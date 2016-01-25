@@ -1,0 +1,1 @@
+/Users/nunoguedelha/dev/bnt_time_varying/src/utils/yarp/yarpdatadumperAppGenerator.py --name rightLegInertialMTBDump --host localhost --port '/icub/right_leg/stateExt:o' '/icub/right_leg/inertialMTB'
