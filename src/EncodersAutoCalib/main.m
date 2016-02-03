@@ -76,7 +76,7 @@ data.diff_q    = 1;    %derivate the angular velocity of the IMUs
 
 
 %% strucutre from files
-data.path        = '/Users/nunoguedelha/dev/jointOffsetCalibInertial/data/calibration/dumperExample';
+data.path        = '/Users/nunoguedelha/dev/jointOffsetCalibInertial/data/calibration/dumperExample/iCubGenova02/';
 data.parts       = {};
 data.labels      = {};
 data.ndof        = {};

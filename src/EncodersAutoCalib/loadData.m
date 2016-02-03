@@ -6,7 +6,7 @@ sgolay_K = num2str(3);
 sgolay_F = num2str(57);
 
 for i = 1 : length(data.parts)
-   file = [data.path '/icub/' data.parts{i} '/' data.type{i} '/data.log'];
+   file = [data.path data.parts{i} '/' data.type{i} '/data.log'];
    if strcmp(data.type{i}, 'stateExt:o');
       q    = ['q_' data.labels{i}];
       dq   = ['dq_' data.labels{i}];
