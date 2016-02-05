@@ -43,11 +43,15 @@ end
 
 mtbSensorFrames = {};
 for i = 1:nrOfMTBAccs
-    mtbSensorFrames{i} = strcat(mtbSensorLink{i},'_acc_mtb_',mtbSensorCodes{i}); % there is no naming convention yet
+    % there is no naming convention yet. ex of sensor frame:
+    % [r_upper_leg_acc_mtb_11B3]
+    mtbSensorFrames{i} = strcat(mtbSensorLink{i},'_acc_mtb_',mtbSensorCodes{i});
 end
 
 mtbSensorLabel = {};
 for i = 1:nrOfMTBAccs
+    % ex of sensor label:
+    % [11B3_acc]
     mtbSensorLabel{i} = strcat(mtbSensorCodes{i},'_acc');
 end
 
@@ -67,12 +71,14 @@ mtbInvertedFrames   =  {true,true, ...
 
 %% Parsing configuration
 %
+% the fields of "data" are created here on the fly.
+%
 data.nsamples  = 100; %number of samples
 data.plot      = 0;
 data.ini       = 2;   %seconds to be skipped at the start
 data.end       = 22;  %seconds to reach the end of the movement
-data.diff_imu  = 1;    %derivate the angular velocity of the IMUs
-data.diff_q    = 1;    %derivate the angular velocity of the IMUs
+data.diff_imu  = 0;    %derivate the angular velocity of the IMUs
+data.diff_q    = 0;    %derivate the angular velocity of the IMUs
 
 
 %% strucutre from files
@@ -93,19 +99,21 @@ sens.transform  = {};
 
 %% add mtb sensors
 for i = 1:nrOfMTBAccs
+    % ex of sensor drake label:
+    % drake_r_upper_leg_X_urdf_r_upper_leg_acc_mtb_11B3]
     sensorTransformName = strcat('drake_', mtbSensorLink{i},'_X_urdf_',mtbSensorFrames{i});
     data = addSensToData(data, 'right_leg'    , mtbSensorLabel{i}  , 3, mtbIndices{i}, 'inertialMTB'           , 1*data.plot);
     sens = addSensToSens(sens, mtbSensorLink{i} , mtbSensorLabel{i}  , 3,        ''           ,sensorTransformName);
 end
 
 %% add joint measurements
-data = addSensToData(data, 'right_leg'         , 'rl'      , 6, '1:6', 'stateExt:o' , 1*data.plot);
+data = addSensToData(data, 'right_leg'         , 'rleg'      , 6, '1:6', 'stateExt:o' , 1*data.plot);
 
 data = loadData(data);
 
 
 %% plot results
-label_to_plot = [mtbSensorLabel,{'rl'}];
+label_to_plot = [mtbSensorLabel,{'11B1_acc' '11B2_acc' '11B3_acc' 'rleg'}];
 
 
 run('iCubSensTransforms.m');

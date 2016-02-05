@@ -5,6 +5,10 @@ function [ data ] = loadData( data )
 sgolay_K = num2str(3);
 sgolay_F = num2str(57);
 
+% length(data.parts) is the lists (parts, labels, ndof) length in 'data'
+% structure. list length = number of sensors (ex: 11 acc + "leg_position").
+% For instance, for the leg, q_1 to q_6 are seen like a single sensor of 6
+% dof ("leg_position"), and that's the way it is read from stateExt:o.
 for i = 1 : length(data.parts)
    file = [data.path data.parts{i} '/' data.type{i} '/data.log'];
    if strcmp(data.type{i}, 'stateExt:o');
@@ -12,6 +16,7 @@ for i = 1 : length(data.parts)
       dq   = ['dq_' data.labels{i}];
       d2q  = ['d2q_' data.labels{i}];
       t    = ['time_' data.labels{i}];
+      % dynamicaly create new fields of "data".
       eval(['[data.' q ',data.' dq ',data.' d2q ',data.' t '] = readStateExt(' num2str(data.ndof{i}) ',''' file ''');']);
       eval(['data.'  q  '= data.'   q '(' data.index{i} ',:);']);
       eval(['data.' dq  '= data.'  dq '(' data.index{i} ',:);']);
@@ -145,11 +150,11 @@ for i = 1 : length(data.parts)
    end
 end
 
-data.q = [data.qs_rl].*pi/180;
+data.q = [data.qs_rleg].*pi/180;
 
-data.dq = [data.dqs_rl].*pi/180;
+data.dq = [data.dqs_rleg].*pi/180;
 
-data.d2q = [data.d2qs_rl].*pi/180;
+data.d2q = [data.d2qs_rleg].*pi/180;
 
 
 
