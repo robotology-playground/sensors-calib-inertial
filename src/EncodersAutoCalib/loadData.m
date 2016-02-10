@@ -9,6 +9,39 @@ sgolay_F = num2str(57);
 % structure. list length = number of sensors (ex: 11 acc + "leg_position").
 % For instance, for the leg, q_1 to q_6 are seen like a single sensor of 6
 % dof ("leg_position"), and that's the way it is read from stateExt:o.
+
+% Create function handles for assigning variables :
+%   q_<labels{i}>, dq_<labels{i}>, d2q_<labels{i}>
+%   qs_<labels{i}>, dqs_<labels{i}>, d2qs_<labels{i}>
+%   qsRad_<labels{i}>, dqsRad_<labels{i}>, d2qsRad_<labels{i}>
+%   y_<labels{i}>
+%   ys_<labels{i}>
+
+% meas = {};
+% 
+% for i = 1 : length(data.parts)
+%     
+%     eval(['meas{i}.t = @(x) data.t_' data.labels{i} ' = x;']);
+%     
+%     if strcmp(data.type{i}, 'stateExt:o');
+%         eval(['meas{i}.q = @(x) data.q_' data.labels{i} ' = x;']);
+%         eval(['meas{i}.dq = @(x) data.dq_' data.labels{i} ' = x;']);
+%         eval(['meas{i}.d2q = @(x) data.d2q_' data.labels{i} ' = x;']);
+% 
+%         eval(['meas{i}.qs = @(x) data.qs_' data.labels{i} ' = x;']);
+%         eval(['meas{i}.dqs = @(x) data.dqs_' data.labels{i} ' = x;']);
+%         eval(['meas{i}.d2qs = @(x) data.d2qs_' data.labels{i} ' = x;']);
+% 
+%         eval(['meas{i}.qsRad = @(x) data.qsRad_' data.labels{i} ' = x;']);
+%         eval(['meas{i}.dqsRad = @(x) data.dqsRad_' data.labels{i} ' = x;']);
+%         eval(['meas{i}.d2qsRad = @(x) data.d2qsRad_' data.labels{i} ' = x;']);
+%    else
+%         eval(['meas{i}.y = @(x) data.y_' data.labels{i} ' = x;']);
+%         eval(['meas{i}.ys = @(x) data.ys_' data.labels{i} ' = x;']);
+%    end
+% end
+
+% Load data from dump files
 for i = 1 : length(data.parts)
    file = [data.path data.parts{i} '/' data.type{i} '/data.log'];
    if strcmp(data.type{i}, 'stateExt:o');
@@ -150,12 +183,25 @@ for i = 1 : length(data.parts)
    end
 end
 
+
+% % Convert qs_xxx, dqs_xxx, d2qs_xxx variables from degrees to radians
+% for i = 1 : length(data.parts)
+%     if strcmp(data.type{i}, 'stateExt:o');
+%         meas{i}.qsRad([data.qs_rleg].*pi/180);
+%         meas{i}.dqsRad([data.dqs_rleg].*pi/180);
+%         meas{i}.d2qsRad([data.d2qs_rleg].*pi/180);
+%     end
+% end
+
 data.q = [data.qs_rleg].*pi/180;
 
 data.dq = [data.dqs_rleg].*pi/180;
 
 data.d2q = [data.d2qs_rleg].*pi/180;
 
+% data.q - meas{12}.qsRad_rleg
+% data.dq - meas{12}.dqsRad_rleg
+% data.d2q - meas{12}.d2qsRad_rleg
 
 
 end

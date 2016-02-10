@@ -1,28 +1,26 @@
-format = '%d %f ';
+clear
+close all
+clc
 
-for j = 1 : 10
-   format = [format, '('];
-   for i = 1 : 10
-      if j < 9
-         format = [format, '%f '];
-      else
-         format = [format, '%d '];
-      end
-   end
-   format = [format, ') [ok] '];
-end
-% C    = textscan(fid, format);
-% time = C{1, 2};
-% q    = cell2mat(C(1, 3    :3+  n-1));
-% dq   = cell2mat(C(1, 3+  n:3+2*n-1));
-% d2q  = cell2mat(C(1, 3+2*n:3+3*n-1));
-% 
-% [tu,iu] = unique(time);
-% time    = tu';
-% q       = q(iu, :)';
-% dq      = dq(iu, :)';
-% d2q     = d2q(iu, :)';
-% 
-% if fclose(fid) == -1
-%    error('[ERROR] there was a problem in closing the file')
-% end
+%% test optimset and fminunc
+
+c = 6;                              % define parameter first
+options = optimset('GradObj','on'); % indicate gradient is provided 
+[x, fval, exitFlag, output, grad] = fminunc(@(x) myfun(x,c),[0;0],options)
+
+%% EXITFLAG:
+%       1  Magnitude of gradient small enough. 
+%       2  Change in X too small.
+%       3  Change in objective function too small.
+%       5  Cannot decrease function along search direction.
+%       0  Too many function evaluations or iterations.
+%      -1  Stopped by output/plot function.
+%      -3  Problem seems unbounded. 
+
+%% plt myfun
+[X,Y] = meshgrid(-2:.2:2, -4:.4:4);
+Z = c * X .* exp(-X.^2 - Y.^2);
+surf(X,Y,Z)
+hold;
+plot3(x(1), x(2), fval, 'ro');
+title('example');
