@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.33"
+    ComputedModelVersion    "1.127"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -30,7 +30,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [-292.0, -1057.0, 1920.0, 1057.0]
+      Location		      [170.0, -1057.0, 1920.0, 1057.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -52,11 +52,11 @@ Model {
 	$ObjectID		5
 	$ClassName		"Simulink.EditorInfo"
 	IsActive		[1]
-	ViewObjType		"SimulinkTopLevel"
-	LoadSaveID		"0"
+	ViewObjType		"SimulinkSubsys"
+	LoadSaveID		"13"
 	Extents			[1696.0, 886.0]
 	ZoomFactor		[1.5]
-	Offset			[138.65000000000009, 19.100000000000023]
+	Offset			[46.333333333333329, 41.333333333333329]
       }
     }
   }
@@ -66,9 +66,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Feb 12 01:59:37 2016"
-  RTWModifiedTimeStamp	  377143097
-  ModelVersionFormat	  "1.%<AutoIncrement:33>"
+  LastModifiedDate	  "Fri Feb 12 17:15:08 2016"
+  RTWModifiedTimeStamp	  377169905
+  ModelVersionFormat	  "1.%<AutoIncrement:127>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -768,6 +768,11 @@ Model {
       SampleTime	      "-1"
     }
     Block {
+      BlockType		      DataStoreWrite
+      DataStoreName	      "A"
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      Demux
       Outputs		      "4"
       DisplayOption	      "none"
@@ -857,8 +862,8 @@ Model {
   }
   System {
     Name		    "jointSpaceTrajController"
-    Location		    [-292, -1057, 1628, 0]
-    Open		    on
+    Location		    [170, -1057, 2090, 0]
+    Open		    off
     ModelBrowserVisibility  on
     ModelBrowserWidth	    200
     ScreenColor		    "white"
@@ -871,38 +876,13 @@ Model {
     ShowPageBoundaries	    off
     ZoomFactor		    "150"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "26"
-    Block {
-      BlockType		      DataStoreMemory
-      Name		      "Data Store Memory"
-      SID		      "25"
-      Position		      [277, 505, 309, 535]
-      ZOrder		      220
-      DataStoreName	      "State"
-      ReadBeforeWriteMsg      "warning"
-      WriteAfterWriteMsg      "warning"
-      WriteAfterReadMsg	      "warning"
-      InitialValue	      "getJointLimits"
-      OutMin		      "1"
-      OutMax		      "4"
-      OutDataTypeStr	      "Enum: SMstates"
-    }
-    Block {
-      BlockType		      DataStoreRead
-      Name		      "Data Store Read"
-      SID		      "26"
-      Ports		      [0, 1]
-      Position		      [430, 150, 460, 180]
-      ZOrder		      221
-      DataStoreName	      "State"
-      DataStoreElements	      "State"
-    }
+    SIDHighWatermark	    "73"
     Block {
       BlockType		      SubSystem
       Name		      "MATLAB Function"
       SID		      "7"
-      Ports		      [1, 4]
-      Position		      [490, 101, 685, 229]
+      Ports		      [1, 3]
+      Position		      [490, 98, 755, 232]
       ZOrder		      215
       LibraryVersion	      "1.32"
       ErrorFcn		      "Stateflow.Translate.translate"
@@ -957,7 +937,7 @@ Model {
 	  Name			  " Demux "
 	  SID			  "7::20"
 	  Ports			  [1, 1]
-	  Position		  [270, 250, 320, 290]
+	  Position		  [270, 255, 320, 295]
 	  ZOrder		  6
 	  Outputs		  "1"
 	}
@@ -966,12 +946,12 @@ Model {
 	  Name			  " SFunction "
 	  SID			  "7::19"
 	  Tag			  "Stateflow S-Function jointSpaceTrajController 2"
-	  Ports			  [1, 5]
-	  Position		  [180, 108, 230, 252]
+	  Ports			  [1, 4]
+	  Position		  [180, 110, 230, 255]
 	  ZOrder		  5
 	  FunctionName		  "sf_sfun"
-	  PortCounts		  "[1 5]"
-	  EnableBusSupport	  off
+	  PortCounts		  "[1 4]"
+	  EnableBusSupport	  on
 	  Port {
 	    PortNumber		    2
 	    Name		    "enGetJointLimits"
@@ -980,7 +960,7 @@ Model {
 	  }
 	  Port {
 	    PortNumber		    3
-	    Name		    "enReachStartPosition"
+	    Name		    "enReachPosition"
 	    RTWStorageClass	    "Auto"
 	    DataLoggingNameMode	    "SignalName"
 	  }
@@ -990,18 +970,12 @@ Model {
 	    RTWStorageClass	    "Auto"
 	    DataLoggingNameMode	    "SignalName"
 	  }
-	  Port {
-	    PortNumber		    5
-	    Name		    "enReachInitPosition"
-	    RTWStorageClass	    "Auto"
-	    DataLoggingNameMode	    "SignalName"
-	  }
 	}
 	Block {
 	  BlockType		  Terminator
 	  Name			  " Terminator "
 	  SID			  "7::22"
-	  Position		  [460, 261, 480, 279]
+	  Position		  [460, 266, 480, 284]
 	  ZOrder		  8
 	}
 	Block {
@@ -1014,7 +988,7 @@ Model {
 	}
 	Block {
 	  BlockType		  Outport
-	  Name			  "enReachStartPosition"
+	  Name			  "enReachPosition"
 	  SID			  "7::5"
 	  Position		  [460, 136, 480, 154]
 	  ZOrder		  -5
@@ -1028,15 +1002,6 @@ Model {
 	  Position		  [460, 171, 480, 189]
 	  ZOrder		  10
 	  Port			  "3"
-	  IconDisplay		  "Port number"
-	}
-	Block {
-	  BlockType		  Outport
-	  Name			  "enReachInitPosition"
-	  SID			  "7::28"
-	  Position		  [460, 206, 480, 224]
-	  ZOrder		  14
-	  Port			  "4"
 	  IconDisplay		  "Port number"
 	}
 	Line {
@@ -1054,11 +1019,11 @@ Model {
 	  DstPort		  1
 	}
 	Line {
-	  Name			  "enReachStartPosition"
+	  Name			  "enReachPosition"
 	  Labels		  [0, 0]
 	  SrcBlock		  " SFunction "
 	  SrcPort		  3
-	  DstBlock		  "enReachStartPosition"
+	  DstBlock		  "enReachPosition"
 	  DstPort		  1
 	}
 	Line {
@@ -1067,14 +1032,6 @@ Model {
 	  SrcBlock		  " SFunction "
 	  SrcPort		  4
 	  DstBlock		  "enRunCalibTrajectory"
-	  DstPort		  1
-	}
-	Line {
-	  Name			  "enReachInitPosition"
-	  Labels		  [0, 0]
-	  SrcBlock		  " SFunction "
-	  SrcPort		  5
-	  DstBlock		  "enReachInitPosition"
 	  DstPort		  1
 	}
 	Line {
@@ -1090,6 +1047,122 @@ Model {
 	  DstPort		  1
 	}
       }
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      Name		      "Mem0"
+      SID		      "65"
+      Position		      [217, 506, 249, 536]
+      ZOrder		      238
+      DataStoreName	      "qInit"
+      ReadBeforeWriteMsg      "warning"
+      WriteAfterWriteMsg      "warning"
+      WriteAfterReadMsg	      "warning"
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      Name		      "Mem1"
+      SID		      "25"
+      Position		      [277, 505, 309, 535]
+      ZOrder		      220
+      DataStoreName	      "State"
+      ReadBeforeWriteMsg      "warning"
+      WriteAfterWriteMsg      "warning"
+      WriteAfterReadMsg	      "warning"
+      InitialValue	      "getJointLimits"
+      OutMin		      "0"
+      OutMax		      "2"
+      OutDataTypeStr	      "Enum: SMstates"
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      Name		      "Mem2"
+      SID		      "39"
+      Position		      [332, 450, 364, 480]
+      ZOrder		      228
+      DataStoreName	      "qMin"
+      ReadBeforeWriteMsg      "warning"
+      WriteAfterWriteMsg      "warning"
+      WriteAfterReadMsg	      "warning"
+      VectorParams1D	      off
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      Name		      "Mem3"
+      SID		      "41"
+      Position		      [382, 450, 414, 480]
+      ZOrder		      229
+      ForegroundColor	      "blue"
+      BackgroundColor	      "[0.000000, 0.819608, 0.819608]"
+      DataStoreName	      "qMax"
+      ReadBeforeWriteMsg      "warning"
+      WriteAfterWriteMsg      "warning"
+      WriteAfterReadMsg	      "warning"
+      VectorParams1D	      off
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      Name		      "Mem4"
+      SID		      "46"
+      Position		      [226, 451, 308, 481]
+      ZOrder		      230
+      DataStoreName	      "fasterJointIdx"
+      ReadBeforeWriteMsg      "warning"
+      WriteAfterWriteMsg      "warning"
+      WriteAfterReadMsg	      "warning"
+      VectorParams1D	      off
+      OutDataTypeStr	      "uint8"
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      Name		      "Mem5"
+      SID		      "49"
+      Position		      [163, 450, 205, 480]
+      ZOrder		      233
+      DataStoreName	      "dqiMax"
+      ReadBeforeWriteMsg      "warning"
+      WriteAfterWriteMsg      "warning"
+      WriteAfterReadMsg	      "warning"
+      VectorParams1D	      off
+    }
+    Block {
+      BlockType		      DataStoreMemory
+      Name		      "Mem6"
+      SID		      "52"
+      Position		      [382, 400, 414, 430]
+      ZOrder		      236
+      DataStoreName	      "qDest"
+      ReadBeforeWriteMsg      "warning"
+      WriteAfterWriteMsg      "warning"
+      WriteAfterReadMsg	      "warning"
+      VectorParams1D	      off
+    }
+    Block {
+      BlockType		      DataStoreRead
+      Name		      "Read1"
+      SID		      "26"
+      Ports		      [0, 1]
+      Position		      [430, 150, 460, 180]
+      ZOrder		      221
+      DataStoreName	      "State"
+    }
+    Block {
+      BlockType		      DataStoreRead
+      Name		      "Read3"
+      SID		      "72"
+      Ports		      [0, 1]
+      Position		      [925, 335, 955, 365]
+      ZOrder		      239
+      DataStoreName	      "qDest"
+    }
+    Block {
+      BlockType		      DataStoreRead
+      Name		      "Read6"
+      SID		      "51"
+      Ports		      [0, 1]
+      Position		      [925, 105, 955, 135]
+      ZOrder		      235
+      DataStoreName	      "qDest"
     }
     Block {
       BlockType		      Reference
@@ -1110,149 +1183,47 @@ Model {
       threadPeriod	      "Ts"
     }
     Block {
-      BlockType		      SubSystem
-      Name		      "SetAngles"
-      SID		      "9"
-      Ports		      [1, 0, 1]
-      Position		      [1095, 314, 1195, 356]
-      ZOrder		      217
-      TreatAsAtomicUnit	      on
-      MinAlgLoopOccurrences   off
-      PropExecContextOutsideSubsystem off
-      RTWSystemCode	      "Auto"
-      FunctionWithSeparateData off
-      Opaque		      off
-      RequestExecContextInheritance off
-      MaskHideContents	      off
-      System {
-	Name			"SetAngles"
-	Location		[170, -1057, 2090, 0]
-	Open			off
-	ModelBrowserVisibility	on
-	ModelBrowserWidth	200
-	ScreenColor		"white"
-	PaperOrientation	"landscape"
-	PaperPositionMode	"auto"
-	PaperType		"usletter"
-	PaperUnits		"inches"
-	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
-	TiledPageScale		1
-	ShowPageBoundaries	off
-	ZoomFactor		"100"
-	Block {
-	  BlockType		  Inport
-	  Name			  "q_j"
-	  SID			  "10"
-	  Position		  [110, 103, 140, 117]
-	  ZOrder		  -1
-	  IconDisplay		  "Port number"
-	}
-	Block {
-	  BlockType		  EnablePort
-	  Name			  "Enable"
-	  SID			  "11"
-	  Ports			  []
-	  Position		  [235, 20, 255, 40]
-	  ZOrder		  -2
-	}
-	Block {
-	  BlockType		  Reference
-	  Name			  "Set Angles"
-	  SID			  "17"
-	  Ports			  [1]
-	  Position		  [360, 88, 430, 132]
-	  ZOrder		  1
-	  BackgroundColor	  "[0.855000, 0.450000, 0.133000]"
-	  LibraryVersion	  "1.285"
-	  SourceBlock		  "WBCLibrary/wholeBodyActuators/Set Angles"
-	  SourceType		  "Set Joint Angles"
-	  val			  "5"
-	  robotName		  "robotName"
-	  localName		  "localName"
-	}
-	Line {
-	  SrcBlock		  "q_j"
-	  SrcPort		  1
-	  DstBlock		  "Set Angles"
-	  DstPort		  1
-	}
-      }
+      BlockType		      DataStoreWrite
+      Name		      "Write2"
+      SID		      "36"
+      Ports		      [1]
+      Position		      [325, 120, 355, 150]
+      ZOrder		      225
+      DataStoreName	      "qMin"
     }
     Block {
-      BlockType		      SubSystem
-      Name		      "SetVelocities"
-      SID		      "13"
-      Ports		      [1, 0, 1]
-      Position		      [1280, 314, 1380, 356]
-      ZOrder		      218
-      TreatAsAtomicUnit	      on
-      MinAlgLoopOccurrences   off
-      PropExecContextOutsideSubsystem off
-      RTWSystemCode	      "Auto"
-      FunctionWithSeparateData off
-      Opaque		      off
-      RequestExecContextInheritance off
-      MaskHideContents	      off
-      System {
-	Name			"SetVelocities"
-	Location		[170, -1057, 2090, 0]
-	Open			off
-	ModelBrowserVisibility	on
-	ModelBrowserWidth	200
-	ScreenColor		"white"
-	PaperOrientation	"landscape"
-	PaperPositionMode	"auto"
-	PaperType		"usletter"
-	PaperUnits		"inches"
-	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
-	TiledPageScale		1
-	ShowPageBoundaries	off
-	ZoomFactor		"100"
-	Block {
-	  BlockType		  Inport
-	  Name			  "dq_j"
-	  SID			  "14"
-	  Position		  [110, 103, 140, 117]
-	  ZOrder		  -1
-	  IconDisplay		  "Port number"
-	}
-	Block {
-	  BlockType		  EnablePort
-	  Name			  "Enable"
-	  SID			  "15"
-	  Ports			  []
-	  Position		  [235, 20, 255, 40]
-	  ZOrder		  -2
-	}
-	Block {
-	  BlockType		  Reference
-	  Name			  "Set Velocities"
-	  SID			  "18"
-	  Ports			  [1]
-	  Position		  [360, 88, 435, 132]
-	  ZOrder		  1
-	  BackgroundColor	  "[0.976000, 0.635000, 0.140000]"
-	  LibraryVersion	  "1.285"
-	  SourceBlock		  "WBCLibrary/wholeBodyActuators/Set Velocities"
-	  SourceType		  "Set Velocities"
-	  val			  "4"
-	  robotName		  "robotName"
-	  localName		  "localName"
-	}
-	Line {
-	  SrcBlock		  "dq_j"
-	  SrcPort		  1
-	  DstBlock		  "Set Velocities"
-	  DstPort		  1
-	}
-      }
+      BlockType		      DataStoreWrite
+      Name		      "Write3"
+      SID		      "37"
+      Ports		      [1]
+      Position		      [325, 180, 355, 210]
+      ZOrder		      226
+      DataStoreName	      "qMax"
+    }
+    Block {
+      BlockType		      DataStoreWrite
+      Name		      "Write4"
+      SID		      "50"
+      Ports		      [1]
+      Position		      [325, 240, 400, 270]
+      ZOrder		      234
+      DataStoreName	      "fasterJointIdx"
+    }
+    Block {
+      BlockType		      DataStoreWrite
+      Name		      "Write5"
+      SID		      "48"
+      Ports		      [1]
+      Position		      [325, 300, 365, 330]
+      ZOrder		      232
+      DataStoreName	      "dqiMax"
     }
     Block {
       BlockType		      SubSystem
       Name		      "getJointLimits"
       SID		      "19"
-      Ports		      [0, 2, 1]
-      Position		      [185, 103, 270, 232]
+      Ports		      [0, 4, 1]
+      Position		      [185, 105, 275, 345]
       ZOrder		      219
       TreatAsAtomicUnit	      on
       MinAlgLoopOccurrences   off
@@ -1282,15 +1253,29 @@ Model {
 	  Name			  "Enable"
 	  SID			  "21"
 	  Ports			  []
-	  Position		  [235, 20, 255, 40]
+	  Position		  [240, 20, 260, 40]
 	  ZOrder		  -2
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Joint Angles"
+	  SID			  "66"
+	  Ports			  [0, 1]
+	  Position		  [160, 448, 230, 492]
+	  ZOrder		  234
+	  BackgroundColor	  "[0.375000, 0.187500, 0.000000]"
+	  LibraryVersion	  "1.285"
+	  SourceBlock		  "WBCLibrary/wholeBodyStates/Joint Angles"
+	  SourceType		  "Joint Angles"
+	  robotName		  "robotName"
+	  localName		  "localName"
 	}
 	Block {
 	  BlockType		  Reference
 	  Name			  "Joint Limits"
 	  SID			  "23"
 	  Ports			  [0, 2]
-	  Position		  [125, 98, 210, 187]
+	  Position		  [125, 93, 225, 362]
 	  ZOrder		  1
 	  BackgroundColor	  "[1.000000, 0.202946, 0.028293]"
 	  LibraryVersion	  "1.285"
@@ -1300,33 +1285,1051 @@ Model {
 	  localName		  "localName"
 	}
 	Block {
+	  BlockType		  SubSystem
+	  Name			  "MATLAB Function"
+	  SID			  "42"
+	  Ports			  [2, 5]
+	  Position		  [380, 89, 710, 361]
+	  ZOrder		  4
+	  LibraryVersion	  "1.32"
+	  ErrorFcn		  "Stateflow.Translate.translate"
+	  PermitHierarchicalResolution "ExplicitOnly"
+	  TreatAsAtomicUnit	  on
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  SFBlockType		  "MATLAB Function"
+	  Object {
+	    $PropName		    "MaskObject"
+	    $ObjectID		    20
+	    $ClassName		    "Simulink.Mask"
+	    Type		    "Stateflow"
+	    Description		    "Embedded MATLAB block"
+	    SelfModifiable	    "on"
+	    Display		    "bgColor = Simulink.Root.ColorString2Rgb(get_param(gcbh, 'BackgroundColor')); image(imread('private/"
+	    "eml_membrane_16.png','png','BackgroundColor',bgColor(1:3)),'center'); disp([10 10 'initTrajParams']);"
+	    IconOpaque		    "off"
+	    IconUnits		    "normalized"
+	  }
+	  System {
+	    Name		    "MATLAB Function"
+	    Location		    [223, 338, 826, 833]
+	    Open		    off
+	    ModelBrowserVisibility  on
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "28"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "qMin"
+	      SID		      "42::1"
+	      Position		      [20, 101, 40, 119]
+	      ZOrder		      -1
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "qMax"
+	      SID		      "42::23"
+	      Position		      [20, 136, 40, 154]
+	      ZOrder		      9
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      SID		      "42::20"
+	      Ports		      [1, 1]
+	      Position		      [270, 280, 320, 320]
+	      ZOrder		      6
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      S-Function
+	      Name		      " SFunction "
+	      SID		      "42::19"
+	      Tag		      "Stateflow S-Function jointSpaceTrajController 1"
+	      Ports		      [2, 6]
+	      Position		      [180, 102, 230, 243]
+	      ZOrder		      5
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[2 6]"
+	      EnableBusSupport	      on
+	      Port {
+		PortNumber		2
+		Name			"qMinRed"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		3
+		Name			"qMaxRed"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		4
+		Name			"fasterJointIdx"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		5
+		Name			"dqiMaxNorm"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		6
+		Name			"nextState"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      SID		      "42::22"
+	      Position		      [460, 291, 480, 309]
+	      ZOrder		      8
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "qMinRed"
+	      SID		      "42::5"
+	      Position		      [460, 101, 480, 119]
+	      ZOrder		      -5
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "qMaxRed"
+	      SID		      "42::24"
+	      Position		      [460, 136, 480, 154]
+	      ZOrder		      10
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "fasterJointIdx"
+	      SID		      "42::25"
+	      Position		      [460, 171, 480, 189]
+	      ZOrder		      11
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "dqiMaxNorm"
+	      SID		      "42::26"
+	      Position		      [460, 206, 480, 224]
+	      ZOrder		      12
+	      Port		      "4"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "nextState"
+	      SID		      "42::27"
+	      Position		      [460, 246, 480, 264]
+	      ZOrder		      13
+	      Port		      "5"
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "qMin"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "qMax"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      2
+	    }
+	    Line {
+	      Name		      "qMinRed"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "qMinRed"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "qMaxRed"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      3
+	      DstBlock		      "qMaxRed"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "fasterJointIdx"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      4
+	      DstBlock		      "fasterJointIdx"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "dqiMaxNorm"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      5
+	      DstBlock		      "dqiMaxNorm"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "nextState"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      6
+	      DstBlock		      "nextState"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  "Write0"
+	  SID			  "67"
+	  Ports			  [1]
+	  Position		  [885, 455, 915, 485]
+	  ZOrder		  235
+	  DataStoreName		  "qInit"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  "Write1"
+	  SID			  "47"
+	  Ports			  [1]
+	  Position		  [885, 320, 915, 350]
+	  ZOrder		  232
+	  DataStoreName		  "State"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  "Write6"
+	  SID			  "53"
+	  Ports			  [1]
+	  Position		  [885, 385, 915, 415]
+	  ZOrder		  233
+	  DataStoreName		  "qDest"
+	}
+	Block {
 	  BlockType		  Outport
-	  Name			  "qMin"
+	  Name			  "qMinRed"
 	  SID			  "22"
-	  Position		  [360, 113, 390, 127]
+	  Position		  [885, 108, 915, 122]
 	  ZOrder		  -3
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Outport
-	  Name			  "qMax"
+	  Name			  "qMaxRed"
 	  SID			  "24"
-	  Position		  [360, 158, 390, 172]
+	  Position		  [885, 163, 915, 177]
 	  ZOrder		  2
 	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "fasterJointIdx"
+	  SID			  "43"
+	  Position		  [885, 218, 915, 232]
+	  ZOrder		  5
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "dqiMax"
+	  SID			  "44"
+	  Position		  [885, 273, 915, 287]
+	  ZOrder		  6
+	  Port			  "4"
 	  IconDisplay		  "Port number"
 	}
 	Line {
 	  SrcBlock		  "Joint Limits"
 	  SrcPort		  1
-	  DstBlock		  "qMin"
+	  DstBlock		  "MATLAB Function"
 	  DstPort		  1
 	}
 	Line {
 	  SrcBlock		  "Joint Limits"
 	  SrcPort		  2
-	  DstBlock		  "qMax"
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  1
+	  Points		  [80, 0]
+	  Branch {
+	    Points		    [0, 285]
+	    DstBlock		    "Write6"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "qMinRed"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  2
+	  DstBlock		  "qMaxRed"
 	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  3
+	  DstBlock		  "fasterJointIdx"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  4
+	  DstBlock		  "dqiMax"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  5
+	  DstBlock		  "Write1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Joint Angles"
+	  SrcPort		  1
+	  Points		  [635, 0]
+	  DstBlock		  "Write0"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "reachPosition"
+      SID		      "9"
+      Ports		      [1, 0, 1]
+      Position		      [1005, 99, 1105, 141]
+      ZOrder		      217
+      TreatAsAtomicUnit	      on
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"reachPosition"
+	Location		[170, -1057, 2090, 0]
+	Open			off
+	ModelBrowserVisibility	on
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"100"
+	Block {
+	  BlockType		  Inport
+	  Name			  "qjDes"
+	  SID			  "10"
+	  Position		  [110, 103, 140, 117]
+	  ZOrder		  -1
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  EnablePort
+	  Name			  "Enable"
+	  SID			  "11"
+	  Ports			  []
+	  Position		  [235, 20, 255, 40]
+	  ZOrder		  -2
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Joint Angles"
+	  SID			  "59"
+	  Ports			  [0, 1]
+	  Position		  [110, 263, 180, 307]
+	  ZOrder		  2
+	  BackgroundColor	  "[0.375000, 0.187500, 0.000000]"
+	  LibraryVersion	  "1.285"
+	  SourceBlock		  "WBCLibrary/wholeBodyStates/Joint Angles"
+	  SourceType		  "Joint Angles"
+	  robotName		  "robotName"
+	  localName		  "localName"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Joint Velocities"
+	  SID			  "64"
+	  Ports			  [0, 1]
+	  Position		  [110, 323, 180, 367]
+	  ZOrder		  6
+	  BackgroundColor	  "[0.634000, 0.401533, 0.000000]"
+	  LibraryVersion	  "1.285"
+	  SourceBlock		  "WBCLibrary/wholeBodyStates/Joint Velocities"
+	  SourceType		  "Joint Velocities"
+	  robotName		  "robotName"
+	  localName		  "localName"
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "MATLAB Function"
+	  SID			  "60"
+	  Ports			  [5, 2]
+	  Position		  [255, 190, 475, 440]
+	  ZOrder		  3
+	  LibraryVersion	  "1.32"
+	  ErrorFcn		  "Stateflow.Translate.translate"
+	  PermitHierarchicalResolution "ExplicitOnly"
+	  TreatAsAtomicUnit	  on
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  SFBlockType		  "MATLAB Function"
+	  Object {
+	    $PropName		    "MaskObject"
+	    $ObjectID		    21
+	    $ClassName		    "Simulink.Mask"
+	    Type		    "Stateflow"
+	    Description		    "Embedded MATLAB block"
+	    SelfModifiable	    "on"
+	    Display		    "bgColor = Simulink.Root.ColorString2Rgb(get_param(gcbh, 'BackgroundColor')); image(imread('private/"
+	    "eml_membrane_16.png','png','BackgroundColor',bgColor(1:3)),'center'); disp([10 10 'checkStopCond']);"
+	    IconOpaque		    "off"
+	    IconUnits		    "normalized"
+	  }
+	  System {
+	    Name		    "MATLAB Function"
+	    Location		    [223, 338, 826, 833]
+	    Open		    off
+	    ModelBrowserVisibility  on
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "27"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "qjDes"
+	      SID		      "60::23"
+	      Position		      [20, 101, 40, 119]
+	      ZOrder		      9
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "q_j"
+	      SID		      "60::1"
+	      Position		      [20, 136, 40, 154]
+	      ZOrder		      -1
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "dq_j"
+	      SID		      "60::24"
+	      Position		      [20, 171, 40, 189]
+	      ZOrder		      10
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "qInit"
+	      SID		      "60::25"
+	      Position		      [20, 206, 40, 224]
+	      ZOrder		      11
+	      Port		      "4"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "qMax"
+	      SID		      "60::27"
+	      Position		      [20, 246, 40, 264]
+	      ZOrder		      13
+	      Port		      "5"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      SID		      "60::20"
+	      Ports		      [1, 1]
+	      Position		      [270, 220, 320, 260]
+	      ZOrder		      6
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      S-Function
+	      Name		      " SFunction "
+	      SID		      "60::19"
+	      Tag		      "Stateflow S-Function jointSpaceTrajController 3"
+	      Ports		      [5, 3]
+	      Position		      [180, 100, 230, 220]
+	      ZOrder		      5
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[5 3]"
+	      EnableBusSupport	      off
+	      Port {
+		PortNumber		2
+		Name			"qDest"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		3
+		Name			"nextState"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      SID		      "60::22"
+	      Position		      [460, 231, 480, 249]
+	      ZOrder		      8
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "qDest"
+	      SID		      "60::26"
+	      Position		      [460, 101, 480, 119]
+	      ZOrder		      12
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "nextState"
+	      SID		      "60::5"
+	      Position		      [460, 136, 480, 154]
+	      ZOrder		      -5
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "qjDes"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "q_j"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      2
+	    }
+	    Line {
+	      SrcBlock		      "dq_j"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      3
+	    }
+	    Line {
+	      SrcBlock		      "qInit"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      4
+	    }
+	    Line {
+	      SrcBlock		      "qMax"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      5
+	    }
+	    Line {
+	      Name		      "qDest"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "qDest"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "nextState"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      3
+	      DstBlock		      "nextState"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Read0"
+	  SID			  "68"
+	  Ports			  [0, 1]
+	  Position		  [150, 390, 180, 420]
+	  ZOrder		  7
+	  DataStoreName		  "qInit"
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Read3"
+	  SID			  "71"
+	  Ports			  [0, 1]
+	  Position		  [150, 455, 180, 485]
+	  ZOrder		  8
+	  DataStoreName		  "qMax"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Set Angles"
+	  SID			  "17"
+	  Ports			  [1]
+	  Position		  [580, 88, 650, 132]
+	  ZOrder		  1
+	  BackgroundColor	  "[0.855000, 0.450000, 0.133000]"
+	  LibraryVersion	  "1.285"
+	  SourceBlock		  "WBCLibrary/wholeBodyActuators/Set Angles"
+	  SourceType		  "Set Joint Angles"
+	  val			  "5"
+	  robotName		  "robotName"
+	  localName		  "localName"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  "Write1"
+	  SID			  "61"
+	  Ports			  [1]
+	  Position		  [600, 365, 630, 395]
+	  ZOrder		  4
+	  DataStoreName		  "State"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  "Write6"
+	  SID			  "63"
+	  Ports			  [1]
+	  Position		  [600, 240, 630, 270]
+	  ZOrder		  5
+	  DataStoreName		  "qDest"
+	}
+	Line {
+	  SrcBlock		  "qjDes"
+	  SrcPort		  1
+	  Points		  [66, 0]
+	  Branch {
+	    Points		    [0, 105]
+	    DstBlock		    "MATLAB Function"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Set Angles"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Joint Angles"
+	  SrcPort		  1
+	  Points		  [55, 0]
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  2
+	  DstBlock		  "Write1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  1
+	  Points		  [105, 0]
+	  DstBlock		  "Write6"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Joint Velocities"
+	  SrcPort		  1
+	  Points		  [55, 0]
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  3
+	}
+	Line {
+	  SrcBlock		  "Read0"
+	  SrcPort		  1
+	  Points		  [55, 0]
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  4
+	}
+	Line {
+	  SrcBlock		  "Read3"
+	  SrcPort		  1
+	  Points		  [32, 0; 0, -55]
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  5
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "runCalibTrajectory"
+      SID		      "13"
+      Ports		      [1, 0, 1]
+      Position		      [1005, 329, 1105, 371]
+      ZOrder		      218
+      TreatAsAtomicUnit	      on
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"runCalibTrajectory"
+	Location		[170, -1057, 2090, 0]
+	Open			on
+	ModelBrowserVisibility	on
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"150"
+	Block {
+	  BlockType		  Inport
+	  Name			  "qjDes"
+	  SID			  "14"
+	  Position		  [115, 143, 145, 157]
+	  ZOrder		  -1
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  EnablePort
+	  Name			  "Enable"
+	  SID			  "15"
+	  Ports			  []
+	  Position		  [235, 20, 255, 40]
+	  ZOrder		  -2
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Joint Angles"
+	  SID			  "69"
+	  Ports			  [0, 1]
+	  Position		  [75, 208, 145, 252]
+	  ZOrder		  3
+	  BackgroundColor	  "[0.375000, 0.187500, 0.000000]"
+	  LibraryVersion	  "1.285"
+	  SourceBlock		  "WBCLibrary/wholeBodyStates/Joint Angles"
+	  SourceType		  "Joint Angles"
+	  robotName		  "robotName"
+	  localName		  "localName"
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "MATLAB Function"
+	  SID			  "62"
+	  Ports			  [3, 2]
+	  Position		  [195, 109, 450, 271]
+	  ZOrder		  2
+	  LibraryVersion	  "1.32"
+	  ErrorFcn		  "Stateflow.Translate.translate"
+	  PermitHierarchicalResolution "ExplicitOnly"
+	  TreatAsAtomicUnit	  on
+	  MinAlgLoopOccurrences	  off
+	  PropExecContextOutsideSubsystem off
+	  RTWSystemCode		  "Auto"
+	  FunctionWithSeparateData off
+	  Opaque		  off
+	  RequestExecContextInheritance	off
+	  MaskHideContents	  off
+	  SFBlockType		  "MATLAB Function"
+	  Object {
+	    $PropName		    "MaskObject"
+	    $ObjectID		    22
+	    $ClassName		    "Simulink.Mask"
+	    Type		    "Stateflow"
+	    Description		    "Embedded MATLAB block"
+	    SelfModifiable	    "on"
+	    Display		    "bgColor = Simulink.Root.ColorString2Rgb(get_param(gcbh, 'BackgroundColor')); image(imread('private/"
+	    "eml_membrane_16.png','png','BackgroundColor',bgColor(1:3)),'center'); disp([10 10 'checkStopCond']);"
+	    IconOpaque		    "off"
+	    IconUnits		    "normalized"
+	  }
+	  System {
+	    Name		    "MATLAB Function"
+	    Location		    [223, 338, 826, 833]
+	    Open		    off
+	    ModelBrowserVisibility  on
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "26"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "qjDes"
+	      SID		      "62::1"
+	      Position		      [20, 101, 40, 119]
+	      ZOrder		      -1
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "q_j"
+	      SID		      "62::23"
+	      Position		      [20, 136, 40, 154]
+	      ZOrder		      9
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Inport
+	      Name		      "fasterJointIdx"
+	      SID		      "62::25"
+	      Position		      [20, 171, 40, 189]
+	      ZOrder		      11
+	      Port		      "3"
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      SID		      "62::20"
+	      Ports		      [1, 1]
+	      Position		      [270, 205, 320, 245]
+	      ZOrder		      6
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      S-Function
+	      Name		      " SFunction "
+	      SID		      "62::19"
+	      Tag		      "Stateflow S-Function jointSpaceTrajController 4"
+	      Ports		      [3, 3]
+	      Position		      [180, 104, 230, 206]
+	      ZOrder		      5
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[3 3]"
+	      EnableBusSupport	      off
+	      Port {
+		PortNumber		2
+		Name			"dq_j"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	      Port {
+		PortNumber		3
+		Name			"nextState"
+		RTWStorageClass		"Auto"
+		DataLoggingNameMode	"SignalName"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      SID		      "62::22"
+	      Position		      [460, 216, 480, 234]
+	      ZOrder		      8
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "dq_j"
+	      SID		      "62::24"
+	      Position		      [460, 101, 480, 119]
+	      ZOrder		      10
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "nextState"
+	      SID		      "62::5"
+	      Position		      [460, 136, 480, 154]
+	      ZOrder		      -5
+	      Port		      "2"
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      SrcBlock		      "qjDes"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      "q_j"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      2
+	    }
+	    Line {
+	      SrcBlock		      "fasterJointIdx"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      3
+	    }
+	    Line {
+	      Name		      "dq_j"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "dq_j"
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "nextState"
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      3
+	      DstBlock		      "nextState"
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  DataStoreRead
+	  Name			  "Read4"
+	  SID			  "73"
+	  Ports			  [0, 1]
+	  Position		  [75, 305, 145, 335]
+	  ZOrder		  234
+	  DataStoreName		  "fasterJointIdx"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "Set Velocities"
+	  SID			  "18"
+	  Ports			  [1]
+	  Position		  [530, 128, 605, 172]
+	  ZOrder		  1
+	  BackgroundColor	  "[0.976000, 0.635000, 0.140000]"
+	  LibraryVersion	  "1.285"
+	  SourceBlock		  "WBCLibrary/wholeBodyActuators/Set Velocities"
+	  SourceType		  "Set Velocities"
+	  val			  "4"
+	  robotName		  "robotName"
+	  localName		  "localName"
+	}
+	Block {
+	  BlockType		  DataStoreWrite
+	  Name			  "Write1"
+	  SID			  "70"
+	  Ports			  [1]
+	  Position		  [530, 215, 560, 245]
+	  ZOrder		  233
+	  DataStoreName		  "State"
+	}
+	Line {
+	  SrcBlock		  "Joint Angles"
+	  SrcPort		  1
+	  Points		  [30, 0]
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "qjDes"
+	  SrcPort		  1
+	  Points		  [30, 0]
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  1
+	  DstBlock		  "Set Velocities"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  2
+	  DstBlock		  "Write1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Read4"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, -75]
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  3
 	}
       }
     }
@@ -1348,38 +2351,64 @@ Model {
     Line {
       SrcBlock		      "MATLAB Function"
       SrcPort		      2
-      Points		      [455, 0]
-      DstBlock		      "SetAngles"
+      Points		      [82, 0; 0, -117; 213, 0]
+      DstBlock		      "reachPosition"
       DstPort		      enable
     }
     Line {
       SrcBlock		      "MATLAB Function"
       SrcPort		      3
-      Points		      [640, 0]
-      DstBlock		      "SetVelocities"
+      Points		      [83, 0; 0, 65; 212, 0]
+      DstBlock		      "runCalibTrajectory"
       DstPort		      enable
     }
     Line {
       SrcBlock		      "MATLAB Function"
       SrcPort		      1
-      Points		      [85, 0; 0, -73; -550, 0]
+      Points		      [15, 0; 0, -73; -545, 0]
       DstBlock		      "getJointLimits"
       DstPort		      enable
     }
     Line {
-      Points		      [690, 190; 172, 0; 0, 145]
-      DstBlock		      "SetAngles"
-      DstPort		      1
-    }
-    Line {
-      Points		      [690, 210; 115, 0; 0, 196; 433, 0; 0, -71]
-      DstBlock		      "SetVelocities"
-      DstPort		      1
-    }
-    Line {
-      SrcBlock		      "Data Store Read"
+      SrcBlock		      "Read1"
       SrcPort		      1
       DstBlock		      "MATLAB Function"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "getJointLimits"
+      SrcPort		      1
+      DstBlock		      "Write2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "getJointLimits"
+      SrcPort		      2
+      DstBlock		      "Write3"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "getJointLimits"
+      SrcPort		      4
+      DstBlock		      "Write5"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "getJointLimits"
+      SrcPort		      3
+      DstBlock		      "Write4"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Read6"
+      SrcPort		      1
+      DstBlock		      "reachPosition"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Read3"
+      SrcPort		      1
+      DstBlock		      "runCalibTrajectory"
       DstPort		      1
     }
   }
@@ -1396,18 +2425,18 @@ Stateflow {
     name		    "jointSpaceTrajController"
     created		    "11-Feb-2016 17:49:36"
     isLibrary		    0
-    firstTarget		    12
+    firstTarget		    45
     sfVersion		    76014001.001
   }
   chart {
     id			    2
-    name		    "MATLAB Function"
+    name		    "getJointLimits/MATLAB Function"
     windowPosition	    [357.12 483.496 167 391]
     viewLimits		    [0 156.75 0 153.75]
     screen		    [1 1 1280 1024 1.041666666666667]
     treeNode		    [0 3 0 0]
-    firstTransition	    10
-    firstJunction	    9
+    firstTransition	    12
+    firstJunction	    11
     viewObj		    2
     visible		    1
     machine		    1
@@ -1417,10 +2446,10 @@ Stateflow {
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
     firstData		    4
-    chartFileNumber	    2
+    chartFileNumber	    1
     disableImplicitCasting  1
     eml {
-      name		      "mainSM"
+      name		      "initTrajParams"
     }
   }
   state {
@@ -1437,23 +2466,25 @@ Stateflow {
     decomposition	    CLUSTER_STATE
     eml {
       isEML		      1
-      script		      "function [enGetJointLimits, enReachStartPosition, enRunCalibTrajectory, enReachInitPosition] = ma"
-      "inSM(state)\n%#codegen\n\n%% static variables\n%\n\n% %% States: 'getJointLimits', 'reachStartPosition', 'runCal"
-      "ibTrajectory'\n% % 'reachInitPosition'\n% persistent state;\n% \n% % Init first call State\n% if isempty(state)\n"
-      "%     state = 'getJointLimits';\n% end\n\n%% reset and set triggers from input state  \nenState_getJointLimits ="
-      " 0;\nenReachStartPosition = 0;\nenRunCalibTrajectory = 0;\nenReachInitPosition = 0;\n\nswitch state\n    case 1 "
-      "%'getJointLimits'\n        enState_getJointLimits = 1;\n    case 2 %'reachStartPosition'\n        enReachStartPo"
-      "sition = 1;\n    case 3 %'runCalibTrajectory'\n        enRunCalibTrajectory = 1;\n    case 4 %'reachInitPosition"
-      "'\n        enReachInitPosition = 1;\n    otherwise\n        error('msgIdent','wrong state')\nend\n"
+      script		      "function [qMinRed, qMaxRed, fasterJointIdx, dqiMaxNorm, nextState] = initTrajParams(qMin, qMax)\n"
+      "%#codegen\n\n% adjusted joint limits.\n% For the lower boundary (qMin), we shift by 2deg in the direction qMin->"
+      "qMax.\n% For the higher boundary (qMax), we shift by 2deg in the direction qMax->qMin.\nDeltaQ = qMax - qMin;\nq"
+      "MinRed = qMin + DeltaQ/(norm(DeltaQ,2)+0.5)*2; % +0.5 is to avoid div by 0\nqMaxRed = qMax - DeltaQ/(norm(DeltaQ"
+      ",2)+0.5)*2;\n\n% Select joint for which rotation will have the highest speed.\n% This shall be the high boundary"
+      " speed for all joints. We shall set this \n% boundary to the maximum speed 'dqiMax' required for neglecting the "
+      "angular \n% and linear acceleration to be measured by the sensors, w.r.t. the gravity\n% measurements.\nDeltaQ ="
+      " qMaxRed - qMinRed;\n[~,fasterJointIdx] = max(abs(DeltaQ));\n\n% Set the start position for the calibration traj"
+      "ectory\n% (done outside this function but inside the subsystem).\n\n% Set the next state for reaching the start "
+      "position\nnextState = SMstates.reachPosition;\n"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }
   data {
     id			    4
-    ssIdNumber		    8
-    name		    "enGetJointLimits"
+    ssIdNumber		    4
+    name		    "qMin"
     linkNode		    [2 0 5]
-    scope		    OUTPUT_DATA
+    scope		    INPUT_DATA
     machine		    1
     props {
       array {
@@ -1462,18 +2493,15 @@ Stateflow {
       type {
 	method			SF_INHERITED_TYPE
 	primitive		SF_DOUBLE_TYPE
-	isSigned		1
-	wordLength		"16"
       }
       complexity	      SF_COMPLEX_INHERITED
-      frame		      SF_FRAME_NO
     }
     dataType		    "Inherit: Same as Simulink"
   }
   data {
     id			    5
     ssIdNumber		    5
-    name		    "enReachStartPosition"
+    name		    "qMinRed"
     linkNode		    [2 4 6]
     scope		    OUTPUT_DATA
     machine		    1
@@ -1492,9 +2520,31 @@ Stateflow {
   }
   data {
     id			    6
-    ssIdNumber		    7
-    name		    "enRunCalibTrajectory"
+    ssIdNumber		    6
+    name		    "qMax"
     linkNode		    [2 5 7]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    7
+    ssIdNumber		    7
+    name		    "qMaxRed"
+    linkNode		    [2 6 8]
     scope		    OUTPUT_DATA
     machine		    1
     props {
@@ -1513,11 +2563,11 @@ Stateflow {
     dataType		    "Inherit: Same as Simulink"
   }
   data {
-    id			    7
-    ssIdNumber		    4
-    name		    "state"
-    linkNode		    [2 6 8]
-    scope		    INPUT_DATA
+    id			    8
+    ssIdNumber		    8
+    name		    "fasterJointIdx"
+    linkNode		    [2 7 9]
+    scope		    OUTPUT_DATA
     machine		    1
     props {
       array {
@@ -1526,16 +2576,41 @@ Stateflow {
       type {
 	method			SF_INHERITED_TYPE
 	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
       }
       complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
     }
     dataType		    "Inherit: Same as Simulink"
   }
   data {
-    id			    8
-    ssIdNumber		    11
-    name		    "enReachInitPosition"
-    linkNode		    [2 7 0]
+    id			    9
+    ssIdNumber		    9
+    name		    "dqiMaxNorm"
+    linkNode		    [2 8 10]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    10
+    ssIdNumber		    10
+    name		    "nextState"
+    linkNode		    [2 9 0]
     scope		    OUTPUT_DATA
     machine		    1
     props {
@@ -1554,7 +2629,7 @@ Stateflow {
     dataType		    "Inherit: Same as Simulink"
   }
   junction {
-    id			    9
+    id			    11
     position		    [23.5747 49.5747 7]
     chart		    2
     linkNode		    [2 0 0]
@@ -1563,7 +2638,7 @@ Stateflow {
     type		    CONNECTIVE_JUNCTION
   }
   transition {
-    id			    10
+    id			    12
     labelString		    "{eML_blk_kernel();}"
     labelPosition	    [32.125 19.875 102.544 14.964]
     fontSize		    12
@@ -1571,7 +2646,7 @@ Stateflow {
       intersection	      [0 0 1 0 23.5747 14.625 0 0]
     }
     dst {
-      id		      9
+      id		      11
       intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
     }
     midPoint		    [23.5747 24.9468]
@@ -1587,13 +2662,618 @@ Stateflow {
     ssIdNumber		    2
   }
   instance {
-    id			    11
-    name		    "MATLAB Function"
+    id			    13
+    name		    "getJointLimits/MATLAB Function"
     machine		    1
     chart		    2
   }
+  chart {
+    id			    14
+    name		    "MATLAB Function"
+    windowPosition	    [357.12 483.496 167 391]
+    viewLimits		    [0 156.75 0 153.75]
+    screen		    [1 1 1280 1024 1.041666666666667]
+    treeNode		    [0 15 0 0]
+    firstTransition	    21
+    firstJunction	    20
+    viewObj		    14
+    visible		    1
+    machine		    1
+    subviewS {
+    }
+    ssIdHighWaterMark	    11
+    decomposition	    CLUSTER_CHART
+    type		    EML_CHART
+    firstData		    16
+    chartFileNumber	    2
+    disableImplicitCasting  1
+    eml {
+      name		      "mainSM"
+    }
+  }
+  state {
+    id			    15
+    labelString		    "eML_blk_kernel()"
+    position		    [18 64.5 118 66]
+    fontSize		    12
+    chart		    14
+    treeNode		    [14 0 0 0]
+    superState		    SUBCHART
+    subviewer		    14
+    ssIdNumber		    1
+    type		    FUNC_STATE
+    decomposition	    CLUSTER_STATE
+    eml {
+      isEML		      1
+      script		      "function [enGetJointLimits, enReachPosition, enRunCalibTrajectory] = mainSM(state)\n%#codegen\n\n"
+      "%% static variables\n%\n\n%% States: 'getJointLimits', 'reachPosition', 'runCalibTrajectory'\n%\n% reset and set"
+      " triggers from input state  \n%\nenGetJointLimits = 0;\nenReachPosition = 0;\nenRunCalibTrajectory = 0;\n\nswitc"
+      "h state\n    case getJointLimits\n        enGetJointLimits = 1;\n    case reachPosition\n        enReachPosition"
+      " = 1;\n    case runCalibTrajectory\n        enRunCalibTrajectory = 1;\n    otherwise\n        error('msgIdent','"
+      "wrong state')\nend\n"
+      editorLayout	      "100 M4x1[10 5 700 500]"
+    }
+  }
+  data {
+    id			    16
+    ssIdNumber		    8
+    name		    "enGetJointLimits"
+    linkNode		    [14 0 17]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    17
+    ssIdNumber		    5
+    name		    "enReachPosition"
+    linkNode		    [14 16 18]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    18
+    ssIdNumber		    7
+    name		    "enRunCalibTrajectory"
+    linkNode		    [14 17 19]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    19
+    ssIdNumber		    4
+    name		    "state"
+    linkNode		    [14 18 0]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  junction {
+    id			    20
+    position		    [23.5747 49.5747 7]
+    chart		    14
+    linkNode		    [14 0 0]
+    subviewer		    14
+    ssIdNumber		    3
+    type		    CONNECTIVE_JUNCTION
+  }
+  transition {
+    id			    21
+    labelString		    "{eML_blk_kernel();}"
+    labelPosition	    [32.125 19.875 102.544 14.964]
+    fontSize		    12
+    src {
+      intersection	      [0 0 1 0 23.5747 14.625 0 0]
+    }
+    dst {
+      id		      20
+      intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
+    }
+    midPoint		    [23.5747 24.9468]
+    chart		    14
+    linkNode		    [14 0 0]
+    dataLimits		    [21.175 25.975 14.625 42.575]
+    subviewer		    14
+    drawStyle		    SMART
+    slide {
+      sticky		      BOTH_STICK
+    }
+    executionOrder	    1
+    ssIdNumber		    2
+  }
+  instance {
+    id			    22
+    name		    "MATLAB Function"
+    machine		    1
+    chart		    14
+  }
+  chart {
+    id			    23
+    name		    "reachPosition/MATLAB Function"
+    windowPosition	    [357.12 483.496 167 391]
+    viewLimits		    [0 156.75 0 153.75]
+    screen		    [1 1 1280 1024 1.041666666666667]
+    treeNode		    [0 24 0 0]
+    firstTransition	    33
+    firstJunction	    32
+    viewObj		    23
+    visible		    1
+    machine		    1
+    subviewS {
+    }
+    ssIdHighWaterMark	    10
+    decomposition	    CLUSTER_CHART
+    type		    EML_CHART
+    firstData		    25
+    chartFileNumber	    3
+    disableImplicitCasting  1
+    eml {
+      name		      "checkStopCond"
+    }
+  }
+  state {
+    id			    24
+    labelString		    "eML_blk_kernel()"
+    position		    [18 64.5 118 66]
+    fontSize		    12
+    chart		    23
+    treeNode		    [23 0 0 0]
+    superState		    SUBCHART
+    subviewer		    23
+    ssIdNumber		    1
+    type		    FUNC_STATE
+    decomposition	    CLUSTER_STATE
+    eml {
+      isEML		      1
+      script		      "function [qDest, nextState] = checkStopCond(qjDes, q_j, dq_j, qInit, qMax)\n%#codegen\n\npersiste"
+      "nt subState;\nif isempty(subState)\n    suState = 1;\nend\n\n% Check if we reached the desired position:\n% We s"
+      "hall stop as soon as |qDes-q_j| < qErr AND |dqDes-dq_j| < dqErr,\n% qErr and dqErr being the approximative posit"
+      "ion and speed accuracy.\nif abs(qjDes-q_j)<=qErr && abs(dq_j)<=dqErr\n    switch subState\n        case 1\n     "
+      "       qDest = qMax;\n            subState = 2;\n            nextState = SMstates.runCalibTrajectory;\n        c"
+      "ase 2\n            qDest = qInit;\n            subState = 3;\n            nextState = SMstates.reachPosition;\n "
+      "       case 3\n            qDest = qjDes;\n            % subState unchanged.\n            nextState = SMstates.r"
+      "eachPosition;\n    end\nelse\n    qDest = qjDes;\n    % subState unchanged.\n    nextState = SMstates.reachPosit"
+      "ion;\nend\n"
+      editorLayout	      "100 M4x1[10 5 700 500]"
+    }
+  }
+  data {
+    id			    25
+    ssIdNumber		    9
+    name		    "qDest"
+    linkNode		    [23 0 26]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    26
+    ssIdNumber		    6
+    name		    "qjDes"
+    linkNode		    [23 25 27]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    27
+    ssIdNumber		    4
+    name		    "q_j"
+    linkNode		    [23 26 28]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    28
+    ssIdNumber		    5
+    name		    "nextState"
+    linkNode		    [23 27 29]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    29
+    ssIdNumber		    7
+    name		    "dq_j"
+    linkNode		    [23 28 30]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    30
+    ssIdNumber		    8
+    name		    "qInit"
+    linkNode		    [23 29 31]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    31
+    ssIdNumber		    10
+    name		    "qMax"
+    linkNode		    [23 30 0]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  junction {
+    id			    32
+    position		    [23.5747 49.5747 7]
+    chart		    23
+    linkNode		    [23 0 0]
+    subviewer		    23
+    ssIdNumber		    3
+    type		    CONNECTIVE_JUNCTION
+  }
+  transition {
+    id			    33
+    labelString		    "{eML_blk_kernel();}"
+    labelPosition	    [32.125 19.875 102.544 14.964]
+    fontSize		    12
+    src {
+      intersection	      [0 0 1 0 23.5747 14.625 0 0]
+    }
+    dst {
+      id		      32
+      intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
+    }
+    midPoint		    [23.5747 24.9468]
+    chart		    23
+    linkNode		    [23 0 0]
+    dataLimits		    [21.175 25.975 14.625 42.575]
+    subviewer		    23
+    drawStyle		    SMART
+    slide {
+      sticky		      BOTH_STICK
+    }
+    executionOrder	    1
+    ssIdNumber		    2
+  }
+  instance {
+    id			    34
+    name		    "reachPosition/MATLAB Function"
+    machine		    1
+    chart		    23
+  }
+  chart {
+    id			    35
+    name		    "runCalibTrajectory/MATLAB Function"
+    windowPosition	    [357.12 483.496 167 391]
+    viewLimits		    [0 156.75 0 153.75]
+    screen		    [1 1 1280 1024 1.041666666666667]
+    treeNode		    [0 36 0 0]
+    firstTransition	    43
+    firstJunction	    42
+    viewObj		    35
+    visible		    1
+    machine		    1
+    subviewS {
+    }
+    ssIdHighWaterMark	    9
+    decomposition	    CLUSTER_CHART
+    type		    EML_CHART
+    firstData		    37
+    chartFileNumber	    4
+    disableImplicitCasting  1
+    eml {
+      name		      "checkStopCond"
+    }
+  }
+  state {
+    id			    36
+    labelString		    "eML_blk_kernel()"
+    position		    [18 64.5 118 66]
+    fontSize		    12
+    chart		    35
+    treeNode		    [35 0 0 0]
+    superState		    SUBCHART
+    subviewer		    35
+    ssIdNumber		    1
+    type		    FUNC_STATE
+    decomposition	    CLUSTER_STATE
+    eml {
+      isEML		      1
+      script		      "function [dq_j, nextState] = checkStopCond(qjDes, q_j, fasterJointIdx)\n%#codegen\n\n% define the"
+      " maximum speed (in degrees) of the reference revolute single joint\n% (single DOF). This is done manually:\n% jo"
+      "ints rotation speed is considered constant, so we only get centripete \n% acceleration . $|a_n| = \\frac{v^2}{R}"
+      " = R dq^2$\n% => $dqiMax = \\sqrt{\\frac{|a_n|}{R}}$\n% As a_n max should not exceed 1/10 g,\n% $dqiMax = \\sqrt"
+      "{\\frac{1}{R}} ~ sqrt(1/0.4) ~ 1.5rad = 85deg$ for g ~\n% 10m.s^{-2}.\n% Let's have a margin and define 45deg (s"
+      "igned value)\npersistent dqiMax;\npersistent last_dq_j;\n\n%% Program joint velocity for current timeslot\nDelta"
+      "Q = qjDes - q_j;\n\n% Fill 'dqiMaxNorm'\nif isempty(dqiMax)\n    dqiMax = 45*DeltaQ(fasterJointIdx)/abs(DeltaQ(f"
+      "asterJointIdx));\nend\nif isempty(last_dq_j)\n    last_dq_j = zeros(ROBOT_DOF,1);\nend\n\n% If angles are small,"
+      " avoid computing dq_j, just use same velocities for\n% all joints.\nif abs(DeltaQ(fasterJointIdx))>5\n    dq_j ="
+      " DeltaQ*dqiMax/DeltaQ(fasterJointIdx);\n    last_dq_j = dq_j\nelse\n    dq_j = last_dq_j;\nend\n    \n% We shall"
+      " stop as soon as the joint closest to its respective end position\n% reaches the end position vicinity (d<0..1 d"
+      "egdistance between \n% Check if we reached the desired position\nif abs(DeltaQ(fasterJointIdx))<(3*Ts) || abs(De"
+      "ltaQ(fasterJointIdx))>2\n    nextState = SMstates.reachPosition;\nelse\n    \nend\n\nend\n"
+      editorLayout	      "100 M4x1[10 5 700 500]"
+    }
+  }
+  data {
+    id			    37
+    ssIdNumber		    7
+    name		    "dq_j"
+    linkNode		    [35 0 38]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    38
+    ssIdNumber		    4
+    name		    "qjDes"
+    linkNode		    [35 37 39]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    39
+    ssIdNumber		    5
+    name		    "nextState"
+    linkNode		    [35 38 40]
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    40
+    ssIdNumber		    6
+    name		    "q_j"
+    linkNode		    [35 39 41]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    41
+    ssIdNumber		    8
+    name		    "fasterJointIdx"
+    linkNode		    [35 40 0]
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  junction {
+    id			    42
+    position		    [23.5747 49.5747 7]
+    chart		    35
+    linkNode		    [35 0 0]
+    subviewer		    35
+    ssIdNumber		    3
+    type		    CONNECTIVE_JUNCTION
+  }
+  transition {
+    id			    43
+    labelString		    "{eML_blk_kernel();}"
+    labelPosition	    [32.125 19.875 102.544 14.964]
+    fontSize		    12
+    src {
+      intersection	      [0 0 1 0 23.5747 14.625 0 0]
+    }
+    dst {
+      id		      42
+      intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
+    }
+    midPoint		    [23.5747 24.9468]
+    chart		    35
+    linkNode		    [35 0 0]
+    dataLimits		    [21.175 25.975 14.625 42.575]
+    subviewer		    35
+    drawStyle		    SMART
+    slide {
+      sticky		      BOTH_STICK
+    }
+    executionOrder	    1
+    ssIdNumber		    2
+  }
+  instance {
+    id			    44
+    name		    "runCalibTrajectory/MATLAB Function"
+    machine		    1
+    chart		    35
+  }
   target {
-    id			    12
+    id			    45
     name		    "sfun"
     description		    "Default Simulink S-Function Target."
     machine		    1

@@ -1,9 +1,8 @@
 classdef SMstates < Simulink.IntEnumType
    enumeration
       getJointLimits(0)
-      reachStartPosition(1)
+      reachPosition(1)
       runCalibTrajectory(2)
-      reachInitPosition(3)
    end
    methods
        function retVal = getDescription()
