@@ -112,7 +112,9 @@ data = loadData(data);
 
 
 %% plot results
-label_to_plot = [mtbSensorLabel,{'11b1_acc' '11b2_acc' '11b3_acc' 'rleg'}];
+label_to_plot = [mtbSensorLabel,{'11b1_acc' '11b2_acc' '11b3_acc' '11b4_acc' '11b5_acc' '11b6_acc' '11b7_acc'...
+                                 '11b8_acc' '11b9_acc' '11b10_acc' '11b11_acc'...
+                                 'rleg'}];
 
 % %% Plots
 % py = [0; cumsum(cell2mat(myMAP.IDsens.sensorsParams.sizes))];
@@ -155,49 +157,6 @@ estimator.loadModelAndSensorsFromFile('../models/iCubGenova02/iCubFull.urdf');
 % Check if the model was correctly created by printing the model
 estimator.model().toString()
 
-%% Prepare inputs for updating the kinematics information in the estimator
-% 
-% Compute the kinematics information necessary for the accelerometer
-% sensor measurements estimation. We assume the robot root link is fixed to
-% the ground (steady kart pole). We then assume to know the gravity (ground
-% truth) on the frame (base_link) fixed to the root link For more info on iCub 
-% frames check: http://wiki.icub.org/wiki/ICub_Model_naming_conventions.
-
-% Gravity
-grav_idyn = iDynTree.Vector3();
-grav = [0.0;0.0;-9.81];
-grav_idyn.fromMatlab(grav);
-
-% create joint position iDynTree objects
-q0i_idyn   = iDynTree.JointPosDoubleArray(dofs);
-dqi_idyn  = iDynTree.JointDOFsDoubleArray(dofs);
-d2qi_idyn = iDynTree.JointDOFsDoubleArray(dofs);
-
-% Base link index for later applying forward kynematics
-base_link_index = estimator.model().getFrameIndex('base_link');
-
-% Get joint information: DOF
-dofs = estimator.model().getNrOfDOFs();
-
-% Unknown wrenches: we consider there are no external forces.
-% (the fullBodyUnknowns is a class storing all the unknown external wrenches
-% acting on a class)
-% Build an empty list.
-fullBodyUnknowns = iDynTree.LinkUnknownWrenchContacts(estimator.model());
-fullBodyUnknowns.clear();
-
-% The estimated FT sensor measurements
-% `estimator.sensors()` gets used sensors (returns `SensorList`)
-% ex: `estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER)`
-%     `estimator.sensors.getSensor(iDynTree.ACCELEROMETER,1)`
-estMeasurements = iDynTree.SensorsMeasurements(estimator.sensors());
-
-% Init empty dynamic variables (default inputs we don't need but 
-% have to provide to the estimator)
-estJointTorques = iDynTree.JointDOFsDoubleArray(dofs);
-estContactForces = iDynTree.LinkContactWrenches(estimator.model());
-
-
 %% Optimization
 %
 number_of_random_init = 5;
@@ -214,20 +173,37 @@ for i = 1 : number_of_random_init
     subsetVec_idx = randsample(data.nsamples, subsetVec_size);
     subsetVec_idx = sort(subsetVec_idx);
     
-    [q(:, i, j), fval(i), exitflag, output, grad(:,i)] = fminunc(@(Dq) costFunctionID(grav_idyn, data, subsetVec_idx, estimator), Dq0, op);
-    dq(:, i, j) = mod(dq(:, i, j)+pi, 2*pi)-pi;
+    % Optimization options: we won't provide the gradient for now
+    %
+    % For FUNCTION 'fminunc'
+    % Display: 
+    % MaxFunEvals: 
+    % MaxIter: 
+    % TolFun:  1e-7
+    % TolX:    Encoders accuracy => 12 bits for 360 deg => 1 tick = 0.087 deg ~ 0.1 deg
+    % FunValCheck: 
+    % ActiveConstrTol: 
+    % Algorithm: 
+    % AlwaysHonorConstraints:
+    % GradConstr:
+    % GradObj: 
+    % InitTrustRegionRadius: 
+    % LargeScale: 
+    % ScaleProblem: 
+    % SubproblemAlgorithm: 
+    % UseParallel: 
+    % 
+    options = optimset('Display', 'iter', 'TolFun', 1e-7, 'TolX', 1e-1, 'Algorithm','interior-point');
+    
+    % optimize
+    [optimalDq(:, i), fval(i), exitflag, output, grad(:,i)] = fminunc(@(Dq) costFunctionSigma(Dq, data, subsetVec_idx, estimator), Dq0, options);
+    optimalDq(:, i) = mod(optimalDq(:, i)+pi, 2*pi)-pi;
 end
 
-
-std_dq{r+1,j} = std(dq(:, :, j)');
-std(dq(:, :, j)')
+optimalDq
 
 
 
-
-
-% Warning!! iDynTree takes in input **radians** based units,
-% while the iCub port stream **degrees** based units.
 
 
 %%
@@ -397,7 +373,7 @@ std(dq(:, :, j)')
 %     myRMAP  = MAP(myModel, mySens);
 %     
 
-%%
+
 % for i = 1 : number_of_random_init
 %     
 %     % define a random subset
