@@ -8,7 +8,7 @@ localName='simulink';
 ROBOT_DOF=23;
 Ts=0.01;
 
-qErr = zeros(ROBOT_DOF,1); qErr(:) = 0.3; % degrees
-dqErr = zeros(ROBOT_DOF,1); dqErr(:) = 0.2; % degrees/s
+qErr = 0.3; % degrees
+dqErr = 0.2; % degrees/s
 
 % Parse the ROBOT_DOF
