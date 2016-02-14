@@ -184,6 +184,37 @@ for i = 1 : length(data.parts)
 end
 
 
+%% Process raw sensor data
+acc_gain = 5.9855e-04;
+%acc_gain = 1.0;
+deg_to_rad = pi/180.0;
+gyro_gain = deg_to_rad*7.6274e-03;
+for i = 1 : length(data.parts)
+    t    = ['time_' data.labels{i}];
+    ys   = ['ys_' data.labels{i}];
+    if( strcmp(data.labels{i},'lh_imu') || ...
+            strcmp(data.labels{i},'rh_imu') )
+        eval(['data.' ys '(1:3,:) = ' ...
+            'acc_gain*data.' ys '(1:3,:);']);
+        eval(['data.' ys '(4:6,:) = ' ...
+            'gyro_gain*data.' ys '(4:6,:);']);
+    end
+    if( strcmp(data.labels{i},'imu') )
+        eval(['data.' ys '(4:6,:) = ' ...
+            'deg_to_rad*data.' ys '(4:6,:);']);
+    end
+    if( strcmp(data.labels{i}(end-2:end),'acc') )
+        eval(['data.' ys '(1:3,:) = ' ...
+            'acc_gain*data.' ys '(1:3,:);']);        
+    end
+end
+
+fprintf('Processed raw sensors\n')
+
+
+%%
+% Convert qs_xxx, dqs_xxx, d2qs_xxx variables from degrees to radians
+%
 % % Convert qs_xxx, dqs_xxx, d2qs_xxx variables from degrees to radians
 % for i = 1 : length(data.parts)
 %     if strcmp(data.type{i}, 'stateExt:o');
@@ -192,16 +223,28 @@ end
 %         meas{i}.d2qsRad([data.d2qs_rleg].*pi/180);
 %     end
 % end
-
-data.q = [data.qs_rleg].*pi/180;
-
-data.dq = [data.dqs_rleg].*pi/180;
-
-data.d2q = [data.d2qs_rleg].*pi/180;
-
+%
 % data.q - meas{12}.qsRad_rleg
 % data.dq - meas{12}.dqsRad_rleg
 % data.d2q - meas{12}.d2qsRad_rleg
+
+
+for i = 1 : length(data.parts)
+    if strcmp(data.type{i}, 'stateExt:o');
+        qs    = ['qs_' data.labels{i}];
+        dqs   = ['dqs_' data.labels{i}];
+        d2qs  = ['d2qs_' data.labels{i}];
+        
+        qsRad    = ['qsRad_' data.labels{i}];
+        dqsRad   = ['dqsRad_' data.labels{i}];
+        d2qsRad  = ['d2qsRad_' data.labels{i}];
+        
+        eval(['data.' qsRad ' = data.' qs '*pi/180;']);
+        eval(['data.' dqsRad ' = data.' dqs '*pi/180;']);
+        eval(['data.' d2qsRad ' = data.' d2qs '*pi/180;']);
+    end
+end
+
 
 
 end
