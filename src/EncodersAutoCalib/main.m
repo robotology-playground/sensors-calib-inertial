@@ -18,6 +18,16 @@ mtbSensorLink = {'r_upper_leg','r_upper_leg', ...
     'r_lower_leg','r_lower_leg', ...
     'r_lower_leg','r_lower_leg'};
 
+%% define the joints to calibrate
+jointsToCalibrate_right_leg = {'r_hip_pitch','r_hip_roll','r_hip_yaw','r_knee','r_ankle_pitch','r_ankle_roll'};
+jointsInitOffsets_right_leg = [0 0 0 0 0 0];
+
+% Bind the lists: common index is the part index.
+jointsToCalibrate.parts = {'right_leg'};
+jointsToCalibrate.joints = {jointsToCalibrate_right_leg};
+jointsToCalibrate.jointsInitOffsets = {jointsInitOffsets_right_leg};
+
+
 %% define offsets for parsing Linear Acceleration data from MTB accelerometers
 %
 % | size  |   1   |   1       |   6  |            6           | ...
@@ -84,6 +94,7 @@ data.diff_q    = 0;    %derivate the angular velocity of the IMUs
 data.path        = '../../data/calibration/dumperExample/iCubGenova02/';
 data.parts       = {};
 data.labels      = {};
+data.frames      = {};
 data.ndof        = {};
 data.index       = {};
 data.type        = {};
@@ -101,12 +112,11 @@ for i = 1:nrOfMTBAccs
     % ex of sensor drake label:
     % drake_r_upper_leg_X_urdf_r_upper_leg_acc_mtb_11B3]
     sensorTransformName = strcat('drake_', mtbSensorLink{i},'_X_urdf_',mtbSensorFrames{i});
-    data = addSensToData(data, 'right_leg'    , mtbSensorLabel{i}  , 3, mtbIndices{i}, 'inertialMTB'           , 1*data.plot);
-    sens = addSensToSens(sens, mtbSensorLink{i} , mtbSensorLabel{i}  , 3,        ''           ,sensorTransformName);
+    data = addSensToData(data, 'right_leg'    , mtbSensorFrames{i}, mtbSensorLabel{i}  , 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
 end
 
 %% add joint measurements
-data = addSensToData(data, 'right_leg'         , 'rleg'      , 6, '1:6', 'stateExt:o' , 1*data.plot);
+data = addSensToData(data, 'right_leg', '', 'rleg'      , 6, '1:6', 'stateExt:o' , 1*data.plot);
 
 data = loadData(data);
 
@@ -159,51 +169,61 @@ estimator.model().toString()
 
 %% Optimization
 %
-number_of_random_init = 5;
-subsetVec_size = round(data.nsamples*0.1);
 
-label_to_min   = {'11B1_acc', '11B2_acc', '11B3_acc', '11B4_acc', '11B5_acc', '11B7_acc', '11B8_acc', '11B9_acc', '11B10_acc', '11B11_acc'};
+for part = 1 : length(jointsToCalibrate.parts)
 
-% run minimisation for every random subset of data.
-% 1 subset <=> all measurements for a given timestamp <=>1 column index of 
-% table `q_xxx`, `dq_xxx`, `ddq_xxx`, `y_xxx_acc`, ...
-for i = 1 : number_of_random_init
+    number_of_random_init = 5;
+    subsetVec_size = round(data.nsamples*0.1);
+    Dq0 = cell2mat(jointsToCalibrate.jointsInitOffsets(part))';
     
-    % define a random subset: 10 % of the total set of instants
-    subsetVec_idx = randsample(data.nsamples, subsetVec_size);
-    subsetVec_idx = sort(subsetVec_idx);
+    % run minimisation for every random subset of data.
+    % 1 subset <=> all measurements for a given timestamp <=>1 column index of
+    % table `q_xxx`, `dq_xxx`, `ddq_xxx`, `y_xxx_acc`, ...
+    for i = 1 : number_of_random_init
+        
+        % define a random subset: 10 % of the total set of instants
+        subsetVec_idx = randsample(data.nsamples, subsetVec_size);
+        subsetVec_idx = sort(subsetVec_idx);
+        
+        % Optimization options: we won't provide the gradient for now
+        %
+        % For FUNCTION 'fminunc'
+        % Display: 'iter'
+        % MaxFunEvals:
+        % MaxIter:
+        % TolFun:  1e-7
+        % TolX: 0.1 (Encoders accuracy => 12 bits for 360 deg => 1 tick =
+        % 0.087 deg ~ 0.1 deg)
+        % FunValCheck: 'on'
+        % ActiveConstrTol:
+        % Algorithm: 'interior-point'
+        % AlwaysHonorConstraints:
+        % GradConstr:
+        % GradObj:
+        % InitTrustRegionRadius:
+        % LargeScale:
+        % ScaleProblem:
+        % SubproblemAlgorithm:
+        % UseParallel:
+        % PlotFcns : {@optimplotx, @optimplotfval, @optimplotstepsize}
+        %
+        options = optimset('Algorithm','interior-point', ...
+            'TolFun', 1e-7, 'TolX', 1e-1, 'FunValCheck', 'on', ...
+            'Display', 'iter', 'PlotFcns', {@optimplotx, @optimplotfval, @optimplotstepsize});
+        
+        % optimize
+        [optimalDq(:, i), fval(i), exitflag(i), output(i)] = fminunc(@(Dq) costFunctionSigma(Dq, part, jointsToCalibrate, ...
+                                                                                             data, subsetVec_idx, estimator), ...
+                                                                     Dq0, options);
+        optimalDq(:, i) = mod(optimalDq(:, i)+pi, 2*pi)-pi;
+    end
     
-    % Optimization options: we won't provide the gradient for now
-    %
-    % For FUNCTION 'fminunc'
-    % Display: 
-    % MaxFunEvals: 
-    % MaxIter: 
-    % TolFun:  1e-7
-    % TolX:    Encoders accuracy => 12 bits for 360 deg => 1 tick = 0.087 deg ~ 0.1 deg
-    % FunValCheck: 
-    % ActiveConstrTol: 
-    % Algorithm: 
-    % AlwaysHonorConstraints:
-    % GradConstr:
-    % GradObj: 
-    % InitTrustRegionRadius: 
-    % LargeScale: 
-    % ScaleProblem: 
-    % SubproblemAlgorithm: 
-    % UseParallel: 
-    % 
-    options = optimset('Display', 'iter', 'TolFun', 1e-7, 'TolX', 1e-1, 'Algorithm','interior-point');
-    
-    % optimize
-    [optimalDq(:, i), fval(i), exitflag, output, grad(:,i)] = fminunc(@(Dq) costFunctionSigma(Dq, data, subsetVec_idx, estimator), Dq0, options);
-    optimalDq(:, i) = mod(optimalDq(:, i)+pi, 2*pi)-pi;
+    optimalDq
+    fval
+    exitflag
+    output
+
 end
-
-optimalDq
-
-
-
 
 
 %%
