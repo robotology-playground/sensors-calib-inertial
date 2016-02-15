@@ -64,31 +64,52 @@ estJointTorques = iDynTree.JointDOFsDoubleArray(dofs);
 estContactForces = iDynTree.LinkContactWrenches(estimator.model());
 
 
-%% compute predicted measurements
-
-% Build the joint vectors.
-% FOR NOW, WE ASSUME MODEL AND MEASUREMENTS ONLY DEPICT RIGHT_LEG.
-q0i = data.qsRad_rleg(:,subsetVec_idx);
-dqi = data.dqsRad_rleg(:,subsetVec_idx);
-d2qi = data.d2qsRad_rleg(:,subsetVec_idx);
-
-% Build sensor list for the current part (part: right_leg, left_arm,...).
+%% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
+% Go through 'data.frames', 'data.parts' and 'data.labels' and build :
+% - the joint vectors
+% - the sensor list for the current part (part: right_leg, left_arm,...).
 % This is a list of indexes, that will be later used for retrieving the
 % sensor predicted measurements and the real measure from the captured data.
 sensorsIdxListModel = [];
 sensorsIdxListFile  = [];
+jointsIdxListModel  = [];
+jointsLabelIdx = 0;
 
 for frame = 1:length(data.frames)
-    if strcmp(data.parts(frame),jointsToCalibrate.parts(part))...
-            && strcmp(data.type(frame),'inertialMTB')
-        sensorsIdxListModel = [sensorsIdxListModel ...
-            estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
-            char(data.frames(frame)))];
-        sensorsIdxListFile = [sensorsIdxListFile frame];
+    if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
+        if strcmp(data.type(frame),'inertialMTB')
+            sensorsIdxListModel = [sensorsIdxListModel ...
+                estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
+                char(data.frames(frame)))];
+            sensorsIdxListFile = [sensorsIdxListFile frame];
+        elseif strcmp(data.type{frame}, 'stateExt:o')
+            jointsLabelIdx = frame;
+        else
+            error('costFunctionSigma: wrong type ',...
+            'Error.\nWrong data type of sensor data. Valid types are "inertialMTB" and "stateExt:o" !!');
+        end
     end
 end
 
-%% 
+% Select from label index the joints associated to the current processed part.
+qsRad    = ['qsRad_' data.labels{jointsLabelIdx}];
+dqsRad   = ['dqsRad_' data.labels{jointsLabelIdx}];
+d2qsRad  = ['d2qsRad_' data.labels{jointsLabelIdx}];
+
+eval(['q0i = data.' qsRad '(:,subsetVec_idx);']);
+eval(['dqi = data.' dqsRad '(:,subsetVec_idx);']);
+eval(['d2qi = data.' d2qsRad '(:,subsetVec_idx);']);
+
+% mapping of 'jointsToCalibrate.joints' into the iDynTree joint list.
+for joint = 1:length(jointsToCalibrate.joints{part})
+    % get joint index
+    jointsIdxListModel = [jointsIdxListModel...
+        estimator.model.getJointIndex(jointsToCalibrate.joints{part}{joint})];
+end
+%convert indices to matlab
+jointsIdxListModel = jointsIdxListModel+1;
+
+%% compute predicted measurements
 % We compute here the final cost 'e'. As it is a sum of norms, we can also
 % compute it as :   v^\top \dot v    , v being a vector concatenation of
 % all the components of the sum. Refer to equation(1) in https://bitbucket.org/
@@ -99,15 +120,21 @@ end
 costVector1Sample = cell(length(sensorsIdxListModel),1);
 costVector = cell(length(subsetVec_idx),1);
 
+%DEBUG
+myplot1 = [];
+myplot2 = [];
+
 for s = 1:length(subsetVec_idx)
     
-    % Fill iDynTree joint vectors. (right_leg, in radians)
+    % Fill iDynTree joint vectors.
     % Warning!! iDynTree takes in input **radians** based units,
     % while the iCub port stream **degrees** based units.
-    qi_s = q0i(s) + Dq;
-    qi_idyn.fromMatlab(qi_s);
-    dqi_idyn.fromMatlab(dqi(s));
-    d2qi_idyn.fromMatlab(d2qi(s));
+    qisRobotDOF = zeros(dofs,1); qisRobotDOF(jointsIdxListModel,1) = q0i(:,s) + Dq;
+    dqisRobotDOF = zeros(dofs,1); dqisRobotDOF(jointsIdxListModel,1) = dqi(:,s);
+    d2qisRobotDOF = zeros(dofs,1); d2qisRobotDOF(jointsIdxListModel,1) = d2qi(:,s);
+    qi_idyn.fromMatlab(qisRobotDOF);
+    dqi_idyn.fromMatlab(dqisRobotDOF);
+    d2qi_idyn.fromMatlab(d2qisRobotDOF);
     
     % Update the kinematics information in the estimator
     estimator.updateKinematicsFromFixedBase(qi_idyn,dqi_idyn,d2qi_idyn,base_link_index,grav_idyn);
@@ -120,7 +147,6 @@ for s = 1:length(subsetVec_idx)
     for i = 1:length(sensorsIdxListModel)
         % get predicted measurement on sensor frame
         estimatedSensorLinAcc = iDynTree.LinearMotionVector3();
-        sens = estimator.sensors().getSensor(iDynTree.ACCELEROMETER,sensorsIdxListModel(i));
         estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,sensorsIdxListModel(i),estimatedSensorLinAcc);
         sensEst = estimatedSensorLinAcc.toMatlab;
         
@@ -131,11 +157,19 @@ for s = 1:length(subsetVec_idx)
         
         % compute the cost for 1 sensor / 1 timestamp
         costVector1Sample{i} = (sensMeas - sensEst);
+        %DEBUG
+        myplot1 = [myplot1 norm(sensMeas,2)];
+        myplot2 = [myplot2 norm(sensEst,2)];
     end
     
     costVector{s} = cell2mat(costVector1Sample);
     
 end
+
+%DEBUG
+plot(myplot1,'r');
+hold;
+plot(myplot2,'b');
 
 % Final cost = norm of 'costVector'
 costVectorMat = cell2mat(costVector);
