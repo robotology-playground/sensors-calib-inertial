@@ -3,21 +3,28 @@
 % configuration file yarpWholeBodyInterface.ini defined for the current
 % model.
 
-robotName='icubGazeboSim';
+robotName='icub';
 localName='simulink';
-ROBOT_DOF=23;
+ROBOT_DOF=20;
 Ts=0.01;
 
 qErr = 1*pi/180; % radians
 dqErr = 0.5*pi/180; % radians/s
 
 qjDes = zeros(ROBOT_DOF,1);
+dqiRef = 10*pi/180; % absolute value in radians/s
 
-refMask = zeros(ROBOT_DOF, 1);
-refMask(4:7) = 1; %left_arm
-refMask(8:11) = 1; %right_arm
-refMask(12:17) = 1; %left_leg
-refMask(18:23) = 1; %right_leg
+refMask = zeros(ROBOT_DOF,1);
+refMask(1:4) = 1;   %left_arm
+refMask(5:8) = 1;   %right_arm
+refMask(9:14) = 1;  %left_leg
+refMask(15:20) = 1; %right_leg
+
+% refMask(1:4) = [-50 50 -50 50]'; %left_arm
+% refMask(5:8) = [-50 50 -50 50]'; %right_arm
+% refMask(9:14) = 50; %left_leg
+% refMask(15:20) = 50; %right_leg
+% refMask([13 14 19 20])=10;
 
 % Parse the ROBOT_DOF
 

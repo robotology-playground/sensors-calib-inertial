@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.200"
+    ComputedModelVersion    "1.210"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -30,7 +30,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [170.0, -1057.0, 1920.0, 1053.0]
+      Location		      [170.0, 87.0, 1280.0, 773.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -54,9 +54,9 @@ Model {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[1696.0, 912.0]
-	ZoomFactor		[1.8649789029535864]
-	Offset			[32.803167420814532, 5.4932126696835439]
+	Extents			[1056.0, 632.0]
+	ZoomFactor		[1.2023391812865496]
+	Offset			[63.356031128404666, -54.821011673151745]
       }
     }
   }
@@ -66,9 +66,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Feb 16 20:36:19 2016"
-  RTWModifiedTimeStamp	  377555703
-  ModelVersionFormat	  "1.%<AutoIncrement:200>"
+  LastModifiedDate	  "Fri Feb 19 22:42:31 2016"
+  RTWModifiedTimeStamp	  377811169
+  ModelVersionFormat	  "1.%<AutoIncrement:210>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -833,7 +833,7 @@ Model {
   }
   System {
     Name		    "jointSpaceTrajController_reachPos"
-    Location		    [170, -1057, 2090, -4]
+    Location		    [170, 87, 1450, 860]
     Open		    on
     ModelBrowserVisibility  on
     ModelBrowserWidth	    200
@@ -845,7 +845,7 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "186"
+    ZoomFactor		    "120"
     ReportName		    "simulink-default.rpt"
     SIDHighWatermark	    "107"
     Block {
@@ -922,7 +922,7 @@ Model {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	"31"
+	SIDHighWatermark	"34"
 	Block {
 	  BlockType		  Inport
 	  Name			  "q_j"
@@ -958,7 +958,7 @@ Model {
 	  Position		  [180, 108, 230, 272]
 	  ZOrder		  5
 	  FunctionName		  "sf_sfun"
-	  Parameters		  "dqErr,qErr,qjDes"
+	  Parameters		  "ROBOT_DOF,dqErr,qErr,qInit,qjDes,refMask"
 	  PortCounts		  "[2 4]"
 	  EnableBusSupport	  on
 	  Port {
@@ -1075,7 +1075,6 @@ Model {
       DropShadow	      on
       ShowName		      off
       Priority		      "-10"
-      Commented		      on
       LibraryVersion	      "1.285"
       SourceBlock	      "WBCLibrary/Utilities/Real Time Synchronizer"
       SourceType	      ""
@@ -1112,17 +1111,6 @@ Model {
     }
     Block {
       BlockType		      Gain
-      Name		      "all but torso"
-      SID		      "102"
-      Position		      [725, 167, 785, 203]
-      ZOrder		      247
-      Gain		      "refMask"
-      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
-      OutDataTypeStr	      "Inherit: Inherit via internal rule"
-      SaturateOnIntegerOverflow	off
-    }
-    Block {
-      BlockType		      Gain
       Name		      "mask"
       SID		      "103"
       Position		      [330, 307, 390, 343]
@@ -1152,6 +1140,7 @@ Model {
       ZOrder		      211
       ForegroundColor	      "[0.900000, 0.000000, 0.472153]"
       ShowName		      off
+      Commented		      on
       LibraryVersion	      "1.285"
       SourceBlock	      "WBCLibrary/Utilities/synchronize"
       SourceType	      "ySynchronizer"
@@ -1171,12 +1160,6 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "all but torso"
-      SrcPort		      1
-      DstBlock		      "Set Angles"
-      DstPort		      1
-    }
-    Line {
       SrcBlock		      "mask\n1"
       SrcPort		      1
       DstBlock		      "MATLAB Function"
@@ -1191,7 +1174,7 @@ Model {
     Line {
       SrcBlock		      "MATLAB Function"
       SrcPort		      1
-      DstBlock		      "all but torso"
+      DstBlock		      "Set Angles"
       DstPort		      1
     }
     Line {
@@ -1220,7 +1203,7 @@ Stateflow {
     name		    "jointSpaceTrajController_reachPos"
     created		    "11-Feb-2016 17:49:36"
     isLibrary		    0
-    firstTarget		    15
+    firstTarget		    18
     sfVersion		    76014001.001
   }
   chart {
@@ -1230,14 +1213,14 @@ Stateflow {
     viewLimits		    [0 156.75 0 153.75]
     screen		    [1 1 1280 1024 1.041666666666667]
     treeNode		    [0 3 0 0]
-    firstTransition	    13
-    firstJunction	    12
+    firstTransition	    16
+    firstJunction	    15
     viewObj		    2
     visible		    1
     machine		    1
     subviewS {
     }
-    ssIdHighWaterMark	    14
+    ssIdHighWaterMark	    17
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
     firstData		    4
@@ -1261,11 +1244,11 @@ Stateflow {
     decomposition	    CLUSTER_STATE
     eml {
       isEML		      1
-      script		      "function [qDest, qLast, status] = checkStopCond(qjDes, q_j, dq_j, qErr, dqErr)\n%#codegen\n\n% Ta"
-      "rget position\nqDest = qjDes;\n\n% Check if we reached the desired position:\n% We shall stop as soon as |qDes-q"
-      "_j| < qErr AND |dqDes-dq_j| < dqErr,\n% qErr and dqErr being the approximative position and speed accuracy.\nif "
-      "norm((qjDes-q_j),Inf)<=qErr && norm(dq_j,Inf)<=dqErr\n    status = 1;\nelse\n    status = 0;\nend\n\nqLast = q_j"
-      ";\n\nend\n"
+      script		      "function [qDest, qLast, status] = checkStopCond(qjDes, q_j, dq_j, qErr, dqErr, ROBOT_DOF, qInit, "
+      "refMask)\n%#codegen\n\n% Target position\nqDest = qjDes.*refMask + qInit.*(ones(ROBOT_DOF,1)-refMask);\n\n% Chec"
+      "k if we reached the desired position:\n% We shall stop as soon as |qDes-q_j| < qErr AND |dqDes-dq_j| < dqErr,\n%"
+      " qErr and dqErr being the approximative position and speed accuracy.\nif norm((qjDes-q_j),Inf)<=qErr && norm(dq_"
+      "j,Inf)<=dqErr\n    status = 1;\nelse\n    status = 0;\nend\n\nqLast = q_j;\n\nend\n"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }
@@ -1320,7 +1303,7 @@ Stateflow {
     name		    "qjDes"
     linkNode		    [2 5 7]
     scope		    PARAMETER_DATA
-    paramIndexForInitFromWorkspace 2
+    paramIndexForInitFromWorkspace 4
     isNonTunable	    1
     machine		    1
     props {
@@ -1385,7 +1368,7 @@ Stateflow {
     name		    "qErr"
     linkNode		    [2 8 10]
     scope		    PARAMETER_DATA
-    paramIndexForInitFromWorkspace 1
+    paramIndexForInitFromWorkspace 2
     machine		    1
     props {
       array {
@@ -1408,6 +1391,7 @@ Stateflow {
     name		    "dqErr"
     linkNode		    [2 9 11]
     scope		    PARAMETER_DATA
+    paramIndexForInitFromWorkspace 1
     machine		    1
     props {
       array {
@@ -1426,9 +1410,55 @@ Stateflow {
   }
   data {
     id			    11
+    ssIdNumber		    17
+    name		    "ROBOT_DOF"
+    linkNode		    [2 10 12]
+    scope		    PARAMETER_DATA
+    isNonTunable	    1
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    12
+    ssIdNumber		    16
+    name		    "qInit"
+    linkNode		    [2 11 13]
+    scope		    PARAMETER_DATA
+    paramIndexForInitFromWorkspace 3
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    13
     ssIdNumber		    14
     name		    "status"
-    linkNode		    [2 10 0]
+    linkNode		    [2 12 14]
     scope		    OUTPUT_DATA
     machine		    1
     props {
@@ -1446,8 +1476,31 @@ Stateflow {
     }
     dataType		    "Inherit: Same as Simulink"
   }
+  data {
+    id			    14
+    ssIdNumber		    15
+    name		    "refMask"
+    linkNode		    [2 13 0]
+    scope		    PARAMETER_DATA
+    paramIndexForInitFromWorkspace 5
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_INHERITED
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
   junction {
-    id			    12
+    id			    15
     position		    [23.5747 49.5747 7]
     chart		    2
     linkNode		    [2 0 0]
@@ -1456,7 +1509,7 @@ Stateflow {
     type		    CONNECTIVE_JUNCTION
   }
   transition {
-    id			    13
+    id			    16
     labelString		    "{eML_blk_kernel();}"
     labelPosition	    [32.125 19.875 102.544 14.964]
     fontSize		    12
@@ -1464,7 +1517,7 @@ Stateflow {
       intersection	      [0 0 1 0 23.5747 14.625 0 0]
     }
     dst {
-      id		      12
+      id		      15
       intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
     }
     midPoint		    [23.5747 24.9468]
@@ -1480,13 +1533,13 @@ Stateflow {
     ssIdNumber		    2
   }
   instance {
-    id			    14
+    id			    17
     name		    "MATLAB Function"
     machine		    1
     chart		    2
   }
   target {
-    id			    15
+    id			    18
     name		    "sfun"
     description		    "Default Simulink S-Function Target."
     machine		    1
