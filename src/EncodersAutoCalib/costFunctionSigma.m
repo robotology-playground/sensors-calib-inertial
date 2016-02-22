@@ -53,7 +53,7 @@ fullBodyUnknowns.addNewContactInFrame(estimator.model(),base_link_index,unknownW
 fullBodyUnknowns.toString(estimator.model())
 
 
-%% The estimated FT sensor measurements
+%% The estimated sensor measurements
 % `estimator.sensors()` gets used sensors (returns `SensorList`)
 % ex: `estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER)`
 %     `estimator.sensors.getSensor(iDynTree.ACCELEROMETER,1)`
@@ -100,11 +100,11 @@ eval(['q0i = data.' qsRad '(:,subsetVec_idx);']);
 eval(['dqi = data.' dqsRad '(:,subsetVec_idx);']);
 eval(['d2qi = data.' d2qsRad '(:,subsetVec_idx);']);
 
-% mapping of 'jointsToCalibrate.joints' into the iDynTree joint list.
-for joint = 1:length(jointsToCalibrate.joints{part})
+% mapping of 'jointsToCalibrate.partJoints' into the iDynTree joint list.
+for joint = 1:length(jointsToCalibrate.partJoints{part})
     % get joint index
     jointsIdxListModel = [jointsIdxListModel...
-        estimator.model.getJointIndex(jointsToCalibrate.joints{part}{joint})];
+        estimator.model.getJointIndex(jointsToCalibrate.partJoints{part}{joint})];
 end
 %convert indices to matlab
 jointsIdxListModel = jointsIdxListModel+1;
@@ -121,8 +121,8 @@ costVector1Sample = cell(length(sensorsIdxListModel),1);
 costVector = cell(length(subsetVec_idx),1);
 
 %DEBUG
-myplot1 = [];
-myplot2 = [];
+sensMeasPlot = cell(length(sensorsIdxListModel),1);
+sensEstPlot = cell(length(sensorsIdxListModel),1);
 
 for s = 1:length(subsetVec_idx)
     
@@ -158,8 +158,8 @@ for s = 1:length(subsetVec_idx)
         % compute the cost for 1 sensor / 1 timestamp
         costVector1Sample{i} = (sensMeas - sensEst);
         %DEBUG
-        myplot1 = [myplot1 norm(sensMeas,2)];
-        myplot2 = [myplot2 norm(sensEst,2)];
+        sensMeasPlot{i} = [sensMeasPlot{i} norm(sensMeas,2)];
+        sensEstPlot{i} = [sensEstPlot{i} norm(sensEst,2)];
     end
     
     costVector{s} = cell2mat(costVector1Sample);
@@ -167,9 +167,10 @@ for s = 1:length(subsetVec_idx)
 end
 
 %DEBUG
-plot(myplot1,'r');
+plot(cell2mat(sensMeasPlot)','r');
 hold;
-plot(myplot2,'b');
+plot(cell2mat(sensEstPlot)','b');
+hold;
 
 % Final cost = norm of 'costVector'
 costVectorMat = cell2mat(costVector);
