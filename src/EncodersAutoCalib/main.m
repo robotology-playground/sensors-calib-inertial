@@ -1,3 +1,4 @@
+%% clear all variables and close all previous figures
 clear
 close all
 clc
@@ -95,6 +96,7 @@ for part = 1 : length(jointsToCalibrate.parts)
 
     %% strucutre from files
     data.path        = '../../data/calibration/dumper/iCubGenova02_#1/';
+%    data.path        = '../../data/calibration/dumperExample/iCubGenova02/';
     data.parts       = {};
     data.labels      = {};
     data.frames      = {};
@@ -178,18 +180,26 @@ for part = 1 : length(jointsToCalibrate.parts)
             'Display', 'iter', 'PlotFcns', {@optimplotx, @optimplotfval, @optimplotstepsize});
         
         % optimize
-        [optimalDq(:, i), fval(i), exitflag(i), output(i)] = fminunc(@(Dq) costFunctionSigma(Dq, part, jointsToCalibrate, ...
+        [optimalDq(:, i), fval(1,i), exitflag(1,i), output(1,i)] = fminunc(@(Dq) costFunctionSigma(Dq, part, jointsToCalibrate, ...
                                                                                              data, subsetVec_idx, estimator), ...
                                                                      Dq0, options);
         optimalDq(:, i) = mod(optimalDq(:, i)+pi, 2*pi)-pi;
     end
     
-    optimalDq
-    fval
-    exitflag
-    output
+    % Standard deviation
+    std_optDq = std(optimalDq,0,2);
     
-    std_optDq = std(optimalDq,0,2)
-
+    fprintf('Final optimization results. Each column stands for a random init of the data subset.\n');
+    fprintf('Optimal offsets Dq (in radians):\n');
+    optimalDq
+    fprintf('Mean cost (in (m.s^{-2})^2):\n');
+    fval/(nrOfMTBAccs*length(subsetVec_idx))
+    fprintf('optimization function exit flag:\n');
+    exitflag
+    fprintf('other optimization info:\n');
+    output
+    fprintf('Standard deviation for each joint offset:\n');
+    std_optDq
+    
 end
 
