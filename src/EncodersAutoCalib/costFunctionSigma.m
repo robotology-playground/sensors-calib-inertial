@@ -116,22 +116,26 @@ jointsIdxListModel = jointsIdxListModel+1;
 % gnuno/jointoffsetcalibinertialdoc/src/6c2f99f3e1be59c8021e4fc5e522fa21bdd97037/
 % Papers/PaperOnOffsetsCalibration.svg?at=fix/renderingMindmaps
 %
-% 'costVector' will be a cell array of cells 'costVector1Sample'
-costVector1Sample = cell(length(sensorsIdxListModel),1);
-costVector = cell(length(subsetVec_idx),1);
+% 'costVec' will be a cell array of cells 'costVec_ts'
+costVec_ts = cell(length(sensorsIdxListModel),1);
+costVec = cell(length(subsetVec_idx),1);
 
 %DEBUG
-sensMeasPlot = cell(length(sensorsIdxListModel),1);
-sensEstPlot = cell(length(sensorsIdxListModel),1);
+sensMeasNormMat = zeros(length(subsetVec_idx),length(sensorsIdxListModel));
+sensEstNormMat = zeros(length(subsetVec_idx),length(sensorsIdxListModel));
+costNormMat = zeros(length(subsetVec_idx),length(sensorsIdxListModel));
 
-for s = 1:length(subsetVec_idx)
+sensMeasCell = cell(length(subsetVec_idx),length(sensorsIdxListModel));
+sensEstCell = cell(length(subsetVec_idx),length(sensorsIdxListModel));
+
+for ts = 1:length(subsetVec_idx)
     
     % Fill iDynTree joint vectors.
     % Warning!! iDynTree takes in input **radians** based units,
     % while the iCub port stream **degrees** based units.
-    qisRobotDOF = zeros(dofs,1); qisRobotDOF(jointsIdxListModel,1) = q0i(:,s) + Dq;
-    dqisRobotDOF = zeros(dofs,1); dqisRobotDOF(jointsIdxListModel,1) = dqi(:,s);
-    d2qisRobotDOF = zeros(dofs,1); d2qisRobotDOF(jointsIdxListModel,1) = d2qi(:,s);
+    qisRobotDOF = zeros(dofs,1); qisRobotDOF(jointsIdxListModel,1) = q0i(:,ts) + Dq;
+    dqisRobotDOF = zeros(dofs,1); dqisRobotDOF(jointsIdxListModel,1) = dqi(:,ts);
+    d2qisRobotDOF = zeros(dofs,1); d2qisRobotDOF(jointsIdxListModel,1) = d2qi(:,ts);
     qi_idyn.fromMatlab(qisRobotDOF);
     dqi_idyn.fromMatlab(dqisRobotDOF);
     d2qi_idyn.fromMatlab(d2qisRobotDOF);
@@ -144,37 +148,88 @@ for s = 1:length(subsetVec_idx)
     
     % Get predicted and measured sensor data for each sensor referenced in
     % 'sensorsIdxList' and build a single 'diff' vector for the whole data set.
-    for i = 1:length(sensorsIdxListModel)
+    for acc_i = 1:length(sensorsIdxListModel)
         % get predicted measurement on sensor frame
         estimatedSensorLinAcc = iDynTree.LinearMotionVector3();
-        estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,sensorsIdxListModel(i),estimatedSensorLinAcc);
+        estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,sensorsIdxListModel(acc_i),estimatedSensorLinAcc);
         sensEst = estimatedSensorLinAcc.toMatlab;
         
         % get measurement table ys_xxx_acc [3xnSamples] from captured data,
         % and then select the sample 's' (<=> timestamp).
-        ys   = ['ys_' data.labels{sensorsIdxListFile(i)}];
-        eval(['sensMeas = data.' ys '(:,s);']);
+        ys   = ['ys_' data.labels{sensorsIdxListFile(acc_i)}];
+        eval(['sensMeas = data.' ys '(:,ts);']);
         
         % compute the cost for 1 sensor / 1 timestamp
-        costVector1Sample{i} = (sensMeas - sensEst);
+        costVec_ts{acc_i} = (sensMeas - sensEst);
         %DEBUG
-        sensMeasPlot{i} = [sensMeasPlot{i} norm(sensMeas,2)];
-        sensEstPlot{i} = [sensEstPlot{i} norm(sensEst,2)];
+        sensMeasNormMat(ts,acc_i) = norm(sensMeas,2);
+        sensEstNormMat(ts,acc_i) = norm(sensEst,2);
+        costNormMat(ts,acc_i) = norm(costVec_ts{acc_i},2);
+        sensMeasCell{ts,acc_i} = sensMeas';
+        sensEstCell{ts,acc_i} = sensEst';
     end
     
-    costVector{s} = cell2mat(costVector1Sample);
-    
+    costVec{ts} = cell2mat(costVec_ts);
 end
 
-%DEBUG
-plot(cell2mat(sensMeasPlot)','r');
-hold;
-plot(cell2mat(sensEstPlot)','b');
-hold;
 
-% Final cost = norm of 'costVector'
-costVectorMat = cell2mat(costVector);
-e = costVectorMat'*costVectorMat;
+% Final cost = norm of 'costVec'
+costVecMat = cell2mat(costVec);
+e = costVecMat'*costVecMat;
+
+
+%% DEBUG: plot debug data
+persistent scrsz;
+if isempty(scrsz)
+    scrsz = get(0,'ScreenSize');
+end
+persistent fig1;
+if isempty(fig1)
+    fig1 = figure('Name', '||sensor meas|| (red) & ||sensor estim|| (blue)');
+end
+persistent fig2;
+if isempty(fig2)
+    fig2 = figure('Name', '||sens_meas - sens_est|| & mean of norms');
+end
+persistent fig3;
+if isempty(fig3)
+    fig3 = figure('Name', '3D vector sensor_meas');
+end
+persistent fig4;
+if isempty(fig4)
+    fig4 = figure('Name', '3D vector sensor_est');
+end
+
+figure(fig1);
+plot(sensMeasNormMat,'r');
+hold on;
+plot(sensEstNormMat,'b');
+hold off;
+
+figure(fig2);
+plot(costNormMat,'g');
+hold on;
+plot(mean(costNormMat,2),'m');
+hold off;
+
+%% DEBUG: plot gravity as 3D vector
+origin=zeros(length(subsetVec_idx),3);
+
+for acc_i = 1:length(sensorsIdxListModel)
+    figure(fig3);
+    Vmeas=cell2mat(sensMeasCell(:,acc_i));
+    quiver3(origin(:,1),origin(:,2),origin(:,3),Vmeas(:,1),Vmeas(:,2),Vmeas(:,2));
+    axis equal;
+    axis vis3d;
+    figure(fig4);
+    Vest=cell2mat(sensEstCell(:,acc_i));
+    quiver3(origin(:,1),origin(:,2),origin(:,3),Vest(:,1),Vest(:,2),Vest(:,2));
+    axis equal;
+    axis vis3d;
+    
+    pause;
+end
+
 
 end
 
