@@ -33,6 +33,9 @@ mtbSensorLink_leg = @(side) {[side '_upper_leg'],[side '_upper_leg'], ...
                              [side '_lower_leg'],[side '_lower_leg'], ...
                              [side '_foot']};
 
+segments_leg = @(side) {[side '_upper_leg'],[side '_lower_leg'],[side '_foot']};
+segments_arm = @(side) {[side '_upper_arm'],[side '_forearm'],[side '_hand']};
+
 %% define the joints to calibrate
 %
 jointsToCalibrate_left_arm = jointsToCalibrate_arm('l');
@@ -46,6 +49,15 @@ jointsInitOffsets_right_arm = [0 0 0 0];
 jointsInitOffsets_left_leg = [0 0 0 0 0 0];
 jointsInitOffsets_right_leg = [0 0 0 0 0 0];
 jointsInitOffsets_torso = [0 0 0];
+
+% We define a segment i as a link for which parent joint i and joint i+1 axis 
+% are not concurrent. For instance 'root_link', 'r_upper_leg', 'r_lower_leg', 
+% 'r_foot' are segments of the right leg. 'r_hip_1', 'r_hip2' and r_hip_3' are 
+% part of the 3 DoF hip joint.
+segments_left_leg = segments_leg('l');
+segments_right_leg = segments_leg('r');
+segments_left_arm = segments_arm('l');
+segments_right_arm = segments_arm('r');
 
 %% define the sensor codes and links they are attached to
 %
@@ -79,6 +91,7 @@ mtbSensorLink_right_leg = mtbSensorLink_leg('r');
 for i = 1:length(jointsToCalibrate.parts)
     eval(['jointsToCalibrate.partJoints{' num2str(i) '} = jointsToCalibrate_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.partJointsInitOffsets{' num2str(i) '} = jointsInitOffsets_' jointsToCalibrate.parts{i} ';']);
+    eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorCodes_list{' num2str(i) '} = mtbSensorCodes_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorLink_list{' num2str(i) '} = mtbSensorLink_' jointsToCalibrate.parts{i} ';']);
 end
