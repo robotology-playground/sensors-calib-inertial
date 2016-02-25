@@ -3,6 +3,45 @@ clear
 close all
 clc
 
+%% Global parameters
+
+% Function used to optimise the offsets through an optimisation method like
+% *fminunc*, *fmincon*, ...
+costFunction = @costFunctionSigma;
+%costFunction = @costFunctionSigmaProjOnEachLink;
+
+% Optimization options: we won't provide the gradient for now
+%
+% For FUNCTION 'fminunc'
+% Display: 'iter'
+% MaxFunEvals:
+% MaxIter:
+% TolFun:  1e-7
+% TolX: 0.1 (Encoders accuracy => 12 bits for 360 deg => 1 tick =
+% 0.087 deg ~ 0.1 deg)
+% FunValCheck: 'on'
+% ActiveConstrTol:
+% Algorithm: 'interior-point'
+% AlwaysHonorConstraints:
+% GradConstr:
+% GradObj:
+% InitTrustRegionRadius:
+% LargeScale:
+% ScaleProblem:
+% SubproblemAlgorithm:
+% UseParallel:
+% PlotFcns : {@optimplotx, @optimplotfval, @optimplotstepsize}
+%
+options = optimset('Algorithm','interior-point', ...
+    'TolFun', 1e-7, 'TolX', 1e-1, 'FunValCheck', 'on', ...
+    'Display', 'iter', 'PlotFcns', {@optimplotx, @optimplotfval, @optimplotstepsize});
+
+% A random init selects randomly an ordered subset of samples from the whole data
+% set bucket.
+number_of_random_init = 5;
+subsetVec_size_frac = 0.1; % subset size = 1/10 total data set size
+
+
 %% define the joints to calibrate and the sensor codes and links they are attached to
 jointsToCalibrate.parts = {'left_leg'};
 jointsToCalibrate.partJoints = {};
@@ -140,8 +179,7 @@ for part = 1 : length(jointsToCalibrate.parts)
     %% Optimization
     %
 
-    number_of_random_init = 5;
-    subsetVec_size = round(data.nsamples*0.1);
+    subsetVec_size = round(data.nsamples*subsetVec_size_frac);
     Dq0 = cell2mat(jointsToCalibrate.partJointsInitOffsets(part))';
     
     % run minimisation for every random subset of data.
@@ -153,35 +191,9 @@ for part = 1 : length(jointsToCalibrate.parts)
         subsetVec_idx = randsample(data.nsamples, subsetVec_size);
         subsetVec_idx = sort(subsetVec_idx);
         
-        % Optimization options: we won't provide the gradient for now
-        %
-        % For FUNCTION 'fminunc'
-        % Display: 'iter'
-        % MaxFunEvals:
-        % MaxIter:
-        % TolFun:  1e-7
-        % TolX: 0.1 (Encoders accuracy => 12 bits for 360 deg => 1 tick =
-        % 0.087 deg ~ 0.1 deg)
-        % FunValCheck: 'on'
-        % ActiveConstrTol:
-        % Algorithm: 'interior-point'
-        % AlwaysHonorConstraints:
-        % GradConstr:
-        % GradObj:
-        % InitTrustRegionRadius:
-        % LargeScale:
-        % ScaleProblem:
-        % SubproblemAlgorithm:
-        % UseParallel:
-        % PlotFcns : {@optimplotx, @optimplotfval, @optimplotstepsize}
-        %
-        options = optimset('Algorithm','interior-point', ...
-            'TolFun', 1e-7, 'TolX', 1e-1, 'FunValCheck', 'on', ...
-            'Display', 'iter', 'PlotFcns', {@optimplotx, @optimplotfval, @optimplotstepsize});
-        
         % optimize
-        [optimalDq(:, i), fval(1,i), exitflag(1,i), output(1,i)] = fminunc(@(Dq) costFunctionSigma(Dq, part, jointsToCalibrate, ...
-                                                                                             data, subsetVec_idx, estimator), ...
+        [optimalDq(:, i), fval(1,i), exitflag(1,i), output(1,i)] = fminunc(@(Dq) costFunction(Dq, part, jointsToCalibrate, ...
+                                                                                              data, subsetVec_idx, estimator), ...
                                                                      Dq0, options);
         optimalDq(:, i) = mod(optimalDq(:, i)+pi, 2*pi)-pi;
     end

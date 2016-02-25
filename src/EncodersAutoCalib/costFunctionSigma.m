@@ -191,14 +191,6 @@ persistent fig2;
 if isempty(fig2)
     fig2 = figure('Name', '||sens_meas - sens_est|| & mean of norms');
 end
-persistent fig3;
-if isempty(fig3)
-    fig3 = figure('Name', '3D vector sensor_meas');
-end
-persistent fig4;
-if isempty(fig4)
-    fig4 = figure('Name', '3D vector sensor_est');
-end
 
 figure(fig1);
 plot(sensMeasNormMat,'r');
@@ -212,24 +204,11 @@ hold on;
 plot(mean(costNormMat,2),'m');
 hold off;
 
-%% DEBUG: plot gravity as 3D vector
-origin=zeros(length(subsetVec_idx),3);
+%% DEBUG: Log data for later plotting gravity as 3D vector
 
-for acc_i = 1:length(sensorsIdxListModel)
-    figure(fig3);
-    Vmeas=cell2mat(sensMeasCell(:,acc_i));
-    quiver3(origin(:,1),origin(:,2),origin(:,3),Vmeas(:,1),Vmeas(:,2),Vmeas(:,2));
-    axis equal;
-    axis vis3d;
-    figure(fig4);
-    Vest=cell2mat(sensEstCell(:,acc_i));
-    quiver3(origin(:,1),origin(:,2),origin(:,3),Vest(:,1),Vest(:,2),Vest(:,2));
-    axis equal;
-    axis vis3d;
-    
-    pause;
-end
-
+% log data
+logFile = 'logSensorMeasVsEst.mat';
+save(logFile,'sensMeasCell','sensEstCell');
 
 end
 

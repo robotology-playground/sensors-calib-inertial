@@ -1,3 +1,4 @@
+%% DEBUG
 %jointsToCalibrate.parts = {'left_arm','right_arm','left_leg','right_leg'};
 
 %% macros for repetitive names and codes between left and right parts
