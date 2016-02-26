@@ -12,6 +12,9 @@ function e = costFunctionSigma(Dq, part, jointsToCalibrate, data, subsetVec_idx,
 %
 % MOVE ALL INIT VARIABLES TO PERSISTENT
 
+% correction for MTB mounted upside-down
+global real_R_model;
+
 % Gravity
 grav_idyn = iDynTree.Vector3();
 grav = [0.0;0.0;-9.81];
@@ -153,6 +156,10 @@ for ts = 1:length(subsetVec_idx)
         estimatedSensorLinAcc = iDynTree.LinearMotionVector3();
         estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,sensorsIdxListModel(acc_i),estimatedSensorLinAcc);
         sensEst = estimatedSensorLinAcc.toMatlab;
+        % correction for MTB mounted upside-down
+        if data.isInverted{acc_i}
+            sensEst = real_R_model*sensEst;
+        end
         
         % get measurement table ys_xxx_acc [3xnSamples] from captured data,
         % and then select the sample 's' (<=> timestamp).
@@ -179,36 +186,38 @@ e = costVecMat'*costVecMat;
 
 
 %% DEBUG: plot debug data
-persistent scrsz;
-if isempty(scrsz)
-    scrsz = get(0,'ScreenSize');
-end
-persistent fig1;
-if isempty(fig1)
-    fig1 = figure('Name', '||sensor meas|| (red) & ||sensor estim|| (blue)');
-end
-persistent fig2;
-if isempty(fig2)
-    fig2 = figure('Name', '||sens_meas - sens_est|| & mean of norms');
-end
-
-figure(fig1);
-plot(sensMeasNormMat,'r');
-hold on;
-plot(sensEstNormMat,'b');
-hold off;
-
-figure(fig2);
-plot(costNormMat,'g');
-hold on;
-plot(mean(costNormMat,2),'m');
-hold off;
-
-%% DEBUG: Log data for later plotting gravity as 3D vector
-
-% log data
-logFile = 'logSensorMeasVsEst.mat';
-save(logFile,'sensMeasCell','sensEstCell');
+% persistent scrsz;
+% if isempty(scrsz)
+%     scrsz = get(0,'ScreenSize');
+% end
+% persistent fig1;
+% if isempty(fig1)
+%     fig1 = figure('Name', '||sensor meas|| (red) & ||sensor estim|| (blue)');
+% end
+% persistent fig2;
+% if isempty(fig2)
+%     fig2 = figure('Name', '||sens_meas - sens_est|| & mean of norms');
+% end
+% 
+% figure(fig1);
+% plot(sensMeasNormMat,'r');
+% hold on;
+% plot(sensEstNormMat,'b');
+% hold off;
+% 
+% figure(fig2);
+% plot(costNormMat,'g');
+% hold on;
+% plot(mean(costNormMat,2),'m');
+% hold off;
+% 
+% %% DEBUG: Log data for later plotting gravity as 3D vector
+% 
+% % log data
+% logFile = 'logSensorMeasVsEst.mat';
+% save(logFile,'sensMeasCell','sensEstCell');
+% 
+% pause;
 
 end
 

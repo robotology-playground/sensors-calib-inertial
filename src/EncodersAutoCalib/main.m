@@ -49,6 +49,14 @@ jointsToCalibrate.partJointsInitOffsets = {};
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};
 
+mtbInvertedFrames = {};
+% correction for MTB mounted upside-down
+global real_R_model;
+real_R_model  = [-1, 0, 0;  ...
+                  0,-1, 0; ...
+                  0, 0, 1];
+
+
 run jointsNsensorsDefinitions;
 
 
@@ -108,19 +116,6 @@ for part = 1 : length(jointsToCalibrate.parts)
     end
 
 
-    % some sensor are inverted in the model with respect to how are mounted on
-    % the real robot
-    mtbInvertedFrames   =  {true,true, ...
-        true,true, ...
-        true, ...
-        false,false, ...
-        true,true,   ...
-        true,true,   ...
-        false,false};
-
-
-
-
     %% Parsing configuration
     %
     % the fields of "data" are created here on the fly.
@@ -133,31 +128,25 @@ for part = 1 : length(jointsToCalibrate.parts)
     data.diff_q    = 0;    %derivate the angular velocity of the IMUs
 
 
-    %% strucutre from files
+    %% strucutre from files and model
     data.path        = '../../data/calibration/dumper/iCubGenova02_#1/';
 %    data.path        = '../../data/calibration/dumperExample/iCubGenova02/';
     data.parts       = {};
     data.labels      = {};
     data.frames      = {};
+    data.isInverted  = {};
     data.ndof        = {};
     data.index       = {};
     data.type        = {};
     data.visualize   = {};
 
-    %% strucutre for urdf
-    sens.parts       = {};
-    sens.labels      = {};
-    sens.ndof        = {};
-    sens.type        = {};
-    sens.transform  = {};
-
     %% add mtb sensors
     for i = 1:nrOfMTBAccs
-        data = addSensToData(data, jointsToCalibrate.parts{part}, mtbSensorFrames{i}, mtbSensorLabel{i}  , 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
+        data = addSensToData(data, jointsToCalibrate.parts{part}, mtbSensorFrames{i}, mtbInvertedFrames{i} , mtbSensorLabel{i} , 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
     end
 
     %% add joint measurements
-    data = addSensToData(data, jointsToCalibrate.parts{part}, '', [jointsToCalibrate.parts{part} '_state'], 6, '1:6', 'stateExt:o' , 1*data.plot);
+    data = addSensToData(data, jointsToCalibrate.parts{part}, '', '' , [jointsToCalibrate.parts{part} '_state'] , 6, '1:6', 'stateExt:o' , 1*data.plot);
 
     data = loadData(data);
 

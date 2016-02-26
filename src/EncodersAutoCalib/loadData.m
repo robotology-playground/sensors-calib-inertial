@@ -41,44 +41,71 @@ sgolay_F = num2str(57);
 %    end
 % end
 
+% init buffers
+qBuff = []; dqBuff = []; d2qBuff = []; tStateBuff = [];
+for i = 1 : length(data.parts)
+    bufferId = ['buffer_' data.parts{i} '_' data.type{i}(1:end-2)];
+    eval(['readFile_' bufferId ' = []']);
+end
+
 % Load data from dump files
 for i = 1 : length(data.parts)
-   file = [data.path data.parts{i} '/' data.type{i} '/data.log'];
-   if strcmp(data.type{i}, 'stateExt:o');
-      q    = ['q_' data.labels{i}];
-      dq   = ['dq_' data.labels{i}];
-      d2q  = ['d2q_' data.labels{i}];
-      t    = ['time_' data.labels{i}];
-      % dynamicaly create new fields of "data".
-      eval(['[data.' q ',data.' dq ',data.' d2q ',data.' t '] = readStateExt(' num2str(data.ndof{i}) ',''' file ''');']);
-      eval(['data.'  q  '= data.'   q '(' data.index{i} ',:);']);
-      eval(['data.' dq  '= data.'  dq '(' data.index{i} ',:);']);
-      eval(['data.' d2q '= data.' d2q '(' data.index{i} ',:);']);
-      
-      if data.diff_q
-         eval(['data.'   q '(:, :   )= sgolayfilt(data.'   q ''',' sgolay_K ',' sgolay_F ')'' ;'])
-         eval(['data.'  dq '(:,2:end)= 1/mean(diff(data.' t ')).*diff(data.'  q ''')'' ;'])
-         eval(['data.'   dq '(:, :   )= sgolayfilt(data.'   dq ''',' sgolay_K ',' sgolay_F ')'' ;'])
-         eval(['data.' d2q '(:,2:end)= 1/mean(diff(data.' t ')).*diff(data.' dq ''')'' ;'])
-      end
-   else
-      y    = ['y_' data.labels{i}];
-      t    = ['time_' data.labels{i}];
-      eval(['[data.' y ',data.' t '] = readDataDumper(''' file ''');']);
-      fprintf('Loaded sensor %s\n',data.labels{i})
-      eval(['data.' y '= data.' y '(:,' data.index{i} ');']);
-      
-
-      if(strcmp(y(end-2:end), 'imu') && data.diff_imu)
-         eval(['data.' y '(2:end,4:6)= 1/mean(diff(data.' t ')).*diff(sgolayfilt(data.' y '(:,4:6),' sgolay_K ',' sgolay_F '));'])
-      end
-      eval(['data.' t '=data.' t ''';']);
-      eval(['data.' y '=data.' y ''';']);
-      
-      % add filtering
-      eval(['data.' y '=sgolayfilt(data.' y ''',' sgolay_K ',' sgolay_F ')'';']); 
-      
-   end
+    file = [data.path data.parts{i} '/' data.type{i} '/data.log'];
+    % this buffer Id avoids reading the same file twice
+    bufferId = ['buffer_' data.parts{i} '_' data.type{i}(1:end-2)];
+    
+    if strcmp(data.type{i}, 'stateExt:o');
+        q    = ['q_' data.labels{i}];
+        dq   = ['dq_' data.labels{i}];
+        d2q  = ['d2q_' data.labels{i}];
+        t    = ['time_' data.labels{i}];
+        % trigger and register the unique read of the file
+        eval(['readFile_' bufferId ' = isempty(readFile_' bufferId ');']);
+        eval(['readFile = readFile_' bufferId]);
+        % Read file.
+        if readFile
+            [qBuff,dqBuff,d2qBuff,tStateBuff] = readStateExt(data.ndof{i},file);
+        end
+        % Parse file content.
+        % (dynamicaly create new fields of "data")
+        eval(['data.' t ' = tStateBuff;']);
+        eval(['data.'  q  '= qBuff(' data.index{i} ',:);']);
+        eval(['data.' dq  '= dqBuff(' data.index{i} ',:);']);
+        eval(['data.' d2q '= d2qBuff(' data.index{i} ',:);']);
+        
+        if data.diff_q
+            eval(['data.'   q '(:, :   )= sgolayfilt(data.'   q ''',' sgolay_K ',' sgolay_F ')'' ;'])
+            eval(['data.'  dq '(:,2:end)= 1/mean(diff(data.' t ')).*diff(data.'  q ''')'' ;'])
+            eval(['data.'   dq '(:, :   )= sgolayfilt(data.'   dq ''',' sgolay_K ',' sgolay_F ')'' ;'])
+            eval(['data.' d2q '(:,2:end)= 1/mean(diff(data.' t ')).*diff(data.' dq ''')'' ;'])
+        end
+        
+    else
+        y    = ['y_' data.labels{i}];
+        t    = ['time_' data.labels{i}];
+        % trigger and register the unique read of the file
+        eval(['readFile_' bufferId ' = isempty(readFile_' bufferId ');']);
+        eval(['readFile = readFile_' bufferId]);
+        % Read file.
+        if readFile
+            [yBuff,tAccBuff] = readDataDumper(file);
+        end
+        % Parse file content.
+        fprintf('Loaded sensor %s\n',data.labels{i})
+        eval(['data.' t ' = tAccBuff;']);
+        eval(['data.' y '= yBuff(:,' data.index{i} ');']);
+        
+        
+        if(strcmp(y(end-2:end), 'imu') && data.diff_imu)
+            eval(['data.' y '(2:end,4:6)= 1/mean(diff(data.' t ')).*diff(sgolayfilt(data.' y '(:,4:6),' sgolay_K ',' sgolay_F '));'])
+        end
+        eval(['data.' t '=data.' t ''';']);
+        eval(['data.' y '=data.' y ''';']);
+        
+        % add filtering
+        eval(['data.' y '=sgolayfilt(data.' y ''',' sgolay_K ',' sgolay_F ')'';']);
+        
+    end
 end
 
 min_times = [];
