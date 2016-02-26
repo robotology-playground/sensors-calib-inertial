@@ -10,31 +10,9 @@ clc
 costFunction = @costFunctionSigma;
 %costFunction = @costFunctionSigmaProjOnEachLink;
 
-% Optimization options: we won't provide the gradient for now
-%
-% For FUNCTION 'fminunc'
-% Display: 'iter'
-% MaxFunEvals:
-% MaxIter:
-% TolFun:  1e-7
-% TolX: 0.1 (Encoders accuracy => 12 bits for 360 deg => 1 tick =
-% 0.087 deg ~ 0.1 deg)
-% FunValCheck: 'on'
-% ActiveConstrTol:
-% Algorithm: 'interior-point'
-% AlwaysHonorConstraints:
-% GradConstr:
-% GradObj:
-% InitTrustRegionRadius:
-% LargeScale:
-% ScaleProblem:
-% SubproblemAlgorithm:
-% UseParallel:
-% PlotFcns : {@optimplotx, @optimplotfval, @optimplotstepsize}
-%
-options = optimset('Algorithm','interior-point', ...
-    'TolFun', 1e-7, 'TolX', 1e-1, 'FunValCheck', 'on', ...
-    'Display', 'iter', 'PlotFcns', {@optimplotx, @optimplotfval, @optimplotstepsize});
+% Optimisation configuration
+[optimFunction,options] = getOptimConfig();
+startPoint2Boundary = 5*pi/180; % 5 deg
 
 % A random init selects randomly an ordered subset of samples from the whole data
 % set bucket.
@@ -56,6 +34,14 @@ real_R_model  = [-1, 0, 0;  ...
                   0,-1, 0; ...
                   0, 0, 1];
 
+global mtbSensorAct_left_leg;
+mtbSensorAct_left_leg = {false,false, ...
+                         true,true, ...
+                         false, ...
+                         true,true, ...
+                         true,false,   ...
+                         false,false,   ...
+                         true};
 
 run jointsNsensorsDefinitions;
 
@@ -170,6 +156,8 @@ for part = 1 : length(jointsToCalibrate.parts)
 
     subsetVec_size = round(data.nsamples*subsetVec_size_frac);
     Dq0 = cell2mat(jointsToCalibrate.partJointsInitOffsets(part))';
+    lowerBoundary = Dq0 - startPoint2Boundary;
+    upperBoundary = Dq0 + startPoint2Boundary;
     
     % run minimisation for every random subset of data.
     % 1 subset <=> all measurements for a given timestamp <=>1 column index of
@@ -181,9 +169,21 @@ for part = 1 : length(jointsToCalibrate.parts)
         subsetVec_idx = sort(subsetVec_idx);
         
         % optimize
-        [optimalDq(:, i), fval(1,i), exitflag(1,i), output(1,i)] = fminunc(@(Dq) costFunction(Dq, part, jointsToCalibrate, ...
-                                                                                              data, subsetVec_idx, estimator), ...
-                                                                     Dq0, options);
+        funcProps = functions(optimFunction);
+        funcName = funcProps.function;
+        switch funcName
+            case 'fminunc'
+                [optimalDq(:, i),  resnorm(1,i), exitflag(1,i), output(1,i)] = optimFunction(@(Dq) costFunction(Dq, part, jointsToCalibrate, ...
+                    data, subsetVec_idx, estimator, ...
+                    optimFunction), ...
+                    Dq0, options);
+            case 'lsqnonlin'
+                [optimalDq(:, i), resnorm(1,i), ~, exitflag(1,i), output(1,i), lambda(1,i)] = optimFunction(@(Dq) costFunction(Dq, part, jointsToCalibrate, ...
+                    data, subsetVec_idx, estimator, ...
+                    optimFunction), ...
+                    Dq0, lowerBoundary, upperBoundary, options);
+            otherwise
+        end
         optimalDq(:, i) = mod(optimalDq(:, i)+pi, 2*pi)-pi;
     end
     
@@ -194,7 +194,7 @@ for part = 1 : length(jointsToCalibrate.parts)
     fprintf('Optimal offsets Dq (in radians):\n');
     optimalDq
     fprintf('Mean cost (in (m.s^{-2})^2):\n');
-    fval/(nrOfMTBAccs*length(subsetVec_idx))
+     resnorm/(nrOfMTBAccs*length(subsetVec_idx))
     fprintf('optimization function exit flag:\n');
     exitflag
     fprintf('other optimization info:\n');

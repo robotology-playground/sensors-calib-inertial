@@ -1,4 +1,4 @@
-function e = costFunctionSigma(Dq, part, jointsToCalibrate, data, subsetVec_idx, estimator)
+function e = costFunctionSigma(Dq, part, jointsToCalibrate, data, subsetVec_idx, estimator, optimFunction)
 %COSTFUNCTIONSIGMA Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -14,6 +14,7 @@ function e = costFunctionSigma(Dq, part, jointsToCalibrate, data, subsetVec_idx,
 
 % correction for MTB mounted upside-down
 global real_R_model;
+global mtbSensorAct_left_leg;
 
 % Gravity
 grav_idyn = iDynTree.Vector3();
@@ -81,10 +82,12 @@ jointsLabelIdx = 0;
 for frame = 1:length(data.frames)
     if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
         if strcmp(data.type(frame),'inertialMTB')
-            sensorsIdxListModel = [sensorsIdxListModel ...
-                estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
-                char(data.frames(frame)))];
-            sensorsIdxListFile = [sensorsIdxListFile frame];
+            if mtbSensorAct_left_leg{frame}
+                sensorsIdxListModel = [sensorsIdxListModel ...
+                    estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
+                    char(data.frames(frame)))];
+                sensorsIdxListFile = [sensorsIdxListFile frame];
+            end
         elseif strcmp(data.type{frame}, 'stateExt:o')
             jointsLabelIdx = frame;
         else
@@ -182,7 +185,12 @@ end
 
 % Final cost = norm of 'costVec'
 costVecMat = cell2mat(costVec);
-e = costVecMat'*costVecMat;
+optimFunctionProps = functions(optimFunction);
+if strcmp(optimFunctionProps.function,'lsqnonlin')
+    e = costVecMat;
+else
+    e = costVecMat'*costVecMat;
+end
 
 
 %% DEBUG: plot debug data
