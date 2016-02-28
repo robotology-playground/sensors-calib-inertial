@@ -15,6 +15,7 @@ function e = costFunctionSigma(Dq, part, jointsToCalibrate, data, subsetVec_idx,
 % correction for MTB mounted upside-down
 global real_R_model;
 global mtbSensorAct_left_leg;
+global mtbInvertedFrames;
 
 % Gravity
 grav_idyn = iDynTree.Vector3();
@@ -160,7 +161,7 @@ for ts = 1:length(subsetVec_idx)
         estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,sensorsIdxListModel(acc_i),estimatedSensorLinAcc);
         sensEst = estimatedSensorLinAcc.toMatlab;
         % correction for MTB mounted upside-down
-        if data.isInverted{acc_i}
+        if mtbInvertedFrames{acc_i}
             sensEst = real_R_model*sensEst;
         end
         
@@ -193,7 +194,7 @@ else
 end
 
 
-%% DEBUG: plot debug data
+% % DEBUG: plot debug data
 % persistent scrsz;
 % if isempty(scrsz)
 %     scrsz = get(0,'ScreenSize');

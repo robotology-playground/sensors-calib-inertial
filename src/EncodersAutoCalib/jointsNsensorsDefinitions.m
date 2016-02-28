@@ -48,6 +48,7 @@ jointsToCalibrate_torso = {'torso_pitch','torso_roll','torso_yaw'};
 jointsInitOffsets_left_arm = [0 0 0 0];
 jointsInitOffsets_right_arm = [0 0 0 0];
 jointsInitOffsets_left_leg = [0 0 0 0 0 0];
+% jointsInitOffsets_left_leg = [-0.1732 -0.0331 -0.1732 -0.1745 0.1745 0.1745];
 jointsInitOffsets_right_leg = [0 0 0 0 0 0];
 jointsInitOffsets_torso = [0 0 0];
 
@@ -100,12 +101,9 @@ end
 
 %% some sensor are inverted in the model with respect to how are mounted on
 % the real robot
+global mtbInvertedFrames;
 mtbInvertedFrames   =  {true,true, ...
-                        true,true, ...
-                        true, ...
                         false,false, ...
-                        true,true,   ...
-                        true,true,   ...
+                        true, ...
                         true};
-
-
+%mtbInvertedFrames(:)  = {false}; 

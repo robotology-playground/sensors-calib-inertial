@@ -12,7 +12,7 @@ costFunction = @costFunctionSigma;
 
 % Optimisation configuration
 [optimFunction,options] = getOptimConfig();
-startPoint2Boundary = 5*pi/180; % 5 deg
+startPoint2Boundary = 10*pi/180; % 10 deg
 
 % A random init selects randomly an ordered subset of samples from the whole data
 % set bucket.
@@ -27,7 +27,6 @@ jointsToCalibrate.partJointsInitOffsets = {};
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};
 
-mtbInvertedFrames = {};
 % correction for MTB mounted upside-down
 global real_R_model;
 real_R_model  = [-1, 0, 0;  ...
@@ -42,6 +41,7 @@ mtbSensorAct_left_leg = {false,false, ...
                          true,false,   ...
                          false,false,   ...
                          true};
+%mtbSensorAct_left_leg(:) = {true};
 
 run jointsNsensorsDefinitions;
 
@@ -128,11 +128,11 @@ for part = 1 : length(jointsToCalibrate.parts)
 
     %% add mtb sensors
     for i = 1:nrOfMTBAccs
-        data = addSensToData(data, jointsToCalibrate.parts{part}, mtbSensorFrames{i}, mtbInvertedFrames{i} , mtbSensorLabel{i} , 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
+        data = addSensToData(data, jointsToCalibrate.parts{part}, mtbSensorFrames{i}, mtbSensorLabel{i} , 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
     end
 
     %% add joint measurements
-    data = addSensToData(data, jointsToCalibrate.parts{part}, '', '' , [jointsToCalibrate.parts{part} '_state'] , 6, '1:6', 'stateExt:o' , 1*data.plot);
+    data = addSensToData(data, jointsToCalibrate.parts{part}, '', [jointsToCalibrate.parts{part} '_state'] , 6, '1:6', 'stateExt:o' , 1*data.plot);
 
     data = loadData(data);
 
@@ -158,6 +158,8 @@ for part = 1 : length(jointsToCalibrate.parts)
     Dq0 = cell2mat(jointsToCalibrate.partJointsInitOffsets(part))';
     lowerBoundary = Dq0 - startPoint2Boundary;
     upperBoundary = Dq0 + startPoint2Boundary;
+%     lowerBoundary = [];
+%     upperBoundary = [];
     
     % run minimisation for every random subset of data.
     % 1 subset <=> all measurements for a given timestamp <=>1 column index of
