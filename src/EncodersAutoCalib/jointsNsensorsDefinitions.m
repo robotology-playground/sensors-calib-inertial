@@ -47,10 +47,16 @@ jointsToCalibrate_torso = {'torso_pitch','torso_roll','torso_yaw'};
 
 jointsInitOffsets_left_arm = [0 0 0 0];
 jointsInitOffsets_right_arm = [0 0 0 0];
-jointsInitOffsets_left_leg = [0 0 0 0 0 0];
-% jointsInitOffsets_left_leg = [-0.1732 -0.0331 -0.1732 -0.1745 0.1745 0.1745];
+%jointsInitOffsets_left_leg = [0 0 0 0 0 0];
+jointsInitOffsets_left_leg = [-0.0021   -0.0346    0.0426    0.3098    0.2366    0.0751];
 jointsInitOffsets_right_leg = [0 0 0 0 0 0];
 jointsInitOffsets_torso = [0 0 0];
+
+jointsDq0_left_arm = [0 0 0 0];
+jointsDq0_right_arm = [0 0 0 0];
+jointsDq0_left_leg = [0 0 0 0 0 0];
+jointsDq0_right_leg = [0 0 0 0 0 0];
+jointsDq0_torso = [0 0 0];
 
 % We define a segment i as a link for which parent joint i and joint i+1 axis 
 % are not concurrent. For instance 'root_link', 'r_upper_leg', 'r_lower_leg', 
@@ -85,25 +91,19 @@ mtbSensorLink_right_leg = mtbSensorLink_leg('r');
 
 %% Build access lists
 %
-% jointsToCalibrate.partJoints = {};
-% jointsToCalibrate.partJointsInitOffsets = {};
-% mtbSensorCodes_list = {};
-% mtbSensorLink_list = {};
+jointsToCalibrate.partJoints = {};
+jointsToCalibrate.partJointsInitOffsets = {};
+jointsToCalibrate.jointsDq0 = {};
+jointsToCalibrate.partSegments = {};
+mtbSensorCodes_list = {};
+mtbSensorLink_list = {};
 
 for i = 1:length(jointsToCalibrate.parts)
     eval(['jointsToCalibrate.partJoints{' num2str(i) '} = jointsToCalibrate_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.partJointsInitOffsets{' num2str(i) '} = jointsInitOffsets_' jointsToCalibrate.parts{i} ';']);
+    eval(['jointsToCalibrate.jointsDq0{' num2str(i) '} = jointsDq0_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorCodes_list{' num2str(i) '} = mtbSensorCodes_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorLink_list{' num2str(i) '} = mtbSensorLink_' jointsToCalibrate.parts{i} ';']);
 end
 
-
-%% some sensor are inverted in the model with respect to how are mounted on
-% the real robot
-global mtbInvertedFrames;
-mtbInvertedFrames   =  {true,true, ...
-                        false,false, ...
-                        true, ...
-                        true};
-%mtbInvertedFrames(:)  = {false}; 

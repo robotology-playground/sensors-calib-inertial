@@ -12,7 +12,7 @@ costFunction = @costFunctionSigma;
 
 % Optimisation configuration
 [optimFunction,options] = getOptimConfig();
-startPoint2Boundary = 10*pi/180; % 10 deg
+startPoint2Boundary = 20*pi/180; % 20 deg
 
 % A random init selects randomly an ordered subset of samples from the whole data
 % set bucket.
@@ -27,12 +27,6 @@ jointsToCalibrate.partJointsInitOffsets = {};
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};
 
-% correction for MTB mounted upside-down
-global real_R_model;
-real_R_model  = [-1, 0, 0;  ...
-                  0,-1, 0; ...
-                  0, 0, 1];
-
 global mtbSensorAct_left_leg;
 mtbSensorAct_left_leg = {false,false, ...
                          true,true, ...
@@ -45,6 +39,8 @@ mtbSensorAct_left_leg = {false,false, ...
 
 run jointsNsensorsDefinitions;
 
+% create the calibration context implementing the cost function
+myCalibContext = CalibrationContextBuilder();
 
 %% define offsets for parsing Linear Acceleration data from MTB accelerometers
 %
@@ -137,20 +133,10 @@ for part = 1 : length(jointsToCalibrate.parts)
     data = loadData(data);
 
 
-    %% Create the estimator and model...
-    %
-    % Create an estimator class, load the respective model from URDF file and
-    % set the robot state constant parameters
-
-    % Create estimator class
-    estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
-
-    % Load model and sensors from the URDF file
-    estimator.loadModelAndSensorsFromFile('../models/iCubGenova02/iCubFull.urdf');
-
-    % Check if the model was correctly created by printing the model
-    estimator.model().toString()
-
+    %% init joints and sensors lists
+    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,part,jointsToCalibrate,mtbSensorAct_left_leg);
+    
+    
     %% Optimization
     %
 
@@ -158,8 +144,11 @@ for part = 1 : length(jointsToCalibrate.parts)
     Dq0 = cell2mat(jointsToCalibrate.partJointsInitOffsets(part))';
     lowerBoundary = Dq0 - startPoint2Boundary;
     upperBoundary = Dq0 + startPoint2Boundary;
-%     lowerBoundary = [];
-%     upperBoundary = [];
+    %lowerBoundary = [];
+    %upperBoundary = [];
+    optimalDq = zeros(length(Dq0),number_of_random_init);
+    resnorm = zeros(1,number_of_random_init);
+    exitflag = zeros(1,number_of_random_init);
     
     % run minimisation for every random subset of data.
     % 1 subset <=> all measurements for a given timestamp <=>1 column index of
@@ -170,20 +159,21 @@ for part = 1 : length(jointsToCalibrate.parts)
         subsetVec_idx = randsample(data.nsamples, subsetVec_size);
         subsetVec_idx = sort(subsetVec_idx);
         
+        % load joint positions
+        myCalibContext.loadJointNsensorsDataSubset(data,subsetVec_idx);
+        
         % optimize
         funcProps = functions(optimFunction);
         funcName = funcProps.function;
         switch funcName
             case 'fminunc'
-                [optimalDq(:, i),  resnorm(1,i), exitflag(1,i), output(1,i)] = optimFunction(@(Dq) costFunction(Dq, part, jointsToCalibrate, ...
-                    data, subsetVec_idx, estimator, ...
-                    optimFunction), ...
-                    Dq0, options);
+                [optimalDq(:, i),  resnorm(1,i), exitflag(1,i), output(1,i)] ...
+                    = optimFunction(@(Dq) myCalibContext.costFunctionSigma(Dq,data,subsetVec_idx,optimFunction), ...
+                                    Dq0, options);
             case 'lsqnonlin'
-                [optimalDq(:, i), resnorm(1,i), ~, exitflag(1,i), output(1,i), lambda(1,i)] = optimFunction(@(Dq) costFunction(Dq, part, jointsToCalibrate, ...
-                    data, subsetVec_idx, estimator, ...
-                    optimFunction), ...
-                    Dq0, lowerBoundary, upperBoundary, options);
+                [optimalDq(:, i), resnorm(1,i), ~, exitflag(1,i), output(1,i), lambda(1,i)] ...
+                    = optimFunction(@(Dq) myCalibContext.costFunctionSigma(Dq,data,subsetVec_idx,optimFunction), ...
+                                    Dq0, lowerBoundary, upperBoundary, options);
             otherwise
         end
         optimalDq(:, i) = mod(optimalDq(:, i)+pi, 2*pi)-pi;
