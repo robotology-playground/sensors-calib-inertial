@@ -1,0 +1,48 @@
+Final optimization results. Each column stands for a random init of the data subset.
+Optimal offsets Dq (in radians):
+
+optimalDq =
+
+   -0.0873   -0.0873   -0.0873   -0.0873   -0.0873
+   -0.0356   -0.0356   -0.0355   -0.0355   -0.0355
+   -0.0873   -0.0873   -0.0873   -0.0873   -0.0873
+   -0.0873   -0.0873   -0.0873   -0.0873   -0.0873
+    0.0873    0.0873    0.0873    0.0873    0.0873
+    0.0873    0.0873    0.0873    0.0873    0.0873
+
+Mean cost (in (m.s^{-2})^2):
+
+ans =
+
+   26.7157   26.7138   26.7147   26.7156   26.7147
+
+optimization function exit flag:
+
+exitflag =
+
+     2     2     2     2     2
+
+other optimization info:
+
+output = 
+
+1x5 struct array with fields:
+    firstorderopt
+    iterations
+    funcCount
+    cgiterations
+    algorithm
+    message
+
+Standard deviation for each joint offset:
+
+std_optDq =
+
+   1.0e-04 *
+
+    0.0000
+    0.3464
+    0.0000
+    0.0000
+    0.0000
+    0.0000
