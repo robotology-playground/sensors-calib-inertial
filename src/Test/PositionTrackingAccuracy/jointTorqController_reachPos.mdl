@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.68"
+    ComputedModelVersion    "1.69"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -87,9 +87,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Mar 01 16:31:56 2016"
-  RTWModifiedTimeStamp	  378741368
-  ModelVersionFormat	  "1.%<AutoIncrement:68>"
+  LastModifiedDate	  "Tue Mar 01 22:09:26 2016"
+  RTWModifiedTimeStamp	  378770855
+  ModelVersionFormat	  "1.%<AutoIncrement:69>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -1279,7 +1279,7 @@ Model {
       ShowName		      off
       InputPortWidth	      "ROBOT_DOF"
       IndexOptions	      "Index vector (dialog)"
-      Indices		      "[5:8]"
+      Indices		      "[9:14]"
       OutputSizes	      "1"
     }
     Block {
@@ -1292,7 +1292,7 @@ Model {
       ShowName		      off
       InputPortWidth	      "ROBOT_DOF"
       IndexOptions	      "Index vector (dialog)"
-      Indices		      "[5:8]"
+      Indices		      "[9:14]"
       OutputSizes	      "1"
     }
     Block {
@@ -1547,8 +1547,8 @@ Model {
       Position		      [1205, 165, 1250, 265]
       ZOrder		      403
       Floating		      off
-      Location		      [6, 73, 1256, 750]
-      Open		      on
+      Location		      [407, 79, 1270, 756]
+      Open		      off
       NumInputPorts	      "1"
       List {
 	ListType		AxesTitles
@@ -1565,7 +1565,7 @@ Model {
 	MarkerStyles		"none|none|none|none|none|none"
       }
       ShowLegends	      on
-      LegendLocations	      "0.89877     0.86557    0.078426    0.090848"
+      LegendLocations	      "0.88119     0.86557      0.1136    0.090848"
       TimeRange		      "20"
       YMin		      "-60"
       YMax		      "80"
@@ -4338,7 +4338,10 @@ Stateflow {
     firstTransition	    49
     firstJunction	    48
     viewObj		    43
+    visible		    1
     machine		    1
+    subviewS {
+    }
     ssIdHighWaterMark	    6
     decomposition	    CLUSTER_CHART
     type		    EML_CHART

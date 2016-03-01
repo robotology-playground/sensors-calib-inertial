@@ -17,24 +17,28 @@ dqiRef = 10*pi/180; % absolute value in radians/s
 
 refMask = zeros(ROBOT_DOF,1);
 %refMask(1:4) = 1;   %left_arm
-refMask(5:8) = 1;   %right_arm
-%refMask(9:14) = 1;  %left_leg
+%refMask(5:8) = 1;   %right_arm
+refMask(9:14) = 1;  %left_leg
 %refMask(15:20) = 1; %right_leg
 
 refMaskGravComp = zeros(ROBOT_DOF,1);
-refMaskGravComp(1:4) = 1;   %left_arm
-refMaskGravComp(5:8) = 1;   %right_arm
+%refMaskGravComp(1:4) = 1;   %left_arm
+%refMaskGravComp(5:8) = 1;   %right_arm
+refMaskGravComp(9:14) = 1;   %left_leg
+%refMaskGravComp(15:20) = 1;   %right_leg
 
 KpTorso   = 0.5*ones(1,3);
 KpArms    = [0.08,0.08,0.08,0.08];
 KpLegs    = [0.5,0.5,0.5,0.5,0.5,0.5];
-Kp        = diag([KpArms,KpArms,KpLegs,KpLegs]);
+Kp        = diag([KpArms,KpArms,0.5*KpLegs,KpLegs]);
 
 if size(Kp,1) ~= ROBOT_DOF
     error('Dimension of Kp different from ROBOT_DOF')
 end
 
-Kd        = 2*sqrt(Kp)*0.01;
+%Kd        = -2*sqrt(diag([KpArms*0.0001,KpArms*0.0001,KpLegs*0.00016,KpLegs*0.0001]));
+myK = 2;
+Kd        = -2*sqrt(Kp)*0.01*diag([ones(1,4),ones(1,4),myK*ones(1,6),ones(1,6)]);
 
 GRAV_COMP = 1;
 
