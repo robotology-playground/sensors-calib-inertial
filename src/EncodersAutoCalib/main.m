@@ -196,3 +196,5 @@ for part = 1 : length(jointsToCalibrate.parts)
     
 end
 
+
+save('./data/minimResult.mat','optimalDq','exitflag','output','std_optDq','data');
