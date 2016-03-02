@@ -46,16 +46,16 @@ for i = 1:length(testMats)
     figure(i);
 
     plot(testMats{i}.t(1:testMats{i}.tMaxInd),testMats{i}.err(1:testMats{i}.tMaxInd,:),'lineWidth',2.0);
-    xlabel('Time (sec)','FontSize',16);
-    ylabel('Joint Position (degrees)','FontSize',16);
+    xlabel('Time (sec)','FontSize',20);
+    ylabel('Joint Position (degrees)','FontSize',20);
     hl = legend('e_q_1','e_q_2','e_q_3','e_q_4','e_q_5','e_q_6');
-    set(hl,'FontSize',16);
+    set(hl,'FontSize',20);
     axis tight;
     grid on;
-    title(testMats{i}.titl,'FontSize',16);
+    %title(testMats{i}.titl,'FontSize',16);
     
-    set(gca,'FontSize',16);
-    print('-dpng','-r300',strcat('./figs/',testMats{i}.saveName));
+    set(gca,'FontSize',20);
+    print('-dpng','-r300','-opengl',strcat('./figs/',testMats{i}.saveName));
     %     figure(length(testMats)+i);
 % 
 %     plot(testMats{i}.t,testMats{i}.gOfq,'lineWidth',2.0);
