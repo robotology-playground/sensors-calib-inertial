@@ -52,7 +52,7 @@ switch funcName
         %
         dfltOptions = optimset('lsqnonlin'); % Algorithm = 'trust-region-reflective'
         options = optimset(dfltOptions,'TolFun', TolFun, 'TolX', TolX, 'FunValCheck', FunValCheck, ...
-            'Algorithm', Algorithm);%, 'Display', Display, 'PlotFcns', PlotFcns);
+            'Algorithm', Algorithm, 'Display', Display, 'PlotFcns', PlotFcns);
         
     otherwise
 end
