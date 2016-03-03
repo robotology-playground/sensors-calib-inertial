@@ -22,24 +22,24 @@ function e = costFunctionSigmaProjOnEachLink(Dq, part, jointsToCalibrate, data, 
 % MOVE ALL INIT VARIABLES TO PERSISTENT
 
 % Gravity
-grav_idyn = iDynTree.Vector3();
-grav = [0.0;0.0;-9.81];
-grav_idyn.fromMatlab(grav);
+% % % grav_idyn = iDynTree.Vector3();
+% % % grav = [0.0;0.0;-9.81];
+% % % grav_idyn.fromMatlab(grav);
 
 % Get joint information: DOF
-dofs = estimator.model.getNrOfDOFs();
+% % % dofs = estimator.model.getNrOfDOFs();
 
 % create joint position iDynTree objects
 % Note: 'JointPosDoubleArray' is a special type for future evolution which
 % will handle quaternions. But for now the type has the format as 
 % 'JointDOFsDoubleArray'.
-qi_idyn   = iDynTree.JointPosDoubleArray(dofs);
-fixedBasePos = iDynTree.FreeFloatingPos(estimator.model);
-fixedBasePos.worldBasePos() = iDynTree.Transform.Identity();
+% % % qi_idyn   = iDynTree.JointPosDoubleArray(dofs);
+% % % fixedBasePos = iDynTree.FreeFloatingPos(estimator.model);
+% % % fixedBasePos.worldBasePos() = iDynTree.Transform.Identity();
 
 % Memory allocation for output variables
-traversal_Lk = iDynTree.Traversal();
-linkPos = iDynTree.LinkPositions();
+% % % traversal_Lk = iDynTree.Traversal();
+% % % linkPos = iDynTree.LinkPositions();
 
 
 %% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
@@ -48,44 +48,44 @@ linkPos = iDynTree.LinkPositions();
 % - the sensor list for the current part (part: right_leg, left_arm,...).
 % This is a list of indexes, that will be later used for retrieving the
 % sensor predicted measurements and the real measure from the captured data.
-sensorsIdxListModel = [];
-sensorsIdxListFile  = [];
-jointsIdxListModel  = [];
-jointsLabelIdx = 0;
-
-for frame = 1:length(data.frames)
-    if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
-        if strcmp(data.type(frame),'inertialMTB')
-            sensorsIdxListModel = [sensorsIdxListModel ...
-                estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
-                char(data.frames(frame)))];
-            sensorsIdxListFile = [sensorsIdxListFile frame];
-        elseif strcmp(data.type{frame}, 'stateExt:o')
-            jointsLabelIdx = frame;
-        else
-            error('costFunctionSigma: wrong type ',...
-            'Error.\nWrong data type of sensor data. Valid types are "inertialMTB" and "stateExt:o" !!');
-        end
-    end
-end
+% % % sensorsIdxListModel = [];
+% % % sensorsIdxListFile  = [];
+% % % jointsIdxListModel  = [];
+% % % jointsLabelIdx = 0;
+% % % 
+% % % for frame = 1:length(data.frames)
+% % %     if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
+% % %         if strcmp(data.type(frame),'inertialMTB')
+% % %             sensorsIdxListModel = [sensorsIdxListModel ...
+% % %                 estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
+% % %                 char(data.frames(frame)))];
+% % %             sensorsIdxListFile = [sensorsIdxListFile frame];
+% % %         elseif strcmp(data.type{frame}, 'stateExt:o')
+% % %             jointsLabelIdx = frame;
+% % %         else
+% % %             error('costFunctionSigma: wrong type ',...
+% % %             'Error.\nWrong data type of sensor data. Valid types are "inertialMTB" and "stateExt:o" !!');
+% % %         end
+% % %     end
+% % % end
 
 % Select from label index the joints associated to the current processed part.
-qsRad    = ['qsRad_' data.labels{jointsLabelIdx}];
-dqsRad   = ['dqsRad_' data.labels{jointsLabelIdx}];
-d2qsRad  = ['d2qsRad_' data.labels{jointsLabelIdx}];
-
-eval(['q0i = data.' qsRad '(:,subsetVec_idx);']);
-eval(['dqi = data.' dqsRad '(:,subsetVec_idx);']);
-eval(['d2qi = data.' d2qsRad '(:,subsetVec_idx);']);
-
-% mapping of 'jointsToCalibrate.partJoints' into the iDynTree joint list.
-for joint = 1:length(jointsToCalibrate.partJoints{part})
-    % get joint index
-    jointsIdxListModel = [jointsIdxListModel...
-        estimator.model.getJointIndex(jointsToCalibrate.partJoints{part}{joint})];
-end
-%convert indices to matlab
-jointsIdxListModel = jointsIdxListModel+1;
+% % % qsRad    = ['qsRad_' data.labels{jointsLabelIdx}];
+% % % dqsRad   = ['dqsRad_' data.labels{jointsLabelIdx}];
+% % % d2qsRad  = ['d2qsRad_' data.labels{jointsLabelIdx}];
+% % % 
+% % % eval(['q0i = data.' qsRad '(:,subsetVec_idx);']);
+% % % eval(['dqi = data.' dqsRad '(:,subsetVec_idx);']);
+% % % eval(['d2qi = data.' d2qsRad '(:,subsetVec_idx);']);
+% % % 
+% % % % mapping of 'jointsToCalibrate.partJoints' into the iDynTree joint list.
+% % % for joint = 1:length(jointsToCalibrate.partJoints{part})
+% % %     % get joint index
+% % %     jointsIdxListModel = [jointsIdxListModel...
+% % %         estimator.model.getJointIndex(jointsToCalibrate.partJoints{part}{joint})];
+% % % end
+% % % %convert indices to matlab
+% % % jointsIdxListModel = jointsIdxListModel+1;
 
 %% compute predicted measurements
 % We compute here the final cost 'e'. As it is a sum of norms, we can also
@@ -100,10 +100,10 @@ jointsIdxListModel = jointsIdxListModel+1;
 % and *per* sensor.
 % 'costVec' is an array of costs for *per* frame projection, *per* timestamp 
 % and *per* sensor.
-costVec_Lk_ts = cell(length(sensorsIdxListModel),1);
-costVec_Lk = cell(length(subsetVec_idx),1);
-costVec = cell(length(jointsToCalibrate.partSegments{part}),1);
-
+% % % costVec_Lk_ts = cell(length(sensorsIdxListModel),1);
+% % % costVec_Lk = cell(length(subsetVec_idx),1);
+% % % costVec = cell(length(jointsToCalibrate.partSegments{part}),1);
+% % % 
 %DEBUG
 % sensMeasNormMat = zeros(length(subsetVec_idx),length(sensorsIdxListModel));
 % sensEstNormMat = zeros(length(subsetVec_idx),length(sensorsIdxListModel));
@@ -146,42 +146,42 @@ for segmentk = 1:length(jointsToCalibrate.partSegments{part})
     %
     
     % init the 2D array of measurements projected on link k, and their mean
-    Lk_sensMeasCell = cell(length(subsetVec_idx),length(sensorsIdxListModel));
-    mu_k = cell(length(subsetVec_idx),1);
+% % %     Lk_sensMeasCell = cell(length(subsetVec_idx),length(sensorsIdxListModel));
+% % %     mu_k = cell(length(subsetVec_idx),1);
     
     % set 'Lk' as the traversal base to be used at current
     % iteration
-    Lk = estimator.model.getLinkIndex(jointsToCalibrate.partSegments{part}{segmentk});
-    estimator.model.computeFullTreeTraversal(traversal_Lk, Lk);
+% % %     Lk = estimator.model.getLinkIndex(jointsToCalibrate.partSegments{part}{segmentk});
+% % %     estimator.model.computeFullTreeTraversal(traversal_Lk, Lk);
     
     for ts = 1:length(subsetVec_idx)
         % Fill the full floating base joint positions configuration
-        qisRobotDOF = zeros(dofs,1); qisRobotDOF(jointsIdxListModel,1) = q0i(:,ts) + Dq;
-        qi_idyn.fromMatlab(qisRobotDOF);
-        fixedBasePos.jointPos() = qi_idyn;
+% % %         qisRobotDOF = zeros(dofs,1); qisRobotDOF(jointsIdxListModel,1) = q0i(:,ts) + Dq;
+% % %         qi_idyn.fromMatlab(qisRobotDOF);
+% % %         fixedBasePos.jointPos() = qi_idyn;
         
         % Project on link frame Lk all measurements from each sensor referenced in
         % 'sensorsIdxList'and compute the mean.
         for acci = 1:length(sensorsIdxListModel)
-            % get sensor handle
-            sensor = estimator.sensors.getSensor(iDynTree.ACCELEROMETER,sensorsIdxListModel(acci));
-            % get the sensor to link i transform Li_H_acci
-            Li_H_acci = sensor.getLinkSensorTransform();
-            % get the projection link k to link i transform Lk_H_Li
-            iDynTree.ForwardPositionKinematics(estimator.model, traversal_Lk, ...
-                                               fixedBasePos, linkPos);
-            Li = sensor.getParentLinkIndex();
-            Lk_H_Li = linkPos(Li);
-            % get measurement table ys_xxx_acc [3xnSamples] from captured data,
-            % and then select the sample 's' (<=> timestamp).
-            ys   = ['ys_' data.labels{sensorsIdxListFile(acci)}];
-            eval(['sensMeas = data.' ys '(:,ts);']);
-            % project the measurement in link Lk frame and store it for
-            % later computing the variances
-            Lk_sensMeasCell{ts,acci} = Lk_H_Li * Li_H_acci * sensMeas;
+% % %             % get sensor handle
+% % %             sensor = estimator.sensors.getSensor(iDynTree.ACCELEROMETER,sensorsIdxListModel(acci));
+% % %             % get the sensor to link i transform Li_H_acci
+% % %             Li_H_acci = sensor.getLinkSensorTransform();
+% % %             % get the projection link k to link i transform Lk_H_Li
+% % %             iDynTree.ForwardPositionKinematics(estimator.model, traversal_Lk, ...
+% % %                                                fixedBasePos, linkPos);
+% % %             Li = sensor.getParentLinkIndex();
+% % %             Lk_H_Li = linkPos(Li);
+% % %             % get measurement table ys_xxx_acc [3xnSamples] from captured data,
+% % %             % and then select the sample 's' (<=> timestamp).
+% % %             ys   = ['ys_' data.labels{sensorsIdxListFile(acci)}];
+% % %             eval(['sensMeas = data.' ys '(:,ts);']);
+% % %             % project the measurement in link Lk frame and store it for
+% % %             % later computing the variances
+% % %             Lk_sensMeasCell{ts,acci} = Lk_H_Li * Li_H_acci * sensMeas;
         end
-        % compute the mean
-        mu_k{ts} = mean(cell2mat(Lk_sensMeasCell{ts,:}),2);
+% % %         % compute the mean
+% % %         mu_k{ts} = mean(cell2mat(Lk_sensMeasCell{ts,:}),2);
     end
     
     %% Compute the variances of measurements projected on link Lk
@@ -194,41 +194,41 @@ for segmentk = 1:length(jointsToCalibrate.partSegments{part})
     % $k$: link frame where we project the measurements
     % $N$: total number of links
     %
-    for ts = 1:length(subsetVec_idx)
-
-        % Fill iDynTree joint vectors.
-        % Warning!! iDynTree takes in input **radians** based units,
-        % while the iCub port stream **degrees** based units.
-        qisRobotDOF = zeros(dofs,1); qisRobotDOF(jointsIdxListModel,1) = q0i(:,ts) + Dq;
-        qi_idyn.fromMatlab(qisRobotDOF);
-        fixedBasePos.jointPos() = qi_idyn;
-        
-        % Project on link frame Lk all measurements from each sensor referenced in
-        % 'sensorsIdxList'and compute the variance w.r.t. the previously computed mean.
-        % Formulate computation as variance = diff' * diff.
-        for acci = 1:length(sensorsIdxListModel)
-            % get previously computed measurement projected on frame link k
-
-            % compute the cost for 1 sensor / 1 timestamp, usig previously
-            % computed measurement (ts,acci) and mean(ts), projected on
-            % frame link k
-            costVec_Lk_ts{acci} = (Lk_sensMeasCell{ts,acci} - mu_k{ts});
-            %DEBUG
-%             sensMeasNormMat(ts,acci) = norm(sensMeas,2);
-%             sensEstNormMat(ts,acci) = norm(sensEst,2);
-%             costNormMat(ts,acci) = norm(costVec_Lk_ts{acci},2);
-%             sensMeasCell{ts,acci} = sensMeas';
-%             sensEstCell{ts,acci} = sensEst';
-        end
-
-        costVec_Lk{ts} = cell2mat(costVec_Lk_ts);
-    end
-    costVec{Lk} = cell2mat(costVec_Lk);
+% % %     for ts = 1:length(subsetVec_idx)
+% % % 
+% % %         % Fill iDynTree joint vectors.
+% % %         % Warning!! iDynTree takes in input **radians** based units,
+% % %         % while the iCub port stream **degrees** based units.
+% % %         qisRobotDOF = zeros(dofs,1); qisRobotDOF(jointsIdxListModel,1) = q0i(:,ts) + Dq;
+% % %         qi_idyn.fromMatlab(qisRobotDOF);
+% % %         fixedBasePos.jointPos() = qi_idyn;
+% % %         
+% % %         % Project on link frame Lk all measurements from each sensor referenced in
+% % %         % 'sensorsIdxList'and compute the variance w.r.t. the previously computed mean.
+% % %         % Formulate computation as variance = diff' * diff.
+% % %         for acci = 1:length(sensorsIdxListModel)
+% % %             % get previously computed measurement projected on frame link k
+% % % 
+% % %             % compute the cost for 1 sensor / 1 timestamp, usig previously
+% % %             % computed measurement (ts,acci) and mean(ts), projected on
+% % %             % frame link k
+% % %             costVec_Lk_ts{acci} = (Lk_sensMeasCell{ts,acci} - mu_k{ts});
+% % %             %DEBUG
+% % % %             sensMeasNormMat(ts,acci) = norm(sensMeas,2);
+% % % %             sensEstNormMat(ts,acci) = norm(sensEst,2);
+% % % %             costNormMat(ts,acci) = norm(costVec_Lk_ts{acci},2);
+% % % %             sensMeasCell{ts,acci} = sensMeas';
+% % % %             sensEstCell{ts,acci} = sensEst';
+% % %         end
+% % % 
+% % %         costVec_Lk{ts} = cell2mat(costVec_Lk_ts);
+% % %     end
+% % %     costVec{Lk} = cell2mat(costVec_Lk);
 end
 
 % Final cost = norm of 'costVec'
-costVecMat = cell2mat(costVec);
-e = costVecMat'*costVecMat;
+% % % costVecMat = cell2mat(costVec);
+% % % e = costVecMat'*costVecMat;
 
 
 % %% DEBUG: plot debug data

@@ -19,7 +19,7 @@ classdef CalibrationContextBuilder < handle
         sink2                 %% sink for output estJointTorques
         sensorsIdxListModel = []; %% subset of active sensors: indices from iDynTree model
         sensorsIdxListFile  = []; %% subset of active sensors: indices from 'data.frame' list,
-        %% ordered as per the data.log format.
+                                  %  ordered as per the data.log format.
         jointsLabelIdx = 0;       %% index of 'StateExt' in 'data.frame' list
         jointsIdxListModel  = []; %% map 'joint to calibrate' to iDynTree joint index
         estimatedSensorLinAcc     %% predicted measurement on sensor frame
@@ -27,6 +27,15 @@ classdef CalibrationContextBuilder < handle
         dqi                       %% joint velocities for the current processed part.
         d2qi                      %% joint accelerations for the current processed part.
         DqiEnc                    %% vrtual joint offsets from the encoders.
+        %% specific to APPROACH 2: measurements projected on each link
+        traversal_Lk              %% full traversal for computing the link positions
+        fixedBasePos              %% full tree joint positions (including base link)
+                                   % (required by the estimator interface,
+                                   % but the base position is not really
+                                   % relevant for computing the transforms
+                                   % between segment frames).
+        linkPos                   %% link positions w.r.t. the chosen base (base="projection link")
+        segments                  %% list of segments for current part.
     end
     
     methods
@@ -58,6 +67,7 @@ classdef CalibrationContextBuilder < handle
             obj.estimator.model.toString()
             
             % Base link index for later applying forward kynematics
+            % (specific to APPROACH 1)
             obj.base_link_index = obj.estimator.model.getFrameIndex('base_link');
             
             % Get joint information: DOF
@@ -71,7 +81,11 @@ classdef CalibrationContextBuilder < handle
             obj.dqi_idyn  = iDynTree.JointDOFsDoubleArray(obj.dofs);
             obj.d2qi_idyn = iDynTree.JointDOFsDoubleArray(obj.dofs);
             
-            %% Specify unknown wrenches
+            % Set the position of base link
+            obj.fixedBasePos = iDynTree.FreeFloatingPos(obj.estimator.model);
+%            obj.fixedBasePos.worldBasePos = iDynTree.Transform.Identity();
+
+            %% Specify unknown wrenches (specific to APPROACH 1)
             % We need to set the location of the unknown wrench. We express the unknown
             % wrench at the origin of the l_sole frame
             unknownWrench = iDynTree.UnknownWrenchContact();
@@ -87,8 +101,8 @@ classdef CalibrationContextBuilder < handle
             obj.fullBodyUnknowns = iDynTree.LinkUnknownWrenchContacts(obj.estimator.model());
             obj.fullBodyUnknowns.clear();
             obj.fullBodyUnknowns.addNewContactInFrame(obj.estimator.model, ...
-                                                                  obj.base_link_index, ...
-                                                                  unknownWrench);
+                                                      obj.base_link_index, ...
+                                                      unknownWrench);
             
             % Print the unknowns to make sure that everything is properly working
             obj.fullBodyUnknowns.toString(obj.estimator.model())
@@ -106,14 +120,23 @@ classdef CalibrationContextBuilder < handle
             
             % estimation outputs
             obj.estimatedSensorLinAcc = iDynTree.LinearMotionVector3();
+            
+            % full traversal for computing the base to link k transforms
+            obj.traversal_Lk = iDynTree.Traversal();
+            obj.linkPos = iDynTree.LinkPositions();
+            
         end
         
         function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,jointsToCalibrate,mtbSensorAct)
             % get list of activated sensors
             obj.mtbSensorAct = mtbSensorAct;
             
-            % load joint init offsets
+            % load joint virtual encoder offsets
             obj.DqiEnc = jointsToCalibrate.partJointsInitOffsets{part}';
+            
+            % load segments list for current part (ex: segments of left leg part
+            % are: 'l_upper_leg', 'l_lower_leg', 'l_foot'.
+            obj.segments = jointsToCalibrate.partSegments{part};
             
             %% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
             % Go through 'data.frames', 'data.parts' and 'data.labels' and build :
@@ -244,7 +267,188 @@ classdef CalibrationContextBuilder < handle
             
         end
         
+        function e = costFunctionSigmaProjOnEachLink(obj,Dq,data,subsetVec_idx,optimFunction)
+            % We defined in 'jointsNsensorsDefinitions' a segment i as a link for which
+            % parent joint i and joint i+1 axis are not concurrent. For instance 'root_link',
+            % 'r_upper_leg', 'r_lower_leg', 'r_foot' are segments of the right leg. 'r_hip_1',
+            % 'r_hip2' and r_hip_3' are part of the 3 DoF hip joint.
+            % This function computes a sub-cost function e_k for each segment k. Each
+            % cost e_k is the sum of variances of all the sensor measurements projected
+            % on the link k frame F_k.
+            %
+            %% compute predicted measurements
+            % We compute here the final cost 'e'. As it is a sum of norms, we can also
+            % compute it as :   v^\top \dot v    , v being a vector concatenation of
+            % all the components of the sum. Refer to equation(1) in https://bitbucket.org/
+            % gnuno/jointoffsetcalibinertialdoc/src/6c2f99f3e1be59c8021e4fc5e522fa21bdd97037/
+            % Papers/PaperOnOffsetsCalibration.svg?at=fix/renderingMindmaps
+            %
+            % 'costVec_Lk_ts' is an array of costs for 1 frame projection, 1 timestamp 
+            % and *per* sensor.
+            % 'costVec_Lk' is an array of costs for 1 frame projection, *per* timestamp
+            % and *per* sensor.
+            % 'costVec' is an array of costs for *per* frame projection, *per* timestamp
+            % and *per* sensor.
+            costVec_Lk_ts = cell(length(obj.sensorsIdxListModel),1);
+            costVec_Lk = cell(length(subsetVec_idx),1);
+            costVec = cell(length(obj.segments),1);
+            
+            %DEBUG
+            % sensMeasNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            % sensEstNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            % costNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            % 
+            % sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            % sensEstCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+
+            %% Sum the costs projected on every link (we later might exclude the base
+            % link which doesn't have accelerometers and assume a theoretical g_0.
+            %
+            % Definition:
+            %
+            % $$e_T = \sum_{k=0}^{N} e_k$$
+            %
+            for segmentk = 1:length(obj.segments)
+                %% Compute the mean of measurements projected on link Lk
+                %
+                % Definition:
+                %
+                % $${}^k\mu_{g,k} = \frac{1}{PM} \sum_{p=1}^{P} \sum_{i=0}^{M} {{}^kR_{S_i}}(q_p,\Delta q) {}^{S_i}g_i(p)$$
+                %
+                %  Considering the following notation:
+                %
+                % $N$: number of links/joints in the chain, except link 0.
+                % $M$: number of sensors. Each link can have several sensors attached
+                % to it ($M \geq N$).
+                % $S_i$: sensor $i$ frame.
+                % ${}^{S_i}g_i(p)$: gravity measurement from sensor $i$, for a given
+                % kinematic chain configuration $p$, expressed in the sensor $i$ frame.
+                %  $G$: ground truth gravity vector.
+                %  ${}^bR_a$: for any frame $a$ or $b$, rotation matrix transforming
+                %  motion. vector coordinates from frame $a$ to frame $b$ (link root frames).
+                %  $p$: static configuration of the kinematic chain, for a given set of
+                %  measurements.
+                %  $P$: number of static configurations used for capturing data.
+                %  $q_p$: vector of all the joint angular positions (joint encoders reading) of the
+                %  kinematic chain for a static configuration $p$.
+                %  $\Delta q$: vector of encoder offsets.
+                %
+                
+                % init the 2D array of measurements projected on link k, and their mean
+                Lk_sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+                mu_k = cell(length(subsetVec_idx),1);
+                
+                % set 'Lk' as the traversal base to be used at current
+                % iteration
+                Lk = obj.estimator.model.getLinkIndex(obj.segments{segmentk});
+                obj.estimator.model.computeFullTreeTraversal(obj.traversal_Lk, Lk);
+                
+                
+                for ts = 1:length(subsetVec_idx)
+                    
+                    % Complete the full floating base position configuration
+                    % by filling the joint positions.
+                    % Warning!! iDynTree takes in input **radians** based units,
+                    % while the iCub port stream **degrees** based units.
+                    % Also add joint offsets from a previous result.
+                    qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.q0i(:,ts) + obj.DqiEnc + Dq;
+                    % obj.qi_idyn.fromMatlab(qisRobotDOF);
+                    for joint_i = 0:(obj.dofs-1)
+                        obj.fixedBasePos.jointPos.setVal(joint_i,qisRobotDOF(joint_i+1));
+                    end
+                    
+                    % Project on link frame Lk all measurements from each sensor referenced in
+                    % 'sensorsIdxList'and compute the mean.
+                    for acci = 1:length(obj.sensorsIdxListModel)
+                        % get sensor handle
+                        sensor = obj.estimator.sensors.getSensor(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acci));
+                        accSensor = iDynTree.AccelerometerSensor(sensor);
+                        % get the sensor to link i transform Li_H_acci
+                        Li_H_acci = accSensor.getLinkSensorTransform();
+                        % get the projection link k to link i transform Lk_H_Li
+                        iDynTree.ForwardPositionKinematics(obj.estimator.model, obj.traversal_Lk, ...
+                            obj.fixedBasePos, obj.linkPos);
+                        Li = accSensor.getParentLinkIndex();
+                        Lk_H_Li = obj.linkPos(Li);
+                        % get measurement table ys_xxx_acc [3xnSamples] from captured data,
+                        % and then select the sample 's' (<=> timestamp).
+                        ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acci)}];
+                        eval(['sensMeas = data.' ys '(:,ts);']);
+                        % project the measurement in link Lk frame and store it for
+                        % later computing the variances
+                        Lk_sensMeasCell{ts,acci} = Lk_H_Li * Li_H_acci * sensMeas;
+                    end
+                    % compute the mean
+                    mu_k{ts} = mean(cell2mat(Lk_sensMeasCell{ts,:}),2);
+                end
+                
+                %% Compute the variances of measurements projected on link Lk
+                %
+                % Definition:
+                %
+                % $$e_k = \sum_{p=1}^{P} \sum_{i=0}^{M} \Vert {}^kR_{S_i}(q_p,\Delta q) {}^{S_i}g_i(p) - {{}^k\mu_{g,k}} \Vert^2$$
+                %
+                % Considering the same previous notation, and the following additions:
+                % $k$: link frame where we project the measurements
+                % $N$: total number of links
+                %
+                % Compute the variances for each ts and acc_i. Formulate computation
+                % as variance = diff' * diff.
+                for ts = 1:length(subsetVec_idx)
+                    for acci = 1:length(obj.sensorsIdxListModel)
+                        % compute the cost for 1 sensor / 1 timestamp, using previously
+                        % computed measurement (ts,acci) and mean(ts), and previously
+                        % computed mean, all projected on frame link k.
+                        costVec_Lk_ts{acci} = (Lk_sensMeasCell{ts,acci} - mu_k{ts});
+                        %DEBUG
+                        %             sensMeasNormMat(ts,acci) = norm(sensMeas,2);
+                        %             sensEstNormMat(ts,acci) = norm(sensEst,2);
+                        %             costNormMat(ts,acci) = norm(costVec_Lk_ts{acci},2);
+                        %             sensMeasCell{ts,acci} = sensMeas';
+                        %             sensEstCell{ts,acci} = sensEst';
+                    end
+                    
+                    costVec_Lk{ts} = cell2mat(costVec_Lk_ts);
+                end
+                costVec{Lk} = cell2mat(costVec_Lk);
+            end
+            
+            % Final cost = norm of 'costVec'
+            costVecMat = cell2mat(costVec);
+            optimFunctionProps = functions(optimFunction);
+            if strcmp(optimFunctionProps.function,'lsqnonlin')
+                e = costVecMat;
+            else
+                e = costVecMat'*costVecMat;
+            end
+          
+            
+            
+            
+            % % %                         % correction for MTB mounted upside-down
+            % % %                         if FrameConditioner.mtbInvertedFrames{acc_i}
+            % % %                             sensEst = FrameConditioner.real_R_model*sensEst;
+            % % %                         end
+            % % %
+            % % %                     end
+            % % %
+            % % %                     costVec{ts} = cell2mat(costVec_ts);
+            % % %                 end
+            % % %
+            % % %
+            % % %                 % Final cost = norm of 'costVec'
+            % % %                 costVecMat = cell2mat(costVec);
+            % % %                 optimFunctionProps = functions(optimFunction);
+            % % %                 if strcmp(optimFunctionProps.function,'lsqnonlin')
+            % % %                     e = costVecMat;
+            % % %                 else
+            % % %                     e = costVecMat'*costVecMat;
+            % % %                 end
+            
+        end
+        
     end
+    
     
     % % DEBUG: plot debug data
     % persistent scrsz;
@@ -279,6 +483,6 @@ classdef CalibrationContextBuilder < handle
     % save(logFile,'sensMeasCell','sensEstCell');
     %
     % pause;
-
+    
 end
 

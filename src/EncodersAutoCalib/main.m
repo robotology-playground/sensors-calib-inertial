@@ -5,11 +5,6 @@ clc
 
 %% Global parameters
 
-% Function used to optimise the offsets through an optimisation method like
-% *fminunc*, *fmincon*, ...
-costFunction = @costFunctionSigma;
-%costFunction = @costFunctionSigmaProjOnEachLink;
-
 % Optimisation configuration
 [optimFunction,options] = getOptimConfig();
 startPoint2Boundary = 20*pi/180; % 20 deg
@@ -41,6 +36,11 @@ run jointsNsensorsDefinitions;
 
 % create the calibration context implementing the cost function
 myCalibContext = CalibrationContextBuilder();
+
+% Cost Function used to optimise the offsets
+%costFunction = @myCalibContext.costFunctionSigma;
+costFunction = @myCalibContext.costFunctionSigmaProjOnEachLink;
+
 
 %% define offsets for parsing Linear Acceleration data from MTB accelerometers
 %
@@ -168,11 +168,11 @@ for part = 1 : length(jointsToCalibrate.parts)
         switch funcName
             case 'fminunc'
                 [optimalDq(:, i),  resnorm(1,i), exitflag(1,i), output(1,i)] ...
-                    = optimFunction(@(Dq) myCalibContext.costFunctionSigma(Dq,data,subsetVec_idx,optimFunction), ...
+                    = optimFunction(@(Dq) costFunction(Dq,data,subsetVec_idx,optimFunction), ...
                                     Dq0, options);
             case 'lsqnonlin'
                 [optimalDq(:, i), resnorm(1,i), ~, exitflag(1,i), output(1,i), lambda(1,i)] ...
-                    = optimFunction(@(Dq) myCalibContext.costFunctionSigma(Dq,data,subsetVec_idx,optimFunction), ...
+                    = optimFunction(@(Dq) costFunction(Dq,data,subsetVec_idx,optimFunction), ...
                                     Dq0, lowerBoundary, upperBoundary, options);
             otherwise
         end

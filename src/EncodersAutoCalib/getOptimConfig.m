@@ -3,7 +3,7 @@ function [optimFunc,options] = getOptimConfig()
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
 
-%% SELECT HERE THE FUNCTION
+%% SELECT HERE THE ALGORITHM FOR OPTIMIZING THE COST FUNCTION
 % fminunc, fmincon, lsqnonlin
 optimFunc = @lsqnonlin;
 
