@@ -35,7 +35,7 @@ switch funcName
         %
         dfltOptions = optimset('fminunc');
         options = optimset(dfltOptions,'TolFun', TolFun, 'TolX', TolX, 'FunValCheck', FunValCheck, ...
-            'Algorithm', Algorithm, 'Display', Display, 'PlotFcns', PlotFcns);
+           'Algorithm', Algorithm, 'Display', Display, 'PlotFcns', PlotFcns);
         
     case 'lsqnonlin'
         % Optimization options:

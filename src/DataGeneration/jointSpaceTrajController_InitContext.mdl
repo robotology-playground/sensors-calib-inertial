@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.271"
+    ComputedModelVersion    "1.293"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -47,16 +47,28 @@ Model {
 	$ClassName		"Simulink.ExplorerBarInfo"
 	Visible			[0]
       }
-      Object {
-	$PropName		"EditorsInfo"
-	$ObjectID		5
-	$ClassName		"Simulink.EditorInfo"
-	IsActive		[1]
-	ViewObjType		"SimulinkTopLevel"
-	LoadSaveID		"0"
-	Extents			[1056.0, 632.0]
-	ZoomFactor		[1.2662473794549267]
-	Offset			[148.94370860927154, 13.943708609271539]
+      Array {
+	Type			"Simulink.EditorInfo"
+	Dimension		2
+	Object {
+	  $ObjectID		  5
+	  IsActive		  [1]
+	  ViewObjType		  "SimulinkTopLevel"
+	  LoadSaveID		  "0"
+	  Extents		  [1056.0, 632.0]
+	  ZoomFactor		  [1.2715789473684209]
+	  Offset		  [138.98696192052978, 15.990066225165549]
+	}
+	Object {
+	  $ObjectID		  6
+	  IsActive		  [0]
+	  ViewObjType		  "SimulinkSubsys"
+	  LoadSaveID		  "100"
+	  Extents		  [1056.0, 632.0]
+	  ZoomFactor		  [1.0]
+	  Offset		  [-353.0, -93.5]
+	}
+	PropName		"EditorsInfo"
       }
     }
   }
@@ -66,9 +78,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Feb 19 22:42:49 2016"
-  RTWModifiedTimeStamp	  377811525
-  ModelVersionFormat	  "1.%<AutoIncrement:271>"
+  LastModifiedDate	  "Fri Mar 04 19:12:01 2016"
+  RTWModifiedTimeStamp	  379013279
+  ModelVersionFormat	  "1.%<AutoIncrement:293>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -103,7 +115,7 @@ Model {
   TryForcingSFcnDF	  off
   Object {
     $PropName		    "DataLoggingOverride"
-    $ObjectID		    6
+    $ObjectID		    7
     $ClassName		    "Simulink.SimulationData.ModelLoggingInfo"
     model_		    "posControlStateMachine"
     overrideMode_	    [0.0]
@@ -162,13 +174,13 @@ Model {
     Type		    "Handle"
     Dimension		    1
     Simulink.ConfigSet {
-      $ObjectID		      7
+      $ObjectID		      8
       Version		      "1.12.1"
       Array {
 	Type			"Handle"
 	Dimension		8
 	Simulink.SolverCC {
-	  $ObjectID		  8
+	  $ObjectID		  9
 	  Version		  "1.12.1"
 	  StartTime		  "0.0"
 	  StopTime		  "2.0"
@@ -203,7 +215,7 @@ Model {
 	  InsertRTBMode		  "Whenever possible"
 	}
 	Simulink.DataIOCC {
-	  $ObjectID		  9
+	  $ObjectID		  10
 	  Version		  "1.12.1"
 	  Decimation		  "1"
 	  ExternalInput		  "[t, u]"
@@ -235,7 +247,7 @@ Model {
 	  Refine		  "1"
 	}
 	Simulink.OptimizationCC {
-	  $ObjectID		  10
+	  $ObjectID		  11
 	  Version		  "1.12.1"
 	  Array {
 	    Type		    "Cell"
@@ -291,7 +303,7 @@ Model {
 	  ParallelExecutionInRapidAccelerator on
 	}
 	Simulink.DebuggingCC {
-	  $ObjectID		  11
+	  $ObjectID		  12
 	  Version		  "1.12.1"
 	  RTPrefix		  "error"
 	  ConsistencyChecking	  "none"
@@ -381,7 +393,7 @@ Model {
 	  SFTransitionActionBeforeConditionDiag	"warning"
 	}
 	Simulink.HardwareCC {
-	  $ObjectID		  12
+	  $ObjectID		  13
 	  Version		  "1.12.1"
 	  ProdBitPerChar	  8
 	  ProdBitPerShort	  16
@@ -418,7 +430,7 @@ Model {
 	  ProdEqTarget		  on
 	}
 	Simulink.ModelReferenceCC {
-	  $ObjectID		  13
+	  $ObjectID		  14
 	  Version		  "1.12.1"
 	  UpdateModelReferenceTargets "IfOutOfDateOrStructuralChange"
 	  CheckModelReferenceTargetMessage "error"
@@ -433,7 +445,7 @@ Model {
 	  SupportModelReferenceSimTargetCustomCode off
 	}
 	Simulink.SFSimCC {
-	  $ObjectID		  14
+	  $ObjectID		  15
 	  Version		  "1.12.1"
 	  SFSimEnableDebug	  on
 	  SFSimOverflowDetection  on
@@ -448,7 +460,7 @@ Model {
 	}
 	Simulink.RTWCC {
 	  $BackupClass		  "Simulink.RTWCC"
-	  $ObjectID		  15
+	  $ObjectID		  16
 	  Version		  "1.12.1"
 	  Array {
 	    Type		    "Cell"
@@ -517,7 +529,7 @@ Model {
 	    Type		    "Handle"
 	    Dimension		    2
 	    Simulink.CodeAppCC {
-	      $ObjectID		      16
+	      $ObjectID		      17
 	      Version		      "1.12.1"
 	      Array {
 		Type			"Cell"
@@ -585,7 +597,7 @@ Model {
 	    }
 	    Simulink.GRTTargetCC {
 	      $BackupClass	      "Simulink.TargetCC"
-	      $ObjectID		      17
+	      $ObjectID		      18
 	      Version		      "1.12.1"
 	      Array {
 		Type			"Cell"
@@ -674,11 +686,11 @@ Model {
   }
   Simulink.ConfigSet {
     $PropName		    "ActiveConfigurationSet"
-    $ObjectID		    7
+    $ObjectID		    8
   }
   Object {
     $PropName		    "DataTransfer"
-    $ObjectID		    18
+    $ObjectID		    19
     $ClassName		    "Simulink.GlobalDataTransfer"
     DefaultTransitionBetweenSyncTasks "Ensure deterministic transfer (maximum delay)"
     DefaultTransitionBetweenAsyncTasks "Ensure data integrity only"
@@ -830,9 +842,9 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "126"
+    ZoomFactor		    "127"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "134"
+    SIDHighWatermark	    "135"
     Block {
       BlockType		      Reference
       Name		      "Joint Angles"
@@ -865,8 +877,8 @@ Model {
       BlockType		      SubSystem
       Name		      "MATLAB Function"
       SID		      "101"
-      Ports		      [3, 4]
-      Position		      [510, 25, 820, 330]
+      Ports		      [3, 5]
+      Position		      [510, 27, 820, 333]
       ZOrder		      251
       LibraryVersion	      "1.32"
       ErrorFcn		      "Stateflow.Translate.translate"
@@ -882,7 +894,7 @@ Model {
       SFBlockType	      "MATLAB Function"
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		19
+	$ObjectID		20
 	$ClassName		"Simulink.Mask"
 	Type			"Stateflow"
 	Description		"Embedded MATLAB block"
@@ -907,7 +919,7 @@ Model {
 	TiledPageScale		1
 	ShowPageBoundaries	off
 	ZoomFactor		"100"
-	SIDHighWatermark	"33"
+	SIDHighWatermark	"34"
 	Block {
 	  BlockType		  Inport
 	  Name			  "qMin"
@@ -939,7 +951,7 @@ Model {
 	  Name			  " Demux "
 	  SID			  "101::20"
 	  Ports			  [1, 1]
-	  Position		  [270, 265, 320, 305]
+	  Position		  [270, 280, 320, 320]
 	  ZOrder		  6
 	  Outputs		  "1"
 	}
@@ -948,11 +960,11 @@ Model {
 	  Name			  " SFunction "
 	  SID			  "101::19"
 	  Tag			  "Stateflow S-Function jointSpaceTrajController_InitContext 1"
-	  Ports			  [3, 5]
-	  Position		  [180, 116, 230, 264]
+	  Ports			  [3, 6]
+	  Position		  [180, 118, 230, 267]
 	  ZOrder		  5
 	  FunctionName		  "sf_sfun"
-	  PortCounts		  "[3 5]"
+	  PortCounts		  "[3 6]"
 	  EnableBusSupport	  on
 	  Port {
 	    PortNumber		    2
@@ -974,6 +986,12 @@ Model {
 	  }
 	  Port {
 	    PortNumber		    5
+	    Name		    "qjDes"
+	    RTWStorageClass	    "Auto"
+	    DataLoggingNameMode	    "SignalName"
+	  }
+	  Port {
+	    PortNumber		    6
 	    Name		    "status"
 	    RTWStorageClass	    "Auto"
 	    DataLoggingNameMode	    "SignalName"
@@ -983,7 +1001,7 @@ Model {
 	  BlockType		  Terminator
 	  Name			  " Terminator "
 	  SID			  "101::22"
-	  Position		  [460, 276, 480, 294]
+	  Position		  [460, 291, 480, 309]
 	  ZOrder		  8
 	}
 	Block {
@@ -1014,11 +1032,20 @@ Model {
 	}
 	Block {
 	  BlockType		  Outport
+	  Name			  "qjDes"
+	  SID			  "101::34"
+	  Position		  [460, 206, 480, 224]
+	  ZOrder		  19
+	  Port			  "4"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
 	  Name			  "status"
 	  SID			  "101::33"
-	  Position		  [460, 206, 480, 224]
+	  Position		  [460, 246, 480, 264]
 	  ZOrder		  18
-	  Port			  "4"
+	  Port			  "5"
 	  IconDisplay		  "Port number"
 	}
 	Line {
@@ -1064,10 +1091,18 @@ Model {
 	  DstPort		  1
 	}
 	Line {
-	  Name			  "status"
+	  Name			  "qjDes"
 	  Labels		  [0, 0]
 	  SrcBlock		  " SFunction "
 	  SrcPort		  5
+	  DstBlock		  "qjDes"
+	  DstPort		  1
+	}
+	Line {
+	  Name			  "status"
+	  Labels		  [0, 0]
+	  SrcBlock		  " SFunction "
+	  SrcPort		  6
 	  DstBlock		  "status"
 	  DstPort		  1
 	}
@@ -1107,7 +1142,7 @@ Model {
       SFBlockType	      "MATLAB Function"
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		20
+	$ObjectID		21
 	$ClassName		"Simulink.Mask"
 	Type			"Stateflow"
 	Description		"Embedded MATLAB block"
@@ -1201,6 +1236,7 @@ Model {
       DropShadow	      on
       ShowName		      off
       Priority		      "-10"
+      Commented		      on
       LibraryVersion	      "1.285"
       SourceBlock	      "WBCLibrary/Utilities/Real Time Synchronizer"
       SourceType	      ""
@@ -1210,29 +1246,36 @@ Model {
       BlockType		      Stop
       Name		      "Stop Simulation"
       SID		      "134"
-      Position		      [895, 272, 930, 308]
+      Position		      [895, 282, 930, 318]
       ZOrder		      279
     }
     Block {
       BlockType		      Terminator
       Name		      "Terminator1"
       SID		      "130"
-      Position		      [905, 55, 925, 75]
+      Position		      [905, 50, 925, 70]
       ZOrder		      278
     }
     Block {
       BlockType		      Terminator
       Name		      "Terminator2"
       SID		      "122"
-      Position		      [905, 130, 925, 150]
+      Position		      [905, 110, 925, 130]
       ZOrder		      274
     }
     Block {
       BlockType		      Terminator
       Name		      "Terminator3"
       SID		      "124"
-      Position		      [905, 205, 925, 225]
+      Position		      [905, 170, 925, 190]
       ZOrder		      276
+    }
+    Block {
+      BlockType		      Terminator
+      Name		      "Terminator4"
+      SID		      "135"
+      Position		      [905, 230, 925, 250]
+      ZOrder		      280
     }
     Block {
       BlockType		      Reference
@@ -1243,7 +1286,6 @@ Model {
       ZOrder		      211
       ForegroundColor	      "[0.900000, 0.000000, 0.472153]"
       ShowName		      off
-      Commented		      on
       LibraryVersion	      "1.285"
       SourceBlock	      "WBCLibrary/Utilities/synchronize"
       SourceType	      "ySynchronizer"
@@ -1288,8 +1330,14 @@ Model {
     }
     Line {
       SrcBlock		      "MATLAB Function"
-      SrcPort		      4
+      SrcPort		      5
       DstBlock		      "Stop Simulation"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "MATLAB Function"
+      SrcPort		      4
+      DstBlock		      "Terminator4"
       DstPort		      1
     }
   }
@@ -1306,7 +1354,7 @@ Stateflow {
     name		    "jointSpaceTrajController_InitContext"
     created		    "11-Feb-2016 17:49:36"
     isLibrary		    0
-    firstTarget		    20
+    firstTarget		    21
     sfVersion		    76014001.001
   }
   chart {
@@ -1316,14 +1364,11 @@ Stateflow {
     viewLimits		    [0 156.75 0 153.75]
     screen		    [1 1 1280 1024 1.041666666666667]
     treeNode		    [0 3 0 0]
-    firstTransition	    12
-    firstJunction	    11
+    firstTransition	    13
+    firstJunction	    12
     viewObj		    2
-    visible		    1
     machine		    1
-    subviewS {
-    }
-    ssIdHighWaterMark	    15
+    ssIdHighWaterMark	    16
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
     firstData		    4
@@ -1347,19 +1392,20 @@ Stateflow {
     decomposition	    CLUSTER_STATE
     eml {
       isEML		      1
-      script		      "function [qStartRed, qStopRed, qInit, status] = initTrajParams(qMin, qMax, q_j)\n%#codegen\n\n% j"
-      "ust return q_j for saving it to the workspace\nqInit = q_j;\n\n%% adjusted joint limits.\n%\n% First, choose the"
-      " limits in order to avoid collisions: we can just assign\n% opposite limits between legs, then arms, etc.\n% tor"
-      "so = [1:3];\n% leftArm = [4:7];\n% rightArm = [8:11];\n% leftLeg = [12:17];\n% rightLeg = [18:23];\n% qStart = ["
-      "qMin(torso) ; qMin(leftArm) ; qMax(rightArm) ; qMin(leftLeg) ; qMax(rightLeg)];\n% qStop  = [qMax(torso) ; qMax("
-      "leftArm) ; qMin(rightArm) ; qMax(leftLeg) ; qMin(rightLeg)];\n\nleftArm = [1:4];\nrightArm = [5:8];\nleftLeg = ["
-      "9:14];\nrightLeg = [15:20];\n\n% For the min boundary (qMin), we shift by 2deg in the direction qMin->qMax.\n% F"
-      "or the max boundary (qMax), we shift by 2deg in the direction qMax->qMin.\nDeltaQ = qMax - qMin;\nqMinRed = qMin"
-      " + DeltaQ*0.15; % 1/10th of the trajectory span\nqMaxRed = qMax - DeltaQ*0.15;\n% specific to iCubGenova02\nqMin"
-      "Red(leftLeg(2)) = qMin(leftLeg(2)) + (32*pi/180); % +32 degrees\nqMinRed(rightLeg(2)) = qMin(rightLeg(2)) + (32*"
-      "pi/180); % +32 degrees\n\n% Reorder boundaries for generating disymetric trajectories\nqStartRed = [qMinRed(left"
-      "Arm) ; qMaxRed(rightArm) ; qMinRed(leftLeg) ; qMaxRed(rightLeg)];\nqStopRed  = [qMaxRed(leftArm) ; qMinRed(right"
-      "Arm) ; qMaxRed(leftLeg) ; qMinRed(rightLeg)];\n\n\n% set status to 1 to stop simulation\nstatus = 1;\n\n"
+      script		      "function [qStartRed, qStopRed, qInit, qjDes, status] = initTrajParams(qMin, qMax, q_j)\n%#codegen"
+      "\n\n% just return q_j for saving it to the workspace\nqInit = q_j;\nqjDes = q_j;\n\n%% adjusted joint limits.\n%"
+      "\n% First, choose the limits in order to avoid collisions: we can just assign\n% opposite limits between legs, t"
+      "hen arms, etc.\n% torso = [1:3];\n% leftArm = [4:7];\n% rightArm = [8:11];\n% leftLeg = [12:17];\n% rightLeg = ["
+      "18:23];\n% qStart = [qMin(torso) ; qMin(leftArm) ; qMax(rightArm) ; qMin(leftLeg) ; qMax(rightLeg)];\n% qStop  ="
+      " [qMax(torso) ; qMax(leftArm) ; qMin(rightArm) ; qMax(leftLeg) ; qMin(rightLeg)];\n\nleftArm = 1:4;\nrightArm = "
+      "5:8;\nleftLeg = 9:14;\nrightLeg = 15:20;\n\n% For the min boundary (qMin), we shift by 2deg in the direction qMi"
+      "n->qMax.\n% For the max boundary (qMax), we shift by 2deg in the direction qMax->qMin.\nDeltaQ = qMax - qMin;\nq"
+      "MinRed = qMin + DeltaQ*0.15; % 1/10th of the trajectory span\nqMaxRed = qMax - DeltaQ*0.15;\n% specific to iCubG"
+      "enova02\nqMinRed(leftLeg(2)) = qMin(leftLeg(2)) + (32*pi/180); % +32 degrees\nqMinRed(rightLeg(2)) = qMin(rightL"
+      "eg(2)) + (32*pi/180); % +32 degrees\n\n% Reorder boundaries for generating disymetric trajectories\nqStartRed = "
+      "[qMinRed(leftArm) ; qMinRed(rightArm) ; qMinRed(leftLeg) ; qMinRed(rightLeg)];\nqStopRed  = [qMaxRed(leftArm) ; "
+      "qMaxRed(rightArm) ; qMaxRed(leftLeg) ; qMaxRed(rightLeg)];\n\n\n% set status to 1 to stop simulation\nstatus = 1"
+      ";\n\n"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }
@@ -1495,9 +1541,32 @@ Stateflow {
   }
   data {
     id			    10
+    ssIdNumber		    16
+    name		    "qjDes"
+    linkNode		    [2 9 11]
+    scope		    OUTPUT_DATA
+    saveToWorkspace	    1
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+	isSigned		1
+	wordLength		"16"
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+    }
+    dataType		    "Inherit: Same as Simulink"
+  }
+  data {
+    id			    11
     ssIdNumber		    15
     name		    "status"
-    linkNode		    [2 9 0]
+    linkNode		    [2 10 0]
     scope		    OUTPUT_DATA
     machine		    1
     props {
@@ -1516,7 +1585,7 @@ Stateflow {
     dataType		    "Inherit: Same as Simulink"
   }
   junction {
-    id			    11
+    id			    12
     position		    [23.5747 49.5747 7]
     chart		    2
     linkNode		    [2 0 0]
@@ -1525,7 +1594,7 @@ Stateflow {
     type		    CONNECTIVE_JUNCTION
   }
   transition {
-    id			    12
+    id			    13
     labelString		    "{eML_blk_kernel();}"
     labelPosition	    [32.125 19.875 102.544 14.964]
     fontSize		    12
@@ -1533,7 +1602,7 @@ Stateflow {
       intersection	      [0 0 1 0 23.5747 14.625 0 0]
     }
     dst {
-      id		      11
+      id		      12
       intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
     }
     midPoint		    [23.5747 24.9468]
@@ -1549,26 +1618,26 @@ Stateflow {
     ssIdNumber		    2
   }
   instance {
-    id			    13
+    id			    14
     name		    "MATLAB Function"
     machine		    1
     chart		    2
   }
   chart {
-    id			    14
+    id			    15
     name		    "MATLAB Function1"
     windowPosition	    [357.12 483.496 167 391]
     viewLimits		    [0 156.75 0 153.75]
     screen		    [1 1 1280 1024 1.041666666666667]
-    treeNode		    [0 15 0 0]
-    firstTransition	    18
-    firstJunction	    17
-    viewObj		    14
+    treeNode		    [0 16 0 0]
+    firstTransition	    19
+    firstJunction	    18
+    viewObj		    15
     machine		    1
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
-    firstData		    16
+    firstData		    17
     chartFileNumber	    2
     disableImplicitCasting  1
     eml {
@@ -1576,14 +1645,14 @@ Stateflow {
     }
   }
   state {
-    id			    15
+    id			    16
     labelString		    "eML_blk_kernel()"
     position		    [18 64.5 118 66]
     fontSize		    12
-    chart		    14
-    treeNode		    [14 0 0 0]
+    chart		    15
+    treeNode		    [15 0 0 0]
     superState		    SUBCHART
-    subviewer		    14
+    subviewer		    15
     ssIdNumber		    1
     type		    FUNC_STATE
     decomposition	    CLUSTER_STATE
@@ -1594,10 +1663,10 @@ Stateflow {
     }
   }
   data {
-    id			    16
+    id			    17
     ssIdNumber		    4
     name		    "u"
-    linkNode		    [14 0 0]
+    linkNode		    [15 0 0]
     scope		    INPUT_DATA
     machine		    1
     props {
@@ -1613,16 +1682,16 @@ Stateflow {
     dataType		    "Inherit: Same as Simulink"
   }
   junction {
-    id			    17
+    id			    18
     position		    [23.5747 49.5747 7]
-    chart		    14
-    linkNode		    [14 0 0]
-    subviewer		    14
+    chart		    15
+    linkNode		    [15 0 0]
+    subviewer		    15
     ssIdNumber		    3
     type		    CONNECTIVE_JUNCTION
   }
   transition {
-    id			    18
+    id			    19
     labelString		    "{eML_blk_kernel();}"
     labelPosition	    [32.125 19.875 102.544 14.964]
     fontSize		    12
@@ -1630,14 +1699,14 @@ Stateflow {
       intersection	      [0 0 1 0 23.5747 14.625 0 0]
     }
     dst {
-      id		      17
+      id		      18
       intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
     }
     midPoint		    [23.5747 24.9468]
-    chart		    14
-    linkNode		    [14 0 0]
+    chart		    15
+    linkNode		    [15 0 0]
     dataLimits		    [21.175 25.975 14.625 42.575]
-    subviewer		    14
+    subviewer		    15
     drawStyle		    SMART
     slide {
       sticky		      BOTH_STICK
@@ -1646,13 +1715,13 @@ Stateflow {
     ssIdNumber		    2
   }
   instance {
-    id			    19
+    id			    20
     name		    "MATLAB Function1"
     machine		    1
-    chart		    14
+    chart		    15
   }
   target {
-    id			    20
+    id			    21
     name		    "sfun"
     description		    "Default Simulink S-Function Target."
     machine		    1
