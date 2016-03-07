@@ -3,22 +3,55 @@
 % configuration file yarpWholeBodyInterface.ini defined for the current
 % model.
 
-robotName='icub';
-localName='simulink';
+robotName='icubGazeboSim';
+localName='impedance';
 ROBOT_DOF=20;
 Ts=0.01;
+Tt=2; % trajectory duration from current to desired position. 
 
 qErr = 1*pi/180; % radians
 dqErr = 0.5*pi/180; % radians/s
 
 qjDes = zeros(ROBOT_DOF,1);
 dqiRef = 10*pi/180; % absolute value in radians/s
+randOffsets = zeros(ROBOT_DOF,1);
 
 refMask = zeros(ROBOT_DOF,1);
 refMask(1:4) = 1;   %left_arm
 refMask(5:8) = 1;   %right_arm
 refMask(9:14) = 1;  %left_leg
 refMask(15:20) = 1; %right_leg
+
+refMaskGravComp = zeros(ROBOT_DOF,1);
+refMaskGravComp(1:4) = 1;   %left_arm
+refMaskGravComp(5:8) = 1;   %right_arm
+refMaskGravComp(9:14) = 1;   %left_leg
+refMaskGravComp(15:20) = 1;   %right_leg
+
+leftArmSelect = 1:4;
+rightArmSelect = 5:8;
+leftLegSelect = 9:14;
+rightLegSelect = 15:20;
+displayMask = leftLegSelect;
+
+KpTorso   = ones(1,3);
+KpArms    = [0.1,0.1,0.1,0.1];
+KpLegs    = [0.5,0.5,0.5,0.5,0.5,0.5];
+Kp        = diag([KpArms,KpArms,KpLegs,KpLegs]);
+
+if size(Kp,1) ~= ROBOT_DOF
+    error('Dimension of Kp different from ROBOT_DOF')
+end
+
+myK = 1;
+Kd        = 2*sqrt(Kp)*0.01*diag([ones(1,4),ones(1,4),myK*ones(1,6),myK*ones(1,6)]);
+
+% activate/de-activate all PD gains
+KpOnOff = 1;
+KdOnOff = 1;
+MOnOff = 1;
+
+GRAV_COMP = 1;
 
 % refMask(1:4) = [-50 50 -50 50]'; %left_arm
 % refMask(5:8) = [-50 50 -50 50]'; %right_arm

@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.210"
+    ComputedModelVersion    "1.214"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -30,7 +30,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [170.0, 87.0, 1280.0, 773.0]
+      Location		      [0.0, 23.0, 1280.0, 773.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -56,7 +56,7 @@ Model {
 	LoadSaveID		"0"
 	Extents			[1056.0, 632.0]
 	ZoomFactor		[1.2023391812865496]
-	Offset			[63.356031128404666, -54.821011673151745]
+	Offset			[63.356031128404652, -54.821011673151759]
       }
     }
   }
@@ -66,9 +66,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Feb 19 22:42:31 2016"
-  RTWModifiedTimeStamp	  377811169
-  ModelVersionFormat	  "1.%<AutoIncrement:210>"
+  LastModifiedDate	  "Fri Mar 04 16:46:44 2016"
+  RTWModifiedTimeStamp	  379010722
+  ModelVersionFormat	  "1.%<AutoIncrement:214>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -833,7 +833,7 @@ Model {
   }
   System {
     Name		    "jointSpaceTrajController_reachPos"
-    Location		    [170, 87, 1450, 860]
+    Location		    [0, 23, 1280, 796]
     Open		    on
     ModelBrowserVisibility  on
     ModelBrowserWidth	    200
