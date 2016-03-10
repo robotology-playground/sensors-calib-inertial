@@ -47,8 +47,8 @@ jointsToCalibrate_torso = {'torso_pitch','torso_roll','torso_yaw'};
 
 jointsInitOffsets_left_arm = [0 0 0 0];
 jointsInitOffsets_right_arm = [0 0 0 0];
-%jointsInitOffsets_left_leg = [0 0 0 0 0 0];
-jointsInitOffsets_left_leg = [-0.0021   -0.0346    0.0426    0.3098    0.2366    0.0751];
+jointsInitOffsets_left_leg = [0 0 0 0 0 0];
+%jointsInitOffsets_left_leg = [-0.0021   -0.0346    0.0426    0.3098    0.2366    0.0751];
 jointsInitOffsets_right_leg = [0 0 0 0 0 0];
 jointsInitOffsets_torso = [0 0 0];
 
@@ -88,6 +88,13 @@ mtbSensorLink_left_leg = mtbSensorLink_leg('l');
 
 mtbSensorLink_right_leg = mtbSensorLink_leg('r');
 
+%% some sensor are inverted in the model with respect to how are mounted on
+% the real robot
+mtbInvertedFrames_left_arm  = {false,false,false,false,false,false,false};
+mtbInvertedFrames_right_arm = {false,false,false,false,false,false,false};
+mtbInvertedFrames_left_leg  = {false,false,  true,true  ,false,false,false,  true  ,false,false,false,  true};
+mtbInvertedFrames_right_leg = {false,false,  true,true  ,false,false,false,  true  ,false,false,false,  true};
+
 
 %% Build access lists
 %
@@ -103,6 +110,7 @@ for i = 1:length(jointsToCalibrate.parts)
     eval(['jointsToCalibrate.partJointsInitOffsets{' num2str(i) '} = jointsInitOffsets_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.jointsDq0{' num2str(i) '} = jointsDq0_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' jointsToCalibrate.parts{i} ';']);
+    eval(['jointsToCalibrate.mtbInvertedFrames{' num2str(i) '} = mtbInvertedFrames_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorCodes_list{' num2str(i) '} = mtbSensorCodes_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorLink_list{' num2str(i) '} = mtbSensorLink_' jointsToCalibrate.parts{i} ';']);
 end

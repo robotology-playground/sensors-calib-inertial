@@ -11,7 +11,7 @@ startPoint2Boundary = 20*pi/180; % 20 deg
 
 % A random init selects randomly an ordered subset of samples from the whole data
 % set bucket.
-number_of_random_init = 5;
+number_of_random_init = 1;
 subsetVec_size_frac = 0.1; % subset size = 1/10 total data set size
 
 
@@ -22,24 +22,23 @@ jointsToCalibrate.partJointsInitOffsets = {};
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};
 
-global mtbSensorAct_left_leg;
-mtbSensorAct_left_leg = {false,false, ...
+mtbSensorAct_left_leg = [false,false, ...
                          true,true, ...
                          false, ...
                          true,true, ...
                          true,false,   ...
                          false,false,   ...
-                         true};
+                         true];
 %mtbSensorAct_left_leg(:) = {true};
 
 run jointsNsensorsDefinitions;
 
 % create the calibration context implementing the cost function
-myCalibContext = CalibrationContextBuilder();
+myCalibContext = CalibrationContextBuilder('../models/iCubGenova02/iCubFull.urdf');
 
 % Cost Function used to optimise the offsets
-%costFunction = @myCalibContext.costFunctionSigma;
-costFunction = @myCalibContext.costFunctionSigmaProjOnEachLink;
+costFunction = @myCalibContext.costFunctionSigma;
+%costFunction = @myCalibContext.costFunctionSigmaProjOnEachLink;
 
 
 %% define offsets for parsing Linear Acceleration data from MTB accelerometers
@@ -104,18 +103,18 @@ for part = 1 : length(jointsToCalibrate.parts)
     %
     data.nsamples  = 1000; %number of samples
     data.plot      = 0;
-    data.ini       = 2;    %seconds to be skipped at the start
-    data.end       = 28;   %seconds to reach the end of the movement
+    data.ini       = 130;    %seconds to be skipped at the start
+    data.end       = 140;   %seconds to reach the end of the movement
     data.diff_imu  = 0;    %derivate the angular velocity of the IMUs
     data.diff_q    = 0;    %derivate the angular velocity of the IMUs
 
 
     %% strucutre from files and model
     data.path        = '../../data/calibration/dumper/iCubGenova02_#1/';
-%    data.path        = '../../data/calibration/dumperExample/iCubGenova02/';
     data.parts       = {};
     data.labels      = {};
     data.frames      = {};
+    data.sensorAct   = {};
     data.isInverted  = {};
     data.ndof        = {};
     data.index       = {};
@@ -124,24 +123,25 @@ for part = 1 : length(jointsToCalibrate.parts)
 
     %% add mtb sensors
     for i = 1:nrOfMTBAccs
-        data = addSensToData(data, jointsToCalibrate.parts{part}, mtbSensorFrames{i}, mtbSensorLabel{i} , 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
+        data = addSensToData(data, jointsToCalibrate.parts{part}, mtbSensorFrames{i}, mtbSensorLabel{i} , ...
+                             mtbSensorAct_left_leg(i), jointsToCalibrate.mtbInvertedFrames{part}{i}, 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
     end
 
     %% add joint measurements
-    data = addSensToData(data, jointsToCalibrate.parts{part}, '', [jointsToCalibrate.parts{part} '_state'] , 6, '1:6', 'stateExt:o' , 1*data.plot);
+    data = addSensToData(data, jointsToCalibrate.parts{part}, '', [jointsToCalibrate.parts{part} '_state'] , true, false, 6, '1:6', 'stateExt:o' , 1*data.plot);
 
     data = loadData(data);
 
 
     %% init joints and sensors lists
-    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,part,jointsToCalibrate,mtbSensorAct_left_leg);
+    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,part,jointsToCalibrate);
     
     
     %% Optimization
     %
 
     subsetVec_size = round(data.nsamples*subsetVec_size_frac);
-    Dq0 = cell2mat(jointsToCalibrate.partJointsInitOffsets(part))';
+    Dq0 = cell2mat(jointsToCalibrate.jointsDq0(part))';
     lowerBoundary = Dq0 - startPoint2Boundary;
     upperBoundary = Dq0 + startPoint2Boundary;
     %lowerBoundary = [];

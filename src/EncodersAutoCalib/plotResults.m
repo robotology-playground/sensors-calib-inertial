@@ -13,7 +13,7 @@ yAcc = [data.ys_10b3_acc;...
         data.ys_10b12_acc];
 maxTime = 10;    
     
-tMaxIndex = sum(data.time<=10);    
+tMaxIndex = sum(data.time<=maxTime);    
 plot(data.time(1:tMaxIndex),yAcc(:, 1:tMaxIndex),'lineWidth',2.0);
 axis tight;
 grid on;

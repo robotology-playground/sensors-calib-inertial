@@ -23,6 +23,7 @@ classdef CalibrationContextBuilder < handle
         jointsLabelIdx = 0;       %% index of 'StateExt' in 'data.frame' list
         jointsIdxListModel  = []; %% map 'joint to calibrate' to iDynTree joint index
         estimatedSensorLinAcc     %% predicted measurement on sensor frame
+        tmpSensorLinAcc              %% sensor measurement
         q0i                       %% joint positions for the current processed part.
         dqi                       %% joint velocities for the current processed part.
         d2qi                      %% joint accelerations for the current processed part.
@@ -39,7 +40,7 @@ classdef CalibrationContextBuilder < handle
     end
     
     methods
-        function obj = CalibrationContextBuilder()
+        function obj = CalibrationContextBuilder(urdfModel)
             %% Prepare inputs for updating the kinematics information in the estimator
             %
             % Compute the kinematics information necessary for the accelerometer
@@ -61,7 +62,7 @@ classdef CalibrationContextBuilder < handle
             obj.estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
             
             % Load model and sensors from the URDF file
-            obj.estimator.loadModelAndSensorsFromFile('../models/iCubGenova02/iCubFull.urdf');
+            obj.estimator.loadModelAndSensorsFromFile(urdfModel);
             
             % Check if the model was correctly created by printing the model
             obj.estimator.model.toString()
@@ -121,16 +122,16 @@ classdef CalibrationContextBuilder < handle
             % estimation outputs
             obj.estimatedSensorLinAcc = iDynTree.LinearMotionVector3();
             
+            % measurements
+            obj.tmpSensorLinAcc = iDynTree.LinearMotionVector3();
+            
             % full traversal for computing the base to link k transforms
             obj.traversal_Lk = iDynTree.Traversal();
-            obj.linkPos = iDynTree.LinkPositions();
+            obj.linkPos = iDynTree.LinkPositions(obj.estimator.model);
             
         end
         
-        function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,jointsToCalibrate,mtbSensorAct)
-            % get list of activated sensors
-            obj.mtbSensorAct = mtbSensorAct;
-            
+        function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,jointsToCalibrate)
             % load joint virtual encoder offsets
             obj.DqiEnc = jointsToCalibrate.partJointsInitOffsets{part}';
             
@@ -147,7 +148,7 @@ classdef CalibrationContextBuilder < handle
             for frame = 1:length(data.frames)
                 if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
                     if strcmp(data.type(frame),'inertialMTB')
-                        if obj.mtbSensorAct{frame}
+                        if data.sensorAct{frame}
                             obj.sensorsIdxListModel = [obj.sensorsIdxListModel ...
                                 obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
                                 char(data.frames(frame)))];
@@ -182,7 +183,45 @@ classdef CalibrationContextBuilder < handle
             eval(['obj.dqi = data.' dqsRad '(:,subsetVec_idx);']);
             eval(['obj.d2qi = data.' d2qsRad '(:,subsetVec_idx);']);
         end
-        
+
+        function simulateAccelerometersMeasurements(obj, data, datasetVecIdx)
+            for ts = 1:length(datasetVecIdx)
+                % Fill iDynTree joint vectors.
+                % Warning!! iDynTree takes in input **radians** based units,
+                % while the iCub port stream **degrees** based units.
+                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.q0i(:,ts);
+                dqisRobotDOF = zeros(obj.dofs,1); dqisRobotDOF(obj.jointsIdxListModel,1) = obj.dqi(:,ts);
+                d2qisRobotDOF = zeros(obj.dofs,1); d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.d2qi(:,ts);
+                obj.qi_idyn.fromMatlab(qisRobotDOF);
+                obj.dqi_idyn.fromMatlab(dqisRobotDOF);
+                obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
+                
+                % Update the kinematics information in the estimator
+                obj.estimator.updateKinematicsFromFixedBase(obj.qi_idyn,obj.dqi_idyn,obj.d2qi_idyn, ...
+                    obj.base_link_index,obj.grav_idyn);
+                
+                % run the estimation
+                obj.estimator.computeExpectedFTSensorsMeasurements(obj.fullBodyUnknowns,obj.estMeasurements,obj.sink1,obj.sink2);
+                
+                % Get predicted sensor data for each sensor referenced in 'sensorsIdxList'
+                % and write them into the 'data' structure.
+                for acc_i = 1:length(obj.sensorsIdxListModel)
+                    % get predicted measurement on sensor frame
+                    obj.estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acc_i),obj.estimatedSensorLinAcc);
+                    sensEst = obj.estimatedSensorLinAcc.toMatlab;
+                    % correction for MTB mounted upside-down
+                    if data.isInverted{obj.sensorsIdxListFile(acc_i)}
+                        sensEst = FrameConditioner.real_R_model*sensEst;
+                    end
+                    
+                    % get measurement table ys_xxx_acc [3xnSamples] from captured data,
+                    % and then select the sample 's' (<=> timestamp).
+                    ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acc_i)}];
+                    eval(['data.' ys '(:,ts) = sensEst;']);
+                end
+            end
+        end
+
         function e = costFunctionSigma(obj,Dq, data, subsetVec_idx, optimFunction)
             %COSTFUNCTIONSIGMA Summary of this function goes here
             %   Detailed explanation goes here
@@ -198,13 +237,13 @@ classdef CalibrationContextBuilder < handle
             costVec_ts = cell(length(obj.sensorsIdxListModel),1);
             costVec = cell(length(subsetVec_idx),1);
             
-            %DEBUG
-            sensMeasNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-            sensEstNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-            costNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-            
-            sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-            sensEstCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+%             %DEBUG
+%             sensMeasNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+%             sensEstNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+%             costNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+%             
+%             sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+%             sensEstCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
             
             for ts = 1:length(subsetVec_idx)
                 
@@ -233,7 +272,7 @@ classdef CalibrationContextBuilder < handle
                     obj.estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acc_i),obj.estimatedSensorLinAcc);
                     sensEst = obj.estimatedSensorLinAcc.toMatlab;
                     % correction for MTB mounted upside-down
-                    if FrameConditioner.mtbInvertedFrames{acc_i}
+                    if data.isInverted{obj.sensorsIdxListFile(acc_i)}
                         sensEst = FrameConditioner.real_R_model*sensEst;
                     end
                     
@@ -244,12 +283,12 @@ classdef CalibrationContextBuilder < handle
                     
                     % compute the cost for 1 sensor / 1 timestamp
                     costVec_ts{acc_i} = (sensMeas - sensEst);
-                    %DEBUG
-                    sensMeasNormMat(ts,acc_i) = norm(sensMeas,2);
-                    sensEstNormMat(ts,acc_i) = norm(sensEst,2);
-                    costNormMat(ts,acc_i) = norm(costVec_ts{acc_i},2);
-                    sensMeasCell{ts,acc_i} = sensMeas';
-                    sensEstCell{ts,acc_i} = sensEst';
+%                     %DEBUG
+%                     sensMeasNormMat(ts,acc_i) = norm(sensMeas,2);
+%                     sensEstNormMat(ts,acc_i) = norm(sensEst,2);
+%                     costNormMat(ts,acc_i) = norm(costVec_ts{acc_i},2);
+%                     sensMeasCell{ts,acc_i} = sensMeas';
+%                     sensEstCell{ts,acc_i} = sensEst';
                 end
                 
                 costVec{ts} = cell2mat(costVec_ts);
@@ -361,25 +400,25 @@ classdef CalibrationContextBuilder < handle
                     % 'sensorsIdxList'and compute the mean.
                     for acci = 1:length(obj.sensorsIdxListModel)
                         % get sensor handle
-                        sensor = obj.estimator.sensors.getSensor(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acci));
-                        accSensor = iDynTree.AccelerometerSensor(sensor);
+                        sensor = obj.estimator.sensors.getAccelerometerSensor(obj.sensorsIdxListModel(acci));
                         % get the sensor to link i transform Li_H_acci
-                        Li_H_acci = accSensor.getLinkSensorTransform();
+                        Li_H_acci = sensor.getLinkSensorTransform().getRotation().toMatlab;
                         % get the projection link k to link i transform Lk_H_Li
                         iDynTree.ForwardPositionKinematics(obj.estimator.model, obj.traversal_Lk, ...
                             obj.fixedBasePos, obj.linkPos);
-                        Li = accSensor.getParentLinkIndex();
-                        Lk_H_Li = obj.linkPos(Li);
+                        Li = sensor.getParentLinkIndex();
+                        Lk_H_Li_idyn = obj.linkPos(Li);
+                        Lk_H_Li = Lk_H_Li_idyn.getRotation().toMatlab;
                         % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                         % and then select the sample 's' (<=> timestamp).
                         ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acci)}];
                         eval(['sensMeas = data.' ys '(:,ts);']);
                         % project the measurement in link Lk frame and store it for
                         % later computing the variances
-                        Lk_sensMeasCell{ts,acci} = Lk_H_Li * Li_H_acci * sensMeas;
+                        Lk_sensMeasCell{ts,acci} = Lk_H_Li * (Li_H_acci * sensMeas);
                     end
                     % compute the mean
-                    mu_k{ts} = mean(cell2mat(Lk_sensMeasCell{ts,:}),2);
+                    mu_k{ts} = mean(cell2mat(Lk_sensMeasCell(ts,:)),2);
                 end
                 
                 %% Compute the variances of measurements projected on link Lk
@@ -410,7 +449,7 @@ classdef CalibrationContextBuilder < handle
                     
                     costVec_Lk{ts} = cell2mat(costVec_Lk_ts);
                 end
-                costVec{Lk} = cell2mat(costVec_Lk);
+                costVec{segmentk} = cell2mat(costVec_Lk);
             end
             
             % Final cost = norm of 'costVec'
@@ -422,29 +461,6 @@ classdef CalibrationContextBuilder < handle
                 e = costVecMat'*costVecMat;
             end
           
-            
-            
-            
-            % % %                         % correction for MTB mounted upside-down
-            % % %                         if FrameConditioner.mtbInvertedFrames{acc_i}
-            % % %                             sensEst = FrameConditioner.real_R_model*sensEst;
-            % % %                         end
-            % % %
-            % % %                     end
-            % % %
-            % % %                     costVec{ts} = cell2mat(costVec_ts);
-            % % %                 end
-            % % %
-            % % %
-            % % %                 % Final cost = norm of 'costVec'
-            % % %                 costVecMat = cell2mat(costVec);
-            % % %                 optimFunctionProps = functions(optimFunction);
-            % % %                 if strcmp(optimFunctionProps.function,'lsqnonlin')
-            % % %                     e = costVecMat;
-            % % %                 else
-            % % %                     e = costVecMat'*costVecMat;
-            % % %                 end
-            
         end
         
     end
