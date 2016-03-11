@@ -1,0 +1,145 @@
+
+                                         Norm of      First-order 
+ Iteration  Func-count     f(x)          step          optimality   CG-iterations
+     0          7         1126.16                           834
+     1         14         654.555       0.289402            204            0
+     2         21         529.176       0.248593           60.7            0
+     3         28         496.195        0.16914           17.8            0
+     4         35         488.701       0.104713           5.04            0
+     5         42         487.385      0.0508953            1.7            0
+     6         49         487.246      0.0203415          0.615            0
+     7         56          487.24     0.00489336          0.147            0
+
+Local minimum possible.
+
+lsqnonlin stopped because the size of the current step is less than
+the selected value of the step size tolerance.
+
+<stopping criteria details>
+
+
+                                         Norm of      First-order 
+ Iteration  Func-count     f(x)          step          optimality   CG-iterations
+     0          7         1126.78                           836
+     1         14         654.709       0.289351            204            0
+     2         21         529.254       0.248612           60.7            0
+     3         28         496.246       0.169187           17.8            0
+     4         35         488.742       0.104776           5.05            0
+     5         42         487.423      0.0509785            1.7            0
+     6         49         487.284       0.020452          0.617            0
+     7         56         487.277     0.00567981          0.143            0
+
+Local minimum possible.
+
+lsqnonlin stopped because the size of the current step is less than
+the selected value of the step size tolerance.
+
+<stopping criteria details>
+
+
+                                         Norm of      First-order 
+ Iteration  Func-count     f(x)          step          optimality   CG-iterations
+     0          7         1127.15                           838
+     1         14         654.761       0.289384            204            0
+     2         21         529.353       0.248557           60.7            0
+     3         28         496.361       0.169155           17.8            0
+     4         35         488.864       0.104729           5.04            0
+     5         42         487.546      0.0509113            1.7            0
+     6         49         487.408      0.0203505          0.615            0
+     7         56         487.401     0.00491789          0.147            0
+
+Local minimum possible.
+
+lsqnonlin stopped because the size of the current step is less than
+the selected value of the step size tolerance.
+
+<stopping criteria details>
+
+
+                                         Norm of      First-order 
+ Iteration  Func-count     f(x)          step          optimality   CG-iterations
+     0          7         1126.07                           834
+     1         14         654.599       0.289406            204            0
+     2         21         529.251       0.248579           60.6            0
+     3         28         496.281       0.169121           17.8            0
+     4         35         488.791       0.104687           5.04            0
+     5         42         487.476      0.0508631            1.7            0
+     6         49         487.338      0.0203107          0.614            0
+     7         56         487.331     0.00492321          0.146            0
+
+Local minimum possible.
+
+lsqnonlin stopped because the size of the current step is less than
+the selected value of the step size tolerance.
+
+<stopping criteria details>
+
+
+                                         Norm of      First-order 
+ Iteration  Func-count     f(x)          step          optimality   CG-iterations
+     0          7         1125.86                           832
+     1         14           654.7       0.289398            204            0
+     2         21         529.317       0.248627           60.7            0
+     3         28         496.334       0.169145           17.8            0
+     4         35         488.839       0.104716           5.04            0
+     5         42         487.523      0.0508962            1.7            0
+     6         49         487.385      0.0203385          0.615            0
+     7         56         487.378     0.00490591          0.147            0
+
+Local minimum possible.
+
+lsqnonlin stopped because the size of the current step is less than
+the selected value of the step size tolerance.
+
+<stopping criteria details>
+
+Final optimization results. Each column stands for a random init of the data subset.
+Optimal offsets Dq (in radians):
+
+optimalDq =
+
+   -0.0018   -0.0034   -0.0013   -0.0013   -0.0016
+   -0.0348   -0.0336   -0.0352   -0.0352   -0.0350
+    0.0423    0.0441    0.0420    0.0418    0.0420
+    0.3097    0.3098    0.3097    0.3097    0.3097
+    0.2366    0.2366    0.2366    0.2366    0.2366
+    0.0751    0.0751    0.0751    0.0751    0.0751
+
+Mean cost (in (m.s^{-2})^2):
+
+ans =
+
+    0.4060    0.4061    0.4062    0.4061    0.4061
+
+optimization function exit flag:
+
+exitflag =
+
+     2     2     2     2     2
+
+other optimization info:
+
+output = 
+
+1x5 struct array with fields:
+    firstorderopt
+    iterations
+    funcCount
+    cgiterations
+    algorithm
+    message
+
+Standard deviation for each joint offset:
+
+std_optDq =
+
+   1.0e-03 *
+
+    0.8699
+    0.6831
+    0.9397
+    0.0292
+    0.0020
+    0.0142
+
+>> 

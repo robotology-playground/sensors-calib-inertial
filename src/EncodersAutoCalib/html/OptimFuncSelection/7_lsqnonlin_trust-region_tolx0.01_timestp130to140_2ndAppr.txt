@@ -1,0 +1,53 @@
+                                         Norm of      First-order 
+ Iteration  Func-count     f(x)          step          optimality   CG-iterations
+     0          7         8814.27                      1.21e+03
+     1         14         7933.11       0.318739            338            0
+     2         21         7710.09       0.243294           97.7            0
+     3         28         7653.64       0.136434           64.1            0
+     4         35         7637.47       0.092041           39.1            0
+     5         42         7633.18      0.0599545           22.1            0
+     6         49          7632.2      0.0346363           11.5            0
+     7         56         7632.02      0.0166621           5.27            0
+     8         63         7631.99     0.00664766           2.12            0
+
+Local minimum possible.
+
+lsqnonlin stopped because the size of the current step is less than
+the selected value of the step size tolerance.
+
+<stopping criteria details>
+
+Final optimization results. Each column stands for a random init of the data subset.
+Optimal offsets Dq (in radians):
+
+optimalDq =
+
+         0
+         0
+         0
+   -0.1225
+   -0.1993
+    0.3201
+
+Mean cost (in (m.s^{-2})^2):
+
+ans =
+
+    6.3600
+
+optimization function exit flag:
+
+exitflag =
+
+     2
+
+other optimization info:
+
+output = 
+
+    firstorderopt: 2.1204
+       iterations: 8
+        funcCount: 63
+     cgiterations: 0
+        algorithm: 'trust-region-reflective'
+          message: [1x415 char]
