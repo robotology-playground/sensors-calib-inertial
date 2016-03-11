@@ -179,9 +179,9 @@ classdef CalibrationContextBuilder < handle
             dqsRad   = ['dqsRad_' data.labels{obj.jointsLabelIdx}];
             d2qsRad  = ['d2qsRad_' data.labels{obj.jointsLabelIdx}];
             
-            eval(['obj.q0i = data.' qsRad '(:,subsetVec_idx);']);
-            eval(['obj.dqi = data.' dqsRad '(:,subsetVec_idx);']);
-            eval(['obj.d2qi = data.' d2qsRad '(:,subsetVec_idx);']);
+            eval(['obj.q0i = data.parsedParams.' qsRad '(:,subsetVec_idx);']);
+            eval(['obj.dqi = data.parsedParams.' dqsRad '(:,subsetVec_idx);']);
+            eval(['obj.d2qi = data.parsedParams.' d2qsRad '(:,subsetVec_idx);']);
         end
 
         function simulateAccelerometersMeasurements(obj, data, datasetVecIdx)
@@ -217,7 +217,7 @@ classdef CalibrationContextBuilder < handle
                     % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                     % and then select the sample 's' (<=> timestamp).
                     ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acc_i)}];
-                    eval(['data.' ys '(:,ts) = sensEst;']);
+                    eval(['data.parsedParams.' ys '(:,ts) = sensEst;']);
                 end
             end
         end
@@ -279,7 +279,7 @@ classdef CalibrationContextBuilder < handle
                     % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                     % and then select the sample 's' (<=> timestamp).
                     ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acc_i)}];
-                    eval(['sensMeas = data.' ys '(:,ts);']);
+                    eval(['sensMeas = data.parsedParams.' ys '(:,ts);']);
                     
                     % compute the cost for 1 sensor / 1 timestamp
                     costVec_ts{acc_i} = (sensMeas - sensEst);
@@ -412,7 +412,7 @@ classdef CalibrationContextBuilder < handle
                         % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                         % and then select the sample 's' (<=> timestamp).
                         ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acci)}];
-                        eval(['sensMeas = data.' ys '(:,ts);']);
+                        eval(['sensMeas = data.parsedParams.' ys '(:,ts);']);
                         % project the measurement in link Lk frame and store it for
                         % later computing the variances
                         Lk_sensMeasCell{ts,acci} = Lk_H_Li * (Li_H_acci * sensMeas);

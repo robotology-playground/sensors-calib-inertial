@@ -22,13 +22,13 @@ jointsToCalibrate.partJointsInitOffsets = {};
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};
 
-mtbSensorAct_left_leg = [false,false, ...
+mtbSensorAct_left_leg = {false,false, ...
                          true,true, ...
                          false, ...
                          true,true, ...
                          true,false,   ...
                          false,false,   ...
-                         true];
+                         true};
 %mtbSensorAct_left_leg(:) = {true};
 
 run jointsNsensorsDefinitions;
@@ -41,97 +41,30 @@ costFunction = @myCalibContext.costFunctionSigma;
 %costFunction = @myCalibContext.costFunctionSigmaProjOnEachLink;
 
 
-%% define offsets for parsing Linear Acceleration data from MTB accelerometers
-%
-% Refer to wiki:
-% https://github.com/robotology/codyco-modules/wiki/External-Inertial-Sensors-for-iCubGenova02
-%
-% a = (n  6.0  (a1  b1 t1 x1 y1 z1)   .... (an  bn tn xn yn xn))
-% n  = number of sensors published on the port
-% ai = pos of sensor ... see enum type
-% bi = accel (1) or gyro (2)
-% ti = ?
-% 
-% | size  | 1 |  1  |   6  |            6           | ...
-% | offset| 1 |  2  | 3..8 |2+6*(i-1)+1..2+6*(i-1)+6| ...
-% | Field | n | 6.0 |a1..z1| ai  bi  ti  xi  yi  zi | ...
-%
-HEADER_LENGTH = 2;
-FULL_ACC_SIZE = 6;
-LIN_ACC_1RST_IDX = 4;
-LIN_ACC_LAST_IDX = 6;
-
-
 %% PROCESS EACH PART INDEPENDENTLY
 %
 for part = 1 : length(jointsToCalibrate.parts)
 
-    %% define joint codes and links for current part
-    %
-    mtbSensorCodes = mtbSensorCodes_list{part};
-    mtbSensorLink = mtbSensorLink_list{part};
-    
-    %% generate indices and labels for the mtb sensors (Accelerometers)
-    %
-    nrOfMTBAccs = length(mtbSensorLink);
-    mtbIndices = {};
-    for i = 1:nrOfMTBAccs
-        % Indexes for linear acceleration
-        mtbIndices{i} = strcat(num2str(HEADER_LENGTH+FULL_ACC_SIZE*(i-1)+LIN_ACC_1RST_IDX), ...
-            ':', ...
-            num2str(HEADER_LENGTH+FULL_ACC_SIZE*(i-1)+LIN_ACC_LAST_IDX));
-    end
-
-    mtbSensorFrames = {};
-    for i = 1:nrOfMTBAccs
-        % there is no naming convention yet. ex of sensor frame:
-        % [r_upper_leg_mtb_acc_11b3]
-        mtbSensorFrames{i} = strcat(mtbSensorLink{i},'_mtb_acc_',mtbSensorCodes{i});
-    end
-
-    mtbSensorLabel = {};
-    for i = 1:nrOfMTBAccs
-        % ex of sensor label:
-        % [11b3_acc]
-        mtbSensorLabel{i} = strcat(mtbSensorCodes{i},'_acc');
-    end
-
+    %% joint codes and links for current part are:
+    % mtbSensorCodes_list{part}
+    % mtbSensorLink_list{part};
+    nrOfMTBAccs = length(mtbSensorLink_list{part});
 
     %% Parsing configuration
     %
-    % the fields of "data" are created here on the fly.
-    %
-    data.nsamples  = 1000; %number of samples
-    data.plot      = 0;
-    data.ini       = 130;    %seconds to be skipped at the start
-    data.end       = 140;   %seconds to reach the end of the movement
-    data.diff_imu  = 0;    %derivate the angular velocity of the IMUs
-    data.diff_q    = 0;    %derivate the angular velocity of the IMUs
-
-
-    %% strucutre from files and model
-    data.path        = '../../data/calibration/dumper/iCubGenova02_#1/';
-    data.parts       = {};
-    data.labels      = {};
-    data.frames      = {};
-    data.sensorAct   = {};
-    data.isInverted  = {};
-    data.ndof        = {};
-    data.index       = {};
-    data.type        = {};
-    data.visualize   = {};
+    % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
+    data = SensorsData('../../data/calibration/dumper/iCubGenova02_#1/',1000,2,28,false);
 
     %% add mtb sensors
-    for i = 1:nrOfMTBAccs
-        data = addSensToData(data, jointsToCalibrate.parts{part}, mtbSensorFrames{i}, mtbSensorLabel{i} , ...
-                             mtbSensorAct_left_leg(i), jointsToCalibrate.mtbInvertedFrames{part}{i}, 3, mtbIndices{i}, 'inertialMTB', 1*data.plot);
-    end
+    data.addMTBsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
+                          mtbSensorCodes_list{part}, mtbSensorLink_list{part}, ...
+                          mtbSensorAct_left_leg, jointsToCalibrate.mtbInvertedFrames{part},true);
 
     %% add joint measurements
-    data = addSensToData(data, jointsToCalibrate.parts{part}, '', [jointsToCalibrate.parts{part} '_state'] , true, false, 6, '1:6', 'stateExt:o' , 1*data.plot);
+    data.addEncSensToData(jointsToCalibrate.parts{part}, true);
 
-    data = loadData(data);
-
+    % Load data from the file and parse it
+    data.loadData();
 
     %% init joints and sensors lists
     myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,part,jointsToCalibrate);
@@ -140,7 +73,7 @@ for part = 1 : length(jointsToCalibrate.parts)
     %% Optimization
     %
 
-    subsetVec_size = round(data.nsamples*subsetVec_size_frac);
+    subsetVec_size = round(data.nSamples*subsetVec_size_frac);
     Dq0 = cell2mat(jointsToCalibrate.jointsDq0(part))';
     lowerBoundary = Dq0 - startPoint2Boundary;
     upperBoundary = Dq0 + startPoint2Boundary;
@@ -156,7 +89,7 @@ for part = 1 : length(jointsToCalibrate.parts)
     for i = 1 : number_of_random_init
         
         % define a random subset: 10 % of the total set of instants
-        subsetVec_idx = randsample(data.nsamples, subsetVec_size);
+        subsetVec_idx = randsample(data.nSamples, subsetVec_size);
         subsetVec_idx = sort(subsetVec_idx);
         
         % load joint positions
