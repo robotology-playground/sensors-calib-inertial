@@ -19,3 +19,10 @@ tags
 *.pdf
 *.mat
 /data/
+*/*/temp*/
+*/*/slprj/
+*/*/*/slprj/
+*/*/html/
+*.mdl.original
+*sfun.mexmaci64
+*.mdl.autosave

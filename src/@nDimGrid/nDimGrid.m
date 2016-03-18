@@ -30,11 +30,11 @@ classdef nDimGrid < handle
         end
         
         function vector = getVector(obj,idx)
-            vector = zeros(obj.dimension,1);
+            vectorT = zeros(length(idx),obj.dimension);
             for iter = 1:obj.dimension
-                gridDimIter = obj.grid{iter};
-                vector(iter) = gridDimIter(idx);
+                vectorT(:,iter) = obj.grid{iter}(idx);
             end
+            vector = vectorT';
         end
     end
 end

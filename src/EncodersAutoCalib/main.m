@@ -7,8 +7,8 @@ clc
 
 % 'simu' or 'target' mode
 runMode = 'simu';
-offsetsGridResolution = 10; % step between 2 offsets for each joint DOF (degrees)
-offsetsGridRange = 5; % min/max (degrees)
+offsetsGridResolution = 10*pi/180; % step between 2 offsets for each joint DOF (degrees)
+offsetsGridRange = 5*pi/180; % min/max (degrees)
 offsetedQsIdxs = 1:6;
 
 % model and data capture file
@@ -26,7 +26,7 @@ costFunctionSelect = 'costFunctionSigma';
 % then selected for running the optimisation on.
 % The subset can be selected randomly.
 number_of_subset_init = 1;
-subsetVec_size_frac = 0.5; % subset size = 1/10 total data set size
+subsetVec_size_frac = 0.5; % subset size = 1/2 total data set size
 timeStart = 2;  % starting time in capture data file (in seconds)
 timeStop  = 28; % ending time in capture data file (in seconds)
 subSamplingSize = 1000; % number of samples after sub-sampling the raw data
@@ -48,17 +48,17 @@ mtbSensorAct_left_leg = {false,false, ...
 
 %% set init parameters
 %
-
-if strcmp(runMode,'target')
-    offsetsGridRange = 0;
-    offsetedQsIdxs = 1;
-end
-
 jointsToCalibrate.partJoints = {};
 jointsToCalibrate.partJointsInitOffsets = {};
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};
 run jointsNsensorsDefinitions;
+
+% in target mode, don't apply any prior offsets
+if strcmp(runMode,'target')
+    offsetsGridRange = 0;
+    offsetedQsIdxs = 1;
+end
 
 % create the calibration context implementing the cost function
 myCalibContext = CalibrationContextBuilder(modelPath);
@@ -116,13 +116,14 @@ for part = 1 : length(jointsToCalibrate.parts)
     % Build the offsets grid
     offsetsConfigGrid = nDimGrid(length(offsetedQsIdxs), ...
                                  offsetsGridRange, ...
-                                 offsetsGridResolution);
+                                 offsetsGridResolution)
+
+    optimalDq = zeros(length(Dq0),number_of_subset_init,offsetsConfigGrid.nbVectors);
+    resnorm = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
+    exitflag = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
+
     % iterate over the joints offsets grid values
     for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
-        
-        optimalDq = zeros(length(Dq0),number_of_subset_init,offsetsConfigGrid.nbVectors);
-        resnorm = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
-        exitflag = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
         
         % set the offsets from grid
         myCalibContext.DqiEnc(offsetedQsIdxs) = offsetsConfigGrid.getVector(offsetsConfigIdx);
@@ -156,10 +157,12 @@ for part = 1 : length(jointsToCalibrate.parts)
                 otherwise
             end
             optimalDq(:,i,offsetsConfigIdx) = mod(optimalDq(:,i,offsetsConfigIdx)+pi, 2*pi)-pi;
-            % remove known offset (useful in simulation run mode)
-            optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx) - myCalibContext.DqiEnc;
+            % computed Dq and known a priori offset (offsetsConfigGrid.getVector(offsetsConfigIdx))
+            % added to ground truth q in simulation, are opposite. Add them
+            % and check the result is null.
+            optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx) + myCalibContext.DqiEnc;
             % convert to degrees
-            optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx)*180/pi;
+            optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx)*180/pi
         end
     end
     % Standard deviation (!!!!! across offsets grid, NOT buckets anymore !!!!!!)
@@ -180,4 +183,4 @@ for part = 1 : length(jointsToCalibrate.parts)
 end
 
 
-save('./data/minimResult.mat','optimalDq','exitflag','output','std_optDq','data');
+save('./data/minimResult.mat','optimalDq','exitflag','output','std_optDq','data','offsetsConfigGrid');

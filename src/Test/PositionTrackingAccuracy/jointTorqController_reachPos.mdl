@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.69"
+    ComputedModelVersion    "1.71"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -30,7 +30,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [-292.0, -1053.0, 1920.0, 1053.0]
+      Location		      [-359.0, -1053.0, 1920.0, 1053.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -87,9 +87,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Tue Mar 01 22:09:26 2016"
-  RTWModifiedTimeStamp	  378770855
-  ModelVersionFormat	  "1.%<AutoIncrement:69>"
+  LastModifiedDate	  "Thu Mar 17 18:50:38 2016"
+  RTWModifiedTimeStamp	  380141377
+  ModelVersionFormat	  "1.%<AutoIncrement:71>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -949,7 +949,7 @@ Model {
   }
   System {
     Name		    "jointTorqController_reachPos"
-    Location		    [-292, -1053, 1628, 0]
+    Location		    [-359, -1053, 1561, 0]
     Open		    on
     ModelBrowserVisibility  on
     ModelBrowserWidth	    200
@@ -1957,7 +1957,7 @@ Model {
       }
       System {
 	Name			"references"
-	Location		[-292, -1053, 1628, 0]
+	Location		[-359, -1053, 1561, 0]
 	Open			on
 	ModelBrowserVisibility	on
 	ModelBrowserWidth	200
@@ -3062,7 +3062,7 @@ Model {
 	Description		"Embedded MATLAB block"
 	SelfModifiable		"on"
 	Display			"bgColor = Simulink.Root.ColorString2Rgb(get_param(gcbh, 'BackgroundColor')); image(imread('private/eml_mem"
-	"brane_16.png','png','BackgroundColor',bgColor(1:3)),'center'); disp([10 10 'refMaskGravComp']);"
+	"brane_16.png','png','BackgroundColor',bgColor(1:3)),'center'); disp([10 10 'virtualOffset']);"
 	IconOpaque		"off"
 	IconUnits		"normalized"
       }
@@ -4349,7 +4349,7 @@ Stateflow {
     chartFileNumber	    5
     disableImplicitCasting  1
     eml {
-      name		      "refMaskGravComp"
+      name		      "virtualOffset"
     }
   }
   state {
@@ -4366,7 +4366,7 @@ Stateflow {
     decomposition	    CLUSTER_STATE
     eml {
       isEML		      1
-      script		      "function qjOff = refMaskGravComp(q_j,randOffsets)\n%#codegen\n\n\nqjOff = q_j + randOffsets;\n"
+      script		      "function qjOff = virtualOffset(q_j,randOffsets)\n%#codegen\n\n\nqjOff = q_j + randOffsets;\n"
       editorLayout	      "100 M4x1[10 5 700 500]"
     }
   }

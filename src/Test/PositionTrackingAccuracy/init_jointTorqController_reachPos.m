@@ -5,6 +5,11 @@
 
 robotName='icubGazeboSim';
 localName='impedance';
+% Parameters set in wholeBodyInterfaceToolbox.ini
+%worldRefFrame='l_sole';
+%robot_fixed='true';
+%wbi_id_list='ROBOT_TORQUE_CONTROL_JOINTS_WITHOUT_PRONOSUP_NOR_TORSO';
+
 ROBOT_DOF=20;
 Ts=0.01;
 Tt=2; % trajectory duration from current to desired position. 
@@ -14,39 +19,43 @@ dqErr = 0.5*pi/180; % radians/s
 
 qjDes = zeros(ROBOT_DOF,1);
 dqiRef = 10*pi/180; % absolute value in radians/s
+randOffsets = zeros(ROBOT_DOF,1);
 
 refMask = zeros(ROBOT_DOF,1);
-%refMask(1:4) = 1;   %left_arm
-%refMask(5:8) = 1;   %right_arm
+refMask(1:4) = 1;   %left_arm
+refMask(5:8) = 1;   %right_arm
 refMask(9:14) = 1;  %left_leg
-%refMask(15:20) = 1; %right_leg
+refMask(15:20) = 1; %right_leg
 
 refMaskGravComp = zeros(ROBOT_DOF,1);
-%refMaskGravComp(1:4) = 1;   %left_arm
-%refMaskGravComp(5:8) = 1;   %right_arm
-refMaskGravComp(9:14) = 1;   %left_leg
-%refMaskGravComp(15:20) = 1;   %right_leg
+refMaskGravComp(1:4) = 0;   %left_arm
+refMaskGravComp(5:8) = 1;   %right_arm
+refMaskGravComp(9:14) = 0;   %left_leg
+refMaskGravComp(15:20) = 0;   %right_leg
 
-KpTorso   = 0.5*ones(1,3);
-KpArms    = [0.08,0.08,0.08,0.08];
-KpLegs    = [0.5,0.5,0.5,0.5,0.5,0.5];
-Kp        = diag([KpArms,KpArms,0.5*KpLegs,KpLegs]);
+leftArmSelect = 1:4;
+rightArmSelect = 5:8;
+leftLegSelect = 9:14;
+rightLegSelect = 15:20;
+displayMask = rightArmSelect;
+
+KpTorso   = ones(1,3);
+KpArms    = 0.1*[0.08,0.08,0.08,0.08];
+KpLegs    = 0*[0.5,0.5,0.5,0.5,0.5,0.5];
+Kp        = diag([KpArms,KpArms,KpLegs,KpLegs]);
 
 if size(Kp,1) ~= ROBOT_DOF
     error('Dimension of Kp different from ROBOT_DOF')
 end
 
-%Kd        = -2*sqrt(diag([KpArms*0.0001,KpArms*0.0001,KpLegs*0.00016,KpLegs*0.0001]));
 myK = 2;
-Kd        = -2*sqrt(Kp)*0.01*diag([ones(1,4),ones(1,4),myK*ones(1,6),ones(1,6)]);
+Kd        = 2*sqrt(Kp)*0.01*diag([ones(1,4),ones(1,4),myK*ones(1,6),myK*ones(1,6)]);
+
+% activate/de-activate all PD gains
+KpOnOff = 1;
+KdOnOff = 1;
 
 GRAV_COMP = 1;
-
-% refMask(1:4) = [-50 50 -50 50]'; %left_arm
-% refMask(5:8) = [-50 50 -50 50]'; %right_arm
-% refMask(9:14) = 50; %left_leg
-% refMask(15:20) = 50; %right_leg
-% refMask([13 14 19 20])=10;
 
 % Parse the ROBOT_DOF
 
