@@ -1,12 +1,12 @@
 Model {
-  Name			  "jointTorqController_reachPos"
+  Name			  "jointTorqueCtrl_reachPos_minJerk_sync"
   Version		  8.0
   MdlSubVersion		  0
   GraphicalInterface {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.129"
+    ComputedModelVersion    "1.131"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -55,7 +55,7 @@ Model {
 	  IsActive		  [0]
 	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "55"
-	  Extents		  [1696.0, 912.0]
+	  Extents		  [1696.0, 882.0]
 	  ZoomFactor		  [0.96]
 	  Offset		  [0.0, 0.0]
 	}
@@ -65,8 +65,8 @@ Model {
 	  ViewObjType		  "SimulinkSubsys"
 	  LoadSaveID		  "64"
 	  Extents		  [1696.0, 882.0]
-	  ZoomFactor		  [1.5]
-	  Offset		  [319.68333333333339, 444.61666666666673]
+	  ZoomFactor		  [0.81957773512476018]
+	  Offset		  [-311.003375658665, -1.0819672131147549]
 	}
 	PropName		"EditorsInfo"
       }
@@ -78,9 +78,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Fri Mar 04 20:26:37 2016"
-  RTWModifiedTimeStamp	  379019611
-  ModelVersionFormat	  "1.%<AutoIncrement:129>"
+  LastModifiedDate	  "Wed Mar 23 13:30:27 2016"
+  RTWModifiedTimeStamp	  380639803
+  ModelVersionFormat	  "1.%<AutoIncrement:131>"
   ConfigurationManager	  "none"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -956,7 +956,7 @@ Model {
     }
   }
   System {
-    Name		    "jointTorqController_reachPos"
+    Name		    "jointTorqueCtrl_reachPos_minJerk_sync"
     Location		    [-359, -1053, 1561, 0]
     Open		    off
     ModelBrowserVisibility  on
@@ -969,9 +969,9 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "111"
+    ZoomFactor		    "105"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "184"
+    SIDHighWatermark	    "190"
     Block {
       BlockType		      Constant
       Name		      " "
@@ -1051,6 +1051,17 @@ Model {
       ZOrder		      465
       ShowName		      off
       Gain		      "KdOnOff"
+      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "Gain13"
+      SID		      "185"
+      Position		      [1220, 355, 1285, 385]
+      ZOrder		      466
+      ShowName		      off
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
@@ -1298,7 +1309,7 @@ Model {
       Name		      "Selector4"
       SID		      "107"
       Ports		      [1, 1]
-      Position		      [1030, 131, 1070, 169]
+      Position		      [1420, 131, 1460, 169]
       ZOrder		      422
       ShowName		      off
       InputPortWidth	      "ROBOT_DOF"
@@ -1311,7 +1322,7 @@ Model {
       Name		      "Selector5"
       SID		      "117"
       Ports		      [1, 1]
-      Position		      [1030, 66, 1070, 104]
+      Position		      [1420, 66, 1460, 104]
       ZOrder		      440
       ShowName		      off
       InputPortWidth	      "2*ROBOT_DOF"
@@ -1324,7 +1335,7 @@ Model {
       Name		      "Set Torques1"
       SID		      "43"
       Ports		      [1]
-      Position		      [1395, 348, 1465, 392]
+      Position		      [1515, 348, 1585, 392]
       ZOrder		      390
       BackgroundColor	      "[0.941176, 0.415686, 0.192157]"
       ShowName		      off
@@ -1334,6 +1345,109 @@ Model {
       val		      "6"
       robotName		      "robotName"
       localName		      "localName"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Subsystem"
+      SID		      "186"
+      Ports		      [0, 1]
+      Position		      [355, 742, 415, 788]
+      ZOrder		      467
+      ShowName		      off
+      Commented		      on
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      System {
+	Name			"Subsystem"
+	Location		[-359, -1053, 1561, 0]
+	Open			off
+	ModelBrowserVisibility	on
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"173"
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gain6"
+	  SID			  "187"
+	  Position		  [175, 30, 230, 60]
+	  ZOrder		  366
+	  ShowName		  off
+	  Gain			  "1/151"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector2"
+	  SID			  "188"
+	  Ports			  [1, 1]
+	  Position		  [100, 26, 140, 64]
+	  ZOrder		  367
+	  ShowName		  off
+	  InputPortWidth	  "6"
+	  IndexOptions		  "Index vector (dialog)"
+	  Indices		  "[1]"
+	  OutputSizes		  "1"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "YARP Read"
+	  SID			  "189"
+	  Ports			  [0, 1]
+	  Position		  [20, 23, 85, 67]
+	  ZOrder		  364
+	  ForegroundColor	  "[0.490196, 0.000000, 0.000000]"
+	  ShowName		  off
+	  LibraryVersion	  "1.285"
+	  SourceBlock		  "WBCLibrary/Utilities/YARP Read"
+	  SourceType		  "YARP Read"
+	  portName		  "'/controlBoardDumper/right_leg/getMotorEncoderSpeeds'"
+	  signalSize		  "6"
+	  blocking		  off
+	  timestamp		  off
+	  autoconnect		  on
+	  errorOnConnection	  off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "mD"
+	  SID			  "190"
+	  Position		  [280, 38, 310, 52]
+	  ZOrder		  368
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "YARP Read"
+	  SrcPort		  1
+	  DstBlock		  "Selector2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Selector2"
+	  SrcPort		  1
+	  DstBlock		  "Gain6"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Gain6"
+	  SrcPort		  1
+	  DstBlock		  "mD"
+	  DstPort		  1
+	}
+      }
     }
     Block {
       BlockType		      Sum
@@ -1372,7 +1486,7 @@ Model {
       Name		      "Sum2"
       SID		      "51"
       Ports		      [2, 1]
-      Position		      [1215, 445, 1235, 465]
+      Position		      [1335, 445, 1355, 465]
       ZOrder		      398
       ShowName		      off
       IconShape		      "round"
@@ -1447,7 +1561,7 @@ Model {
       Name		      "To File3"
       SID		      "129"
       Ports		      [1]
-      Position		      [1290, 752, 1405, 788]
+      Position		      [1465, 752, 1580, 788]
       ZOrder		      453
       Filename		      "gOfq.mat"
       SaveFormat	      "Timeseries"
@@ -1467,7 +1581,7 @@ Model {
       Name		      "To File5"
       SID		      "131"
       Ports		      [1]
-      Position		      [1275, 305, 1335, 335]
+      Position		      [1395, 305, 1455, 335]
       ZOrder		      455
       Filename		      "tau_j.mat"
       SaveFormat	      "Timeseries"
@@ -1477,7 +1591,7 @@ Model {
       Name		      "Tracking info1"
       SID		      "106"
       Ports		      [2]
-      Position		      [1130, 54, 1175, 181]
+      Position		      [1540, 54, 1585, 181]
       ZOrder		      421
       Floating		      off
       Location		      [5, 73, 1277, 750]
@@ -1767,7 +1881,7 @@ Model {
       Name		      "feedForward"
       SID		      "63"
       Ports		      [1]
-      Position		      [1365, 610, 1410, 700]
+      Position		      [1535, 610, 1580, 700]
       ZOrder		      405
       Floating		      off
       Location		      [7, 83, 955, 760]
@@ -1867,7 +1981,7 @@ Model {
 	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"150"
+	ZoomFactor		"81"
 	Block {
 	  BlockType		  Inport
 	  Name			  "qjRad"
@@ -2021,7 +2135,7 @@ Model {
 	      BlockType		      S-Function
 	      Name		      " SFunction "
 	      SID		      "92::19"
-	      Tag		      "Stateflow S-Function jointTorqController_reachPos 1"
+	      Tag		      "Stateflow S-Function jointTorqueCtrl_reachPos_minJerk_sync 1"
 	      Ports		      [1, 7]
 	      Position		      [180, 119, 230, 281]
 	      ZOrder		      5
@@ -2280,7 +2394,7 @@ Model {
 	      BlockType		      S-Function
 	      Name		      " SFunction "
 	      SID		      "132::19"
-	      Tag		      "Stateflow S-Function jointTorqController_reachPos 6"
+	      Tag		      "Stateflow S-Function jointTorqueCtrl_reachPos_minJerk_sync 6"
 	      Ports		      [3, 3]
 	      Position		      [180, 100, 230, 220]
 	      ZOrder		      5
@@ -2440,7 +2554,7 @@ Model {
 	      BlockType		      S-Function
 	      Name		      " SFunction "
 	      SID		      "100::19"
-	      Tag		      "Stateflow S-Function jointTorqController_reachPos 4"
+	      Tag		      "Stateflow S-Function jointTorqueCtrl_reachPos_minJerk_sync 4"
 	      Ports		      [1, 2]
 	      Position		      [180, 100, 230, 160]
 	      ZOrder		      5
@@ -2759,7 +2873,6 @@ Model {
 	    MarkerStyles	    "none|none|none|none|none|none"
 	  }
 	  ShowLegends		  on
-	  LegendLocations	  "0.78296     0.87325     0.16815     0.12605\n0.78296     0.39971     0.16815     0.12605"
 	  TimeRange		  "70"
 	  YMin			  "-17.5~-0.25"
 	  YMax			  "17.5~0.2"
@@ -2832,7 +2945,7 @@ Model {
 	      BlockType		      S-Function
 	      Name		      " SFunction "
 	      SID		      "81::18"
-	      Tag		      "Stateflow S-Function jointTorqController_reachPos 2"
+	      Tag		      "Stateflow S-Function jointTorqueCtrl_reachPos_minJerk_sync 2"
 	      Ports		      [1, 2]
 	      Position		      [180, 100, 230, 160]
 	      ZOrder		      4
@@ -3010,7 +3123,7 @@ Model {
 	      BlockType		      S-Function
 	      Name		      " SFunction "
 	      SID		      "96::19"
-	      Tag		      "Stateflow S-Function jointTorqController_reachPos 3"
+	      Tag		      "Stateflow S-Function jointTorqueCtrl_reachPos_minJerk_sync 3"
 	      Ports		      [2, 2]
 	      Position		      [180, 100, 230, 180]
 	      ZOrder		      5
@@ -3541,7 +3654,7 @@ Model {
       Name		      "torqueError"
       SID		      "88"
       Ports		      [3]
-      Position		      [1420, 403, 1470, 507]
+      Position		      [1535, 403, 1585, 507]
       ZOrder		      399
       Floating		      off
       Location		      [1, 81, 1281, 762]
@@ -3637,7 +3750,7 @@ Model {
 	  BlockType		  S-Function
 	  Name			  " SFunction "
 	  SID			  "113::19"
-	  Tag			  "Stateflow S-Function jointTorqController_reachPos 5"
+	  Tag			  "Stateflow S-Function jointTorqueCtrl_reachPos_minJerk_sync 5"
 	  Ports			  [1, 2]
 	  Position		  [180, 100, 230, 160]
 	  ZOrder		  5
@@ -3788,7 +3901,7 @@ Model {
       Name		      "torqueMeasured"
       SrcBlock		      "Joint Torques"
       SrcPort		      1
-      Points		      [35, 0]
+      Points		      [155, 0]
       Branch {
 	Labels			[-1, 1]
 	DstBlock		"torqueError"
@@ -3889,29 +4002,8 @@ Model {
     Line {
       SrcBlock		      "Sum1"
       SrcPort		      1
-      Points		      [35, 0]
-      Branch {
-	Points			[0, -50]
-	DstBlock		"To File5"
-	DstPort			1
-      }
-      Branch {
-	DstBlock		"Sum2"
-	DstPort			1
-      }
-      Branch {
-	Points			[70, 0]
-	Branch {
-	  Labels		  [2, 1]
-	  Points		  [0, 50]
-	  DstBlock		  "torqueError"
-	  DstPort		  1
-	}
-	Branch {
-	  DstBlock		  "Set Torques1"
-	  DstPort		  1
-	}
-      }
+      DstBlock		      "Gain13"
+      DstPort		      1
     }
     Line {
       Name		      "Mj*qDDref"
@@ -4045,6 +4137,33 @@ Model {
       DstBlock		      "Sum1"
       DstPort		      3
     }
+    Line {
+      SrcBlock		      "Gain13"
+      SrcPort		      1
+      Points		      [55, 0]
+      Branch {
+	Points			[0, -50]
+	DstBlock		"To File5"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Sum2"
+	DstPort			1
+      }
+      Branch {
+	Points			[70, 0]
+	Branch {
+	  Labels		  [2, 1]
+	  Points		  [0, 50]
+	  DstBlock		  "torqueError"
+	  DstPort		  1
+	}
+	Branch {
+	  DstBlock		  "Set Torques1"
+	  DstPort		  1
+	}
+      }
+    }
     Annotation {
       SID		      "89"
       Name		      "g"
@@ -4063,7 +4182,7 @@ Model {
 Stateflow {
   machine {
     id			    1
-    name		    "jointTorqController_reachPos"
+    name		    "jointTorqueCtrl_reachPos_minJerk_sync"
     created		    "29-Feb-2016 17:58:56"
     isLibrary		    0
     firstTarget		    63
@@ -4569,7 +4688,10 @@ Stateflow {
     firstTransition	    34
     firstJunction	    33
     viewObj		    26
+    visible		    1
     machine		    1
+    subviewS {
+    }
     ssIdHighWaterMark	    8
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -4757,7 +4879,10 @@ Stateflow {
     firstTransition	    41
     firstJunction	    40
     viewObj		    36
+    visible		    1
     machine		    1
+    subviewS {
+    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -4874,7 +4999,10 @@ Stateflow {
     firstTransition	    49
     firstJunction	    48
     viewObj		    43
+    visible		    1
     machine		    1
+    subviewS {
+    }
     ssIdHighWaterMark	    6
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
