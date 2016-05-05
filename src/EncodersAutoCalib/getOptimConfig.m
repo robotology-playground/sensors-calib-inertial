@@ -5,6 +5,7 @@ function [optimFunc,options] = getOptimConfig()
 
 %% SELECT HERE THE ALGORITHM FOR OPTIMIZING THE COST FUNCTION
 % fminunc, fmincon, lsqnonlin
+% DEBUG: use 'fminsearch' for deactivating optimization
 optimFunc = @lsqnonlin;
 
 funcProps = functions(optimFunc);
@@ -53,5 +54,6 @@ switch funcName
             'Algorithm', Algorithm, 'Display', Display, 'PlotFcns', PlotFcns);
         
     otherwise
+        options = optimset(funcName);
 end
 

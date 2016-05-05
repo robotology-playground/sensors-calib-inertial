@@ -10,6 +10,7 @@
 		<port>/icub/left_leg/inertialMTB</port>
 		<port>/icub/right_arm/inertialMTB</port>
 		<port>/icub/right_leg/inertialMTB</port>
+		<port>/icub/torso/inertialMTB</port>
 		<port>/wholeBodyDynamicsTree/filtered/l_arm_ft_sensor:o</port>
 		<port>/wholeBodyDynamicsTree/filtered/l_leg_ft_sensor:o</port>
 		<port>/wholeBodyDynamicsTree/filtered/r_arm_ft_sensor:o</port>
@@ -114,6 +115,17 @@
 	<connection>
 		<from>/icub/right_leg/inertialMTB</from>
 		<to>/dumper/icub/right_leg/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/torso/inertialMTB --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-torso-inertialMTB</tag>
+	</module>
+	<connection>
+		<from>/icub/torso/inertialMTB</from>
+		<to>/dumper/icub/torso/inertialMTB</to>
 		<protocol>udp</protocol>
 	</connection>
 	<module>

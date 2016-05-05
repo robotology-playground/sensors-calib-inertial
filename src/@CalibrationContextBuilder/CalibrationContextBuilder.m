@@ -222,7 +222,7 @@ classdef CalibrationContextBuilder < handle
             end
         end
 
-        function e = costFunctionSigma(obj,Dq, data, subsetVec_idx, optimFunction)
+        function e = costFunctionSigma(obj,Dq, data, subsetVec_idx, optimFunction, log, optimized)
             %COSTFUNCTIONSIGMA Summary of this function goes here
             %   Detailed explanation goes here
             %
@@ -237,13 +237,15 @@ classdef CalibrationContextBuilder < handle
             costVec_ts = cell(length(obj.sensorsIdxListModel),1);
             costVec = cell(length(subsetVec_idx),1);
             
-%             %DEBUG
-%             sensMeasNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-%             sensEstNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-%             costNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-%             
-%             sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
-%             sensEstCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            %DEBUG
+            sensMeasNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            sensEstNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            costNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            angleMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            qiMat = zeros(length(subsetVec_idx),obj.dofs);
+            
+            sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+            sensEstCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
             
             for ts = 1:length(subsetVec_idx)
                 
@@ -252,11 +254,15 @@ classdef CalibrationContextBuilder < handle
                 % while the iCub port stream **degrees** based units.
                 % Also add joint offsets from a previous result.
                 qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.q0i(:,ts) + obj.DqiEnc + Dq;
-                dqisRobotDOF = zeros(obj.dofs,1); dqisRobotDOF(obj.jointsIdxListModel,1) = obj.dqi(:,ts);
-                d2qisRobotDOF = zeros(obj.dofs,1); d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.d2qi(:,ts);
+                dqisRobotDOF = zeros(obj.dofs,1);% dqisRobotDOF(obj.jointsIdxListModel,1) = obj.dqi(:,ts);
+                d2qisRobotDOF = zeros(obj.dofs,1);% d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.d2qi(:,ts);
                 obj.qi_idyn.fromMatlab(qisRobotDOF);
                 obj.dqi_idyn.fromMatlab(dqisRobotDOF);
                 obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
+                
+                % DEBUG
+                modelJointsList = obj.jointsIdxListModel;
+                qiMat(ts,:) = qisRobotDOF';
                 
                 % Update the kinematics information in the estimator
                 obj.estimator.updateKinematicsFromFixedBase(obj.qi_idyn,obj.dqi_idyn,obj.d2qi_idyn, ...
@@ -283,12 +289,16 @@ classdef CalibrationContextBuilder < handle
                     
                     % compute the cost for 1 sensor / 1 timestamp
                     costVec_ts{acc_i} = (sensMeas - sensEst);
-%                     %DEBUG
-%                     sensMeasNormMat(ts,acc_i) = norm(sensMeas,2);
-%                     sensEstNormMat(ts,acc_i) = norm(sensEst,2);
-%                     costNormMat(ts,acc_i) = norm(costVec_ts{acc_i},2);
-%                     sensMeasCell{ts,acc_i} = sensMeas';
-%                     sensEstCell{ts,acc_i} = sensEst';
+                    %DEBUG
+                    sensMeasNormMat(ts,acc_i) = norm(sensMeas,2);
+                    sensEstNormMat(ts,acc_i) = norm(sensEst,2);
+                    costNormMat(ts,acc_i) = norm(costVec_ts{acc_i},2);
+                    % compute angle
+                    sinAngle = norm(cross(sensEst,sensMeas),2)/(norm(sensEst,2)*norm(sensMeas,2));
+                    cosAngle = (sensEst'*sensMeas)/(norm(sensEst,2)*norm(sensMeas,2));
+                    angleMat(ts,acc_i) = atan2(sinAngle,cosAngle);
+                    sensMeasCell{ts,acc_i} = sensMeas';
+                    sensEstCell{ts,acc_i} = sensEst';
                 end
                 
                 costVec{ts} = cell2mat(costVec_ts);
@@ -304,6 +314,11 @@ classdef CalibrationContextBuilder < handle
                 e = costVecMat'*costVecMat;
             end
             
+            if log
+                % log data
+                logFile = ['./data/logSensorMeasVsEst' optimized '.mat'];
+                save(logFile,'modelJointsList','qiMat','sensMeasNormMat','sensEstNormMat','costNormMat','angleMat','sensMeasCell','sensEstCell');
+            end
         end
         
         function e = costFunctionSigmaProjOnEachLink(obj,Dq,data,subsetVec_idx,optimFunction)
