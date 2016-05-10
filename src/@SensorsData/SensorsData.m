@@ -12,7 +12,8 @@ classdef SensorsData < handle
         
     properties (SetAccess = public, GetAccess = public)
         %% main input parameters
-        path        ;
+        path         ;
+        dataSetNb    ;
         nSamples  = 0; %number of samples
         plot      = 0;
         tInit     = 0;    %seconds to be skipped at the start
@@ -34,9 +35,10 @@ classdef SensorsData < handle
     end
     
     methods
-        function obj = SensorsData(dataPath, nSamples, tInit, tEnd, plot)
+        function obj = SensorsData(dataPath, dataSetNb, nSamples, tInit, tEnd, plot)
             %% main input parameters
             obj.path = dataPath;
+            obj.dataSetNb = dataSetNb;
             obj.nSamples = nSamples;
             obj.tInit = tInit;
             obj.tEnd = tEnd;

@@ -285,7 +285,7 @@ classdef CalibrationContextBuilder < handle
                     % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                     % and then select the sample 's' (<=> timestamp).
                     ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acc_i)}];
-                    eval(['sensMeas = data.parsedParams.' ys '(:,ts);']);
+                    eval(['sensMeas = data.parsedParams.' ys '(:,subsetVec_idx(ts));']);
                     
                     % compute the cost for 1 sensor / 1 timestamp
                     costVec_ts{acc_i} = (sensMeas - sensEst);

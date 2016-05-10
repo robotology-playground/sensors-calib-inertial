@@ -13,7 +13,8 @@ offsetedQsIdxs = 1:6;
 
 % model and data capture file
 modelPath = '../models/iCubGenova02/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubGenova02_#2/';
+dataPath  = '../../data/calibration/dumper/iCubGenova02_#1/';
+dataSetNb = '';
 
 % Optimisation configuration
 [optimFunction,options] = getOptimConfig();
@@ -25,10 +26,10 @@ costFunctionSelect = 'costFunctionSigma';
 % 'subSamplingSize' samples. A subset of 'subSamplingSize*subsetVec_size_frac' is
 % then selected for running the optimisation on.
 % The subset can be selected randomly.
-number_of_subset_init = 1;
+number_of_subset_init = 3;
 subsetVec_size_frac = 0.2; % subset size = 1/n total data set size
-timeStart = 2;  % starting time in capture data file (in seconds)
-timeStop  = 102; % ending time in capture data file (in seconds)
+timeStart = 134;  % starting time in capture data file (in seconds)
+timeStop  = 144; % ending time in capture data file (in seconds)
 subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 
 % define the set of joints (of whole limb) to calibrate and activate the sensors
@@ -84,7 +85,7 @@ for part = 1 : length(jointsToCalibrate.parts)
             load 'dataSimu.mat';
         case 'target'
             % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
-            data = SensorsData(dataPath,subSamplingSize,timeStart,timeStop,false);
+            data = SensorsData(dataPath,dataSetNb,subSamplingSize,timeStart,timeStop,false);
             
             % add mtb sensors
             data.addMTBsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
@@ -153,12 +154,12 @@ for part = 1 : length(jointsToCalibrate.parts)
             switch funcName
                 case 'fminunc'
                     [optimalDq(:,i,offsetsConfigIdx),  resnorm(1,i,offsetsConfigIdx), ...
-                        exitflag(1,i,offsetsConfigIdx), output(1,i,offsetsConfigIdx)] ...
+                        exitflag(1,i,offsetsConfigIdx), output{1,i,offsetsConfigIdx}] ...
                         = optimFunction(@(Dq) costFunction(Dq,data,subsetVec_idx,optimFunction,false,''), ...
                         Dq0, options);
                 case 'lsqnonlin'
                     [optimalDq(:,i,offsetsConfigIdx), resnorm(1,i,offsetsConfigIdx), ~, ...
-                        exitflag(1,i,offsetsConfigIdx), output(1,i,offsetsConfigIdx), ~] ...
+                        exitflag(1,i,offsetsConfigIdx), output{1,i,offsetsConfigIdx}, ~] ...
                         = optimFunction(@(Dq) costFunction(Dq,data,subsetVec_idx,optimFunction,false,''), ...
                         Dq0, [], [], options);
                 otherwise
@@ -174,7 +175,7 @@ for part = 1 : length(jointsToCalibrate.parts)
             % cost after optimisation
             optimCost = costFunction(zeros(6,1),data,subsetVec_idx,optimFunction,true,'Optim');
             fprintf('Mean cost (in (m.s^{-2})^2):\n');
-            (initialCost'*optimCost)/(nrOfMTBAccs*length(subsetVec_idx))            
+            (optimCost'*optimCost)/(nrOfMTBAccs*length(subsetVec_idx))            
         end
     end
     % Standard deviation across offsets grid
