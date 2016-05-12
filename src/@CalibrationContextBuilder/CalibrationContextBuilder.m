@@ -147,7 +147,7 @@ classdef CalibrationContextBuilder < handle
             % sensor predicted measurements and the real measure from the captured data.
             for frame = 1:length(data.frames)
                 if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
-                    if strcmp(data.type(frame),'inertialMTB')
+                    if strcmp(data.type(frame),'inertialMTB') || strcmp(data.type(frame),'inertialMTI')
                         if data.sensorAct{frame}
                             obj.sensorsIdxListModel = [obj.sensorsIdxListModel ...
                                 obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...

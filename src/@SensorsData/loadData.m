@@ -212,11 +212,13 @@ end
 
 
 %% Process raw sensor data
-acc_gain = 5.9855e-04;
-%acc_gain = 1.0;
 deg_to_rad = pi/180.0;
 gyro_gain = deg_to_rad*7.6274e-03;
 for i = 1 : length(obj.parts)
+    % gain for the processed sensor
+    acc_gain = obj.gain{i};
+
+    % convert raw data
     t    = ['time_' obj.labels{i}];
     ys   = ['ys_' obj.labels{i}];
     if( strcmp(obj.labels{i},'lh_imu') || ...

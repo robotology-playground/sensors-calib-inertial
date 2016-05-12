@@ -11,7 +11,8 @@ load('../EncodersAutoCalib/data/minimResult.mat');
 
 origin=zeros(size(sensMeasCell,1),3);
 
-activeAccs = mtbSensorCodes_list{1}(cell2mat(mtbSensorAct));
+activeAccs = mtbSensorCodes_list{1}(cell2mat(mtbSensorAct_list{1}));
+%activeAccs = mtbSensorCodes_list{1}(cell2mat(mtbSensorAct));
 
 listAccPlotted = 1:size(sensMeasCell,2);
 %listAccPlotted = 1;
@@ -119,11 +120,14 @@ figure('Name', 'chain configuration q');
 
 hold on
 myColors = {'b','g','r','c','m','y'};
-for qIdx = 1:6
-    plot(qiMat(:,qIdx)*180/pi,myColors{qIdx});
+myLegend = {'q1','q2','q3','q4','q5','q6'};
+colorIdx = 1;
+for qIdx = modelJointsList
+    plot(qiMat(:,qIdx)*180/pi,myColors{colorIdx});
+    colorIdx = colorIdx+1;
 end
 hold off
-legend('q1','q2','q3','q4','q5','q6');
+legend(jointsToCalibrate.partJoints{1});
 
 % %% try to find a new combination matching meas. and est.
 % 
@@ -161,7 +165,7 @@ legend('q1','q2','q3','q4','q5','q6');
 %     hold on;
 %     Vest=cell2mat(sensEstCell(:,idxVarMin(acc_i)));
 %     quiver3(origin(:,1),origin(:,2),origin(:,3),Vest(:,1),Vest(:,2),Vest(:,3),'color',[0 0 1]);
-%     title(['acc. ' mtbSensorCodes_list{1}(cell2mat(mtbSensorAct))]);
+%     title(['acc. ' mtbSensorCodes_list{1}(cell2mat(mtbSensorAct_list{1}))]);
 %     axis equal;
 %     axis vis3d;
 %     hold off;

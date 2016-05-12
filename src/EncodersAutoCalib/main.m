@@ -13,7 +13,7 @@ offsetedQsIdxs = 1:6;
 
 % model and data capture file
 modelPath = '../models/iCubGenova02/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubGenova02_#1/';
+dataPath  = '../../data/calibration/dumper/iCubDarmstadt01_#1/';
 dataSetNb = '';
 
 % Optimisation configuration
@@ -28,32 +28,18 @@ costFunctionSelect = 'costFunctionSigma';
 % The subset can be selected randomly.
 number_of_subset_init = 3;
 subsetVec_size_frac = 0.2; % subset size = 1/n total data set size
-timeStart = 134;  % starting time in capture data file (in seconds)
-timeStop  = 144; % ending time in capture data file (in seconds)
+timeStart = 2;  % starting time in capture data file (in seconds)
+timeStop  = 300; % ending time in capture data file (in seconds)
 subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 
 % define the set of joints (of whole limb) to calibrate and activate the sensors
 % in that limb.
-jointsToCalibrate.parts = {'left_leg'};
-
-mtbSensorAct = ...
-    {false,false, ...
-    true,true, ...
-    false, ...
-    true,true, ...
-    true,false,   ...
-    false,false,   ...
-    true};
-%mtbSensorAct(:) = {true};
+jointsToCalibrate.parts = {'head'}; %loop on 1 single cost f 
 
 %%=========================================================================
 
 %% set init parameters
 %
-jointsToCalibrate.partJoints = {};
-jointsToCalibrate.partJointsInitOffsets = {};
-mtbSensorCodes_list = {};
-mtbSensorLink_list = {};
 run jointsNsensorsDefinitions;
 
 % in target mode, don't apply any prior offsets
@@ -87,13 +73,16 @@ for part = 1 : length(jointsToCalibrate.parts)
             % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
             data = SensorsData(dataPath,dataSetNb,subSamplingSize,timeStart,timeStop,false);
             
-            % add mtb sensors
-            data.addMTBsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
+            % add mtx sensors (MTB or MTI-imu)
+            data.addMTXsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
                 mtbSensorCodes_list{part}, mtbSensorLink_list{part}, ...
-                mtbSensorAct, jointsToCalibrate.mtbInvertedFrames{part},true);
+                mtbSensorAct_list{part}, jointsToCalibrate.mtbInvertedFrames{part}, ...
+                mtxSensorType_list{part},true);
             
             % add joint measurements
-            data.addEncSensToData(jointsToCalibrate.parts{part}, true);
+            data.addEncSensToData(jointsToCalibrate.parts{part}, ...
+                jointsToCalibrate.jointsDofs{part}, jointsToCalibrate.jointsIdxes{part}, ...
+                true);
             
             % Load data from the file and parse it
             data.loadData();
@@ -144,7 +133,7 @@ for part = 1 : length(jointsToCalibrate.parts)
             myCalibContext.loadJointNsensorsDataSubset(data,subsetVec_idx);
             
             % cost before optimisation
-            initialCost = costFunction(zeros(6,1),data,subsetVec_idx,optimFunction,true,'');
+            initialCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,optimFunction,true,'');
             fprintf('Mean cost (in (m.s^{-2})^2):\n');
             (initialCost'*initialCost)/(nrOfMTBAccs*length(subsetVec_idx))
             
@@ -173,7 +162,7 @@ for part = 1 : length(jointsToCalibrate.parts)
             optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx)*180/pi
             
             % cost after optimisation
-            optimCost = costFunction(zeros(6,1),data,subsetVec_idx,optimFunction,true,'Optim');
+            optimCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,optimFunction,true,'Optim');
             fprintf('Mean cost (in (m.s^{-2})^2):\n');
             (optimCost'*optimCost)/(nrOfMTBAccs*length(subsetVec_idx))            
         end
@@ -201,7 +190,7 @@ end
 
 
 save('./data/minimResult.mat', ...
-    'mtbSensorCodes_list','jointsToCalibrate','mtbSensorAct', ...
+    'mtbSensorCodes_list','jointsToCalibrate','mtbSensorAct_list', ...
     'data','offsetsConfigGrid', ...
     'optimalDq','exitflag','output','std_optDq_offsetsGrid','std_optDq_subsets');
 

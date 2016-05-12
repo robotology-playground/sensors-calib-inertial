@@ -1430,55 +1430,55 @@
         <child link="r_foot_dh_frame" />
     </joint>
   <sensor name="root_link_ems_acc_eb5" type="accelerometer">
-	<origin xyz="0.0493308 -0.0125771 -0.115691" rpy="3.141592653589793 1.2915440450258349 3.141592653589793"/>
+	<origin xyz="0.0493308 -0.0125771 -0.115691" rpy="3.14159265359 1.29154404503 3.14159265359"/>
 	<parent link="root_link"/>
   </sensor>
   <sensor name="root_link_ems_gyro_eb5" type="gyroscope">
-	<origin xyz="0.0493308 -0.0125771 -0.115691" rpy="3.141592653589793 1.2915440450258349 3.141592653589793"/>
+    <origin xyz="0.0493308 -0.0125771 -0.115691" rpy="3.14159265359 1.29154404503 3.14159265359"/>
 	<parent link="root_link"/>
   </sensor>
   <sensor name="l_upper_leg_ems_acc_eb6" type="accelerometer">
-	<origin xyz="-0.0404072 -0.083207 -0.0125771" rpy="1.5707963267948961 0 -1.5707963267948961"/>
+	<origin xyz="-0.0404072 -0.083207 -0.0125771" rpy="1.57079632679 0 -1.57079632679"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_ems_acc_eb10" type="accelerometer">
-	<origin xyz="0.040407 -0.040027 -0.0125751" rpy="1.5707963267948961 0 1.5707963267948961"/>
+	<origin xyz="0.040407 -0.040027 -0.0125751" rpy="1.57079632679 0 1.57079632679"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_ems_gyro_eb6" type="gyroscope">
-	<origin xyz="-0.0404072 -0.087779 -0.013081" rpy="1.5707963267948961 0 -1.5707963267948961"/>
+	<origin xyz="-0.0404072 -0.087779 -0.013081" rpy="1.57079632679 0 -1.57079632679"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_ems_gyro_eb10" type="gyroscope">
-    	<origin xyz="0.040407 -0.035455 -0.013079" rpy="1.5707963267948961 0 1.5707963267948961"/>
+    	<origin xyz="0.040407 -0.035455 -0.013079" rpy="1.57079632679 0 1.57079632679"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_mtb_acc_10b1" type="accelerometer">
-	<origin xyz="0.031565 0.049332 0.04200163" rpy="0.8377580369611062 -8.629128296517655e-05 1.5708740239417236"/>
+    <origin xyz="0.031565 0.049332 0.04200163" rpy="0.837758036961 -8.62912829653e-05 1.57087402394"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_mtb_acc_10b2" type="accelerometer">
-	<origin xyz="0.0083839 0.039452 0.05335544" rpy="0.8377580369650546 -8.629128691368476e-05 1.5708740239399657"/>
+	<origin xyz="0.0083839 0.039452 0.05335544" rpy="0.837758036965 -8.62912869137e-05 1.57087402394"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_mtb_acc_10b3" type="accelerometer">
-	<origin xyz="0.0150706 0.004382 0.053785" rpy="0 0 1.5707963267948966"/>
+    <origin xyz="0.0150706 0.004382 0.053785" rpy="0 0 1.57079632679"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_mtb_acc_10b4" type="accelerometer">
-    <origin xyz="-0.0144294 0.004382 0.053785" rpy="0 0 1.5707963267948966"/>
+    <origin xyz="-0.0144294 0.004382 0.053785" rpy="0 0 1.57079632679"/>
     <parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_mtb_acc_10b5" type="accelerometer">
-    <origin xyz="-0.0414999 -0.004658 0.03412949" rpy="-1.186823762544959 0 1.5707963267948963"/>
+    <origin xyz="-0.0414999 -0.004658 0.03412949" rpy="-1.18682376254 0 1.57079632679"/>
     <parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_mtb_acc_10b6" type="accelerometer">
-	<origin xyz="0.0178086 -0.026212 -0.043785" rpy="3.141592653589793 0 -1.5709124300543913"/>
+	<origin xyz="0.0178086 -0.026212 -0.043785" rpy="3.14159265359 0 -1.57091243005"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_upper_leg_mtb_acc_10b7" type="accelerometer">
-	<origin xyz="-0.0141918 -0.026211 -0.043785" rpy="3.141592653589793 0 -1.5709453146950971"/>
+	<origin xyz="-0.0141918 -0.026211 -0.043785" rpy="3.14159265359 0 -1.5709453147"/>
 	<parent link="l_upper_leg"/>
   </sensor>
   <sensor name="l_lower_leg_ems_acc_eb7" type="accelerometer">
@@ -1490,7 +1490,7 @@
     <parent link="l_lower_leg"/>
   </sensor>
   <sensor name="l_lower_leg_mtb_acc_10b8" type="accelerometer">
-    <origin xyz="0.0099841 -0.004318 0.0544518" rpy="-0.34906563804548707 3.9714103784092166e-05 1.570905440483374"/>
+    <origin xyz="0.0099841 -0.004318 0.0544518" rpy="-0.349065638045 3.97141037841e-05 1.57090544048"/>
     <parent link="l_lower_leg"/>
   </sensor>
   <sensor name="l_lower_leg_mtb_acc_10b9" type="accelerometer">
@@ -1692,6 +1692,10 @@
   <sensor name="r_foot_mtb_acc_11b13" type="accelerometer">
 	<origin xyz="0.0784744 -0.0118072 -0.001215" rpy="0 0 -1.5707963267948966"/>
 	<parent link="r_foot"/>
+  </sensor>
+  <sensor name="head_mti_acc_1x1" type="accelerometer">
+	<origin xyz="0.00950000019074 0.133444 0.0093" rpy="-1.57079632679 1.57079632679 0"/>
+	<parent link="head"/>
   </sensor>
  <gazebo reference="l_arm_ft_sensor">
         <sensor name="left_arm_ft" type="force_torque">
