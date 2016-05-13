@@ -11,13 +11,17 @@ load('../EncodersAutoCalib/data/minimResult.mat');
 
 origin=zeros(size(sensMeasCell,1),3);
 
-activeAccs = mtbSensorCodes_list{1}(cell2mat(mtbSensorAct_list{1}));
 %activeAccs = mtbSensorCodes_list{1}(cell2mat(mtbSensorAct));
+activeAccs = 'imu';
 
 listAccPlotted = 1:size(sensMeasCell,2);
 %listAccPlotted = 1;
 
-figure('Name', '3D vectors sensor_meas (red) & sensor_est (blue)');
+% time scale
+time = data.tInit + data.parsedParams.time(subsetVec_idx);
+
+figure('Name', '3D vectors sensor measurement VS sensor estimation');
+title('3D vectors of IMU measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 for acc_i = listAccPlotted
     subplot(max(1,round(length(listAccPlotted)/3)),min(3,length(listAccPlotted)),acc_i);
@@ -29,13 +33,24 @@ for acc_i = listAccPlotted
     quiver3(origin(:,1),origin(:,2),origin(:,3),Vmeas(:,1),Vmeas(:,2),Vmeas(:,3),'color',[1 0 0]);
     quiver3(origin(:,1),origin(:,2),origin(:,3),Vest(:,1),Vest(:,2),Vest(:,3),'color',[0 0 1]);
     
-    title(['acc. ' activeAccs(acc_i)]);
-    axis equal;
+    % title(['acc. ' activeAccs(acc_i)]);
     axis vis3d;
+    % axis square;
+    daspect([1 1 1]);
+    d = daspect;
+    grid ON;
+    xlabel('Acc X (m/s^2)','Fontsize',12);
+    ylabel('Acc Y (m/s^2)','Fontsize',12);
+    zlabel('Acc Z (m/s^2)','Fontsize',12);
+    legend('Location','BestOutside','measured acc.','estimated acc.');
     hold off;
 end
+set(gca,'FontSize',12);
+print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/v3dAccEstVSaccMeas');
 
-figure('Name', 'coordinates of sensor_meas (red) & sensor_est (blue)');
+
+figure('Name', 'components of sensor measurement VS sensor estimation');
+title('components of IMU measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 for acc_i = listAccPlotted
     subplot(max(1,round(length(listAccPlotted)/3)),min(3,length(listAccPlotted)),acc_i);
@@ -44,19 +59,27 @@ for acc_i = listAccPlotted
     Vmeas=cell2mat(sensMeasCell(:,acc_i));
     Vest=cell2mat(sensEstCell(:,acc_i));
     
-    plot(Vmeas(:,1),'r-');
-    plot(Vmeas(:,2),'rV:');
-    plot(Vmeas(:,3),'r^:');
-    plot(Vest(:,1),'b-');
-    plot(Vest(:,2),'bV:');
-    plot(Vest(:,3),'b^:');
+    plot(time,Vmeas(:,1),'r-');
+    plot(time,Vmeas(:,2),'rV:');
+    plot(time,Vmeas(:,3),'r^:');
+    plot(time,Vest(:,1),'b-');
+    plot(time,Vest(:,2),'bV:');
+    plot(time,Vest(:,3),'b^:');
     
-    title(['acc. ' activeAccs(acc_i)]);
+    % title(['acc. ' activeAccs(acc_i)]);
     axis equal;
+    grid ON;
+    xlabel('Time (sec)','Fontsize',12);
+    ylabel('Acc X|Y|Z (m/s^2)','Fontsize',12);
+    legend('Location','BestOutside','measured x','measured y','measured z',...
+        'estimated x','estimated y','estimated z');
     hold off;
 end
+set(gca,'FontSize',12);
+print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/xyzAccEstVSaccMeas');
 
-figure('Name', 'Norm of sensor_meas (red) & sensor_est (blue)');
+figure('Name', 'Norm of sensor measurement VS sensor estimation');
+title('Norm of IMU measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 for acc_i = listAccPlotted
     subplot(max(1,round(length(listAccPlotted)/3)),min(3,length(listAccPlotted)),acc_i);
@@ -66,26 +89,61 @@ for acc_i = listAccPlotted
     Vest=sensEstNormMat(:,acc_i);
     Vcost=costNormMat(:,acc_i);
     
-    plot(Vmeas,'r');
-    plot(Vest,'b');
-    plot(Vcost,'g');
+    plot(time,Vmeas,'r','lineWidth',2.0);
+    plot(time,Vest,'b','lineWidth',2.0);
+    plot(time,Vcost,'g','lineWidth',2.0);
     
-    title(['acc. ' activeAccs(acc_i)]);
+    % title(['acc. ' activeAccs(acc_i)]);
     axis equal;
+    grid ON;
+    xlabel('Time (sec)','Fontsize',12);
+    ylabel('Acc norm (m/s^2)','Fontsize',12);
+    legend('Location','BestOutside','norm(measured)','norm(estimated)','norm(measured-estimated)');
     hold off;
 end
+set(gca,'FontSize',12);
+print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/normAccEstVSaccMeas');
 
-figure('Name', 'Angle of sensor_est VS sensor_meas');
+figure('Name', 'Angle of sensor measurement VS sensor estimation');
+title('Angle of IMU measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 for acc_i = listAccPlotted
     subplot(max(1,round(length(listAccPlotted)/3)),min(3,length(listAccPlotted)),acc_i);
+    hold on;
     
-    plot(angleMat(:,acc_i)*180/pi,'r');
+    plot(time,angleMat(:,acc_i)*180/pi,'r','lineWidth',2.0);
     
-    title(['acc. ' activeAccs(acc_i)]);
+    % title(['acc. ' activeAccs(acc_i)]);
     axis equal;
+    grid ON;
+    xlabel('Time (sec)','Fontsize',12);
+    ylabel('Angle (degrees)','Fontsize',12);
+    hold off
 end
+set(gca,'FontSize',12);
+print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/angleAccEstVSaccMeas');
 
+figure('Name', 'chain joint positions q');
+title('torso,head joints positions q','Fontsize',16,'FontWeight','bold');
+
+hold on
+myColors = {'b','g','r','c','m','y'};
+colorIdx = 1;
+for qIdx = modelJointsList
+    plot(time,qiMat(:,qIdx)*180/pi,myColors{colorIdx},'lineWidth',2.0);
+    colorIdx = colorIdx+1;
+end
+hold off
+grid ON;
+xlabel('Time (sec)','Fontsize',12);
+ylabel('Joints positions (degrees)','Fontsize',12);
+legend('Location','BestOutside',[jointsToCalibrate.partJoints{1} jointsToCalibrate.partJoints{2}]);
+set(gca,'FontSize',12);
+print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/jointPositions');
+
+
+%%
+%
 % figure('Name', 'Distribution of sensor_meas Norm');
 % 
 % for acc_i = listAccPlotted
@@ -115,19 +173,6 @@ end
 %     axis equal;
 %     hold off;
 % end
-
-figure('Name', 'chain configuration q');
-
-hold on
-myColors = {'b','g','r','c','m','y'};
-myLegend = {'q1','q2','q3','q4','q5','q6'};
-colorIdx = 1;
-for qIdx = modelJointsList
-    plot(qiMat(:,qIdx)*180/pi,myColors{colorIdx});
-    colorIdx = colorIdx+1;
-end
-hold off
-legend(jointsToCalibrate.partJoints{1});
 
 % %% try to find a new combination matching meas. and est.
 % 

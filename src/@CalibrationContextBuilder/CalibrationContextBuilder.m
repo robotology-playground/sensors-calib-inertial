@@ -20,14 +20,17 @@ classdef CalibrationContextBuilder < handle
         sensorsIdxListModel = []; %% subset of active sensors: indices from iDynTree model
         sensorsIdxListFile  = []; %% subset of active sensors: indices from 'data.frame' list,
                                   %  ordered as per the data.log format.
-        jointsLabelIdx = 0;       %% index of 'StateExt' in 'data.frame' list
+        jointsIdxFile             %% index of 'StateExt' in 'data.frame' list
         jointsIdxListModel  = []; %% map 'joint to calibrate' to iDynTree joint index
         estimatedSensorLinAcc     %% predicted measurement on sensor frame
-        tmpSensorLinAcc              %% sensor measurement
-        q0i                       %% joint positions for the current processed part.
-        dqi                       %% joint velocities for the current processed part.
-        d2qi                      %% joint accelerations for the current processed part.
-        DqiEnc                    %% vrtual joint offsets from the encoders.
+        tmpSensorLinAcc           %% sensor measurement
+        q0i     = [];             %% joint positions for the current processed part.
+        dqi     = [];             %% joint velocities for the current processed part.
+        d2qi    = [];             %% joint accelerations for the current processed part.
+        sub_q0i
+        sub_dqi
+        sub_d2qi
+        DqiEnc  = [];             %% virtual joint offsets from the encoders.
         %% specific to APPROACH 2: measurements projected on each link
         traversal_Lk              %% full traversal for computing the link positions
         fixedBasePos              %% full tree joint positions (including base link)
@@ -36,7 +39,7 @@ classdef CalibrationContextBuilder < handle
                                    % relevant for computing the transforms
                                    % between segment frames).
         linkPos                   %% link positions w.r.t. the chosen base (base="projection link")
-        segments                  %% list of segments for current part.
+        segments = {};            %% list of segments for current part.
     end
     
     methods
@@ -133,11 +136,11 @@ classdef CalibrationContextBuilder < handle
         
         function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,jointsToCalibrate)
             % load joint virtual encoder offsets
-            obj.DqiEnc = jointsToCalibrate.partJointsInitOffsets{part}';
+            obj.DqiEnc = [obj.DqiEnc; jointsToCalibrate.partJointsInitOffsets{part}'];
             
             % load segments list for current part (ex: segments of left leg part
             % are: 'l_upper_leg', 'l_lower_leg', 'l_foot'.
-            obj.segments = jointsToCalibrate.partSegments{part};
+            obj.segments = [obj.segments jointsToCalibrate.partSegments{part}];
             
             %% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
             % Go through 'data.frames', 'data.parts' and 'data.labels' and build :
@@ -148,14 +151,12 @@ classdef CalibrationContextBuilder < handle
             for frame = 1:length(data.frames)
                 if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
                     if strcmp(data.type(frame),'inertialMTB') || strcmp(data.type(frame),'inertialMTI')
-                        if data.sensorAct{frame}
-                            obj.sensorsIdxListModel = [obj.sensorsIdxListModel ...
-                                obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
-                                char(data.frames(frame)))];
-                            obj.sensorsIdxListFile = [obj.sensorsIdxListFile frame];
-                        end
+                        obj.sensorsIdxListModel = [obj.sensorsIdxListModel ...
+                            obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
+                            char(data.frames(frame)))];
+                        obj.sensorsIdxListFile = [obj.sensorsIdxListFile frame];
                     elseif strcmp(data.type{frame}, 'stateExt:o')
-                        obj.jointsLabelIdx = frame;
+                        obj.jointsIdxFile = frame;
                     else
                         error('costFunctionSigma: wrong type ',...
                             'Error.\nWrong data type of sensor data. Valid types are "inertialMTB" and "stateExt:o" !!');
@@ -171,17 +172,22 @@ classdef CalibrationContextBuilder < handle
             end
             %convert indices to matlab
             obj.jointsIdxListModel = obj.jointsIdxListModel+1;
+            
+            % Select from label index the joints associated to the current processed part.
+            qsRad    = ['qsRad_' data.labels{obj.jointsIdxFile}];
+            dqsRad   = ['dqsRad_' data.labels{obj.jointsIdxFile}];
+            d2qsRad  = ['d2qsRad_' data.labels{obj.jointsIdxFile}];
+            
+            eval(['obj.q0i = [obj.q0i; data.parsedParams.' qsRad '];']);
+            eval(['obj.dqi = [obj.dqi; data.parsedParams.' dqsRad '];']);
+            eval(['obj.d2qi = [obj.d2qi; data.parsedParams.' d2qsRad '];']);            
         end
         
-        function loadJointNsensorsDataSubset(obj,data,subsetVec_idx)
-            % Select from label index the joints associated to the current processed part.
-            qsRad    = ['qsRad_' data.labels{obj.jointsLabelIdx}];
-            dqsRad   = ['dqsRad_' data.labels{obj.jointsLabelIdx}];
-            d2qsRad  = ['d2qsRad_' data.labels{obj.jointsLabelIdx}];
-            
-            eval(['obj.q0i = data.parsedParams.' qsRad '(:,subsetVec_idx);']);
-            eval(['obj.dqi = data.parsedParams.' dqsRad '(:,subsetVec_idx);']);
-            eval(['obj.d2qi = data.parsedParams.' d2qsRad '(:,subsetVec_idx);']);
+        function loadJointNsensorsDataSubset(obj,subsetVec_idx)
+            % Select a time subset of the joint positions
+            obj.sub_q0i = obj.q0i(:,subsetVec_idx);
+            obj.sub_dqi = obj.dqi(:,subsetVec_idx);
+            obj.sub_d2qi = obj.d2qi(:,subsetVec_idx);
         end
 
         function simulateAccelerometersMeasurements(obj, data, datasetVecIdx)
@@ -189,9 +195,9 @@ classdef CalibrationContextBuilder < handle
                 % Fill iDynTree joint vectors.
                 % Warning!! iDynTree takes in input **radians** based units,
                 % while the iCub port stream **degrees** based units.
-                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.q0i(:,ts);
-                dqisRobotDOF = zeros(obj.dofs,1); dqisRobotDOF(obj.jointsIdxListModel,1) = obj.dqi(:,ts);
-                d2qisRobotDOF = zeros(obj.dofs,1); d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.d2qi(:,ts);
+                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts);
+                dqisRobotDOF = zeros(obj.dofs,1); dqisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_dqi(:,ts);
+                d2qisRobotDOF = zeros(obj.dofs,1); d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_d2qi(:,ts);
                 obj.qi_idyn.fromMatlab(qisRobotDOF);
                 obj.dqi_idyn.fromMatlab(dqisRobotDOF);
                 obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
@@ -217,7 +223,7 @@ classdef CalibrationContextBuilder < handle
                     % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                     % and then select the sample 's' (<=> timestamp).
                     ys   = ['ys_' data.labels{obj.sensorsIdxListFile(acc_i)}];
-                    eval(['data.parsedParams.' ys '(:,ts) = sensEst;']);
+                    eval(['data.parsedParams.' ys '(:,subsetVec_idx(ts)) = sensEst;']);
                 end
             end
         end
@@ -253,9 +259,9 @@ classdef CalibrationContextBuilder < handle
                 % Warning!! iDynTree takes in input **radians** based units,
                 % while the iCub port stream **degrees** based units.
                 % Also add joint offsets from a previous result.
-                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.q0i(:,ts) + obj.DqiEnc + Dq;
-                dqisRobotDOF = zeros(obj.dofs,1);% dqisRobotDOF(obj.jointsIdxListModel,1) = obj.dqi(:,ts);
-                d2qisRobotDOF = zeros(obj.dofs,1);% d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.d2qi(:,ts);
+                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + obj.DqiEnc + Dq;
+                dqisRobotDOF = zeros(obj.dofs,1);% dqisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_dqi(:,ts);
+                d2qisRobotDOF = zeros(obj.dofs,1);% d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_d2qi(:,ts);
                 obj.qi_idyn.fromMatlab(qisRobotDOF);
                 obj.dqi_idyn.fromMatlab(dqisRobotDOF);
                 obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
@@ -317,7 +323,7 @@ classdef CalibrationContextBuilder < handle
             if log
                 % log data
                 logFile = ['./data/logSensorMeasVsEst' optimized '.mat'];
-                save(logFile,'modelJointsList','qiMat','sensMeasNormMat','sensEstNormMat','costNormMat','angleMat','sensMeasCell','sensEstCell');
+                save(logFile,'modelJointsList','qiMat','sensMeasNormMat','sensEstNormMat','costNormMat','angleMat','sensMeasCell','sensEstCell','subsetVec_idx');
             end
         end
         
@@ -405,7 +411,7 @@ classdef CalibrationContextBuilder < handle
                     % Warning!! iDynTree takes in input **radians** based units,
                     % while the iCub port stream **degrees** based units.
                     % Also add joint offsets from a previous result.
-                    qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.q0i(:,ts) + obj.DqiEnc + Dq;
+                    qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + obj.DqiEnc + Dq;
                     % obj.qi_idyn.fromMatlab(qisRobotDOF);
                     for joint_i = 0:(obj.dofs-1)
                         obj.fixedBasePos.jointPos.setVal(joint_i,qisRobotDOF(joint_i+1));

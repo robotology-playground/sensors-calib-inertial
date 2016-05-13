@@ -39,7 +39,9 @@ mtbSensorLink_leg = @(side) {[side '_upper_leg'],[side '_upper_leg'], ...
 segments_leg = @(side) {[side '_upper_leg'],[side '_lower_leg'],[side '_foot']};
 segments_arm = @(side) {[side '_upper_arm'],[side '_forearm'],[side '_hand']};
 
-%% define the joints to calibrate
+%% define the joints to calibrate and the respective indexes in the port data
+%
+% indexes and joints list must match!!
 %
 jointsToCalibrate_left_arm = jointsToCalibrate_arm('l');
 jointsToCalibrate_right_arm = jointsToCalibrate_arm('r');
@@ -130,7 +132,7 @@ mtbInvertedFrames_right_arm = {false,false,false,false,false,false,false};
 mtbInvertedFrames_left_leg  = {false,false,  true,true  ,false,false,false,  true  ,false,false,false,  true};
 mtbInvertedFrames_right_leg = {false,false,  true,true  ,false,false,false,  true  ,false,false,false,  true};
 mtbInvertedFrames_torso = {false,false,false,false};
-mtbInvertedFrames_head = {false};
+mtbInvertedFrames_head = {true};
 
 %% some sensors are de-activated because of faulty behaviour, bad calibration or wrong frame definition
 mtbSensorAct_left_arm(1:7) = {true};
@@ -148,7 +150,7 @@ mtbSensorAct_left_leg = ...
 
 mtbSensorAct_right_leg = mtbSensorAct_left_leg;
 
-mtbSensorAct_torso(1:3) = {true};
+mtbSensorAct_torso(1:4) = {false};
 
 mtbSensorAct_head(1) = {true};
 
@@ -174,6 +176,6 @@ for i = 1:length(jointsToCalibrate.parts)
     eval(['jointsToCalibrate.jointsIdxes{' num2str(i) '} = jointsIdxes_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorCodes_list{' num2str(i) '} = mtbSensorCodes_' jointsToCalibrate.parts{i} ';']);
     eval(['mtbSensorLink_list{' num2str(i) '} = mtbSensorLink_' jointsToCalibrate.parts{i} ';']);
-    eval(['mtbSensorAct_list{' num2str(i) '} = mtbSensorAct_' jointsToCalibrate.parts{i} ';']);
+    eval(['mtbSensorAct_list{' num2str(i) '} = cell2mat(mtbSensorAct_' jointsToCalibrate.parts{i} ');']);
     eval(['mtxSensorType_list{' num2str(i) '} = mtxSensorType_' jointsToCalibrate.parts{i} ';']);
 end
