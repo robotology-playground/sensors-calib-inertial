@@ -87,11 +87,12 @@ classdef CalibrationContextBuilder < handle
             
             % Set the position of base link
             obj.fixedBasePos = iDynTree.FreeFloatingPos(obj.estimator.model);
-%            obj.fixedBasePos.worldBasePos = iDynTree.Transform.Identity();
+            obj.fixedBasePos.worldBasePos().setRotation(iDynTree.Rotation.Identity());
+            obj.fixedBasePos.worldBasePos().setPosition(iDynTree.Position.Zero());
 
             %% Specify unknown wrenches (specific to APPROACH 1)
             % We need to set the location of the unknown wrench. We express the unknown
-            % wrench at the origin of the l_sole frame
+            % wrench at the origin of the base_link frame
             unknownWrench = iDynTree.UnknownWrenchContact();
             unknownWrench.unknownType = iDynTree.FULL_WRENCH;
             
@@ -215,10 +216,6 @@ classdef CalibrationContextBuilder < handle
                     % get predicted measurement on sensor frame
                     obj.estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acc_i),obj.estimatedSensorLinAcc);
                     sensEst = obj.estimatedSensorLinAcc.toMatlab;
-                    % correction for MTB mounted upside-down
-                    if data.isInverted{obj.sensorsIdxListFile(acc_i)}
-                        sensEst = FrameConditioner.real_R_model*sensEst;
-                    end
                     
                     % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                     % and then select the sample 's' (<=> timestamp).
@@ -283,10 +280,6 @@ classdef CalibrationContextBuilder < handle
                     % get predicted measurement on sensor frame
                     obj.estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acc_i),obj.estimatedSensorLinAcc);
                     sensEst = obj.estimatedSensorLinAcc.toMatlab;
-                    % correction for MTB mounted upside-down
-                    if data.isInverted{obj.sensorsIdxListFile(acc_i)}
-                        sensEst = FrameConditioner.real_R_model*sensEst;
-                    end
                     
                     % get measurement table ys_xxx_acc [3xnSamples] from captured data,
                     % and then select the sample 's' (<=> timestamp).
@@ -484,42 +477,52 @@ classdef CalibrationContextBuilder < handle
           
         end
         
+        function list_kHsens = getListTransforms(obj,refFrameName)
+            % Set joint positions to 0
+            qisRobotDOF = zeros(obj.dofs,1);
+            dqisRobotDOF = zeros(obj.dofs,1);
+            d2qisRobotDOF = zeros(obj.dofs,1);
+            obj.qi_idyn.fromMatlab(qisRobotDOF);
+            obj.dqi_idyn.fromMatlab(dqisRobotDOF);
+            obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
+            
+            % init list of transforms
+            nbSensors = obj.estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER);
+            list_kHsens = cell(nbSensors,1);
+            
+            % get link from ref frame and compute the traveral
+            Lb = obj.estimator.model.getFrameLink(...
+                obj.estimator.model.getFrameIndex(refFrameName));
+            obj.estimator.model.computeFullTreeTraversal(obj.traversal_Lk, Lb);
+            
+            % propagate kinematic parameters
+            iDynTree.ForwardPositionKinematics(obj.estimator.model, obj.traversal_Lk,obj.fixedBasePos, obj.linkPos);
+            
+            % get the transform for each sensor
+            for acci = 1:nbSensors
+                % get sensor handle
+                sensor = obj.estimator.sensors.getAccelerometerSensor(acci-1);
+                % get the sensor to link i transform Li_H_acci
+                Li_H_acci = sensor.getLinkSensorTransform().getRotation().toMatlab;
+                % get the projection link b to link i transform Lb_H_Li
+                iDynTree.ForwardPositionKinematics(obj.estimator.model, obj.traversal_Lk, ...
+                    obj.fixedBasePos, obj.linkPos);
+                Li = sensor.getParentLinkIndex();
+                Lb_H_Li_idyn = obj.linkPos(Li);
+                Lb_H_Li = Lb_H_Li_idyn.getRotation().toMatlab;
+                % get the transform base link to sensor frame
+                Lb_H_acci = Lb_H_Li * Li_H_acci;
+                % print
+                fprintf('Sensor %s :',sensor.getName());
+                Lb_H_Li
+                Li_H_acci
+                Lb_H_acci
+                % export list
+                list_kHsens{acci,1} = Lb_H_acci;
+            end
+        end
+        
     end
-    
-    
-    % % DEBUG: plot debug data
-    % persistent scrsz;
-    % if isempty(scrsz)
-    %     scrsz = get(0,'ScreenSize');
-    % end
-    % persistent fig1;
-    % if isempty(fig1)
-    %     fig1 = figure('Name', '||sensor meas|| (red) & ||sensor estim|| (blue)');
-    % end
-    % persistent fig2;
-    % if isempty(fig2)
-    %     fig2 = figure('Name', '||sens_meas - sens_est|| & mean of norms');
-    % end
-    %
-    % figure(fig1);
-    % plot(sensMeasNormMat,'r');
-    % hold on;
-    % plot(sensEstNormMat,'b');
-    % hold off;
-    %
-    % figure(fig2);
-    % plot(costNormMat,'g');
-    % hold on;
-    % plot(mean(costNormMat,2),'m');
-    % hold off;
-    %
-    % %% DEBUG: Log data for later plotting gravity as 3D vector
-    %
-    % % log data
-    % logFile = 'logSensorMeasVsEst.mat';
-    % save(logFile,'sensMeasCell','sensEstCell');
-    %
-    % pause;
     
 end
 

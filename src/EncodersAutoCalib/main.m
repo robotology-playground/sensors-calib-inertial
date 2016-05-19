@@ -50,6 +50,20 @@ end
 
 % create the calibration context implementing the cost function
 myCalibContext = CalibrationContextBuilder(modelPath);
+%% DEBUG
+waitforbuttonpress;
+list_kHsens = myCalibContext.getListTransforms('base_link');
+importFrames;
+
+list_kHsens_left_leg = list_kHsens(3+[1:7 9:14],1);
+list_kHsens_left_leg_idx = 3+[1:7 9:14]-1;
+
+for iterList = 1:13
+    myCalibContext.estimator.sensors.getAccelerometerSensor(list_kHsens_left_leg_idx(iterList)).getName
+    sum(sum(abs(list_kHsens_fromCREO{iterList}-list_kHsens_left_leg{iterList})))
+end
+
+%%
 
 % Cost Function used to optimise the offsets
 eval(['costFunction = @myCalibContext.' costFunctionSelect]);
