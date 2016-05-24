@@ -172,3 +172,11 @@ for i = 1:length(jointsToCalibrate.parts)
     eval(['mtbSensorAct_list{' num2str(i) '} = cell2mat(mtbSensorAct_' jointsToCalibrate.parts{i} ');']);
     eval(['mtxSensorType_list{' num2str(i) '} = mtxSensorType_' jointsToCalibrate.parts{i} ';']);
 end
+
+averageOptimalDq = [
+        0.0217911707219332
+        -0.018180301459323
+       -0.0192434934942838
+       0.00429236030205633
+       -0.0279738490808343
+        0.0182212099876574];

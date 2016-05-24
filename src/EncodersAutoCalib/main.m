@@ -13,8 +13,8 @@ offsetedQsIdxs = 1:6;
 
 % model and data capture file
 modelPath = '../models/iCubGenova02/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubDarmstadt01_#1/';
-dataSetNb = '';
+dataPath  = '../../data/calibration/dumper/iCubGenova02_#2/';
+dataSetNb = '_00000';
 
 % Optimisation configuration
 [optimFunction,options] = getOptimConfig();
@@ -26,15 +26,18 @@ costFunctionSelect = 'costFunctionSigma';
 % 'subSamplingSize' samples. A subset of 'subSamplingSize*subsetVec_size_frac' is
 % then selected for running the optimisation on.
 % The subset can be selected randomly.
+% The subset size = 1/number_of_subset_init of the total data set size
 number_of_subset_init = 1;
-subsetVec_size_frac = 0.2; % subset size = 1/n total data set size
-timeStart = 120;  % starting time in capture data file (in seconds)
-timeStop  = 290; % ending time in capture data file (in seconds)
+subsetVec_size_frac = 1/number_of_subset_init;
+
+% Start and end point of data samples
+timeStart = 2;  % starting time in capture data file (in seconds)
+timeStop  = 100; % ending time in capture data file (in seconds)
 subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 
 % define the set of joints (of whole limb) to calibrate and activate the sensors
 % in that limb.
-jointsToCalibrate.parts = {'torso','head'}; %loop on 1 single cost f 
+jointsToCalibrate.parts = {'right_leg'}; %loop on 1 single cost f 
 
 %%=========================================================================
 
@@ -51,18 +54,18 @@ end
 % create the calibration context implementing the cost function
 myCalibContext = CalibrationContextBuilder(modelPath);
 %% DEBUG
-waitforbuttonpress;
-list_kHsens = myCalibContext.getListTransforms('base_link');
-importFrames;
-
-list_kHsens_left_leg = list_kHsens(3+[1:7 9:14],1);
-list_kHsens_left_leg_idx = 3+[1:7 9:14]-1;
-
-for iterList = 1:13
-    myCalibContext.estimator.sensors.getAccelerometerSensor(list_kHsens_left_leg_idx(iterList)).getName
-    sum(sum(abs(list_kHsens_fromCREO{iterList}-list_kHsens_left_leg{iterList})))
-end
-
+% waitforbuttonpress;
+% list_kHsens = myCalibContext.getListTransforms('base_link');
+% importFrames;
+% 
+% list_kHsens_left_leg = list_kHsens(3+[1:7 9:14],1);
+% list_kHsens_left_leg_idx = 3+[1:7 9:14]-1;
+% 
+% for iterList = 1:13
+%     myCalibContext.estimator.sensors.getAccelerometerSensor(list_kHsens_left_leg_idx(iterList)).getName
+%     sum(sum(abs(list_kHsens_fromCREO{iterList}-list_kHsens_left_leg{iterList})))
+% end
+% 
 %%
 
 % Cost Function used to optimise the offsets
@@ -85,7 +88,7 @@ switch runMode
             % add mtx sensors (MTB or MTI-imu)
             data.addMTXsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
                 mtbSensorCodes_list{part}, mtbSensorLink_list{part}, ...
-                mtbSensorAct_list{part}, jointsToCalibrate.mtbInvertedFrames{part}, ...
+                mtbSensorAct_list{part}, ...
                 mtxSensorType_list{part},true);
             
             % add joint measurements
@@ -135,18 +138,23 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
     % run minimisation for every random subset of data.
     % 1 subset <=> all measurements for a given timestamp <=>1 column index of
     % table `q_xxx`, `dq_xxx`, `ddq_xxx`, `y_xxx_acc`, ...
+    %
+    % Define a random subset: X % of the total set of instants
+    % We first shuffle the data. Then, at each loop iteration i,
+    % we select the samples i to i+n, where n = subsetVec_size.
+    subsetVec = randperm(data.nSamples);
+    %%
     for i = 1 : number_of_subset_init
-        
-        % define a random subset: 10 % of the total set of instants
-%         subsetVec_idx = randsample(data.nSamples, subsetVec_size);
-%         subsetVec_idx = sort(subsetVec_idx);
+        % select the samples i to i+n
+%         idxOffset = (i-1)*subsetVec_size;
+%         subsetVec_idx = subsetVec(idxOffset+1:min(idxOffset+subsetVec_size,data.nSamples));
         
         % load joint positions
         myCalibContext.loadJointNsensorsDataSubset(subsetVec_idx);
         
         % cost before optimisation
-        initialCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,optimFunction,true,'');
-        fprintf('Mean cost (in (m.s^{-2})^2):\n');
+        initialCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,@lsqnonlin,true,'');
+        fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
         (initialCost'*initialCost)/(nrOfMTBAccs*length(subsetVec_idx))
         
         % optimize
@@ -164,21 +172,26 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
                     = optimFunction(@(Dq) costFunction(Dq,data,subsetVec_idx,optimFunction,false,''), ...
                     Dq0, [], [], options);
             otherwise
+                % We are not computing optimalDq, but just using a previous
+                % result for a performance evaluation
+                optimalDq(:,i,offsetsConfigIdx) = averageOptimalDq;
         end
         optimalDq(:,i,offsetsConfigIdx) = mod(optimalDq(:,i,offsetsConfigIdx)+pi, 2*pi)-pi;
         % computed Dq and known a priori offset (offsetsConfigGrid.getVector(offsetsConfigIdx))
         % added to ground truth q in simulation, are opposite. Add them
         % and check the result is null.
         optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx) + myCalibContext.DqiEnc;
-        % convert to degrees
-        optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx)*180/pi
         
         % cost after optimisation
-        optimCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,optimFunction,true,'Optim');
-        fprintf('Mean cost (in (m.s^{-2})^2):\n');
+        optimCost = costFunction(optimalDq(:,i,offsetsConfigIdx),data,subsetVec_idx,@lsqnonlin,true,'Optim');
+        fprintf('Mean cost after optimization (in (m.s^{-2})^2):\n');
         (optimCost'*optimCost)/(nrOfMTBAccs*length(subsetVec_idx))
     end
 end
+
+% convert to degrees
+optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx)*180/pi
+averageOptimalDq = mean(optimalDq,2);
 % Standard deviation across offsets grid
 std_optDq_offsetsGrid = std(optimalDq,0,3);
 % Standard deviation across random subsets
@@ -193,6 +206,8 @@ fprintf('optimization function exit flag:\n');
 exitflag
 fprintf('other optimization info:\n');
 output
+fprintf('Mean optimal offsets Dq (in degrees):\n');
+averageOptimalDq
 fprintf('Standard deviation across offsets grid:\n');
 std_optDq_offsetsGrid
 fprintf('Standard deviation across random subsets:\n');
@@ -203,5 +218,5 @@ std_optDq_subsets
 save('./data/minimResult.mat', ...
     'mtbSensorCodes_list','jointsToCalibrate','mtbSensorAct_list', ...
     'data','offsetsConfigGrid', ...
-    'optimalDq','exitflag','output','std_optDq_offsetsGrid','std_optDq_subsets');
+    'optimalDq','exitflag','output','averageOptimalDq','std_optDq_offsetsGrid','std_optDq_subsets');
 

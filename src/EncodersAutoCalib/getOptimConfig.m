@@ -43,7 +43,7 @@ switch funcName
         %
         Display = 'iter';
         TolFun = 1e-7;
-        TolX = 1e-2; % 0.6 deg
+        TolX = 2e-3; % 0.1 deg
         FunValCheck = 'on';
 %        Algorithm = 'levenberg-marquardt';
         Algorithm = 'trust-region-reflective';

@@ -38,7 +38,6 @@ for acc_i = listAccPlotted
     axis vis3d;
     % axis square;
     daspect([1 1 1]);
-    d = daspect;
     grid ON;
     xlabel('Acc X (m/s^2)','Fontsize',12);
     ylabel('Acc Y (m/s^2)','Fontsize',12);
@@ -68,7 +67,6 @@ for acc_i = listAccPlotted
     plot(time,Vest(:,3),'b^:');
     
     title(['acc. ' activeAccs(acc_i)]);
-    axis equal;
     grid ON;
     xlabel('Time (sec)','Fontsize',12);
     ylabel('Acc X|Y|Z (m/s^2)','Fontsize',12);
@@ -95,7 +93,6 @@ for acc_i = listAccPlotted
     plot(time,Vcost,'g','lineWidth',2.0);
     
     title(['acc. ' activeAccs(acc_i)]);
-    axis equal;
     grid ON;
     xlabel('Time (sec)','Fontsize',12);
     ylabel('Acc norm (m/s^2)','Fontsize',12);
@@ -115,7 +112,6 @@ for acc_i = listAccPlotted
     plot(time,angleMat(:,acc_i)*180/pi,'r','lineWidth',2.0);
     
     title(['acc. ' activeAccs(acc_i)]);
-    axis equal;
     grid ON;
     xlabel('Time (sec)','Fontsize',12);
     ylabel('Angle (degrees)','Fontsize',12);
