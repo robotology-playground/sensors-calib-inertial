@@ -154,7 +154,7 @@ classdef CalibrationContextBuilder < handle
                     if strcmp(data.type(frame),'inertialMTB') || strcmp(data.type(frame),'inertialMTI')
                         obj.sensorsIdxListModel = [obj.sensorsIdxListModel ...
                             obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
-                            char(data.frames(frame)))];
+                            char(data.frames{frame}))];
                         obj.sensorsIdxListFile = [obj.sensorsIdxListFile frame];
                     elseif strcmp(data.type{frame}, 'stateExt:o')
                         obj.jointsIdxFile = frame;

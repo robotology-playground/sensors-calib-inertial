@@ -31,8 +31,8 @@ classdef SensorsData < handle
         visualize   = {};
         parsedParams    ;
         %% parsers for each type of sensor
-        %offsetMTB   = [2 6 4 6];
-        offsetMTB   = [0 4 2 4];
+        offsetMTB   = [2 6 4 6];
+        %offsetMTB   = [0 4 2 4];
         offsetMTI   = [0 12 4 6];
     end
     

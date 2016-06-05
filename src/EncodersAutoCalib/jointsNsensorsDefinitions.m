@@ -1,5 +1,12 @@
 %% DEBUG
 %jointsToCalibrate.parts = {'left_arm','right_arm','left_leg','right_leg'};
+%
+% variables to change in order to define a subset of joints to 
+% calibrate:
+% jointsToCalibrate_leg
+% jointsInitOffsets_left_leg, jointsInitOffsets_right_leg
+% jointsDq0_left_leg, jointsDq0_right_leg
+% mtbSensorAct_left_leg, mtbSensorAct_right_leg
 
 %% macros for repetitive names and codes between left and right parts
 %
@@ -12,7 +19,7 @@ jointsIdxes_leg = '1:6';
                              
 mtbSensorCodes_arm = @(mtbNum) {[mtbNum 'b10'],[mtbNum 'b11'], ...
                                 [mtbNum 'b12'],[mtbNum 'b13'], ...
-                                [mtbNum 'b8'],[mtbNum '1b9'], ...
+                                [mtbNum 'b8'],[mtbNum 'b9'], ...
                                 [mtbNum 'b7']};
 
 mtbSensorCodes_leg = @(mtbNum) {[mtbNum 'b1'],[mtbNum 'b2'], ...
@@ -21,12 +28,12 @@ mtbSensorCodes_leg = @(mtbNum) {[mtbNum 'b1'],[mtbNum 'b2'], ...
                                 [mtbNum 'b6'],[mtbNum 'b7'], ...
                                 [mtbNum 'b8'],[mtbNum 'b9'], ...
                                 [mtbNum 'b10'],[mtbNum 'b11'], ...
-                                [mtbNum 'b12']};
+                                [mtbNum 'b12'],[mtbNum 'b13']};
 
 mtbSensorLink_arm = @(side) {[side '_upper_arm'],[side '_upper_arm'], ...
                              [side '_upper_arm'],[side '_upper_arm'], ...
                              [side '_forearm'],[side '_forearm'] ...
-                             [side '_hand']};
+                             [side '_forearm']};
 
 mtbSensorLink_leg = @(side) {[side '_upper_leg'],[side '_upper_leg'], ...
                              [side '_upper_leg'],[side '_upper_leg'], ...
@@ -34,7 +41,7 @@ mtbSensorLink_leg = @(side) {[side '_upper_leg'],[side '_upper_leg'], ...
                              [side '_upper_leg'],[side '_upper_leg'], ...
                              [side '_lower_leg'],[side '_lower_leg'], ...
                              [side '_lower_leg'],[side '_lower_leg'], ...
-                             [side '_foot']};
+                             [side '_foot'],[side '_foot']};
 
 segments_leg = @(side) {[side '_upper_leg'],[side '_lower_leg'],[side '_foot']};
 segments_arm = @(side) {[side '_upper_arm'],[side '_forearm'],[side '_hand']};
@@ -131,18 +138,9 @@ mtbSensorAct_left_arm(1:7) = {true};
 
 mtbSensorAct_right_arm(1:7) = {true};
 
-mtbSensorAct_left_leg(1:12) = {true};
+mtbSensorAct_left_leg(1:13) = {true};
 
-% mtbSensorAct_left_leg = ...
-%     {false,false, ...
-%     false,false, ...
-%     false, ...
-%     false,false, ...
-%     false,true,   ...
-%     true,true,   ...
-%     true};
-
-mtbSensorAct_right_leg = mtbSensorAct_left_leg;
+mtbSensorAct_right_leg(1:13) = {true};
 
 mtbSensorAct_torso(1:4) = {false};
 
@@ -173,10 +171,27 @@ for i = 1:length(jointsToCalibrate.parts)
     eval(['mtxSensorType_list{' num2str(i) '} = mtxSensorType_' jointsToCalibrate.parts{i} ';']);
 end
 
+averageOptimalDq_left_leg = [
+    0.4177
+    5.1765
+   -3.2373
+    4.2554
+    5.0718
+   -6.0944
+] * pi/180;
+
+averageOptimalDq_right_leg = [
+   -0.7710
+    3.2690
+    6.0923
+    5.3114
+   -0.4424
+   -0.5722
+] * pi/180;
+
 averageOptimalDq = [
-        0.0217911707219332
-        -0.018180301459323
-       -0.0192434934942838
-       0.00429236030205633
-       -0.0279738490808343
-        0.0182212099876574];
+   -0.7710
+    3.2690
+    6.0923
+    5.3114
+] * pi/180;

@@ -12,15 +12,16 @@ offsetsGridRange = 5*pi/180; % min/max (degrees)
 offsetedQsIdxs = 1:6;
 
 % model and data capture file
-modelPath = '../models/iCubGenova02/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubGenova02_#2/';
-dataSetNb = '_00000';
+modelPath = '../models/iCubGenova05/iCubFull.urdf';
+dataPath  = '../../data/calibration/dumper/iCubGenova05_#1/';
+dataSetNb = '';
 
 % Optimisation configuration
 [optimFunction,options] = getOptimConfig();
 startPoint2Boundary = 20*pi/180; % 20 deg
 % cost function: 'costFunctionSigma' / 'costFunctionSigmaProjOnEachLink'
 costFunctionSelect = 'costFunctionSigma';
+shuffle = false;
 
 % The main single data bucket of (timeStop-timeStart)/10ms samples is sub-sampled to
 % 'subSamplingSize' samples. A subset of 'subSamplingSize*subsetVec_size_frac' is
@@ -31,8 +32,8 @@ number_of_subset_init = 1;
 subsetVec_size_frac = 1/number_of_subset_init;
 
 % Start and end point of data samples
-timeStart = 2;  % starting time in capture data file (in seconds)
-timeStop  = 100; % ending time in capture data file (in seconds)
+timeStart = 1;  % starting time in capture data file (in seconds)
+timeStop  = -1; % ending time in capture data file (in seconds). If -1, use the end time from log
 subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 
 % define the set of joints (of whole limb) to calibrate and activate the sensors
@@ -53,7 +54,7 @@ end
 
 % create the calibration context implementing the cost function
 myCalibContext = CalibrationContextBuilder(modelPath);
-%% DEBUG
+% % DEBUG
 % waitforbuttonpress;
 % list_kHsens = myCalibContext.getListTransforms('base_link');
 % importFrames;
@@ -65,7 +66,7 @@ myCalibContext = CalibrationContextBuilder(modelPath);
 %     myCalibContext.estimator.sensors.getAccelerometerSensor(list_kHsens_left_leg_idx(iterList)).getName
 %     sum(sum(abs(list_kHsens_fromCREO{iterList}-list_kHsens_left_leg{iterList})))
 % end
-% 
+
 %%
 
 % Cost Function used to optimise the offsets
@@ -146,8 +147,12 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
     %%
     for i = 1 : number_of_subset_init
         % select the samples i to i+n
-%         idxOffset = (i-1)*subsetVec_size;
-%         subsetVec_idx = subsetVec(idxOffset+1:min(idxOffset+subsetVec_size,data.nSamples));
+        idxOffset = (i-1)*subsetVec_size;
+        if shuffle
+            subsetVec_idx = subsetVec(idxOffset+1:min(idxOffset+subsetVec_size,data.nSamples));
+        else
+            subsetVec_idx = idxOffset+1:min(idxOffset+subsetVec_size,data.nSamples);
+        end
         
         % load joint positions
         myCalibContext.loadJointNsensorsDataSubset(subsetVec_idx);
@@ -190,7 +195,7 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
 end
 
 % convert to degrees
-optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx)*180/pi
+optimalDq = optimalDq*180/pi
 averageOptimalDq = mean(optimalDq,2);
 % Standard deviation across offsets grid
 std_optDq_offsetsGrid = std(optimalDq,0,3);

@@ -134,6 +134,11 @@ for i = 1 : length(obj.labels)
    
 end
 
+% if we specified an invalid tEnd, overwrite it with the end time from data log
+if obj.tEnd == -1
+    obj.tEnd = time_f - time_i;
+end
+
 time   = linspace(time_i+obj.tInit, time_i+obj.tEnd, obj.nSamples);
 
 %%

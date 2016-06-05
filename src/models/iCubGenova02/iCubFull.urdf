@@ -1562,7 +1562,7 @@
 	<parent link="chest"/>
   </sensor>
   <sensor name="l_upper_arm_mtb_acc_1b10" type="accelerometer">
-	<origin xyz="-0.0430553865107 -0.0286807251034 0.0295279" rpy="-1.570796460941082 -1.5705035075902931 2.6825718625443584"/>
+	<origin xyz="-0.0430553865107 -0.0286807251034 0.0295279" rpy="1.570796460941082 1.5705035075902931 -0.459020791045435"/>
 	<parent link="l_upper_arm"/>
   </sensor>
   <sensor name="l_upper_arm_mtb_acc_1b11" type="accelerometer">
