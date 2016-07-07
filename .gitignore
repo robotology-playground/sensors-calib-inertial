@@ -26,3 +26,7 @@ tags
 *.mdl.original
 *sfun.mexmaci64
 *.mdl.autosave
+extern/bnt_time_varying/src/utils/sgolay.m
+extern/bnt_time_varying/src/utils/sgolayfilt.m
+extern/optim/
+src/utils/optim
