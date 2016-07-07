@@ -1,0 +1,221 @@
+icub@icub20:~$ reachRandomJointPositions --from /home/icub/tmp_Nuno/app/conf/randomJointsLeftLeg.ini
+||| clearing context
+||| adding context [reachRandomJointPositions]
+||| configuring
+||| default config file specified as /home/icub/tmp_Nuno/app/conf/randomJointsLeftLeg.ini
+||| checking [/home/icub/tmp_Nuno/app/conf/randomJointsLeftLeg.ini] (pwd)
+||| found /home/icub/tmp_Nuno/app/conf/randomJointsLeftLeg.ini
+(period 0.1) (return_point_waiting_period 0.0) (fittingFlagPort "/left_leg_fitting") (mode gridMapping) (from "/home/icub/tmp_Nuno/app/conf/randomJointsLeftLeg.ini") (static_pose_period 0.0) (robot icub) (joints (left_leg 1 20 80 15.0) (left_leg 2 -57 57 19.0)) (local reachGridJointPositions) (returnFlagPort "/left_leg_return") (ref_speed 5.0)
+Found 2 joint to control
+left_leg 1 20 80 15.0
+left_leg 2 -57 57 19.0
+yarp: Port /reachGridJointPositions/icub/left_leg/rpc:o active at tcp://10.0.0.20:10531
+yarp: Port /reachGridJointPositions/icub/left_leg/command:o active at tcp://10.0.0.20:10532
+yarp: Port /reachGridJointPositions/icub/left_leg/state:i active at tcp://10.0.0.20:10533
+yarp: Port /reachGridJointPositions/icub/left_leg/stateExt:i active at tcp://10.0.0.20:10534
+yarp: Sending output from /reachGridJointPositions/icub/left_leg/rpc:o to /icub/left_leg/rpc:i using tcp
+yarp: Sending output from /reachGridJointPositions/icub/left_leg/command:o to /icub/left_leg/command:i using udp
+yarp: Receiving input from /icub/left_leg/state:o to /reachGridJointPositions/icub/left_leg/state:i using udp
+yarp: Receiving input from /icub/left_leg/stateExt:o to /reachGridJointPositions/icub/left_leg/stateExt:i using udp
+[INFO]created device <remote_controlboard>. See C++ class yarp::dev::RemoteControlBoard for documentation.
+List of desired positions: 
+pos:  50.000000	 0.000000	 wait: 0	 return: 1	 row boundary: 3
+
+pos:  50.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  50.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  65.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  65.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  65.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  65.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  35.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  35.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  35.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  35.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  80.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  80.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  20.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  20.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  20.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	 0.000000	 wait: 0	 return: 1	 row boundary: 3
+
+pos:  50.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	 0.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	 19.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	 19.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	 19.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	 19.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	-19.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	-19.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	-19.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	-19.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	 38.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	 38.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	 38.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	 38.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	-38.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	-38.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	-38.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	-38.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	 57.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 0
+
+pos:  20.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  80.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 1
+
+pos:  50.000000	-57.000000	 wait: 0	 return: 0	 row boundary: 2
+
+pos:  50.000000	 0.000000	 wait: 0	 return: 1	 row boundary: 3
+
+yarp: Port /reachGridJointPositions/left_leg/isTheRobotInReturnPoint:o active at tcp://10.0.0.20:10535
+yarp: Port /reachGridJointPositions/left_leg/useFurtherPosForFitting:o active at tcp://10.0.0.20:10536
+yarp: Port /reachGridJointPositions/left_leg/latch:i active at tcp://10.0.0.20:10537
+yarp: Receiving input from /icub/left_leg/stateExt:o to /reachGridJointPositions/left_leg/latch:i using tcp
+yarp: Removing input from /icub/left_leg/stateExt:o to /reachGridJointPositions/left_leg/latch:i
+yarp: Sending output from /reachGridJointPositions/left_leg/isTheRobotInReturnPoint:o to /left_leg_return using tcp
+yarp: Sending output from /reachGridJointPositions/left_leg/useFurtherPosForFitting:o to /left_leg_fitting using tcp
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: -57 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 57 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 65 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 65 to joint left_leg 1
+Send new desired position: -57 to joint left_leg 2
+Send new desired position: 65 to joint left_leg 1
+Send new desired position: 57 to joint left_leg 2
+Send new desired position: 65 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 35 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 35 to joint left_leg 1
+Send new desired position: -57 to joint left_leg 2
+Send new desired position: 35 to joint left_leg 1
+Send new desired position: 57 to joint left_leg 2
+Send new desired position: 35 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: -57 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: 57 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: -57 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: 57 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 0 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 19 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: 19 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: 19 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 19 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: -19 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: -19 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: -19 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: -19 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 38 to joint left_leg 2
+Send new desired position: 20 to joint left_leg 1
+Send new desired position: 38 to joint left_leg 2
+Send new desired position: 80 to joint left_leg 1
+Send new desired position: 38 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: 38 to joint left_leg 2
+Send new desired position: 50 to joint left_leg 1
+Send new desired position: -38 to joint left_leg 2
+^C[try 1 of 3] Trying to shut down
+yarp: Removing output from /reachGridJointPositions/icub/left_leg/rpc:o to /icub/left_leg/rpc:i
+yarp: Removing output from /reachGridJointPositions/icub/left_leg/command:o to /icub/left_leg/command:i
+yarp: Removing input from /icub/left_leg/state:o to /reachGridJointPositions/icub/left_leg/state:i
+yarp: Removing input from /icub/left_leg/stateExt:o to /reachGridJointPositions/icub/left_leg/stateExt:i
+yarp: Removing output from /reachGridJointPositions/left_leg/isTheRobotInReturnPoint:o to /left_leg_return
+yarp: Removing output from /reachGridJointPositions/left_leg/useFurtherPosForFitting:o to /left_leg_fitting
+RFModule closing
+pure virtual method called
+terminate called without an active exception
+Aborted
+icub@icub20:~$ 
+

@@ -1,0 +1,93 @@
+<application>
+	<name>Inertial_sensors_auto_calibration</name>
+	<dependencies>
+		<port>/icub/left_arm/inertialMTB</port>
+		<port>/icub/left_leg/inertialMTB</port>
+		<port>/icub/right_arm/inertialMTB</port>
+		<port>/icub/right_leg/inertialMTB</port>
+		<port>/icub/torso/inertialMTB</port>
+	</dependencies>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/left_arm/inertialMTB --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-left_arm-inertialMTB</tag>
+	</module>
+	<connection>
+		<from>/icub/left_arm/inertialMTB</from>
+		<to>/dumper/icub/left_arm/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/left_leg/inertialMTB --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-left_leg-inertialMTB</tag>
+	</module>
+	<connection>
+		<from>/icub/left_leg/inertialMTB</from>
+		<to>/dumper/icub/left_leg/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_arm/inertialMTB --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-right_arm-inertialMTB</tag>
+	</module>
+	<connection>
+		<from>/icub/right_arm/inertialMTB</from>
+		<to>/dumper/icub/right_arm/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_leg/inertialMTB --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-right_leg-inertialMTB</tag>
+	</module>
+	<connection>
+		<from>/icub/right_leg/inertialMTB</from>
+		<to>/dumper/icub/right_leg/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/torso/inertialMTB --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-torso-inertialMTB</tag>
+	</module>
+	<connection>
+		<from>/icub/torso/inertialMTB</from>
+		<to>/dumper/icub/torso/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>reachRandomJointPositions</name>
+		<parameters>--from /Users/nunoguedelha/dev/jointOffsetCalibInertial/src/AccelAutoCalib/app/conf/randomJointsLeftLeg.ini</parameters>
+		<node>localhost</node>
+		<tag>randomJoints-icub-left_leg</tag>
+	</module>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /left_leg_return --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-left_leg-return</tag>
+	</module>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /left_leg_fitting --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-left_leg-fitting</tag>
+	</module>
+	<connection>
+		<from>/reachGridJointPositions/left_leg/isTheRobotInReturnPoint:o</from>
+		<to>/left_leg_return</to>
+		<protocol>tcp</protocol>
+	</connection>
+	<connection>
+		<from>/reachGridJointPositions/left_leg/useFurtherPosForFitting:o</from>
+		<to>/left_leg_fitting</to>
+		<protocol>tcp</protocol>
+	</connection>
+</application>
