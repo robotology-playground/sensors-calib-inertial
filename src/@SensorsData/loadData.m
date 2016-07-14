@@ -221,7 +221,12 @@ deg_to_rad = pi/180.0;
 gyro_gain = deg_to_rad*7.6274e-03;
 for i = 1 : length(obj.parts)
     % gain for the processed sensor
-    acc_gain = obj.gain{i};
+    % acc_gain must be applied before the calibration matrix
+    % since the calibration procedure is done after acc_gain
+    % is set.
+    acc_gain = obj.calib{i}.gain;
+    centre = obj.calib{i}.centre;
+    C = obj.calib{i}.C;
 
     % convert raw data
     t    = ['time_' obj.labels{i}];
@@ -229,7 +234,7 @@ for i = 1 : length(obj.parts)
     if( strcmp(obj.labels{i},'lh_imu') || ...
             strcmp(obj.labels{i},'rh_imu') )
         eval(['obj.parsedParams.' ys '(1:3,:) = ' ...
-            'acc_gain*obj.parsedParams.' ys '(1:3,:);']);
+            'C*(obj.parsedParams.' ys '(1:3,:)*acc_gain-repmat(centre,1,nbSamples));']);
         eval(['obj.parsedParams.' ys '(4:6,:) = ' ...
             'gyro_gain*obj.parsedParams.' ys '(4:6,:);']);
     end
@@ -238,8 +243,9 @@ for i = 1 : length(obj.parts)
             'deg_to_rad*obj.parsedParams.' ys '(4:6,:);']);
     end
     if( strcmp(obj.labels{i}(end-2:end),'acc') )
+        eval(['nbSamples = size(obj.parsedParams.' ys '(1:3,:),2);']);
         eval(['obj.parsedParams.' ys '(1:3,:) = ' ...
-            'acc_gain*obj.parsedParams.' ys '(1:3,:);']);        
+            'C*(obj.parsedParams.' ys '(1:3,:)*acc_gain-repmat(centre,1,nbSamples));']);        
     end
 end
 

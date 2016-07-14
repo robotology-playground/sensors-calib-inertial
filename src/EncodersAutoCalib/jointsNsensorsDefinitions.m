@@ -138,7 +138,8 @@ mtbSensorAct_left_arm(1:7) = {true};
 
 mtbSensorAct_right_arm(1:7) = {true};
 
-mtbSensorAct_left_leg(1:13) = {true};
+mtbSensorAct_left_leg(1:11) = {true};
+mtbSensorAct_left_leg(12:13) = {false};
 
 mtbSensorAct_right_leg(1:13) = {true};
 
@@ -170,6 +171,13 @@ for i = 1:length(jointsToCalibrate.parts)
     eval(['mtbSensorAct_list{' num2str(i) '} = cell2mat(mtbSensorAct_' jointsToCalibrate.parts{i} ');']);
     eval(['mtxSensorType_list{' num2str(i) '} = mtxSensorType_' jointsToCalibrate.parts{i} ';']);
 end
+
+ModelParams.jointsToCalibrate = jointsToCalibrate;
+ModelParams.mtbSensorCodes_list = mtbSensorCodes_list;
+ModelParams.mtbSensorLink_list = mtbSensorLink_list;
+ModelParams.mtbSensorAct_list = mtbSensorAct_list;
+ModelParams.mtxSensorType_list = mtxSensorType_list;
+
 
 averageOptimalDq_left_leg = [
     0.4177

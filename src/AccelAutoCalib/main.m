@@ -24,23 +24,20 @@ clc
 
 % 'matFile' or 'dumpFile' mode
 loadSource = 'dumpFile';
+saveToCache = true;
 
 % model and data capture file
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
 dataPath  = '../../data/calibration/dumper/iCubGenova05_#3/';
 dataSetNb = '';
 
-% The main single data bucket of (timeStop-timeStart)/10ms samples is sub-sampled to
-% 'subSamplingSize' samples. A subset of 'subSamplingSize*subsetVec_size_frac' is
-% then selected for running the ellipsoid fitting.
-% The subset size = 1/number_of_subset_init of the total data set size
-number_of_subset_init = 1;
-subsetVec_size_frac = 1/number_of_subset_init;
-
-% Start and end point of data samples, subsampling/filtering
+% Start and end point of data samples
 timeStart = 1;  % starting time in capture data file (in seconds)
-timeStop  = -1; % ending time in capture data file (in seconds). If -1, use the end time from log
-subSamplingSize = 1000; % number of samples after sub-sampling the raw data
+timeStop  = -1; % ending time in capture data file (in seconds). If -1, use 
+                % the end time from log
+% filtering/subsampling: the main single data bucket of (timeStop-timeStart)/10ms 
+% samples is sub-sampled to 'subSamplingSize' samples for running the ellipsoid fitting.
+subSamplingSize = 1000;
 
 % define the limb from which we will calibrate all the sensors.
 % Activate all the sensors of that limb.
@@ -48,66 +45,20 @@ jointsToCalibrate.parts = {'left_leg'};
 
 %%=========================================================================
 
-%% set init parameters
+%% set init parameters 'ModelParams'
 %
 run jointsNsensorsDefinitions;
 
-%% Parsing configuration
-%
-switch loadSource
-    case 'matFile'
-        load './data/data.mat';
-    case 'dumpFile'
-        % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
-        data = SensorsData(dataPath,dataSetNb,subSamplingSize,timeStart,timeStop,false);
-        
-        for part = 1 : length(jointsToCalibrate.parts)
-            % Number of sensors for current part are:
-            nrOfMTBAccs = length(mtbSensorLink_list{part});
-            
-            % add mtx sensors (MTB or MTI-imu)
-            data.addMTXsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
-                mtbSensorCodes_list{part}, mtbSensorLink_list{part}, ...
-                mtbSensorAct_list{part}, ...
-                mtxSensorType_list{part},true);
-        end
-        
-        % Load data from the file and parse it
-        data.loadData();
-        
-        % Save data in a Matlab file for faster access in further runs
-        %save('./data/data.mat','data');
-    otherwise
-        disp('Unknown data source !!')
-end
-
-%% build input data for ellipsoid fitting
+%% build input data for calibration
 %
 
-% Select the data subset to use on ellipsoid fitting
-subsetVec_size = round(data.nSamples*subsetVec_size_frac);
-subsetVec_idx = round(linspace(1,data.nSamples,subsetVec_size));
+[data,sensorsIdxListFile,sensMeasCell] = buildInputDataSet(...
+    loadSource,saveToCache,...
+    dataPath,dataSetNb,...
+    subSamplingSize,timeStart,timeStop,...
+    ModelParams);
 
-% Go through 'data.frames', and get sensor measurements :
-sensorsIdxListFile = [];
-for frame = 1:length(data.frames)
-    switch data.type{frame}
-        case {'inertialMTB','inertialMTI'}
-            sensorsIdxListFile = [sensorsIdxListFile frame];
-        otherwise
-    end
-end
-
-% get measurement table ys_xxx_acc [3xnSamples] from captured data,
-sensMeasCell = cell(1,length(sensorsIdxListFile));
-for acc_i = 1:length(sensorsIdxListFile)
-    ys = ['ys_' data.labels{sensorsIdxListFile(acc_i)}];
-    eval(['sensMeas = data.parsedParams.' ys '(:,subsetVec_idx);']);
-    sensMeasCell{1,acc_i} = sensMeas';
-end
-
-
-%%========================================== CALIBRATION ==========================================
+%% ========================================== CALIBRATION ==========================================
 %
 %                          ellipsoid fitting and distance to ellipsoid
 %
@@ -117,24 +68,45 @@ calib = cell(1,length(sensorsIdxListFile)); % explicit parameters
 ellipsoid_e = cell(1,length(sensorsIdxListFile)); % least squares error
 ellipsoid_d = cell(1,length(sensorsIdxListFile)); % distance to surface
 
-for acc_i = 1:11 %1:length(sensorsIdxListFile)
+for acc_i = sensorsIdxListFile
     [ellipsoid_p{acc_i},ellipsoid_e{acc_i},ellipsoid_d{acc_i}] = ellipsoidfit( ...
         sensMeasCell{1,acc_i}(:,1), ...
         sensMeasCell{1,acc_i}(:,2), ...
         sensMeasCell{1,acc_i}(:,3));
-    [calib{acc_i}.centre,calib{acc_i}.radii,calib{acc_i}.quat,calib{acc_i}.R] = ...
+    [calib{acc_i}.centre,radii,calib{acc_i}.quat,calib{acc_i}.R] = ...
         ellipsoid_im2ex(ellipsoid_p{1,acc_i}); % convert implicit to explicit
+    % convert ellipsoid axis lengths to rates
+    calib{acc_i}.radii = radii/9.807;
+    % compute full calibration matrix combining elongation and rotation
+    calib{acc_i}.C = inv(diag(calib{acc_i}.radii))*inv(calib{acc_i}.R);
+    % raw fullscale to m/s^2 conversion
+    calib{acc_i}.gain = 5.9855e-04;
 end
 
 % Save all for further eventual use
-%save './data/main.mat';
+if saveToCache
+    save './data/logAll.mat';
+end
 
-% Save calibration
+% Load existing calibration or create new empty one
+if exist('./data/calibrationMap.mat','file') == 2
+    load('./data/calibrationMap.mat','calibrationMap');
+end
+
+if ~exist('calibrationMap','var')
+    calibrationMap = containers.Map('KeyType','char','ValueType','any');
+end
+
+% Create mapping extension with new calibrated frames
 calibratedFrames = data.frames(1,sensorsIdxListFile);
-%save(['./data/' jointsToCalibrate.parts{1} '_calibration'],'calibratedFrames','calib');
+calibMapExt = containers.Map(calibratedFrames,calib);
+calibrationMap = [calibrationMap;calibMapExt];
+
+% Save updated calibration
+save('./data/calibrationMap.mat','calibrationMap');
 
 
-%%========================================== CALIBRATION EVALUATION ===============================
+%%========================================== CALIBRATION VISUALISATION ===============================
 %
 
 %% clear all variables and close all previous figures
@@ -142,25 +114,24 @@ clear
 close all
 clc
 
-load './data/main.mat';
+load './data/logAll.mat';
+
+acc_i = 4;
+
+fprintf('Observing fitting on a single accelerometer:\n%d\n',acc_i);
 
 %% Notes:
 %  'ellipsoid_distance' uses 'ellipsoidfit_residuals'
 
-% iteration list
-accIter = 9 %1:length(sensorsIdxListFile);
-
-%% distance to a centered sphere (R=9.81) before calibration
-for acc_i = accIter
-    [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                            sensMeasCell{1,acc_i}(:,1),...
-                                                            sensMeasCell{1,acc_i}(:,2),...
-                                                            sensMeasCell{1,acc_i}(:,3),...
-                                                            [0 0 0]',[9.8 9.8 9.8]',eye(3,3));
-end
+%% distance to a centered sphere (R=9.807) before calibration
+[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+                                                        sensMeasCell{1,acc_i}(:,1),...
+                                                        sensMeasCell{1,acc_i}(:,2),...
+                                                        sensMeasCell{1,acc_i}(:,3),...
+                                                        [0 0 0]',[9.807 9.807 9.807]',eye(3,3));
 %distr of signed distances
-figure('Name','distance to a centered sphere (R=9.81) before calibration');
-histogram(dOrient/max(d+0.001),200);
+figure('Name','distance to a centered sphere (R=9.807) before calibration');
+histogram(dOrient,200,'Normalization','probability');
 xlabel('Oriented distance to surface','Fontsize',12);
 ylabel('Normalized number of occurence','Fontsize',12);
 
@@ -169,16 +140,14 @@ fprintf(['distribution of distances to a centered sphere\n'...
     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
 
 %% distance to offseted sphere & comparison
-for acc_i = accIter
-    [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                            sensMeasCell{1,acc_i}(:,1),...
-                                                            sensMeasCell{1,acc_i}(:,2),...
-                                                            sensMeasCell{1,acc_i}(:,3),...
-                                                            calib{acc_i}.centre,[9.8 9.8 9.8]',eye(3,3));
-end
+[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+                                                        sensMeasCell{1,acc_i}(:,1),...
+                                                        sensMeasCell{1,acc_i}(:,2),...
+                                                        sensMeasCell{1,acc_i}(:,3),...
+                                                        calib{acc_i}.centre,[9.807 9.807 9.807]',eye(3,3));
 %distr of signed distances
 figure('Name','distance to the offseted sphere');
-histogram(dOrient/max(d+0.001),200);
+histogram(dOrient,200,'Normalization','probability');
 xlabel('Oriented distance to surface','Fontsize',12);
 ylabel('Normalized number of occurence','Fontsize',12);
 
@@ -187,16 +156,14 @@ fprintf(['distribution of distances to a centered sphere\n'...
     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
 
 %% distance to non rotated ellipsoid & comparison
-for acc_i = accIter
-    [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                            sensMeasCell{1,acc_i}(:,1),...
-                                                            sensMeasCell{1,acc_i}(:,2),...
-                                                            sensMeasCell{1,acc_i}(:,3),...
-                                                            calib{acc_i}.centre,calib{acc_i}.radii,eye(3,3));
-end
+[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+                                                        sensMeasCell{1,acc_i}(:,1),...
+                                                        sensMeasCell{1,acc_i}(:,2),...
+                                                        sensMeasCell{1,acc_i}(:,3),...
+                                                        calib{acc_i}.centre,9.807*calib{acc_i}.radii,eye(3,3));
 %distr of signed distances
 figure('Name','distance to offseted, non rotated ellipsoid');
-histogram(dOrient/max(d+0.001),200);
+histogram(dOrient,200,'Normalization','probability');
 xlabel('Oriented distance to surface','Fontsize',12);
 ylabel('Normalized number of occurence','Fontsize',12);
 
@@ -205,16 +172,14 @@ fprintf(['distribution of distances to a centered sphere\n'...
     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
 
 %% distance to rotated final ellipsoid & comparison
-for acc_i = accIter
-    [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                            sensMeasCell{1,acc_i}(:,1),...
-                                                            sensMeasCell{1,acc_i}(:,2),...
-                                                            sensMeasCell{1,acc_i}(:,3),...
-                                                            calib{acc_i}.centre,calib{acc_i}.radii,calib{acc_i}.R);
-end
+[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+                                                        sensMeasCell{1,acc_i}(:,1),...
+                                                        sensMeasCell{1,acc_i}(:,2),...
+                                                        sensMeasCell{1,acc_i}(:,3),...
+                                                        calib{acc_i}.centre,9.807*calib{acc_i}.radii,calib{acc_i}.R);
 %distr of signed distances
 figure('Name','distance to offseted, rotated final ellipsoid');
-histogram(dOrient/max(d+0.001),200);
+histogram(dOrient,200,'Normalization','probability');
 xlabel('Oriented distance to surface','Fontsize',12);
 ylabel('Normalized number of occurence','Fontsize',12);
 
@@ -223,34 +188,27 @@ fprintf(['distribution of distances to a centered sphere\n'...
     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
 
 %% plot fitting
-for acc_i = 9 %1:length(sensorsIdxListFile)
-    [centre,radii,quat,R]=ellipsoid_im2ex(ellipsoid_p{1,acc_i}); % convert implicit to explicit
-    [xx,yy,zz]=ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),100); % generate ellipse points without rotation
-    vec=[xx(:),yy(:),zz(:)]; % xx(i,j),yy(i,j),zz(i,j) is a point on the ellipse. a row of zz is an iso-z
-    vec=vec-repmat(centre',size(xx(:)),1); % remove offset before rotating
-    vecRotated=(R*vec')'+repmat(centre',size(xx(:)),1); % rotate ellipse
-    % Plot
-    figure('Name', 'Fitting ellipsoid for MTB sensor');
-    title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
-    surf(reshape(vecRotated(:,1),101,101),reshape(vecRotated(:,2),101,101),reshape(vecRotated(:,3),101,101)); % plot
-    axis equal;
-    grid off;
-    xlabel('x','Fontsize',12);
-    ylabel('y','Fontsize',12);
-    zlabel('z','Fontsize',12);
-    
-    figure('Name', 'Fitting ellipsoid for MTB sensor (plot from quadfit)');
-    hold on;
-    plot_ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),R,'AxesColor','black');
-    scatter3(sensMeasCell{1,acc_i}(:,1),sensMeasCell{1,acc_i}(:,2),sensMeasCell{1,acc_i}(:,3));
-    %title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
-    axis equal;
-    xlabel('x','Fontsize',12);
-    ylabel('y','Fontsize',12);
-    zlabel('z','Fontsize',12);
-end
+[centre,radii,quat,R]=ellipsoid_im2ex(ellipsoid_p{1,acc_i}); % convert implicit to explicit
+[xx,yy,zz]=ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),100); % generate ellipse points without rotation
+vec=[xx(:),yy(:),zz(:)]; % xx(i,j),yy(i,j),zz(i,j) is a point on the ellipse. a row of zz is an iso-z
+vec=vec-repmat(centre',[size(xx(:)),1]); % remove offset before rotating
+vecRotated=(R*vec')'+repmat(centre',[size(xx(:)),1]); % rotate ellipse and add the offset again
+% Plot
+figure('Name', 'Fitting ellipsoid for MTB sensor');
+title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
+surf(reshape(vecRotated(:,1),101,101),reshape(vecRotated(:,2),101,101),reshape(vecRotated(:,3),101,101)); % plot
+axis equal;
+grid off;
+xlabel('x','Fontsize',12);
+ylabel('y','Fontsize',12);
+zlabel('z','Fontsize',12);
 
-%plot_ellipsoid()
-
-%ellipsoidfit_residuals
-%ellipsoid_distance
+figure('Name', 'Fitting ellipsoid for MTB sensor (plot from quadfit)');
+hold on;
+plot_ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),R,'AxesColor','black');
+scatter3(sensMeasCell{1,acc_i}(:,1),sensMeasCell{1,acc_i}(:,2),sensMeasCell{1,acc_i}(:,3));
+%title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
+axis equal;
+xlabel('x','Fontsize',12);
+ylabel('y','Fontsize',12);
+zlabel('z','Fontsize',12);

@@ -20,6 +20,7 @@ classdef SensorsData < handle
         tEnd      = 0;    %seconds to reach the end of the movement
         diff_imu  = 0;    %derivate the angular velocity of the IMUs
         diff_q    = 0;    %derivate the angular velocity of the IMUs
+        calibrationMap;
         %% parsed parameters from files and model
         parts       = {};
         labels      = {};
@@ -27,7 +28,7 @@ classdef SensorsData < handle
         ndof        = {};
         index       = {};
         type        = {};
-        gain        = {};
+        calib       = {};
         visualize   = {};
         parsedParams    ;
         %% parsers for each type of sensor
@@ -37,15 +38,20 @@ classdef SensorsData < handle
     end
     
     methods
-        function obj = SensorsData(dataPath, dataSetNb, nSamples, tInit, tEnd, plot)
-            %% main input parameters
+        function obj = SensorsData(dataPath, dataSetNb, nSamples, tInit, tEnd, plot, calibrationMap)
+            % conditional parameter
+            if nargin > 6
+                obj.calibrationMap = calibrationMap;
+            else
+                obj.calibrationMap = containers.Map('KeyType','char','ValueType','any');
+            end
+            % main input parameters
             obj.path = dataPath;
             obj.dataSetNb = dataSetNb;
             obj.nSamples = nSamples;
             obj.tInit = tInit;
             obj.tEnd = tEnd;
             obj.plot = plot;
-            %% parsed parameters from files and model
         end
         
         function addMTXsensToData(obj, part, frames, mtbSensorCodes, mtbSensorLinks, sensorActs, mtxSensorTypes, visualize)
@@ -106,11 +112,11 @@ classdef SensorsData < handle
                         case 'inertialMTI'
                             offset = obj.offsetMTI;
                             frameTag = '_mti_acc_';
-                            acc_gain = 1;
+                            acc_gain = 1; % raw fullscale to m/s^2 conversion
                         case 'inertialMTB'
                             offset = obj.offsetMTB;
                             frameTag = '_mtb_acc_';
-                            acc_gain = 5.9855e-04;
+                            acc_gain = 5.9855e-04; % raw fullscale to m/s^2 conversion
                         otherwise
                             disp('Unknown sensor type !!')
                     end
@@ -118,13 +124,25 @@ classdef SensorsData < handle
                     indexList = strcat(num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_1RST_IDX)), ...
                         ':',num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_LAST_IDX)));
                     
+                    % define frame string
+                    fullFrameStr = strcat(mtbSensorLinks{iter},frameTag,mtbSensorCodes{iter});
+                    % get calibration for this sensor
+                    if isKey(obj.calibrationMap,fullFrameStr)
+                        calib = obj.calibrationMap(fullFrameStr);
+                    else
+                        calib.centre=[0 0 0]'; calib.radii=[1 1 1]';
+                        calib.quat=[1 0 0 0]'; calib.R=eye(3);
+                        calib.C=eye(3); % calibration matrix
+                        calib.gain=acc_gain;  % raw fullscale to m/s^2 conversion
+                    end
+                    
                     obj.addSensToData(  part, ...
-                                        strcat(mtbSensorLinks{iter},frameTag,mtbSensorCodes{iter}), ...
+                                        fullFrameStr, ...
                                         strcat(mtbSensorCodes{iter},'_acc'), ...
                                         3, ...
                                         indexList, ...
                                         mtxSensorTypes{iter}, ...
-                                        acc_gain, ...
+                                        calib, ...
                                         visualize && obj.plot);
                 end
             end
@@ -139,6 +157,10 @@ classdef SensorsData < handle
                               'stateExt:o', ...
                               1, ...
                               visualize && obj.plot);
+        end
+        
+        function setCalibrationMap(obj, calibrationMap)
+            obj.calibrationMap = calibrationMap;
         end
         
     end

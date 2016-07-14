@@ -6,8 +6,8 @@ clc
 %% Plot sensor measurements against estimations as 3D vectors
 
 % load all variables
-load('../EncodersAutoCalib/data/logSensorMeasVsEst.mat');
-load('../EncodersAutoCalib/data/minimResult.mat');
+load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1/logSensorMeasVsEst.mat');
+load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1/minimResult.mat');
 
 origin=zeros(size(sensMeasCell,1),3);
 
