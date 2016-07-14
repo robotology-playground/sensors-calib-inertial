@@ -28,3 +28,12 @@ tags
 *.mdl.autosave
 extern/bnt_time_varying/src/utils/sgolay.m
 extern/bnt_time_varying/src/utils/sgolayfilt.m
+src/DataGeneration/left_leg_fitting_00012/
+src/DataGeneration/left_leg_fitting_00013/
+src/DataGeneration/left_leg_return_00012/
+src/DataGeneration/left_leg_return_00013/
+src/EncodersAutoCalib/data/
+src/EncodersAutoCalib/demo_imu/
+src/EncodersAutoCalib/figs/
+src/EncodersAutoCalib/issueAnalysis_MTBboardsPoses/
+src/EncodersAutoCalib/issueAnalysis_measured2estimatedGravNorm/
