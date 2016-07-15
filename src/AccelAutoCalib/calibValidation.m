@@ -14,7 +14,7 @@ saveToCache = false;
 
 % model and data capture file
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubGenova05_#3/';
+dataPath  = '../../data/calibration/dumper/iCubGenova05_#1/';
 dataSetNb = '';
 
 % Start and end point of data samples
@@ -104,29 +104,62 @@ end
 %% Plot figures
 %
 
+time = data.ac.tInit + data.ac.parsedParams.time(:);
+
 for acc_i = accIter
     %% Plot distributions
     figure('Name',['calibration of MTB sensor ' activeAccs{acc_i}]);
+    %set(gcf,'PositionMode','manual','Units','centimeters','Position',[5 5 50 200]);
+    set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
 
     % distr of signed distances before calibration
-    subplot(2,2,1);
-    title('distance to a centered sphere (R=9.807) before calibration',...
+    subplot(3,2,1);
+    title('distribution of distances to a centered sphere (R=9.807) before calibration',...
         'Fontsize',16,'FontWeight','bold');
     plotNprintDistrb(dOrientList{1,acc_i}.bc);
     
     % distr of signed distances after calibration
-    subplot(2,2,2);
-    title('distance to a centered sphere (R=9.807) after calibration',...
+    subplot(3,2,2);
+    title('distribution of distances to a centered sphere (R=9.807) after calibration',...
         'Fontsize',16,'FontWeight','bold');
     plotNprintDistrb(dOrientList{1,acc_i}.ac);
 
     %% plot fitting
-    subplot(2,2,3);
+    subplot(3,2,3);
     title('Fitting ellipsoid before calibration','Fontsize',16,'FontWeight','bold');
     plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.bc{1,acc_i});
 
-    subplot(2,2,4);
+    subplot(3,2,4);
     title('Fitting ellipsoid after calibration','Fontsize',16,'FontWeight','bold');
     plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.ac{1,acc_i});
+    
+    %% Plot norm uniformity improvement
+    subplot(3,2,5);
+    title('Norm of sensor measurements before calibration','Fontsize',16,'FontWeight','bold');
+    for iter = 1:subSamplingSize
+        normMeas(iter) = norm(sensMeasCell.bc{1,acc_i}(iter,:));
+    end
+    hold on;
+    grid ON;
+    plot(time,normMeas,'r','lineWidth',2.0);
+    xlabel('Time (sec)','Fontsize',12);
+    ylabel('Acc norm (m/s^2)','Fontsize',12);
+    hold off;
+    
+    subplot(3,2,6);
+    title('Norm of sensor measurements after calibration','Fontsize',16,'FontWeight','bold');
+    for iter = 1:subSamplingSize
+        normMeas(iter) = norm(sensMeasCell.ac{1,acc_i}(iter,:));
+    end
+    hold on;
+    grid ON;
+    plot(time,normMeas,'r','lineWidth',2.0);
+    xlabel('Time (sec)','Fontsize',12);
+    ylabel('Acc norm (m/s^2)','Fontsize',12);
+    hold off;
+    
+    set(gca,'FontSize',12);
+    set(gcf,'PaperPositionMode','auto');
+    print('-dpng','-r300','-opengl',['./figs/iCubGenova05_#1/mtbSensorCalibCheck_' activeAccs{acc_i}]);
 end
 

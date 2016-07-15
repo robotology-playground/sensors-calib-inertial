@@ -79,7 +79,7 @@ for acc_i = sensorsIdxListFile
     % convert ellipsoid axis lengths to rates
     calib{acc_i}.radii = radii/9.807;
     % compute full calibration matrix combining elongation and rotation
-    calib{acc_i}.C = inv(diag(calib{acc_i}.radii))*calib{acc_i}.R;
+    calib{acc_i}.C = calib{acc_i}.R'*inv(diag(calib{acc_i}.radii))*calib{acc_i}.R;
     % raw fullscale to m/s^2 conversion
     calib{acc_i}.gain = 5.9855e-04;
 end
@@ -119,7 +119,7 @@ clc
 
 load './data/logAll.mat';
 
-acc_i = 4;
+acc_i = 3;
 
 fprintf('Observing fitting on a single accelerometer:\n%d\n',acc_i);
 
@@ -195,7 +195,9 @@ fprintf(['distribution of distances to a centered sphere\n'...
 [xx,yy,zz]=ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),100); % generate ellipse points without rotation
 vec=[xx(:),yy(:),zz(:)]; % xx(i,j),yy(i,j),zz(i,j) is a point on the ellipse. a row of zz is an iso-z
 vec=vec-repmat(centre',[size(xx(:)),1]); % remove offset before rotating
-vecRotated=(R*vec')'+repmat(centre',[size(xx(:)),1]); % rotate ellipse and add the offset again
+% R is the rotation transform from the original frame to the frame aligned
+% with the ellipsoid axis.
+vecRotated=(R'*vec')'+repmat(centre',[size(xx(:)),1]); % rotate ellipse and add the offset again
 % Plot
 figure('Name', 'Fitting ellipsoid for MTB sensor');
 title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
