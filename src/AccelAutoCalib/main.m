@@ -25,6 +25,7 @@ clc
 % 'matFile' or 'dumpFile' mode
 loadSource = 'dumpFile';
 saveToCache = true;
+saveCalib = true;
 
 % model and data capture file
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
@@ -78,7 +79,7 @@ for acc_i = sensorsIdxListFile
     % convert ellipsoid axis lengths to rates
     calib{acc_i}.radii = radii/9.807;
     % compute full calibration matrix combining elongation and rotation
-    calib{acc_i}.C = inv(diag(calib{acc_i}.radii))*inv(calib{acc_i}.R);
+    calib{acc_i}.C = inv(diag(calib{acc_i}.radii))*calib{acc_i}.R;
     % raw fullscale to m/s^2 conversion
     calib{acc_i}.gain = 5.9855e-04;
 end
@@ -103,7 +104,9 @@ calibMapExt = containers.Map(calibratedFrames,calib);
 calibrationMap = [calibrationMap;calibMapExt];
 
 % Save updated calibration
-save('./data/calibrationMap.mat','calibrationMap');
+if saveCalib
+    save('./data/calibrationMap.mat','calibrationMap');
+end
 
 
 %%========================================== CALIBRATION VISUALISATION ===============================
