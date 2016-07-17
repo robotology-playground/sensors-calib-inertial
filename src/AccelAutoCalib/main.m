@@ -25,7 +25,7 @@ clc
 % 'matFile' or 'dumpFile' mode
 loadSource = 'dumpFile';
 saveToCache = true;
-saveCalib = true;
+saveCalib = false;
 
 % model and data capture file
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
@@ -54,7 +54,7 @@ run jointsNsensorsDefinitions;
 %
 
 [data,sensorsIdxListFile,sensMeasCell] = buildInputDataSet(...
-    loadSource,saveToCache,...
+    loadSource,saveToCache,false,...
     dataPath,dataSetNb,...
     subSamplingSize,timeStart,timeStop,...
     ModelParams);

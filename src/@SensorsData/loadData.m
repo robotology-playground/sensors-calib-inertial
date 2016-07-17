@@ -147,7 +147,7 @@ close all
 dtime   = time(1);
 for i = 1 : length(obj.parts)
    
-   if strcmp(obj.type{i}, 'stateExt:o');
+   if strcmp(obj.type{i}, 'stateExt:o')
       q    = ['obj.parsedParams.q_' obj.labels{i}];
       dq   = ['obj.parsedParams.dq_' obj.labels{i}];
       d2q  = ['obj.parsedParams.d2q_' obj.labels{i}];
@@ -224,9 +224,11 @@ for i = 1 : length(obj.parts)
     % acc_gain must be applied before the calibration matrix
     % since the calibration procedure is done after acc_gain
     % is set.
-    acc_gain = obj.calib{i}.gain;
-    centre = obj.calib{i}.centre;
-    C = obj.calib{i}.C;
+    if ~strcmp(obj.type{i}, 'stateExt:o')
+        acc_gain = obj.calib{i}.gain;
+        centre = obj.calib{i}.centre;
+        C = obj.calib{i}.C;
+    end
 
     % convert raw data
     t    = ['time_' obj.labels{i}];
