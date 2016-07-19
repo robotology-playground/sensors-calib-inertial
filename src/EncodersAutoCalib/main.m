@@ -14,7 +14,11 @@ offsetedQsIdxs = 1:6;
 % model and data capture file
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
 dataPath  = '../../data/calibration/dumper/iCubGenova05_#1/';
-dataSetNb = '';
+dataSetNb = '_00003';
+calibrationMapFile = '../AccelAutoCalib/data/calib/calibrationMap_#1.mat';
+loadRandomDataIdxes = false;
+saveRandomDataIdxes = true;
+randomDataIdxesFile = './data/randomIdx.mat';
 
 % Optimisation configuration
 [optimFunction,options] = getOptimConfig();
@@ -38,13 +42,14 @@ subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 
 % define the set of joints (of whole limb) to calibrate and activate the sensors
 % in that limb.
-jointsToCalibrate.parts = {'right_leg'}; %loop on 1 single cost f 
+jointsToCalibrate.parts = {'left_leg'}; %loop on 1 single cost f 
 
 %%=========================================================================
 
 %% set init parameters
 %
 run jointsNsensorsDefinitions;
+averageOptimalDq = averageOptimalDq_left_leg;
 
 % in target mode, don't apply any prior offsets
 if strcmp(runMode,'target')
@@ -75,12 +80,22 @@ eval(['costFunction = @myCalibContext.' costFunctionSelect]);
 
 %% Parsing configuration
 %
+
+% Load existing inertial sensors calibration
+if exist(calibrationMapFile,'file') == 2
+    load(calibrationMapFile,'calibrationMap');
+end
+
+if ~exist('calibrationMap','var')
+    error('calibrationMap not found');
+end
+
 switch runMode
     case 'simu'
         load 'dataSimu.mat';
     case 'target'
             % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
-            data = SensorsData(dataPath,dataSetNb,subSamplingSize,timeStart,timeStop,false);
+            data = SensorsData(dataPath,dataSetNb,subSamplingSize,timeStart,timeStop,false,calibrationMap);
             
         for part = 1 : length(jointsToCalibrate.parts)            
             % Number of sensors for current part are:
@@ -143,7 +158,24 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
     % Define a random subset: X % of the total set of instants
     % We first shuffle the data. Then, at each loop iteration i,
     % we select the samples i to i+n, where n = subsetVec_size.
-    subsetVec = randperm(data.nSamples);
+    
+    % Load existing indexes permutation
+    if loadRandomDataIdxes
+        if exist(randomDataIdxesFile,'file') == 2
+            load(randomDataIdxesFile,'subsetVec');
+        end
+        
+        if ~exist('subsetVec','var')
+            error('subsetVec not found');
+        end
+    else
+        subsetVec = randperm(data.nSamples);
+    end
+    
+    if saveRandomDataIdxes
+        save(randomDataIdxesFile,'subsetVec');
+    end
+    
     %%
     for i = 1 : number_of_subset_init
         % select the samples i to i+n
@@ -221,7 +253,9 @@ std_optDq_subsets
 
 
 save('./data/minimResult.mat', ...
+    'costFunctionSelect','shuffle','number_of_subset_init',...
     'mtbSensorCodes_list','jointsToCalibrate','mtbSensorAct_list', ...
     'data','offsetsConfigGrid', ...
     'optimalDq','exitflag','output','averageOptimalDq','std_optDq_offsetsGrid','std_optDq_subsets');
+
 

@@ -6,8 +6,10 @@ clc
 %% Plot sensor measurements against estimations as 3D vectors
 
 % load all variables
-load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1/logSensorMeasVsEst.mat');
-load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1/minimResult.mat');
+load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1.3/logSensorMeasVsEstOptim.mat');
+load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1.3/minimResult.mat');
+
+saveFolder = '../EncodersAutoCalib/figs/optim_leftLeg_iCubGenova05_#1.3/optim';
 
 origin=zeros(size(sensMeasCell,1),3);
 
@@ -46,7 +48,7 @@ for acc_i = listAccPlotted
     hold off;
 end
 set(gca,'FontSize',12);
-print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/v3dAccEstVSaccMeas');
+print('-dpng','-r300','-opengl',[saveFolder '/v3dAccEstVSaccMeas']);
 
 
 figure('Name', 'components of sensor measurement VS sensor estimation');
@@ -75,7 +77,7 @@ for acc_i = listAccPlotted
     hold off;
 end
 set(gca,'FontSize',12);
-print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/xyzAccEstVSaccMeas');
+print('-dpng','-r300','-opengl',[saveFolder '/xyzAccEstVSaccMeas']);
 
 figure('Name', 'Norm of sensor measurement VS sensor estimation');
 title('Norm of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
@@ -100,7 +102,7 @@ for acc_i = listAccPlotted
     hold off;
 end
 set(gca,'FontSize',12);
-print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/normAccEstVSaccMeas');
+print('-dpng','-r300','-opengl',[saveFolder '/normAccEstVSaccMeas']);
 
 figure('Name', 'Angle of sensor measurement VS sensor estimation');
 title('Angle of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
@@ -118,7 +120,7 @@ for acc_i = listAccPlotted
     hold off
 end
 set(gca,'FontSize',12);
-print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/angleAccEstVSaccMeas');
+print('-dpng','-r300','-opengl',[saveFolder '/angleAccEstVSaccMeas']);
 
 figure('Name', 'chain joint positions q');
 title('torso,head joints positions q','Fontsize',16,'FontWeight','bold');
@@ -136,7 +138,7 @@ xlabel('Time (sec)','Fontsize',12);
 ylabel('Joints positions (degrees)','Fontsize',12);
 legend('Location','BestOutside',jointsToCalibrate.partJoints{1});
 set(gca,'FontSize',12);
-print('-dpng','-r300','-opengl','../EncodersAutoCalib/figs/demo_imu_headOnly/jointPositions');
+print('-dpng','-r300','-opengl',[saveFolder '/jointPositions']);
 
 
 %%
