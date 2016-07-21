@@ -2,24 +2,22 @@ function [data,sensorsIdxListFile,sensMeasCell] = buildInputDataSet(...
     loadSource,saveToCache,loadJointPos,...
     dataPath,dataSetNb,...
     subSamplingSize,timeStart,timeStop,...
-    ModelParams,calibrationMap)
+    ModelParams,varargin)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
+% varargin:
+% calibrationMap, filtParams
+%
 
 %% Parsing configuration
 %
 switch loadSource
     case 'matFile'
-        load './data/data.mat';
+        load './data/dataCache.mat';
     case 'dumpFile'
         % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
-        if exist('calibrationMap','var')
-            data = SensorsData(dataPath,dataSetNb,subSamplingSize,...
-                timeStart,timeStop,false,calibrationMap);
-        else
-            data = SensorsData(dataPath,dataSetNb,subSamplingSize,...
-                timeStart,timeStop,false);
-        end            
+        data = SensorsData(dataPath,dataSetNb,subSamplingSize,...
+            timeStart,timeStop,false,varargin{:});
         
         for part = 1 : length(ModelParams.jointsToCalibrate.parts)
             % Number of sensors for current part are:
@@ -44,7 +42,7 @@ switch loadSource
         
         % Save data in a Matlab file for faster access in further runs
         if saveToCache
-            save('./data/data.mat','data');
+            save('./data/dataCache.mat','data');
         end
     otherwise
         disp('Unknown data source !!')

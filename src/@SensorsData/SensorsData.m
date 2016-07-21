@@ -21,6 +21,7 @@ classdef SensorsData < handle
         diff_imu  = 0;    %derivate the angular velocity of the IMUs
         diff_q    = 0;    %derivate the angular velocity of the IMUs
         calibrationMap;
+        filtParams;
         %% parsed parameters from files and model
         parts       = {};
         labels      = {};
@@ -38,12 +39,20 @@ classdef SensorsData < handle
     end
     
     methods
-        function obj = SensorsData(dataPath, dataSetNb, nSamples, tInit, tEnd, plot, calibrationMap)
+        function obj = SensorsData(dataPath, dataSetNb, nSamples, tInit, tEnd, plot, varargin)
             % conditional parameter
-            if nargin > 6
-                obj.calibrationMap = calibrationMap;
+            if nargin>6 && length(varargin{1})>0
+                obj.calibrationMap = varargin{1};
             else
                 obj.calibrationMap = containers.Map('KeyType','char','ValueType','any');
+            end
+            if nargin>7 && length(varargin{2})>0
+                obj.filtParams = varargin{2};
+            else
+                filtParams.type = 'sgolay';
+                filtParams.sgolayK = 3;
+                filtParams.sgolayF = 57;
+                obj.filtParams = filtParams;
             end
             % main input parameters
             obj.path = dataPath;
@@ -118,7 +127,7 @@ classdef SensorsData < handle
                             frameTag = '_mtb_acc_';
                             acc_gain = 5.9855e-04; % raw fullscale to m/s^2 conversion
                         otherwise
-                            disp('Unknown sensor type !!')
+                            error('Unknown sensor type !!');
                     end
                     
                     indexList = strcat(num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_1RST_IDX)), ...

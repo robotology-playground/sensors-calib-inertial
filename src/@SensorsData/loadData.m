@@ -2,8 +2,17 @@ function loadData(obj)
 %LOADDATA Summary of this function goes here
 %   Detailed explanation goes here
 
-sgolay_K = num2str(3);
-sgolay_F = num2str(57);
+% define filter
+switch obj.filtParams.type
+    case 'sgolay'
+        filt = @sgolayfilt;
+        filtParams = {obj.filtParams.sgolayK,obj.filtParams.sgolayF};
+    case 'none'
+        filt = @(x) x;
+        filtParams = {};
+    otherwise
+        error('Unknown filter type !!');
+end
 
 % length(obj.parts) is the lists (parts, labels, ndof) length in 'data'
 % structure. list length = number of sensors (ex: 11 acc + "leg_position").
@@ -74,9 +83,9 @@ for i = 1 : length(obj.parts)
         eval(['obj.parsedParams.' d2q '= d2qBuff(' obj.index{i} ',:);']);
         
         if obj.diff_q
-            eval(['obj.parsedParams.'   q '(:, :   )= sgolayfilt(obj.parsedParams.'   q ''',' sgolay_K ',' sgolay_F ')'' ;'])
+            eval(['obj.parsedParams.'   q '(:, :   )= filt(obj.parsedParams.'   q ''',filtParams{:})'' ;'])
             eval(['obj.parsedParams.'  dq '(:,2:end)= 1/mean(diff(obj.parsedParams.' t ')).*diff(obj.parsedParams.'  q ''')'' ;'])
-            eval(['obj.parsedParams.'   dq '(:, :   )= sgolayfilt(obj.parsedParams.'   dq ''',' sgolay_K ',' sgolay_F ')'' ;'])
+            eval(['obj.parsedParams.'   dq '(:, :   )= filt(obj.parsedParams.'   dq ''',filtParams{:})'' ;'])
             eval(['obj.parsedParams.' d2q '(:,2:end)= 1/mean(diff(obj.parsedParams.' t ')).*diff(obj.parsedParams.' dq ''')'' ;'])
         end
         
@@ -97,13 +106,13 @@ for i = 1 : length(obj.parts)
         
         
         if(strcmp(y(end-2:end), 'imu') && obj.diff_imu)
-            eval(['obj.parsedParams.' y '(2:end,4:6)= 1/mean(diff(obj.parsedParams.' t ')).*diff(sgolayfilt(obj.parsedParams.' y '(:,4:6),' sgolay_K ',' sgolay_F '));'])
+            eval(['obj.parsedParams.' y '(2:end,4:6)= 1/mean(diff(obj.parsedParams.' t ')).*diff(filt(obj.parsedParams.' y '(:,4:6),filtParams{:}));'])
         end
         eval(['obj.parsedParams.' t ' = obj.parsedParams.' t ''';']);
         eval(['obj.parsedParams.' y '= obj.parsedParams.' y ''';']);
         
         % add filtering
-        eval(['obj.parsedParams.' y '=sgolayfilt(obj.parsedParams.' y ''',' sgolay_K ',' sgolay_F ')'';']);
+        eval(['obj.parsedParams.' y '=filt(obj.parsedParams.' y ''',filtParams{:})'';']);
         
     end
 end
