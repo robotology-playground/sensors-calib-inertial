@@ -50,8 +50,8 @@ classdef SensorsData < handle
                 obj.filtParams = varargin{2};
             else
                 filtParams.type = 'sgolay';
-                filtParams.sgolayK = 3;
-                filtParams.sgolayF = 57;
+                filtParams.sgolayK = 5;
+                filtParams.sgolayF = 601;
                 obj.filtParams = filtParams;
             end
             % main input parameters
