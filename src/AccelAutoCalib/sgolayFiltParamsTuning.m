@@ -52,7 +52,6 @@ end
     ModelParams,[],filtParams);
 
 acc_list = 1:length(sensorsIdxListFile);
-%acc_list = 7;
 
 % get time series of ys_xxx_acc [3xnSamples] from captured data,
 sensMeasCell = cell(1,length(sensorsIdxListFile));
@@ -76,9 +75,12 @@ for acc_i = acc_list
     % init filter parameter and referenced object
     filterContext = FilterContext(3,11,timeCell{1,acc_i},sensMeasCell{1,acc_i});
     
+    % create figure and press-key handler
     figure('Name',['{x,y,z} Components of raw sensor ' num2str(sensorsIdxListFile(acc_i))],...
         'WindowKeyPressFcn',{@tuneFilter,filterContext});
+    set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
     
+    % Plot original signal components X, Y, Z
     ax = subplot(3,1,1);
     title('X component','Fontsize',16,'FontWeight','bold');
     grid ON;

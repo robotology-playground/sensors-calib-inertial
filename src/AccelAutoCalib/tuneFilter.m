@@ -3,8 +3,8 @@ function tuneFilter(hObject,callbackdata,filterContext)
 %   Detailed explanation goes here
 
 figureOpened = true; % for handling "close figure" action
-newF = filterContext.SgolayF; % for handling F adjustment
 
+% define operation on graph depending on the key pressed
 switch callbackdata.Key
     case 'q'
         close;
@@ -13,7 +13,14 @@ switch callbackdata.Key
         filterContext.SgolayK = 3;
         filterContext.SgolayF = 11;
     case 's'
-        save('./data/calib/sgolayFiltParams.mat','filterContext');
+        filtParams.type = 'sgolay';
+        filtParams.SgolayK = filterContext.SgolayK;
+        filtParams.SgolayF = filterContext.SgolayF;
+        save('./data/calib/sgolayFiltParams.mat','filtParams');
+    case 'l'
+        load('./data/calib/sgolayFiltParams.mat','filtParams');
+        filterContext.SgolayK = filtParams.SgolayK;
+        filterContext.SgolayF = filtParams.SgolayF;
     case {'1','2','3','4','5'}
         filterContext.SgolayK = str2double(callbackdata.Key);
     case 'rightarrow'
@@ -21,15 +28,25 @@ switch callbackdata.Key
     case 'leftarrow'
         filterContext.deltaF = max(1,filterContext.deltaF/10);
     case 'downarrow'
-        newF = filterContext.SgolayF - filterContext.adjustedDeltaF;
+        filterContext.SgolayF = filterContext.SgolayF - filterContext.adjustedDeltaF;
     case 'uparrow'
-        newF = filterContext.SgolayF + filterContext.adjustedDeltaF;
+        filterContext.SgolayF = filterContext.SgolayF + filterContext.adjustedDeltaF;
+    otherwise
+end
+
+% is reploting necessary?
+switch callbackdata.Key
+    case {'i','l','1','2','3','4','5','downarrow','uparrow'}
+        refresh = true;
+    otherwise
+        refresh = false;
 end
 
 % make sure to always apply an even deltaF
 filterContext.adjustedDeltaF = filterContext.deltaF + mod(filterContext.deltaF,2);
 
 %% make sure that we still meet following requirements after K or F is changed :
+newF = filterContext.SgolayF; % for readability
 % newF >= SgolayK+1
 newF = max(newF,filterContext.SgolayK+1);
 % newF < (nb of samples - margin)
@@ -41,15 +58,21 @@ filterContext.SgolayF = newF;
 
 %% Plot filtered sensor data components
 
+%% print filter (this will be done on any key press)
+clc;
+disp(['key pressed : ' callbackdata.Key]);
+disp(['from figure : ' get(gcf,'Name')]);
+filterContext
+if callbackdata.Key == 's'
+    disp('Saved!');
+end
+if callbackdata.Key == 'l'
+    disp('Loaded!');
+end
+
 SigOrigStyle = {'Color',[239/255 170/255 170/255],'LineStyle','-'};
 
-if figureOpened
-    %% DEBUG: print filter
-    clc;
-    disp(['key pressed : ' callbackdata.Key]);
-    disp(['from figure : ' get(gcf,'Name')]);
-    filterContext
-
+if figureOpened && refresh
     %% compute new filtered signal
     filteredMeas = sgolayfilt(filterContext.sensMeas,filterContext.SgolayK,filterContext.SgolayF);
     disp('...Filtered signal computed.');
