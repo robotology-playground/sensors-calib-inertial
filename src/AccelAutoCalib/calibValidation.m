@@ -11,13 +11,13 @@ clc
 % 'matFile' or 'dumpFile' mode
 loadSource = 'dumpFile';
 saveToCache = false;
-loadJointPos = true;
+loadJointPos = false;
 
 % model and data capture file
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubGenova05_#1/';
-dataSetNb = '_00003';
-calibrationMapFile = './data/calib/calibrationMap_#1.mat';
+dataPath  = '../../data/calibration/dumper/iCubGenova05_#3/';
+dataSetNb = '';
+calibrationMapFile = './data/calib/calibrationMap_#2.mat';
 iterator = 1;
 logTest = false; % if set to true, current iter number (saved in a file) 
 % is incremented, all data is saved and figures printed in a new folder
@@ -80,6 +80,8 @@ end
 pVecList = cell(1,length(sensorsIdxListFile));
 dVecList = cell(1,length(sensorsIdxListFile));
 dOrientList = cell(1,length(sensorsIdxListFile));
+dOrientListBC = cell(1,length(sensorsIdxListFile));
+dOrientListAC = cell(1,length(sensorsIdxListFile));
 dList = cell(1,length(sensorsIdxListFile));
 
 %% Apply calibration and reload input data
@@ -150,64 +152,55 @@ for acc_i = accIter
     set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
 
     % distr of signed distances before calibration
-    axbc = subplot(3,2,1);
-    title('distribution of distances to a centered sphere (R=9.807) before calibration',...
+    subplot(1,3,1);
+    title('distribution of distances to a centered \newline sphere (R=9.807)',...
         'Fontsize',16,'FontWeight','bold');
-    plotNprintDistrb(FID,dOrientList{1,acc_i}.bc,false);
-    
-    % distr of signed distances after calibration
-    axac = subplot(3,2,3);
-    title('distribution of distances to a centered sphere (R=9.807) after calibration',...
-        'Fontsize',16,'FontWeight','bold');
-    plotNprintDistrb(FID,dOrientList{1,acc_i}.ac,true,axbc,axac);
+    prevh=plotNprintDistrb(FID,dOrientList{1,acc_i}.bc,false,'auto',1);
+    plotNprintDistrb(FID,dOrientList{1,acc_i}.ac,true,[7/255 100/255 26/255],0.6,prevh);
 
     % close file
     if FID ~= 1
         fclose(FID);
     end
     
-    %% plot fitting
-    subplot(3,2,5);
-    title('Fitting ellipsoid before calibration','Fontsize',16,'FontWeight','bold');
-    plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.bc{1,acc_i});
-
-    subplot(3,2,6);
-    title('Fitting ellipsoid after calibration','Fontsize',16,'FontWeight','bold');
-    plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.ac{1,acc_i});
-    
     %% Plot norm uniformity improvement
-    subplot(3,2,2);
-    title('Norm of sensor measurements before calibration','Fontsize',16,'FontWeight','bold');
+    subplot(1,3,2);
+    title('Norm of sensor measurements','Fontsize',16,'FontWeight','bold');
     for iter = 1:subSamplingSize
         normMeas(iter) = norm(sensMeasCell.bc{1,acc_i}(iter,:));
     end
     hold on;
     grid ON;
-    plot(time,normMeas,'r','lineWidth',2.0);
+    normbc = plot(time,normMeas,':b','lineWidth',2.0);
     xlabel('Time (sec)','Fontsize',12);
     ylabel('Acc norm (m/s^2)','Fontsize',12);
     hold off;
     
-    subplot(3,2,4);
-    title('Norm of sensor measurements after calibration','Fontsize',16,'FontWeight','bold');
     for iter = 1:subSamplingSize
         normMeas(iter) = norm(sensMeasCell.ac{1,acc_i}(iter,:));
     end
     hold on;
     grid ON;
-    plot(time,normMeas,'r','lineWidth',2.0);
+    normac = plot(time,normMeas,'r','lineWidth',2.0);
     xlabel('Time (sec)','Fontsize',12);
     ylabel('Acc norm (m/s^2)','Fontsize',12);
     hold off;
     set(gca,'FontSize',12);
     
+    legend([normbc,normac],'Before calibration','After calibration')
+    %% plot fitting
+    subplot(1,3,3);
+    title('Projection on ground truth \newline sphere manifold after calibration','Fontsize',16,'FontWeight','bold');
+    plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.ac{1,acc_i});
+
     if logTest
         set(gcf,'PaperPositionMode','auto');
         print('-dpng','-r300','-opengl',[figsFolder '/figs_' activeAccs{acc_i}]);
-    end
+    end    
 end
 
 %% Plot joint trajectories
+if loadJointPos
 figure('Name','chain joint positions q');
 set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
 title('chain joint positions q','Fontsize',16,'FontWeight','bold');
@@ -230,6 +223,44 @@ if logTest
     set(gcf,'PaperPositionMode','auto');
     print('-dpng','-r300','-opengl',[figsFolder '/jointTraject']);
 end
+end
+
+%% Plot bar graph of all accelerometers distributions before and after calibration
+
+% build matrix of distances
+for acc_i = accIter 
+    dOrientListBC{1,acc_i} = dOrientList{1,acc_i}.bc;
+    dOrientListAC{1,acc_i} = dOrientList{1,acc_i}.ac;
+end
+
+dOrientListBCmat = cell2mat(dOrientListBC);
+dOrientListACmat = cell2mat(dOrientListAC);
+
+%% Plot
+figure;
+
+bar([mean(dOrientListBCmat,1)' mean(dOrientListACmat,1)']);
+
+xlabel('MTB board index','Fontsize',12);
+ylabel('distance (m/s^2)','Fontsize',12);
+grid on;
+
+hold on;
+errorbar([1:11]-0.15,mean(dOrientListBCmat,1)',...
+    std(dOrientListBCmat,0,1)',...
+    'r*','lineWidth',2.5);
+errorbar([1:11]+0.15,mean(dOrientListACmat,1)',...
+    std(dOrientListACmat,0,1)',...
+    'r*','lineWidth',2.5);
+hold off
+
+legend('Before calibration','After calibration');
+
+if logTest
+    set(gcf,'PaperPositionMode','auto');
+    print('-dpng','-r300','-opengl',[figsFolder '/AllDistribBefNaft']);
+end
+
 
 %% Log all data
 if logTest
