@@ -1,0 +1,7 @@
+<application>
+	<name>Gazebo-Inertial_sensors_auto_calibration-left_leg</name>
+	<application>
+		<name>Inertial_sensors_auto_calibration-left_leg</name>
+		<prefix>/dumper/icubGazeboSim</prefix>
+	</application>
+</application>
