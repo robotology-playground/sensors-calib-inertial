@@ -2,16 +2,28 @@
 	<name>Inertial_sensors_auto_calibration-left_leg</name>
 	<dependencies>
 		<port>/icubGazeboSim/left_leg/inertialMTB</port>
+		<port>/icubGazeboSim/left_leg/stateExt:o</port>
 	</dependencies>
 	<module>
 		<name>yarpdatadumper</name>
-		<parameters>--name /left_leg/inertialMTB --type bottle </parameters>
+		<parameters>--name /dumper/icubGazeboSim/left_leg/inertialMTB --type bottle </parameters>
 		<node>localhost</node>
 		<tag>data-dumper-left_leg-inertialMTB</tag>
 	</module>
 	<connection>
 		<from>/icubGazeboSim/left_leg/inertialMTB</from>
-		<to>/left_leg/inertialMTB</to>
+		<to>/dumper/icubGazeboSim/left_leg/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icubGazeboSim/left_leg/stateExt:o --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-left_leg-stateExt:o</tag>
+	</module>
+	<connection>
+		<from>/icubGazeboSim/left_leg/stateExt:o</from>
+		<to>/dumper/icubGazeboSim/left_leg/stateExt:o</to>
 		<protocol>udp</protocol>
 	</connection>
 	<module>
@@ -22,24 +34,24 @@
 	</module>
 	<module>
 		<name>yarpdatadumper</name>
-		<parameters>--name /left_leg/return --type bottle </parameters>
+		<parameters>--name /dumper/icubGazeboSim/left_leg/return --type bottle </parameters>
 		<node>localhost</node>
 		<tag>data-dumper-left_leg-return</tag>
 	</module>
 	<module>
 		<name>yarpdatadumper</name>
-		<parameters>--name /left_leg/fitting --type bottle </parameters>
+		<parameters>--name /dumper/icubGazeboSim/left_leg/fitting --type bottle </parameters>
 		<node>localhost</node>
 		<tag>data-dumper-left_leg-fitting</tag>
 	</module>
 	<connection>
 		<from>/reachGridJointPositions/icubGazeboSim/left_leg/isTheRobotInReturnPoint:o</from>
-		<to>/left_leg/return</to>
+		<to>/dumper/icubGazeboSim/left_leg/return</to>
 		<protocol>tcp</protocol>
 	</connection>
 	<connection>
 		<from>/reachGridJointPositions/icubGazeboSim/left_leg/useFurtherPosForFitting:o</from>
-		<to>/left_leg/fitting</to>
+		<to>/dumper/icubGazeboSim/left_leg/fitting</to>
 		<protocol>tcp</protocol>
 	</connection>
 </application>
