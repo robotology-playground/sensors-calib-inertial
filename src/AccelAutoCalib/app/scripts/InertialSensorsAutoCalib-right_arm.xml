@@ -1,0 +1,57 @@
+<application>
+	<name>Inertial_sensors_auto_calibration-right_arm</name>
+	<dependencies>
+		<port>/icub/right_arm/inertialMTB</port>
+		<port>/icub/right_arm/stateExt:o</port>
+	</dependencies>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_arm/inertialMTB --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-right_arm-inertialMTB</tag>
+	</module>
+	<connection>
+		<from>/icub/right_arm/inertialMTB</from>
+		<to>/dumper/icub/right_arm/inertialMTB</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_arm/stateExt:o --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-right_arm-stateExt:o</tag>
+	</module>
+	<connection>
+		<from>/icub/right_arm/stateExt:o</from>
+		<to>/dumper/icub/right_arm/stateExt:o</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>reachRandomJointPositions</name>
+		<parameters>--context AccelAutoCalib --from randomJointsLeftLeg.ini</parameters>
+		<node>localhost</node>
+		<tag>randomJoints-right_arm</tag>
+	</module>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_arm/return --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-right_arm-return</tag>
+	</module>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_arm/fitting --type bottle </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-right_arm-fitting</tag>
+	</module>
+	<connection>
+		<from>/reachGridJointPositions/icub/right_arm/isTheRobotInReturnPoint:o</from>
+		<to>/dumper/icub/right_arm/return</to>
+		<protocol>tcp</protocol>
+	</connection>
+	<connection>
+		<from>/reachGridJointPositions/icub/right_arm/useFurtherPosForFitting:o</from>
+		<to>/dumper/icub/right_arm/fitting</to>
+		<protocol>tcp</protocol>
+	</connection>
+</application>
