@@ -28,7 +28,7 @@
 	</connection>
 	<module>
 		<name>reachRandomJointPositions</name>
-		<parameters>--context AccelAutoCalib --from randomJointsLeftLeg.ini</parameters>
+		<parameters>--context AccelAutoCalib --from randomJointsRightLeg.ini</parameters>
 		<node>localhost</node>
 		<tag>randomJoints-right_leg</tag>
 	</module>
