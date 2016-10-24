@@ -45,12 +45,12 @@
 		<tag>data-dumper-left_leg-fitting</tag>
 	</module>
 	<connection>
-		<from>/reachGridJointPositions/icub/left_leg/isTheRobotInReturnPoint:o</from>
+		<from>/reachGridJointPositions/left_leg/isTheRobotInReturnPoint:o</from>
 		<to>/dumper/icub/left_leg/return</to>
 		<protocol>tcp</protocol>
 	</connection>
 	<connection>
-		<from>/reachGridJointPositions/icub/left_leg/useFurtherPosForFitting:o</from>
+		<from>/reachGridJointPositions/left_leg/useFurtherPosForFitting:o</from>
 		<to>/dumper/icub/left_leg/fitting</to>
 		<protocol>tcp</protocol>
 	</connection>
