@@ -26,8 +26,10 @@ time = data.tInit + data.parsedParams.time(subsetVec_idx);
 figure('Name', '3D vectors sensor measurement VS sensor estimation');
 title('3D vectors of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
-for acc_i = listAccPlotted
-    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_i);
+for acc_idx = 1:length(listAccPlotted)
+    acc_i = listAccPlotted(acc_idx);
+    
+    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_idx);
     hold on;
     
     Vmeas=cell2mat(sensMeasCell(:,acc_i));
@@ -54,8 +56,10 @@ print('-dpng','-r300','-opengl',[saveFolder '/v3dAccEstVSaccMeas']);
 figure('Name', 'components of sensor measurement VS sensor estimation');
 title('components of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
-for acc_i = listAccPlotted
-    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_i);
+for acc_idx = 1:length(listAccPlotted)
+    acc_i = listAccPlotted(acc_idx);
+    
+    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_idx);
     hold on;
     
     Vmeas=cell2mat(sensMeasCell(:,acc_i));
@@ -82,8 +86,10 @@ print('-dpng','-r300','-opengl',[saveFolder '/xyzAccEstVSaccMeas']);
 figure('Name', 'Norm of sensor measurement VS sensor estimation');
 title('Norm of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
-for acc_i = listAccPlotted
-    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_i);
+for acc_idx = 1:length(listAccPlotted)
+    acc_i = listAccPlotted(acc_idx);
+    
+    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_idx);
     hold on;
     
     Vmeas=sensMeasNormMat(:,acc_i);
@@ -107,8 +113,10 @@ print('-dpng','-r300','-opengl',[saveFolder '/normAccEstVSaccMeas']);
 figure('Name', 'Angle of sensor measurement VS sensor estimation');
 title('Angle of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
-for acc_i = listAccPlotted
-    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_i);
+for acc_idx = 1:length(listAccPlotted)
+    acc_i = listAccPlotted(acc_idx);
+    
+    subplot(max(1,ceil(length(listAccPlotted)/4)),min(4,length(listAccPlotted)),acc_idx);
     hold on;
     
     plot(time,angleMat(:,acc_i)*180/pi,'r','lineWidth',2.0);

@@ -14,7 +14,11 @@ for j = 1 : 10
          format = [format, '%d '];
       end
    end
-   format = [format, ') [ok] '];
+   if j < 4
+       format = [format, ') [ok] '];
+   else
+       format = [format, ') %*s '];
+   end
 end
 
 % parse file into an array of cells. As all file lines (L lines) have the same

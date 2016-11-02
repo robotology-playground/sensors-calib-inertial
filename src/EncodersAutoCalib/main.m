@@ -131,7 +131,7 @@ end
 % init variables considered independent from the offsets
 subsetVec_size = round(data.nSamples*subsetVec_size_frac);
 subsetVec_idx = round(linspace(1,data.nSamples,subsetVec_size));
-Dq0 = cell2mat(jointsToCalibrate.jointsDq0)';
+Dq0 = cell2mat(jointsToCalibrate.jointsDq0)'; % Starting point for optimization
 lowerBoundary = Dq0 - startPoint2Boundary;
 upperBoundary = Dq0 + startPoint2Boundary;
 
@@ -195,6 +195,12 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
         (initialCost'*initialCost)/(nrOfMTBAccs*length(subsetVec_idx))
         
         % optimize
+        %
+        % Important note:
+        % - jointsToCalibrate.partJointsInitOffsets are the simulated joint
+        %   encoders offsets
+        % - Dq0 is the init vector for the optimization
+        %
         funcProps = functions(optimFunction);
         funcName = funcProps.function;
         switch funcName
