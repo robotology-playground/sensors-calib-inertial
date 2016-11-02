@@ -233,6 +233,8 @@ for acc_i = accIter
     dOrientListAC{1,acc_i} = dOrientList{1,acc_i}.ac;
 end
 
+dOrientListBC=dOrientListBC(1,accIter);
+dOrientListAC=dOrientListAC(1,accIter);
 dOrientListBCmat = cell2mat(dOrientListBC);
 dOrientListACmat = cell2mat(dOrientListAC);
 
@@ -241,20 +243,21 @@ figure;
 
 bar([mean(dOrientListBCmat,1)' mean(dOrientListACmat,1)']);
 
-xlabel('MTB board index','Fontsize',12);
-ylabel('distance (m/s^2)','Fontsize',12);
+xlabel('MTB board index','Fontsize',20);
+ylabel('distance (m/s^2)','Fontsize',20);
 grid on;
 
 hold on;
-errorbar([1:11]-0.15,mean(dOrientListBCmat,1)',...
+errorbar([1:length(accIter)]-0.15,mean(dOrientListBCmat,1)',...
     std(dOrientListBCmat,0,1)',...
     'r*','lineWidth',2.5);
-errorbar([1:11]+0.15,mean(dOrientListACmat,1)',...
+errorbar([1:length(accIter)]+0.15,mean(dOrientListACmat,1)',...
     std(dOrientListACmat,0,1)',...
-    'r*','lineWidth',2.5);
+    'b*','lineWidth',2.5);
 hold off
 
-legend('Before calibration','After calibration');
+legend('mean before calibration','mean after calibration',...
+    '\sigma before calibration','\sigma after calibration');
 
 if logTest
     set(gcf,'PaperPositionMode','auto');

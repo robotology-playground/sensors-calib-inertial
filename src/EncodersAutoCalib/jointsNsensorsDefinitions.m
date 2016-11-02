@@ -71,14 +71,15 @@ jointsIdxes_right_leg = jointsIdxes_leg;
 jointsIdxes_torso = '1:3';
 jointsIdxes_head = '1:3';
 
+% Simulated joint encoders offsets
 jointsInitOffsets_left_arm = [0 0 0 0];
 jointsInitOffsets_right_arm = [0 0 0 0];
 jointsInitOffsets_left_leg = [0 0 0 0 0 0];
-%jointsInitOffsets_left_leg = [-0.0021   -0.0346    0.0426    0.3098    0.2366    0.0751];
 jointsInitOffsets_right_leg = [0 0 0 0 0 0];
 jointsInitOffsets_torso = [0 0 0];
 jointsInitOffsets_head = [0 0 0];
 
+% Optimization starting point
 jointsDq0_left_arm = [0 0 0 0];
 jointsDq0_right_arm = [0 0 0 0];
 jointsDq0_left_leg = [0 0 0 0 0 0];
@@ -151,7 +152,7 @@ mtbSensorAct_head(1) = {true};
 %% Build access lists
 %
 jointsToCalibrate.partJoints = {};
-jointsToCalibrate.partJointsInitOffsets = {};
+jointsToCalibrate.partJointsInitOffsets = {}; % simulated joint encoders offsets
 jointsToCalibrate.jointsDq0 = {};
 jointsToCalibrate.partSegments = {};
 mtbSensorCodes_list = {};
