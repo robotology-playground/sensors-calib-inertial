@@ -28,6 +28,11 @@ classdef SensorsData < handle
         frames      = {};
         ndof        = {};
         index       = {};
+        %<For mapping MTB pos ids (as they appear in the YARP port
+        % metadata) to MTB labels. These tables are built when loading the
+        % sensor data.
+        mapMTBpos2code = {};
+        mapMTBlabel2offset = {}; %>
         type        = {};
         calib       = {};
         visualize   = {};

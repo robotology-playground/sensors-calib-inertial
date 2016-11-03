@@ -97,12 +97,17 @@ for i = 1 : length(obj.parts)
         eval(['readFile = readFile_' bufferId]);
         % Read file.
         if readFile
+            % extract time and MTB sensor data
             [yBuff,tAccBuff] = readDataDumper(file);
+            % parse the MTB sensor metadata and build the sensor mapping
+            obj.mapMTBids(yBuff);
         end
         % Parse file content.
         fprintf('Loaded sensor %s\n',obj.labels{i})
         eval(['obj.parsedParams.' t ' = tAccBuff;']);
-        eval(['obj.parsedParams.' y '= yBuff(:,' obj.index{i} ');']);
+        % retrieve the correct offsets to index 'yBuff[]'. The offsets are retrieved 
+        % using the sensor mapping built from the metadata parsing.
+        eval(['obj.parsedParams.' y '= yBuff(:,' obj.mapMTBlabel2offset(obj.labels{i}) ');']);
         
         
         if(strcmp(y(end-2:end), 'imu') && obj.diff_imu)
