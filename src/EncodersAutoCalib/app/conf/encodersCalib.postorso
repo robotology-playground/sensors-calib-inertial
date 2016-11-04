@@ -2,9 +2,9 @@
 <Sequence_postorso TotPositions="4" ReferencePart="torso">
     <Position Index="0" Timing="5.00">
         <JointPositions Count="3">
-            <PosValue>-0.00</PosValue>
             <PosValue>0.00</PosValue>
-            <PosValue>-0.00</PosValue>
+            <PosValue>0.00</PosValue>
+            <PosValue>50.00</PosValue>
         </JointPositions>
         <JointVelocities Count="3">
             <SpeedValue>10.00</SpeedValue>
@@ -14,9 +14,9 @@
     </Position>
     <Position Index="1" Timing="35.00">
         <JointPositions Count="3">
-            <PosValue>-0.00</PosValue>
-            <PosValue>-0.00</PosValue>
+            <PosValue>-48.00</PosValue>
             <PosValue>0.00</PosValue>
+            <PosValue>50.00</PosValue>
         </JointPositions>
         <JointVelocities Count="3">
             <SpeedValue>10.00</SpeedValue>
@@ -26,9 +26,9 @@
     </Position>
     <Position Index="2" Timing="95.00">
         <JointPositions Count="3">
+            <PosValue>48.00</PosValue>
             <PosValue>0.00</PosValue>
-            <PosValue>-0.00</PosValue>
-            <PosValue>0.00</PosValue>
+            <PosValue>50.00</PosValue>
         </JointPositions>
         <JointVelocities Count="3">
             <SpeedValue>10.00</SpeedValue>
@@ -38,9 +38,9 @@
     </Position>
     <Position Index="3" Timing="100.00">
         <JointPositions Count="3">
-            <PosValue>-0.00</PosValue>
             <PosValue>0.00</PosValue>
-            <PosValue>-0.00</PosValue>
+            <PosValue>0.00</PosValue>
+            <PosValue>50.00</PosValue>
         </JointPositions>
         <JointVelocities Count="3">
             <SpeedValue>10.00</SpeedValue>
