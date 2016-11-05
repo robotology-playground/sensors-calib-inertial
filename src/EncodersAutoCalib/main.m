@@ -49,7 +49,6 @@ jointsToCalibrate.parts = {'left_leg'}; %loop on 1 single cost f
 %% set init parameters
 %
 run jointsNsensorsDefinitions;
-averageOptimalDq = averageOptimalDq_left_leg;
 
 % in target mode, don't apply any prior offsets
 if strcmp(runMode,'target')

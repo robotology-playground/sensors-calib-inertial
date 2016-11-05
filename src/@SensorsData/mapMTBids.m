@@ -133,7 +133,7 @@ if yBuff(1,2) ~= version
 end
 
 % Parse the MTB sensor pos. IDs and build the mapping to sensor labels.
-obj.maoMTBlabel2offset = containers.Map('KeyType','char','ValueType','any');
+obj.mapMTBlabel2offset = containers.Map('KeyType','char','ValueType','any');
 for offset = sensorMetaOffsets
     % parse the sensor position id
     mtbPos = yBuff(1,1+offset+sensorIdxOffset);
@@ -141,7 +141,7 @@ for offset = sensorMetaOffsets
     mtbCode = obj.mapMTBpos2code{mtbPos+1}; % +1 because of matlab indexing
     % parse the sensor type '_acc' or '_gyro' then build the sensor label.
     mtbLabel = [mtbCode mtbType{yBuff(1,1+offset+sensorTypeOffset)+1}]; % +1 because of matlab indexing
-    obj.maoMTBlabel2offset(mtbLabel) = [num2str(1+offset+sensorDataStartOffset) ':' num2str(1+offset+sensorDataStopOffset)];
+    obj.mapMTBlabel2offset(mtbLabel) = [num2str(1+offset+sensorDataStartOffset) ':' num2str(1+offset+sensorDataStopOffset)];
 end
 
 end
