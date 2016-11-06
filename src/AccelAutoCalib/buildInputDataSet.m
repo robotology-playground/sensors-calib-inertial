@@ -54,7 +54,7 @@ end
 % Select full data subset to use on ellipsoid fitting
 subsetVec_idx = linspace(1,data.nSamples,data.nSamples);
 
-% Go through 'data.frames', and get sensor measurements :
+% Go through 'data.frames', and get measurement variables indexes:
 sensorsIdxListFile = [];
 for frame = 1:length(data.frames)
     switch data.type{frame}

@@ -136,9 +136,6 @@ classdef CalibrationContextBuilder < handle
         end
         
         function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,jointsToCalibrate)
-            % load joint virtual encoder offsets
-            obj.DqiEnc = [obj.DqiEnc; jointsToCalibrate.partJointsInitOffsets{part}'];
-            
             % load segments list for current part (ex: segments of left leg part
             % are: 'l_upper_leg', 'l_lower_leg', 'l_foot'.
             obj.segments = [obj.segments jointsToCalibrate.partSegments{part}];
@@ -256,7 +253,7 @@ classdef CalibrationContextBuilder < handle
                 % Warning!! iDynTree takes in input **radians** based units,
                 % while the iCub port stream **degrees** based units.
                 % Also add joint offsets from a previous result.
-                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + obj.DqiEnc + Dq;
+                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + Dq;
                 dqisRobotDOF = zeros(obj.dofs,1);% dqisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_dqi(:,ts);
                 d2qisRobotDOF = zeros(obj.dofs,1);% d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_d2qi(:,ts);
                 obj.qi_idyn.fromMatlab(qisRobotDOF);
@@ -404,7 +401,7 @@ classdef CalibrationContextBuilder < handle
                     % Warning!! iDynTree takes in input **radians** based units,
                     % while the iCub port stream **degrees** based units.
                     % Also add joint offsets from a previous result.
-                    qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + obj.DqiEnc + Dq;
+                    qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + Dq;
                     % obj.qi_idyn.fromMatlab(qisRobotDOF);
                     for joint_i = 0:(obj.dofs-1)
                         obj.fixedBasePos.jointPos.setVal(joint_i,qisRobotDOF(joint_i+1));

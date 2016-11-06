@@ -1,11 +1,5 @@
 %% DEBUG
 % jointsToCalibrate.parts = {'left_arm','right_arm','left_leg','right_leg'};
-%
-% variables to change in order to define a subset of joints to 
-% calibrate:
-% jointsToCalibrate_leg
-% jointsInitOffsets_left_leg, jointsInitOffsets_right_leg
-% jointsDq0_left_leg, jointsDq0_right_leg
 
 %%%================================== INTERFACE START ==============================
 %% Select the joints to calibrate through the respective indexes in the port data
@@ -19,13 +13,6 @@ jointsIdxes_head = '1:3';
 
 %% Define parameters for all joints (calibrated or not)
 %
-% Simulated joint encoders offsets
-jointsInitOffsets_left_arm = [0 0 0 0];
-jointsInitOffsets_right_arm = [0 0 0 0];
-jointsInitOffsets_left_leg = [0 0 0 0 0 0];
-jointsInitOffsets_right_leg = [0 0 0 0 0 0];
-jointsInitOffsets_torso = [0 0 0];
-jointsInitOffsets_head = [0 0 0];
 
 % Optimization starting point
 jointsDq0_left_arm = [0 0 0 0];
@@ -161,7 +148,6 @@ mtxSensorType_head(1) = {'inertialMTI'};
 %% Build access lists
 %
 jointsToCalibrate.partJoints = {};
-jointsToCalibrate.partJointsInitOffsets = {}; % simulated joint encoders offsets
 jointsToCalibrate.jointsDq0 = {};
 jointsToCalibrate.partSegments = {};
 mtbSensorCodes_list = {};
@@ -171,7 +157,6 @@ mtxSensorType_list = {};
 
 for i = 1:length(jointsToCalibrate.parts)
     eval(['jointsToCalibrate.partJoints{' num2str(i) '} = jointsToCalibrate_' jointsToCalibrate.parts{i} ';']);
-    eval(['jointsToCalibrate.partJointsInitOffsets{' num2str(i) '} = jointsInitOffsets_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.jointsDq0{' num2str(i) '} = jointsDq0_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' jointsToCalibrate.parts{i} ';']);
     eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' jointsToCalibrate.parts{i} ';']);
@@ -185,7 +170,6 @@ end
 % Process the selection for the structure 'jointsToCalibrate' definition
 for i = 1:length(jointsToCalibrate.parts)
     jointsToCalibrate.partJoints{i}=jointsToCalibrate.partJoints{i}(str2num(jointsToCalibrate.jointsIdxes{i}));
-    jointsToCalibrate.partJointsInitOffsets{i}=jointsToCalibrate.partJointsInitOffsets{i}(str2num(jointsToCalibrate.jointsIdxes{i}));
     jointsToCalibrate.jointsDq0{i}=jointsToCalibrate.jointsDq0{i}(str2num(jointsToCalibrate.jointsIdxes{i}));
 end
 

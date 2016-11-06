@@ -36,7 +36,13 @@ jointsToCalibrate.parts = {'left_leg'};
 
 %% set init parameters from interface, create model, load parameters from the 
 %  specified URDF
-%
+%%
+%=================================================================================
+%===========
+%=========== This is outdated, as the use of partJointsInitOffsets !!! TO BE FIXED
+%===========
+%=================================================================================
+%%
 jointsToCalibrate.partJoints = {};
 jointsToCalibrate.partJointsInitOffsets = {};
 mtbSensorCodes_list = {};
