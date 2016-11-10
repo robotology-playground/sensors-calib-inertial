@@ -45,12 +45,12 @@
 		<tag>data-dumper-torso-fitting</tag>
 	</module>
 	<connection>
-		<from>/reachGridJointPositions/icub/torso/isTheRobotInReturnPoint:o</from>
+		<from>/reachGridJointPositions/torso/isTheRobotInReturnPoint:o</from>
 		<to>/dumper/icub/torso/return</to>
 		<protocol>tcp</protocol>
 	</connection>
 	<connection>
-		<from>/reachGridJointPositions/icub/torso/useFurtherPosForFitting:o</from>
+		<from>/reachGridJointPositions/torso/useFurtherPosForFitting:o</from>
 		<to>/dumper/icub/torso/fitting</to>
 		<protocol>tcp</protocol>
 	</connection>

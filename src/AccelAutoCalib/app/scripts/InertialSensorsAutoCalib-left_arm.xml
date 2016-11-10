@@ -1,7 +1,7 @@
 <application>
 	<name>Inertial_sensors_auto_calibration-left_arm</name>
 	<dependencies>
-		<port>/icub/left_arm/inertialMTB</port>
+		<port>/icub/left_hand/inertialMTB</port>
 		<port>/icub/left_arm/stateExt:o</port>
 	</dependencies>
 	<module>
@@ -11,7 +11,7 @@
 		<tag>data-dumper-left_arm-inertialMTB</tag>
 	</module>
 	<connection>
-		<from>/icub/left_arm/inertialMTB</from>
+		<from>/icub/left_hand/inertialMTB</from>
 		<to>/dumper/icub/left_arm/inertialMTB</to>
 		<protocol>udp</protocol>
 	</connection>
@@ -45,12 +45,12 @@
 		<tag>data-dumper-left_arm-fitting</tag>
 	</module>
 	<connection>
-		<from>/reachGridJointPositions/icub/left_arm/isTheRobotInReturnPoint:o</from>
+		<from>/reachGridJointPositions/left_arm/isTheRobotInReturnPoint:o</from>
 		<to>/dumper/icub/left_arm/return</to>
 		<protocol>tcp</protocol>
 	</connection>
 	<connection>
-		<from>/reachGridJointPositions/icub/left_arm/useFurtherPosForFitting:o</from>
+		<from>/reachGridJointPositions/left_arm/useFurtherPosForFitting:o</from>
 		<to>/dumper/icub/left_arm/fitting</to>
 		<protocol>tcp</protocol>
 	</connection>
