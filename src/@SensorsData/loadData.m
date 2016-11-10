@@ -74,6 +74,7 @@ for i = 1 : length(obj.parts)
         % Read file.
         if readFile
             [qBuff,dqBuff,d2qBuff,tStateBuff] = readStateExt(obj.ndof{i},file);
+            qBuff = qBuff + obj.calib{i};
         end
         % Parse file content.
         % (dynamicaly create new fields of "data")

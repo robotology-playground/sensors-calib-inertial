@@ -86,7 +86,8 @@ if exist(calibrationMapFile,'file') == 2
 end
 
 if ~exist('calibrationMap','var')
-    error('calibrationMap not found');
+    warning('calibrationMap not found');
+    calibrationMap = containers.Map('KeyType','char','ValueType','any');
 end
 
 switch runMode
@@ -127,10 +128,14 @@ end
 %% OPTIMIZATION
 %
 
-% init variables considered independent from the offsets
+% Note: below init variables are considered independent from the offsets
+%
+% selecting a subset of samples (time series vector)
 subsetVec_size = round(data.nSamples*subsetVec_size_frac);
 subsetVec_idx = round(linspace(1,data.nSamples,subsetVec_size));
-Dq0 = cell2mat(jointsToCalibrate.jointsDq0)'; % Starting point for optimization
+% Starting point for optimization and boundaries. The format of Dq is
+% defined by Dq0. Dq0 
+Dq0 = cell2mat(jointsToCalibrate.jointsDq0)';
 lowerBoundary = Dq0 - startPoint2Boundary;
 upperBoundary = Dq0 + startPoint2Boundary;
 
@@ -196,9 +201,8 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
         % optimize
         %
         % Important note:
-        % - jointsToCalibrate.partJointsInitOffsets are the simulated joint
-        %   encoders offsets
         % - Dq0 is the init vector for the optimization
+        % - Dq is the main optimization variable (format set by Dq0)
         %
         funcProps = functions(optimFunction);
         funcName = funcProps.function;
@@ -255,8 +259,35 @@ std_optDq_offsetsGrid
 fprintf('Standard deviation across random subsets:\n');
 std_optDq_subsets
 
+%% Format and save calibration in the main calibration map
+%
 
+% Split computed offsets matrix into part wise cells
+calib = mat2cell(averageOptimalDq,lengths(jointsToCalibrate.jointsDq0{:}));
 
+% Merge new calibrated joint offsets with old 'calibrationMap'.
+% The result matrix optimalDq has the same format as Dq and Dq0.
+% Dq0 results from the concatenation of the jointsToCalibrate.jointsDq0
+% matrices.
+for iter = 1:length(jointsToCalibrate.parts)
+    mapKey = strcat('jointsOffsets_',jointsToCalibrate.parts{iter}); % set map key
+    % get current value or set a default one (zeros)
+    if isKey(calibrationMap,mapKey)
+        mapValue = calibrationMap(mapKey); % get current value
+    else
+        mapValue = zeros(jointsToCalibrate.jointsDofs{iter},1); % init default value
+    end
+    mapValue(str2num(jointsToCalibrate.jointsIdxes{iter})) = ...
+        mapValue(str2num(jointsToCalibrate.jointsIdxes{iter})) + calib{iter}; % add calibrated values
+    calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
+end
+
+% Save updated calibration
+if saveCalib
+    save('./data/calibrationMap.mat','calibrationMap');
+end
+
+% log data
 save('./data/minimResult.mat', ...
     'costFunctionSelect','shuffle','number_of_subset_init',...
     'mtbSensorCodes_list','jointsToCalibrate','mtbSensorAct_list', ...
