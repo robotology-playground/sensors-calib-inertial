@@ -135,10 +135,10 @@ classdef CalibrationContextBuilder < handle
             
         end
         
-        function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,jointsToCalibrate)
+        function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,ModelParams)
             % load segments list for current part (ex: segments of left leg part
             % are: 'l_upper_leg', 'l_lower_leg', 'l_foot'.
-            obj.segments = [obj.segments jointsToCalibrate.partSegments{part}];
+            obj.segments = [obj.segments ModelParams.jointsToCalibrate.partSegments{part}];
             
             %% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
             % Go through 'data.frames', 'data.parts' and 'data.labels' and build :
@@ -147,7 +147,7 @@ classdef CalibrationContextBuilder < handle
             % This is a list of indexes, that will be later used for retrieving the
             % sensor predicted measurements and the real measure from the captured data.
             for frame = 1:length(data.frames)
-                if strcmp(data.parts(frame),jointsToCalibrate.parts(part))
+                if strcmp(data.parts(frame),ModelParams.parts(part))
                     if strcmp(data.type(frame),'inertialMTB') || strcmp(data.type(frame),'inertialMTI')
                         obj.sensorsIdxListModel = [obj.sensorsIdxListModel ...
                             obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
@@ -162,11 +162,11 @@ classdef CalibrationContextBuilder < handle
                 end
             end
             
-            % mapping of 'jointsToCalibrate.partJoints' into the iDynTree joint list.
-            for joint = 1:length(jointsToCalibrate.partJoints{part})
+            % mapping of 'ModelParams.jointsToCalibrate.partJoints' into the iDynTree joint list.
+            for joint = 1:length(ModelParams.jointsToCalibrate.partJoints{part})
                 % get joint index
                 obj.jointsIdxListModel = [obj.jointsIdxListModel...
-                    obj.estimator.model.getJointIndex(jointsToCalibrate.partJoints{part}{joint})];
+                    obj.estimator.model.getJointIndex(ModelParams.jointsToCalibrate.partJoints{part}{joint})];
             end
             %convert indices to matlab
             obj.jointsIdxListModel = obj.jointsIdxListModel+1;
