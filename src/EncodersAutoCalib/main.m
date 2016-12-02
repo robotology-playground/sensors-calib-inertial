@@ -3,52 +3,15 @@ clear
 close all
 clc
 
+
 %% Main interface parameters ==============================================
 
-% 'simu' or 'target' mode
-runMode = 'target';
-offsetsGridResolution = 10*pi/180; % step between 2 offsets for each joint DOF (degrees)
-offsetsGridRange = 5*pi/180; % min/max (degrees)
-offsetedQsIdxs = 1:6;
+run mainInit.m;
 
-% model and data capture file
-modelPath = '../models/iCubGenova05/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubGenova05_#1/';
-dataSetNb = '_00003';
-calibrationMapFile = '../AccelAutoCalib/data/calib/calibrationMap_#1.mat';
-loadRandomDataIdxes = false;
-saveRandomDataIdxes = true;
-randomDataIdxesFile = './data/randomIdx.mat';
-
-% Optimisation configuration
-[optimFunction,options] = getOptimConfig();
-startPoint2Boundary = 20*pi/180; % 20 deg
-% cost function: 'costFunctionSigma' / 'costFunctionSigmaProjOnEachLink'
-costFunctionSelect = 'costFunctionSigma';
-shuffle = false;
-
-% The main single data bucket of (timeStop-timeStart)/10ms samples is sub-sampled to
-% 'subSamplingSize' samples. A subset of 'subSamplingSize*subsetVec_size_frac' is
-% then selected for running the optimisation on.
-% The subset can be selected randomly.
-% The subset size = 1/number_of_subset_init of the total data set size
-number_of_subset_init = 1;
-subsetVec_size_frac = 1/number_of_subset_init;
-
-% Start and end point of data samples
-timeStart = 1;  % starting time in capture data file (in seconds)
-timeStop  = -1; % ending time in capture data file (in seconds). If -1, use the end time from log
-subSamplingSize = 1000; % number of samples after sub-sampling the raw data
-
-% define the set of joints (of whole limb) to calibrate and activate the sensors
-% in that limb.
-jointsToCalibrate.parts = {'left_leg'}; %loop on 1 single cost f 
-
-%%=========================================================================
-
-%% set init parameters
+%% set joint/sensor init parameters
 %
-run jointsNsensorsDefinitions;
+run jointsNsensorsSelections;
+ModelParams = jointsNsensorsDefinitions(parts,jointsIdxes,jointsDq0,mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
 if strcmp(runMode,'target')
@@ -97,19 +60,19 @@ switch runMode
             % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
             data = SensorsData(dataPath,dataSetNb,subSamplingSize,timeStart,timeStop,false,calibrationMap);
             
-        for part = 1 : length(jointsToCalibrate.parts)            
+        for part = 1 : length(ModelParams.parts)            
             % Number of sensors for current part are:
-            nrOfMTBAccs = length(mtbSensorLink_list{part});
+            nrOfMTBAccs = length(ModelParams.mtbSensorLink_list{part});
             
             % add mtx sensors (MTB or MTI-imu)
-            data.addMTXsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
-                mtbSensorCodes_list{part}, mtbSensorLink_list{part}, ...
-                mtbSensorAct_list{part}, ...
-                mtxSensorType_list{part},true);
+            data.addMTXsensToData(ModelParams.parts{part}, 1:nrOfMTBAccs, ...
+                ModelParams.mtbSensorCodes_list{part}, ModelParams.mtbSensorLink_list{part}, ...
+                ModelParams.mtbSensorAct_list{part}, ...
+                ModelParams.mtxSensorType_list{part},true);
             
             % add joint measurements
-            data.addEncSensToData(jointsToCalibrate.parts{part}, ...
-                jointsToCalibrate.jointsDofs{part}, jointsToCalibrate.jointsIdxes{part}, ...
+            data.addEncSensToData(ModelParams.parts{part}, ...
+                ModelParams.jointsToCalibrate.jointsDofs{part}, ModelParams.jointsToCalibrate.jointsIdxes{part}, ...
                 true);
         end
             
@@ -120,8 +83,8 @@ switch runMode
 end
 
 %% init joints and sensors lists
-for part = 1 : length(jointsToCalibrate.parts)
-    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,part,jointsToCalibrate);
+for part = 1 : length(ModelParams.parts)
+    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,part,ModelParams);
 end
 
 
@@ -135,7 +98,7 @@ subsetVec_size = round(data.nSamples*subsetVec_size_frac);
 subsetVec_idx = round(linspace(1,data.nSamples,subsetVec_size));
 % Starting point for optimization and boundaries. The format of Dq is
 % defined by Dq0. Dq0 
-Dq0 = cell2mat(jointsToCalibrate.jointsDq0)';
+Dq0 = cell2mat(ModelParams.jointsToCalibrate.jointsDq0)';
 lowerBoundary = Dq0 - startPoint2Boundary;
 upperBoundary = Dq0 + startPoint2Boundary;
 
@@ -148,6 +111,9 @@ optimalDq = zeros(length(Dq0),number_of_subset_init,offsetsConfigGrid.nbVectors)
 resnorm = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
 exitflag = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
 output = cell(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
+
+% pre-computed optimal joint offsets (TO BE REMOVED)
+averageOptimalDq = 0;
 
 % iterate over the joints offsets grid values
 for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
@@ -263,22 +229,22 @@ std_optDq_subsets
 %
 
 % Split computed offsets matrix into part wise cells
-calib = mat2cell(averageOptimalDq,lengths(jointsToCalibrate.jointsDq0{:}));
+calib = mat2cell(averageOptimalDq,lengths(ModelParams.jointsToCalibrate.jointsDq0{:}));
 
 % Merge new calibrated joint offsets with old 'calibrationMap'.
 % The result matrix optimalDq has the same format as Dq and Dq0.
-% Dq0 results from the concatenation of the jointsToCalibrate.jointsDq0
+% Dq0 results from the concatenation of the ModelParams.jointsToCalibrate.jointsDq0
 % matrices.
-for iter = 1:length(jointsToCalibrate.parts)
-    mapKey = strcat('jointsOffsets_',jointsToCalibrate.parts{iter}); % set map key
+for iter = 1:length(ModelParams.parts)
+    mapKey = strcat('jointsOffsets_',ModelParams.parts{iter}); % set map key
     % get current value or set a default one (zeros)
     if isKey(calibrationMap,mapKey)
         mapValue = calibrationMap(mapKey); % get current value
     else
-        mapValue = zeros(jointsToCalibrate.jointsDofs{iter},1); % init default value
+        mapValue = zeros(ModelParams.jointsToCalibrate.jointsDofs{iter},1); % init default value
     end
-    mapValue(str2num(jointsToCalibrate.jointsIdxes{iter})) = ...
-        mapValue(str2num(jointsToCalibrate.jointsIdxes{iter})) + calib{iter}; % add calibrated values
+    mapValue(str2num(ModelParams.jointsToCalibrate.jointsIdxes{iter})) = ...
+        mapValue(str2num(ModelParams.jointsToCalibrate.jointsIdxes{iter})) + calib{iter}; % add calibrated values
     calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
 end
 
@@ -290,7 +256,7 @@ end
 % log data
 save('./data/minimResult.mat', ...
     'costFunctionSelect','shuffle','number_of_subset_init',...
-    'mtbSensorCodes_list','jointsToCalibrate','mtbSensorAct_list', ...
+    'ModelParams', ...
     'data','offsetsConfigGrid', ...
     'optimalDq','exitflag','output','averageOptimalDq','std_optDq_offsetsGrid','std_optDq_subsets');
 

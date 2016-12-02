@@ -6,7 +6,7 @@ function [optimFunc,options] = getOptimConfig()
 %% SELECT HERE THE ALGORITHM FOR OPTIMIZING THE COST FUNCTION
 % fminunc, fmincon, lsqnonlin
 % DEBUG: use 'fminsearch' for deactivating optimization
-optimFunc = @fminsearch;
+optimFunc = @lsqnonlin;
 
 funcProps = functions(optimFunc);
 funcName = funcProps.function;
