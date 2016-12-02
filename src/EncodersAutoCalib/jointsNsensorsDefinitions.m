@@ -116,7 +116,7 @@ mtxSensorType_head(1) = {'inertialMTI'};
 
 %% Build access lists
 %
-if length(jointsDq0) > 0
+if ~isempty(jointsDq0)
     jointsToCalibrate.partJoints = {};
     jointsToCalibrate.jointsDq0 = {};
     jointsToCalibrate.partSegments = {};
