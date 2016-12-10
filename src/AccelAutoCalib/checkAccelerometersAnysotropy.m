@@ -1,9 +1,15 @@
 function checkAccelerometersAnysotropy(...
-    data,sensorsIdxListFile,activeAccs,sensMeasCell,subSamplingSize,...
+    data,sensorsIdxListFile,sensMeasCell_bc,sensMeasCell_ac,...
     figsFolder,logTest,loadJointPos)
 
+% measurements before and after calibration
+[sensMeasCell.bc,sensMeasCell.ac] = deal(sensMeasCell_bc,sensMeasCell_ac);
+
+% number of measurement samples
+subSamplingSize = length(sensMeasCell.ac{1,1});
+
 % select accelerometers to check and plot
-accIter = sensorsIdxListFile;
+accIter = 1:length(sensorsIdxListFile);
 
 %% Check distance to 9.807 sphere manifold
 %
@@ -41,12 +47,12 @@ for acc_i = accIter
     %% Plot distributions
     % Check if we should print to a log file
     if logTest
-        FID = fopen([figsFolder '/distrib_' activeAccs{acc_i} '.txt'],'w');
+        FID = fopen([figsFolder '/distrib_' data.ac.labels{sensorsIdxListFile(acc_i)} '.txt'],'w');
     else
         FID = 1;
     end
     
-    figure('Name',['calibration of MTB sensor ' activeAccs{acc_i}]);
+    figure('Name',['calibration of MTB sensor ' data.ac.labels{sensorsIdxListFile(acc_i)}]);
     %set(gcf,'PositionMode','manual','Units','centimeters','Position',[5 5 50 200]);
     set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
 
@@ -94,7 +100,7 @@ for acc_i = accIter
 
     if logTest
         set(gcf,'PaperPositionMode','auto');
-        print('-dpng','-r300','-opengl',[figsFolder '/figs_' activeAccs{acc_i}]);
+        print('-dpng','-r300','-opengl',[figsFolder '/figs_' data.ac.labels{sensorsIdxListFile(acc_i)}]);
     end    
 end
 

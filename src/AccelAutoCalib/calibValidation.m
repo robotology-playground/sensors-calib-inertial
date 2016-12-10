@@ -42,47 +42,64 @@ end
 
 %% build input data before calibration
 %
-
-% Build input data without calibration applied
-[data.bc,sensorsIdxListFile,sensMeasCell.bc] = buildInputDataSet(...
-    loadSource,saveToCache,loadJointPos,...
-    dataPath,dataSetNb,...
-    subSamplingSize,timeStart,timeStop,...
-    ModelParams);
-
-%% Apply calibration and reload input data
-%
-
-% Load existing calibration
-if exist(calibrationMapFile,'file') == 2
-    load(calibrationMapFile,'calibrationMap');
+switch loadSource
+    case 'matFile'
+        load './data/dataCache.mat';
+    case 'dumpFile'
+        % Build input data without calibration applied
+        [data.bc,sensorsIdxListFile,sensMeasCell.bc] = buildInputDataSet(...
+            'dumpFile',false,loadJointPos,...
+            dataPath,dataSetNb,...
+            subSamplingSize,timeStart,timeStop,...
+            ModelParams);
+        
+        %% Apply calibration and reload input data
+        %
+        
+        % Load existing calibration
+        if exist(calibrationMapFile,'file') == 2
+            load(calibrationMapFile,'calibrationMap');
+        end
+        
+        if ~exist('calibrationMap','var')
+            error('calibrationMap not found');
+        end
+        
+        % Build input data with calibration applied
+        [data.ac,sensorsIdxListFile,sensMeasCell.ac] = buildInputDataSet(...
+            'dumpFile',false,false,...
+            dataPath,dataSetNb,...
+            subSamplingSize,timeStart,timeStop,...
+            ModelParams,calibrationMap);
+        
+        % Save data in a Matlab file for faster access in further runs
+        if saveToCache
+            save('./data/dataCache.mat','data','sensorsIdxListFile','sensMeasCell');
+        end
+    otherwise
+        disp('Unknown data source !!')
 end
-
-if ~exist('calibrationMap','var')
-    error('calibrationMap not found');
-end
-
-% Build input data with calibration applied
-[data.ac,sensorsIdxListFile,sensMeasCell.ac] = buildInputDataSet(...
-    loadSource,saveToCache,false,...
-    dataPath,dataSetNb,...
-    subSamplingSize,timeStart,timeStop,...
-    ModelParams,calibrationMap);
 
 % iteration list
-activeAccs = ModelParams.mtbSensorCodes_list{1}(cell2mat(ModelParams.mtbSensorAct_list));
+%activeAccs = ModelParams.mtbSensorCodes_list{1}(cell2mat(ModelParams.mtbSensorAct_list));
 
 
 %% Check anysotropy of gains and offsets
 %
 checkAccelerometersAnysotropy(...
-    data,sensorsIdxListFile,activeAccs,sensMeasCell,subSamplingSize,...
+    data,sensorsIdxListFile,sensMeasCell.bc,sensMeasCell.ac,...
     figsFolder,logTest,loadJointPos);
 
-%% Plot joint trajectories
-%
 if loadJointPos
+    %% Plot joint trajectories
+    %
     plotJointTrajectories(data,ModelParams,figsFolder,logTest);
+    
+    %% Plot predicted sensor variables VS sensor sensor measurements
+    %
+%     checkSensorMeasVsEst(...
+%         data,sensorsIdxListFile,sensMeasCell.ac,...
+%         figsFolder,logTest);
 end
 
 %% Log all data
