@@ -26,8 +26,8 @@ if logTest
     
     figsFolder = ['./data/test/log_' num2str(iterator)];
     dataFolder = ['./data/test'];
-    [mkdirStatus,mkdirCmdout] = system(['mkdir ' figsFolder],'-echo')
-    [mkdirStatus,mkdirCmdout] = system(['mkdir ' dataFolder],'-echo')
+    system(['mkdir ' dataFolder],'-echo')
+    system(['mkdir ' figsFolder],'-echo')
     fileID = fopen([dataFolder '/log_' num2str(iterator) '.txt'],'w');
     fprintf(fileID,'modelPath = %s\n',modelPath);
     fprintf(fileID,'dataPath = %s\n',dataPath);
@@ -86,20 +86,51 @@ end
 
 %% Check anysotropy of gains and offsets
 %
-checkAccelerometersAnysotropy(...
-    data,sensorsIdxListFile,sensMeasCell.bc,sensMeasCell.ac,...
-    figsFolder,logTest,loadJointPos);
+% checkAccelerometersAnysotropy(...
+%     data.bc,data.ac,sensorsIdxListFile,...
+%     sensMeasCell.bc,sensMeasCell.ac,...
+%     figsFolder,logTest,loadJointPos);
 
 if loadJointPos
+    %% Generate predicted measurements
+    %
+    % create the calibration context implementing the cost function
+    myCalibContext = CalibrationContextBuilder(modelPath);
+    costFunction = @myCalibContext.costFunctionSigma;
+    nrOfMTBAccs = length(sensorsIdxListFile);
+
+    % init joints and sensors lists
+    for part = 1 : length(ModelParams.parts)
+        myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data.bc,part,ModelParams);
+    end
+    
+    % load joint positions
+    myCalibContext.loadJointNsensorsDataSubset(1:data.bc.nSamples);
+    
+    % cost before calibration
+    [initialCost,sensMeasCell.bc,sensEstCell.bc] = costFunction(0,data.bc,1:data.bc.nSamples,@lsqnonlin,false,'');
+    fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
+    (initialCost'*initialCost)/(nrOfMTBAccs*data.bc.nSamples)
+    
+    % cost after calibration
+    [initialCost,sensMeasCell.ac,sensEstCell.ac] = costFunction(0,data.ac,1:data.ac.nSamples,@lsqnonlin,false,'');
+    fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
+    (initialCost'*initialCost)/(nrOfMTBAccs*data.ac.nSamples)
+
     %% Plot joint trajectories
     %
     plotJointTrajectories(data,ModelParams,figsFolder,logTest);
     
     %% Plot predicted sensor variables VS sensor sensor measurements
     %
-%     checkSensorMeasVsEst(...
-%         data,sensorsIdxListFile,sensMeasCell.ac,...
-%         figsFolder,logTest);
+    checkSensorMeasVsEst(...
+        data,sensorsIdxListFile,...
+        sensMeasCell.bc,sensEstCell.bc,...
+        figsFolder,logTest,'bc')
+    checkSensorMeasVsEst(...
+        data,sensorsIdxListFile,...
+        sensMeasCell.ac,sensEstCell.ac,...
+        figsFolder,logTest,'ac')
 end
 
 %% Log all data
