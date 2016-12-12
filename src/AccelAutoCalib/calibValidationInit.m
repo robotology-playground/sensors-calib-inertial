@@ -8,7 +8,9 @@ modelPath = '../models/iCubGenova05/iCubFull.urdf';
 dataPath  = '../../data/calibration/dumper/iCubGenova05_#4/';
 dataSetNb = '';
 calibrationMapFile = './data/calibrationMap.mat';
-iterator = 1;
+iterator = 1; % default value in case no iterator file exists
+              % For reseting the iterator, just delete the file
+              % ./data/test/iterator.mat .
 logTest = true; % if set to true, current iter number (saved in a file) 
 % is incremented, all data is saved and figures printed in a new folder
 % indexed by the iter number.

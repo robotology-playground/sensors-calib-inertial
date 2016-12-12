@@ -222,7 +222,7 @@ classdef CalibrationContextBuilder < handle
             end
         end
 
-        function e = costFunctionSigma(obj,Dq, data, subsetVec_idx, optimFunction, log, optimized)
+        function [e,sensMeasCell,sensEstCell] = costFunctionSigma(obj,Dq, data, subsetVec_idx, optimFunction, log, optimized)
             %COSTFUNCTIONSIGMA Summary of this function goes here
             %   Detailed explanation goes here
             %
