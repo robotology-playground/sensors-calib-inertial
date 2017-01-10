@@ -21,7 +21,8 @@ classdef CalibrationContextBuilder < handle
         sensorsIdxListFile  = []; %% subset of active sensors: indices from 'data.frame' list,
                                   %  ordered as per the data.log format.
         jointsIdxFile             %% index of 'StateExt' in 'data.frame' list
-        jointsIdxListModel  = []; %% map 'joint to calibrate' to iDynTree joint index
+        ctrledJointsIdxFromModel  = []; %% map contolled joints to iDynTree joint index
+        calibJointsIdxFromModel = [];   %% map calibrated joints to iDynTree joint index
         estimatedSensorLinAcc     %% predicted measurement on sensor frame
         tmpSensorLinAcc           %% sensor measurement
         q0i     = [];             %% joint positions for the current processed part.
@@ -154,7 +155,7 @@ classdef CalibrationContextBuilder < handle
                             char(data.frames{frame}))];
                         obj.sensorsIdxListFile = [obj.sensorsIdxListFile frame];
                     elseif strcmp(data.type{frame}, 'stateExt:o')
-                        obj.jointsIdxFile = frame;
+                        obj.jointsIdxFile = frame; % There is only 1 vector q for each part (limb)
                     else
                         error('costFunctionSigma: wrong type ',...
                             'Error.\nWrong data type of sensor data. Valid types are "inertialMTB" and "stateExt:o" !!');
@@ -162,14 +163,18 @@ classdef CalibrationContextBuilder < handle
                 end
             end
             
-            % mapping of 'ModelParams.jointsToCalibrate.partJoints' into the iDynTree joint list.
-            for joint = 1:length(ModelParams.jointsToCalibrate.partJoints{part})
-                % get joint index
-                obj.jointsIdxListModel = [obj.jointsIdxListModel...
-                    obj.estimator.model.getJointIndex(ModelParams.jointsToCalibrate.partJoints{part}{joint})];
+            % mapping of 'ModelParams.jointsToCalibrate.ctrledJoints' into the iDynTree joint list.
+            ctrledJoints = [];
+            for joint = 1:length(ModelParams.jointsToCalibrate.ctrledJoints{part})
+                % get controlled and calibrated joints indexes.
+                % +1 is for matlab indexing
+                ctrledJoints(joint) = 1 + obj.estimator.model.getJointIndex(ModelParams.jointsToCalibrate.ctrledJoints{part}{joint});
             end
-            %convert indices to matlab
-            obj.jointsIdxListModel = obj.jointsIdxListModel+1;
+            %subset of calibrated joints
+            calibedJoints = ctrledJoints(ModelParams.jointsToCalibrate.calibedJointsIdxes{part});
+            % concatenate with previous lists from other parts
+            obj.ctrledJointsIdxFromModel = [obj.ctrledJointsIdxFromModel ctrledJoints];
+            obj.calibJointsIdxFromModel = [obj.calibJointsIdxFromModel calibedJoints];
             
             % Select from label index the joints associated to the current processed part.
             qsRad    = ['qsRad_' data.labels{obj.jointsIdxFile}];
@@ -193,9 +198,9 @@ classdef CalibrationContextBuilder < handle
                 % Fill iDynTree joint vectors.
                 % Warning!! iDynTree takes in input **radians** based units,
                 % while the iCub port stream **degrees** based units.
-                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts);
-                dqisRobotDOF = zeros(obj.dofs,1); dqisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_dqi(:,ts);
-                d2qisRobotDOF = zeros(obj.dofs,1); d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_d2qi(:,ts);
+                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_q0i(:,ts);
+                dqisRobotDOF = zeros(obj.dofs,1); dqisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_dqi(:,ts);
+                d2qisRobotDOF = zeros(obj.dofs,1); d2qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_d2qi(:,ts);
                 obj.qi_idyn.fromMatlab(qisRobotDOF);
                 obj.dqi_idyn.fromMatlab(dqisRobotDOF);
                 obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
@@ -252,16 +257,18 @@ classdef CalibrationContextBuilder < handle
                 % Fill iDynTree joint vectors.
                 % Warning!! iDynTree takes in input **radians** based units,
                 % while the iCub port stream **degrees** based units.
-                % Also add joint offsets from a previous result.
-                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + Dq;
-                dqisRobotDOF = zeros(obj.dofs,1);% dqisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_dqi(:,ts);
-                d2qisRobotDOF = zeros(obj.dofs,1);% d2qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_d2qi(:,ts);
+                qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_q0i(:,ts);
+                dqisRobotDOF = zeros(obj.dofs,1);% dqisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_dqi(:,ts);
+                d2qisRobotDOF = zeros(obj.dofs,1);% d2qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_d2qi(:,ts);
+                % Add Dq for the optimization function obj.calibJointsIdxFromModel
+                qisRobotDOF(obj.calibJointsIdxFromModel,1) = qisRobotDOF(obj.calibJointsIdxFromModel,1) + Dq;
+
                 obj.qi_idyn.fromMatlab(qisRobotDOF);
                 obj.dqi_idyn.fromMatlab(dqisRobotDOF);
                 obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
                 
                 % DEBUG
-                modelJointsList = obj.jointsIdxListModel;
+                modelJointsList = obj.ctrledJointsIdxFromModel;
                 qiMat(ts,:) = qisRobotDOF';
                 
                 % Update the kinematics information in the estimator
@@ -401,7 +408,9 @@ classdef CalibrationContextBuilder < handle
                     % Warning!! iDynTree takes in input **radians** based units,
                     % while the iCub port stream **degrees** based units.
                     % Also add joint offsets from a previous result.
-                    qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.jointsIdxListModel,1) = obj.sub_q0i(:,ts) + Dq;
+                    qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_q0i(:,ts);
+                    % Add Dq for the optimization function obj.calibJointsIdxFromModel
+                    qisRobotDOF(obj.calibJointsIdxFromModel,1) = qisRobotDOF(obj.calibJointsIdxFromModel,1) + Dq;
                     % obj.qi_idyn.fromMatlab(qisRobotDOF);
                     for joint_i = 0:(obj.dofs-1)
                         obj.fixedBasePos.jointPos.setVal(joint_i,qisRobotDOF(joint_i+1));

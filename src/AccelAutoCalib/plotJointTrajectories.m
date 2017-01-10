@@ -19,7 +19,7 @@ hold off
 grid ON;
 xlabel('Time (sec)','Fontsize',12);
 ylabel('Joints positions (degrees)','Fontsize',12);
-legend('Location','BestOutside',ModelParams.jointsToCalibrate.partJoints{1});
+legend('Location','BestOutside',ModelParams.jointsToCalibrate.ctrledJoints{1});
 set(gca,'FontSize',12);
 
 if logTest

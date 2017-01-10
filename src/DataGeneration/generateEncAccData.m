@@ -64,7 +64,7 @@ for part = 1 : length(jointsToCalibrate.parts)
     %% joint codes and links for current part are:
     % mtbSensorCodes_list{part}
     % mtbSensorLink_list{part};
-    nrOfMTBAccs = length(mtbSensorLink_list{part});
+    nrOfMTBAccs = sum(mtbSensorAct_list{part});
 
     % We will generate data for all sensors, so "activate" all of them.
     mtbSensorAct = cell(1,length(mtbSensorCodes_list{part}));
@@ -82,7 +82,7 @@ for part = 1 : length(jointsToCalibrate.parts)
     data.loadData();
 
     % add mtb sensors
-    data.addMTBsensToData(jointsToCalibrate.parts{part}, 1:nrOfMTBAccs, ...
+    data.addMTBsensToData(jointsToCalibrate.parts{part}, 1:length(mtbSensorAct_list{part}), ...
                           mtbSensorCodes_list{part}, mtbSensorLink_list{part}, ...
                           mtbSensorAct, jointsToCalibrate.mtbInvertedFrames{part},true);
 

@@ -13,7 +13,7 @@ run calibValidationInit;
 %% set init parameters 'ModelParams'
 %
 run jointsNsensorsSelectionsForValidation;
-ModelParams = jointsNsensorsDefinitions(parts,jointsIdxes,jointsDq0,mtbSensorAct);
+ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
 
 %% Update iterator and prepare log folders/files
 %
@@ -113,9 +113,9 @@ if loadJointPos
     (initialCost'*initialCost)/(nrOfMTBAccs*data.bc.nSamples)
     
     % cost after calibration
-    [initialCost,sensMeasCell.ac,sensEstCell.ac] = costFunction(0,data.ac,1:data.ac.nSamples,@lsqnonlin,false,'');
+    [finalCost,sensMeasCell.ac,sensEstCell.ac] = costFunction(0,data.ac,1:data.ac.nSamples,@lsqnonlin,false,'');
     fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
-    (initialCost'*initialCost)/(nrOfMTBAccs*data.ac.nSamples)
+    (finalCost'*finalCost)/(nrOfMTBAccs*data.ac.nSamples)
 
     %% Plot joint trajectories
     %
