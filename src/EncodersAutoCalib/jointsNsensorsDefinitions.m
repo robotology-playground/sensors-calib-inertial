@@ -1,4 +1,4 @@
-function ModelParams = jointsNsensorsDefinitions(parts,jointsIdxes,jointsDq0,mtbSensorAct)
+function ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct)
 %% Joints and Sensors selection
 %
 % - Select the joints to calibrate through the respective indexes in the port data
@@ -7,11 +7,13 @@ function ModelParams = jointsNsensorsDefinitions(parts,jointsIdxes,jointsDq0,mtb
 
 %% macros for repetitive names and codes between left and right parts
 %
-jointsToCalibrate_arm = @(side) {...
+
+% controlled joints. All robot joints except wrists and hands
+ctrledJoints_arm = @(side) {...
     [side '_shoulder_pitch'],[side '_shoulder_roll'],[side '_shoulder_yaw'],...
     [side '_elbow']};
 
-jointsToCalibrate_leg = @(side) {...
+ctrledJoints_leg = @(side) {...
     [side '_hip_pitch'],[side '_hip_roll'],[side '_hip_yaw'], ...
     [side '_knee'],...
     [side '_ankle_pitch'],[side '_ankle_roll']};
@@ -52,12 +54,12 @@ segments_arm = @(side) {[side '_upper_arm'],[side '_forearm'],[side '_hand']};
 %% Build lists for left and right parts
 
 % joints names
-jointsToCalibrate_left_arm = jointsToCalibrate_arm('l');
-jointsToCalibrate_right_arm = jointsToCalibrate_arm('r');
-jointsToCalibrate_left_leg = jointsToCalibrate_leg('l');
-jointsToCalibrate_right_leg = jointsToCalibrate_leg('r');
-jointsToCalibrate_torso = {'torso_pitch','torso_roll','torso_yaw'};
-jointsToCalibrate_head = {'neck_pitch', 'neck_roll', 'neck_yaw'};
+ctrledJoints_left_arm = ctrledJoints_arm('l');
+ctrledJoints_right_arm = ctrledJoints_arm('r');
+ctrledJoints_left_leg = ctrledJoints_leg('l');
+ctrledJoints_right_leg = ctrledJoints_leg('r');
+ctrledJoints_torso = {'torso_pitch','torso_roll','torso_yaw'};
+ctrledJoints_head = {'neck_pitch', 'neck_roll', 'neck_yaw'};
 
 % joints DoF
 jointsDofs_left_arm = 16;
@@ -116,25 +118,26 @@ mtxSensorType_head(1) = {'inertialMTI'};
 
 %% Build access lists
 %
-if ~isempty(jointsDq0)
-    jointsToCalibrate.partJoints = {};
-    jointsToCalibrate.jointsDq0 = {};
+if ~isempty(calibedJointsDq0)
+    jointsToCalibrate.ctrledJoints = {};
+    jointsToCalibrate.calibedJointsDq0 = {};
     jointsToCalibrate.partSegments = {};
     jointsToCalibrate.jointsDofs = {};
-    jointsToCalibrate.jointsIdxes = {};
+    jointsToCalibrate.ctrledJointsIdxes = {}; % element index on the data from yarp port
+    jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
     
     for i = 1:length(parts)
-        eval(['jointsToCalibrate.partJoints{' num2str(i) '} = jointsToCalibrate_' parts{i} ';']);
-        eval(['jointsToCalibrate.jointsDq0{' num2str(i) '} = jointsDq0.' parts{i} ';']);
+        eval(['jointsToCalibrate.ctrledJoints{' num2str(i) '} = ctrledJoints_' parts{i} ';']);
+        eval(['jointsToCalibrate.calibedJointsDq0{' num2str(i) '} = calibedJointsDq0.' parts{i} ';']);
         eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' parts{i} ';']);
         eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' parts{i} ';']);
-        eval(['jointsToCalibrate.jointsIdxes{' num2str(i) '} = jointsIdxes.' parts{i} ';']);
+        eval(['jointsToCalibrate.ctrledJointsIdxes{' num2str(i) '} = 1:' num2str(length(jointsToCalibrate.ctrledJoints{i})) ';']);
+        eval(['jointsToCalibrate.calibedJointsIdxes{' num2str(i) '} = calibedJointsIdxes.' parts{i} ';']);
     end
     
     % Process the selection for the structure 'jointsToCalibrate' definition
     for i = 1:length(parts)
-        jointsToCalibrate.partJoints{i}=jointsToCalibrate.partJoints{i}(str2num(jointsToCalibrate.jointsIdxes{i}));
-        jointsToCalibrate.jointsDq0{i}=jointsToCalibrate.jointsDq0{i}(str2num(jointsToCalibrate.jointsIdxes{i}));
+        jointsToCalibrate.calibedJointsDq0{i}=jointsToCalibrate.calibedJointsDq0{i}(jointsToCalibrate.calibedJointsIdxes{i});
     end
     
     ModelParams.jointsToCalibrate = jointsToCalibrate;

@@ -20,11 +20,12 @@ switch loadSource
             timeStart,timeStop,false,varargin{:});
         
         for part = 1 : length(ModelParams.parts)
-            % Number of sensors for current part are:
-            nrOfMTBAccs = length(ModelParams.mtbSensorLink_list{part});
+            % Number of activated sensors for current part are ('true'
+            % flag count)
+            nrOfMTBAccs = sum(ModelParams.mtbSensorAct_list{part});
             
             % add mtx sensors (MTB or MTI-imu)
-            data.addMTXsensToData(ModelParams.parts{part}, 1:nrOfMTBAccs, ...
+            data.addMTXsensToData(ModelParams.parts{part}, ...
                 ModelParams.mtbSensorCodes_list{part}, ModelParams.mtbSensorLink_list{part}, ...
                 ModelParams.mtbSensorAct_list{part}, ...
                 ModelParams.mtxSensorType_list{part},true);
@@ -32,7 +33,7 @@ switch loadSource
             if loadJointPos
                 % add joint measurements
                 data.addEncSensToData(ModelParams.parts{part}, ...
-                    ModelParams.jointsToCalibrate.jointsDofs{part}, ModelParams.jointsToCalibrate.jointsIdxes{part}, ...
+                    ModelParams.jointsToCalibrate.jointsDofs{part}, ModelParams.jointsToCalibrate.ctrledJointsIdxes{part}, ...
                     true);
             end
         end

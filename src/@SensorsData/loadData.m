@@ -79,9 +79,9 @@ for i = 1 : length(obj.parts)
         % Parse file content.
         % (dynamicaly create new fields of "data")
         eval(['obj.parsedParams.' t ' = tStateBuff;']);
-        eval(['obj.parsedParams.'  q  '= qBuff(' obj.index{i} ',:);']);
-        eval(['obj.parsedParams.' dq  '= dqBuff(' obj.index{i} ',:);']);
-        eval(['obj.parsedParams.' d2q '= d2qBuff(' obj.index{i} ',:);']);
+        eval(['obj.parsedParams.'  q  '= qBuff(' mat2str(obj.index{i}) ',:);']);
+        eval(['obj.parsedParams.' dq  '= dqBuff(' mat2str(obj.index{i}) ',:);']);
+        eval(['obj.parsedParams.' d2q '= d2qBuff(' mat2str(obj.index{i}) ',:);']);
         
         if obj.diff_q
             eval(['obj.parsedParams.'   q '(:, :   )= filt(obj.parsedParams.'   q ''',filtParams{:})'' ;'])

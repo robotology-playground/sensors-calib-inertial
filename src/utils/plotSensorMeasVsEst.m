@@ -6,10 +6,10 @@ clc
 %% Plot sensor measurements against estimations as 3D vectors
 
 % load all variables
-load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1.3/logSensorMeasVsEstOptim.mat');
-load('../EncodersAutoCalib/data/optim_leftLeg_iCubGenova05_#1.3/minimResult.mat');
+load('../EncodersAutoCalib/data/logSensorMeasVsEst.mat');
+load('../EncodersAutoCalib/data/minimResult.mat');
 
-saveFolder = '../EncodersAutoCalib/figs/optim_leftLeg_iCubGenova05_#1.3/optim';
+saveFolder = '../EncodersAutoCalib/figs/optim_leftArm_iCubGenova05_#4';
 
 origin=zeros(size(sensMeasCell,1),3);
 
@@ -17,7 +17,7 @@ activeAccs = mtbSensorCodes_list{1}(cell2mat(mtbSensorAct_list));
 %activeAccs = 'imu';
 
 listAccPlotted = 1:size(sensMeasCell,2);
-%listAccPlotted = 1;
+%listAccPlotted = 10;
 
 % time scale
 time = data.tInit + data.parsedParams.time(subsetVec_idx);
@@ -144,7 +144,7 @@ hold off
 grid ON;
 xlabel('Time (sec)','Fontsize',12);
 ylabel('Joints positions (degrees)','Fontsize',12);
-legend('Location','BestOutside',jointsToCalibrate.partJoints{1});
+legend('Location','BestOutside',jointsToCalibrate.ctrledJoints{1});
 set(gca,'FontSize',12);
 print('-dpng','-r300','-opengl',[saveFolder '/jointPositions']);
 

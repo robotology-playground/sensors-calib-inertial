@@ -68,7 +68,7 @@ classdef SensorsData < handle
             obj.plot = plot;
         end
         
-        function addMTXsensToData(obj, part, frames, mtbSensorCodes, mtbSensorLinks, sensorActs, mtxSensorTypes, visualize)
+        function addMTXsensToData(obj, part, mtbSensorCodes, mtbSensorLinks, sensorActs, mtxSensorTypes, visualize)
             %% define offsets for parsing Linear Acceleration data from MTB accelerometers
             %
             % Refer to wiki:
@@ -117,7 +117,7 @@ classdef SensorsData < handle
             LIN_ACC_1RST_IDX = 3;
             LIN_ACC_LAST_IDX = 4;
 
-            for iter = frames
+            for iter = 1:length(sensorActs)
                 if sensorActs(iter)
                     %ADDSENSTODATA Add a sensor to the data structure
                     % there is no naming convention yet. ex of sensor frame: [r_upper_leg_mtb_acc_11b3]
@@ -162,7 +162,7 @@ classdef SensorsData < handle
             end
         end
 
-        function addEncSensToData(obj, part, jointsNdofs, jointsIdxes, visualize)
+        function addEncSensToData(obj, part, jointsNdofs, ctrledJointsIdxes, visualize)
             % define joint calibration string
             mapKey = strcat('jointsOffsets_',part);
             % get calibration for the joint encoders of this part
@@ -176,7 +176,7 @@ classdef SensorsData < handle
                               '', ...
                               strcat(part,'_state'), ...
                               jointsNdofs, ...
-                              jointsIdxes, ...
+                              ctrledJointsIdxes, ...
                               'stateExt:o', ...
                               calib, ...
                               visualize && obj.plot);
