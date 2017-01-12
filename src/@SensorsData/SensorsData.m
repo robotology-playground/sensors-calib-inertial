@@ -41,11 +41,14 @@ classdef SensorsData < handle
         offsetMTB   = [2 6 4 6];
         %offsetMTB   = [0 4 2 4];
         offsetMTI   = [0 12 4 6];
+        nrOfMTBAccs = 0; % total number of activated MTB acc. or IMU acc.
     end
     
     methods
         function obj = SensorsData(dataPath, dataSetNb, nSamples, tInit, tEnd, plot, varargin)
-            % conditional parameter
+            % conditional parameter varargin:
+            % calibrationMap, filtParams
+            %
             if nargin>6 && length(varargin{1})>0
                 obj.calibrationMap = varargin{1};
             else
@@ -117,6 +120,10 @@ classdef SensorsData < handle
             LIN_ACC_1RST_IDX = 3;
             LIN_ACC_LAST_IDX = 4;
 
+            % Number of activated sensors for current part are ('true'
+            % flag count)
+            obj.nrOfMTBAccs = obj.nrOfMTBAccs + sum(sensorActs);
+            
             for iter = 1:length(sensorActs)
                 if sensorActs(iter)
                     %ADDSENSTODATA Add a sensor to the data structure
@@ -128,7 +135,7 @@ classdef SensorsData < handle
                             frameTag = '_mti_acc_';
                             acc_gain = 1; % raw fullscale to m/s^2 conversion
                         case 'inertialMTB'
-                            offset = obj.offsetMTB;
+                            offset = obj.offsetMTB; % TBD. improve: not needed for ETH iCub
                             frameTag = '_mtb_acc_';
                             acc_gain = 5.9855e-04; % raw fullscale to m/s^2 conversion
                         otherwise
@@ -142,12 +149,12 @@ classdef SensorsData < handle
                     fullFrameStr = strcat(mtbSensorLinks{iter},frameTag,mtbSensorCodes{iter});
                     % get calibration for this sensor
                     if isKey(obj.calibrationMap,fullFrameStr)
-                        calib = obj.calibrationMap(fullFrameStr);
+                        calibMap = obj.calibrationMap(fullFrameStr);
                     else
-                        calib.centre=[0 0 0]'; calib.radii=[1 1 1]';
-                        calib.quat=[1 0 0 0]'; calib.R=eye(3);
-                        calib.C=eye(3); % calibration matrix
-                        calib.gain=acc_gain;  % raw fullscale to m/s^2 conversion
+                        calibMap.centre=[0 0 0]'; calibMap.radii=[1 1 1]';
+                        calibMap.quat=[1 0 0 0]'; calibMap.R=eye(3);
+                        calibMap.C=eye(3); % calibration matrix
+                        calibMap.gain=acc_gain;  % raw fullscale to m/s^2 conversion
                     end
                     
                     obj.addSensToData(  part, ...
@@ -156,7 +163,7 @@ classdef SensorsData < handle
                                         3, ...
                                         indexList, ...
                                         mtxSensorTypes{iter}, ...
-                                        calib, ...
+                                        calibMap, ...
                                         visualize && obj.plot);
                 end
             end
@@ -167,9 +174,9 @@ classdef SensorsData < handle
             mapKey = strcat('jointsOffsets_',part);
             % get calibration for the joint encoders of this part
             if isKey(obj.calibrationMap,mapKey)
-                calib = obj.calibrationMap(mapKey);
+                calibMap = obj.calibrationMap(mapKey);
             else
-                calib = 0;
+                calibMap = 0;
             end
             
             obj.addSensToData(part, ...
@@ -178,7 +185,7 @@ classdef SensorsData < handle
                               jointsNdofs, ...
                               ctrledJointsIdxes, ...
                               'stateExt:o', ...
-                              calib, ...
+                              calibMap, ...
                               visualize && obj.plot);
         end
         

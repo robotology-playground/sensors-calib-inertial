@@ -13,10 +13,11 @@ classdef FilterContext < handle
         ax;
         ay;
         az;
+        contextPath = '';
     end
     
     methods
-        function obj = FilterContext(K,F,time,sensMeas)
+        function obj = FilterContext(K,F,time,sensMeas,contextPath)
             obj.SgolayK = K;
             obj.SgolayF = F;
             obj.time = time;
@@ -24,6 +25,7 @@ classdef FilterContext < handle
             obj.lastFilteredSensMeas = sensMeas;
             obj.deltaF = 1;
             obj.adjustedDeltaF = 2;
+            obj.contextPath = contextPath;
         end
         
         function regSubPlots(obj,ax,ay,az)
@@ -31,6 +33,10 @@ classdef FilterContext < handle
             obj.ay = ay;
             obj.az = az;
         end
+    end
+    
+    methods(Static)
+        tuneFilter(hObject,callbackdata,filterContext)
     end
     
 end

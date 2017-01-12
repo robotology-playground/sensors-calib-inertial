@@ -15,6 +15,7 @@ loadFiltParams = false;
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
 dataPath  = '../../data/calibration/dumper/iCubGenova05_#3/';
 dataSetNb = '';
+contextPath = '../AccelAutoCalib/data/calib/sgolayFiltParams.mat';
 
 % Start and end point of data samples
 timeStart = 1;  % starting time in capture data file (in seconds)
@@ -73,7 +74,7 @@ end
 
 for acc_i = acc_list
     % init filter parameter and referenced object
-    filterContext = FilterContext(5,601,timeCell{1,acc_i},sensMeasCell{1,acc_i});
+    filterContext = FilterContext(5,601,timeCell{1,acc_i},sensMeasCell{1,acc_i},contextPath);
     
     % create figure and press-key handler
     figure('Name',['{x,y,z} Components of raw sensor ' num2str(sensorsIdxListFile(acc_i))],...

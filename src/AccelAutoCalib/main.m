@@ -34,11 +34,25 @@ ModelParams = jointsNsensorsDefinitions(parts,struct([]),struct([]),mtbSensorAct
 %% build input data for calibration
 %
 
-[data,sensorsIdxListFile,sensMeasCell] = buildInputDataSet(...
-    loadSource,saveToCache,false,...
-    dataPath,dataSetNb,...
-    subSamplingSize,timeStart,timeStop,...
-    ModelParams);
+switch loadSource
+    case 'matFile'
+        load './data/dataCache.mat';
+        
+    case 'dumpFile'
+        % build sensor data parser
+        plot = false; loadJointPos = false;
+        data = SensorsData(dataPath,dataSetNb,subSamplingSize,...
+            timeStart,timeStop,plot);
+        [sensorsIdxListFile,sensMeasCell] = data.buildInputDataSet(loadJointPos,ModelParams);
+        
+        % Save data in a Matlab file for faster access in further runs
+        if saveToCache
+            save('./data/dataCache.mat','data');
+        end
+        
+    otherwise
+        disp('Unknown data source !!')
+end
 
 %% ========================================== CALIBRATION ==========================================
 %
@@ -65,11 +79,6 @@ for acc_i = sensorsIdxListFile
     calib{acc_i}.gain = 5.9855e-04;
 end
 
-% Save all for further eventual use
-if saveToCache
-    save './data/logAll.mat';
-end
-
 % Load existing calibration or create new empty one
 if exist('./data/calibrationMap.mat','file') == 2
     load('./data/calibrationMap.mat','calibrationMap');
@@ -90,111 +99,111 @@ if saveCalib
 end
 
 
-%%========================================== CALIBRATION VISUALISATION ===============================
-%
-
-%% clear all variables and close all previous figures
-clear
-close all
-clc
-
-load './data/logAll.mat';
-
-acc_i = 3;
-
-fprintf('Observing fitting on a single accelerometer:\n%d\n',acc_i);
-
-%% Notes:
-%  'ellipsoid_distance' uses 'ellipsoidfit_residuals'
-
-%% distance to a centered sphere (R=9.807) before calibration
-[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                        sensMeasCell{1,acc_i}(:,1),...
-                                                        sensMeasCell{1,acc_i}(:,2),...
-                                                        sensMeasCell{1,acc_i}(:,3),...
-                                                        [0 0 0]',[9.807 9.807 9.807]',eye(3,3));
-%distr of signed distances
-figure('Name','distance to a centered sphere (R=9.807) before calibration');
-histogram(dOrient,200,'Normalization','probability');
-xlabel('Oriented distance to surface','Fontsize',12);
-ylabel('Normalized number of occurence','Fontsize',12);
-
-fprintf(['distribution of distances to a centered sphere\n'...
-    'mean:%d\n'...
-    'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
-
-%% distance to offseted sphere & comparison
-[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                        sensMeasCell{1,acc_i}(:,1),...
-                                                        sensMeasCell{1,acc_i}(:,2),...
-                                                        sensMeasCell{1,acc_i}(:,3),...
-                                                        calib{acc_i}.centre,[9.807 9.807 9.807]',eye(3,3));
-%distr of signed distances
-figure('Name','distance to the offseted sphere');
-histogram(dOrient,200,'Normalization','probability');
-xlabel('Oriented distance to surface','Fontsize',12);
-ylabel('Normalized number of occurence','Fontsize',12);
-
-fprintf(['distribution of distances to a centered sphere\n'...
-    'mean:%d\n'...
-    'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
-
-%% distance to non rotated ellipsoid & comparison
-[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                        sensMeasCell{1,acc_i}(:,1),...
-                                                        sensMeasCell{1,acc_i}(:,2),...
-                                                        sensMeasCell{1,acc_i}(:,3),...
-                                                        calib{acc_i}.centre,9.807*calib{acc_i}.radii,eye(3,3));
-%distr of signed distances
-figure('Name','distance to offseted, non rotated ellipsoid');
-histogram(dOrient,200,'Normalization','probability');
-xlabel('Oriented distance to surface','Fontsize',12);
-ylabel('Normalized number of occurence','Fontsize',12);
-
-fprintf(['distribution of distances to a centered sphere\n'...
-    'mean:%d\n'...
-    'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
-
-%% distance to rotated final ellipsoid & comparison
-[pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
-                                                        sensMeasCell{1,acc_i}(:,1),...
-                                                        sensMeasCell{1,acc_i}(:,2),...
-                                                        sensMeasCell{1,acc_i}(:,3),...
-                                                        calib{acc_i}.centre,9.807*calib{acc_i}.radii,calib{acc_i}.R);
-%distr of signed distances
-figure('Name','distance to offseted, rotated final ellipsoid');
-histogram(dOrient,200,'Normalization','probability');
-xlabel('Oriented distance to surface','Fontsize',12);
-ylabel('Normalized number of occurence','Fontsize',12);
-
-fprintf(['distribution of distances to a centered sphere\n'...
-    'mean:%d\n'...
-    'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
-
-%% plot fitting
-[centre,radii,quat,R]=ellipsoid_im2ex(ellipsoid_p{1,acc_i}); % convert implicit to explicit
-[xx,yy,zz]=ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),100); % generate ellipse points without rotation
-vec=[xx(:),yy(:),zz(:)]; % xx(i,j),yy(i,j),zz(i,j) is a point on the ellipse. a row of zz is an iso-z
-vec=vec-repmat(centre',[size(xx(:)),1]); % remove offset before rotating
-% R is the rotation transform from the original frame to the frame aligned
-% with the ellipsoid axis.
-vecRotated=(R'*vec')'+repmat(centre',[size(xx(:)),1]); % rotate ellipse and add the offset again
-% Plot
-figure('Name', 'Fitting ellipsoid for MTB sensor');
-title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
-surf(reshape(vecRotated(:,1),101,101),reshape(vecRotated(:,2),101,101),reshape(vecRotated(:,3),101,101)); % plot
-axis equal;
-grid off;
-xlabel('x','Fontsize',12);
-ylabel('y','Fontsize',12);
-zlabel('z','Fontsize',12);
-
-figure('Name', 'Fitting ellipsoid for MTB sensor (plot from quadfit)');
-hold on;
-plot_ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),R,'AxesColor','black');
-scatter3(sensMeasCell{1,acc_i}(:,1),sensMeasCell{1,acc_i}(:,2),sensMeasCell{1,acc_i}(:,3));
-%title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
-axis equal;
-xlabel('x','Fontsize',12);
-ylabel('y','Fontsize',12);
-zlabel('z','Fontsize',12);
+% %%========================================== CALIBRATION VISUALISATION ===============================
+% %
+% 
+% %% clear all variables and close all previous figures
+% clear
+% close all
+% clc
+% 
+% load './data/logAll.mat';
+% 
+% acc_i = 3;
+% 
+% fprintf('Observing fitting on a single accelerometer:\n%d\n',acc_i);
+% 
+% %% Notes:
+% %  'ellipsoid_distance' uses 'ellipsoidfit_residuals'
+% 
+% %% distance to a centered sphere (R=9.807) before calibration
+% [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+%                                                         sensMeasCell{1,acc_i}(:,1),...
+%                                                         sensMeasCell{1,acc_i}(:,2),...
+%                                                         sensMeasCell{1,acc_i}(:,3),...
+%                                                         [0 0 0]',[9.807 9.807 9.807]',eye(3,3));
+% %distr of signed distances
+% figure('Name','distance to a centered sphere (R=9.807) before calibration');
+% histogram(dOrient,200,'Normalization','probability');
+% xlabel('Oriented distance to surface','Fontsize',12);
+% ylabel('Normalized number of occurence','Fontsize',12);
+% 
+% fprintf(['distribution of distances to a centered sphere\n'...
+%     'mean:%d\n'...
+%     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
+% 
+% %% distance to offseted sphere & comparison
+% [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+%                                                         sensMeasCell{1,acc_i}(:,1),...
+%                                                         sensMeasCell{1,acc_i}(:,2),...
+%                                                         sensMeasCell{1,acc_i}(:,3),...
+%                                                         calib{acc_i}.centre,[9.807 9.807 9.807]',eye(3,3));
+% %distr of signed distances
+% figure('Name','distance to the offseted sphere');
+% histogram(dOrient,200,'Normalization','probability');
+% xlabel('Oriented distance to surface','Fontsize',12);
+% ylabel('Normalized number of occurence','Fontsize',12);
+% 
+% fprintf(['distribution of distances to a centered sphere\n'...
+%     'mean:%d\n'...
+%     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
+% 
+% %% distance to non rotated ellipsoid & comparison
+% [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+%                                                         sensMeasCell{1,acc_i}(:,1),...
+%                                                         sensMeasCell{1,acc_i}(:,2),...
+%                                                         sensMeasCell{1,acc_i}(:,3),...
+%                                                         calib{acc_i}.centre,9.807*calib{acc_i}.radii,eye(3,3));
+% %distr of signed distances
+% figure('Name','distance to offseted, non rotated ellipsoid');
+% histogram(dOrient,200,'Normalization','probability');
+% xlabel('Oriented distance to surface','Fontsize',12);
+% ylabel('Normalized number of occurence','Fontsize',12);
+% 
+% fprintf(['distribution of distances to a centered sphere\n'...
+%     'mean:%d\n'...
+%     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
+% 
+% %% distance to rotated final ellipsoid & comparison
+% [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(...
+%                                                         sensMeasCell{1,acc_i}(:,1),...
+%                                                         sensMeasCell{1,acc_i}(:,2),...
+%                                                         sensMeasCell{1,acc_i}(:,3),...
+%                                                         calib{acc_i}.centre,9.807*calib{acc_i}.radii,calib{acc_i}.R);
+% %distr of signed distances
+% figure('Name','distance to offseted, rotated final ellipsoid');
+% histogram(dOrient,200,'Normalization','probability');
+% xlabel('Oriented distance to surface','Fontsize',12);
+% ylabel('Normalized number of occurence','Fontsize',12);
+% 
+% fprintf(['distribution of distances to a centered sphere\n'...
+%     'mean:%d\n'...
+%     'standard deviation:%d\n'],mean(dOrient,1),std(dOrient,1,1));
+% 
+% %% plot fitting
+% [centre,radii,quat,R]=ellipsoid_im2ex(ellipsoid_p{1,acc_i}); % convert implicit to explicit
+% [xx,yy,zz]=ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),100); % generate ellipse points without rotation
+% vec=[xx(:),yy(:),zz(:)]; % xx(i,j),yy(i,j),zz(i,j) is a point on the ellipse. a row of zz is an iso-z
+% vec=vec-repmat(centre',[size(xx(:)),1]); % remove offset before rotating
+% % R is the rotation transform from the original frame to the frame aligned
+% % with the ellipsoid axis.
+% vecRotated=(R'*vec')'+repmat(centre',[size(xx(:)),1]); % rotate ellipse and add the offset again
+% % Plot
+% figure('Name', 'Fitting ellipsoid for MTB sensor');
+% title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
+% surf(reshape(vecRotated(:,1),101,101),reshape(vecRotated(:,2),101,101),reshape(vecRotated(:,3),101,101)); % plot
+% axis equal;
+% grid off;
+% xlabel('x','Fontsize',12);
+% ylabel('y','Fontsize',12);
+% zlabel('z','Fontsize',12);
+% 
+% figure('Name', 'Fitting ellipsoid for MTB sensor (plot from quadfit)');
+% hold on;
+% plot_ellipsoid(centre(1),centre(2),centre(3),radii(1),radii(2),radii(3),R,'AxesColor','black');
+% scatter3(sensMeasCell{1,acc_i}(:,1),sensMeasCell{1,acc_i}(:,2),sensMeasCell{1,acc_i}(:,3));
+% %title(['Fitting ellipsoid for MTB sensor ' acc_i]','Fontsize',16,'FontWeight','bold');
+% axis equal;
+% xlabel('x','Fontsize',12);
+% ylabel('y','Fontsize',12);
+% zlabel('z','Fontsize',12);
