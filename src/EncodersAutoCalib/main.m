@@ -11,7 +11,7 @@ run mainInit.m;
 %% set joint/sensor init parameters
 %
 run jointsNsensorsSelections;
-ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
+ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
 if strcmp(runMode,'target')

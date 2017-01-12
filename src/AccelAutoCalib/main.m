@@ -29,7 +29,7 @@ run mainInit.m
 %% set init parameters 'ModelParams'
 %
 run sensorsSelections;
-ModelParams = jointsNsensorsDefinitions(parts,struct([]),struct([]),mtbSensorAct);
+ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(parts,struct([]),struct([]),mtbSensorAct);
 
 %% build input data for calibration
 %

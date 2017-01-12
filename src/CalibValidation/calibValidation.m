@@ -13,7 +13,7 @@ run calibValidationInit;
 %% set init parameters 'ModelParams'
 %
 run jointsNsensorsSelectionsForValidation;
-ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
+ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
 
 %% Update iterator and prepare log folders/files
 %
