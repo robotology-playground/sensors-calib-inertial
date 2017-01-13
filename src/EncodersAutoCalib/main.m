@@ -11,7 +11,7 @@ run mainInit.m;
 %% set joint/sensor init parameters
 %
 run jointsNsensorsSelections;
-ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
+ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
 if strcmp(runMode,'target')
@@ -56,28 +56,14 @@ end
 switch runMode
     case 'simu'
         load 'dataSimu.mat';
+        
     case 'target'
-            % build sensor data parser ('inputFilePath',nbSamples,tInit,tEnd,plot--true/false)
-            data = SensorsData(dataPath,dataSetNb,subSamplingSize,timeStart,timeStop,false,calibrationMap);
-            
-        for part = 1 : length(ModelParams.parts)            
-            % Number of activated sensors for current part are ('true' flag count)
-            nrOfMTBAccs = sum(ModelParams.mtbSensorAct_list{part});
-            
-            % add mtx sensors (MTB or MTI-imu)
-            data.addMTXsensToData(ModelParams.parts{part}, ...
-                ModelParams.mtbSensorCodes_list{part}, ModelParams.mtbSensorLink_list{part}, ...
-                ModelParams.mtbSensorAct_list{part}, ...
-                ModelParams.mtxSensorType_list{part},true);
-            
-            % add joint measurements
-            data.addEncSensToData(ModelParams.parts{part}, ...
-                ModelParams.jointsToCalibrate.jointsDofs{part}, ModelParams.jointsToCalibrate.ctrledJointsIdxes{part}, ...
-                true);
-        end
-            
-            % Load data from the file and parse it
-            data.loadData();
+        % build sensor data parser
+        plot = false; loadJointPos = true;
+        data = SensorsData(dataPath,dataSetNb,subSamplingSize,...
+            timeStart,timeStop,plot);
+        data.buildInputDataSet(loadJointPos,ModelParams);
+        
     otherwise
         disp('Unknown run mode !!')
 end
@@ -164,7 +150,7 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
         % cost before optimisation
         initialCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,@lsqnonlin,true,'');
         fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
-        (initialCost'*initialCost)/(nrOfMTBAccs*length(subsetVec_idx))
+        (initialCost'*initialCost)/(data.nrOfMTBAccs*length(subsetVec_idx))
         
         % optimize
         %
@@ -199,7 +185,7 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
         % cost after optimisation
         optimCost = costFunction(optimalDq(:,i,offsetsConfigIdx),data,subsetVec_idx,@lsqnonlin,true,'Optim');
         fprintf('Mean cost after optimization (in (m.s^{-2})^2):\n');
-        (optimCost'*optimCost)/(nrOfMTBAccs*length(subsetVec_idx))
+        (optimCost'*optimCost)/(data.nrOfMTBAccs*length(subsetVec_idx))
     end
 end
 
@@ -215,7 +201,7 @@ fprintf('Final optimization results. Each column stands for a random init of the
 fprintf('Optimal offsets Dq (in degrees):\n');
 optimalDq
 fprintf('Mean cost (in (m.s^{-2})^2):\n');
-resnorm/(nrOfMTBAccs*length(subsetVec_idx))
+resnorm/(data.nrOfMTBAccs*length(subsetVec_idx))
 fprintf('optimization function exit flag:\n');
 exitflag
 fprintf('other optimization info:\n');

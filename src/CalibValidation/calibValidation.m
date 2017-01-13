@@ -13,7 +13,7 @@ run calibValidationInit;
 %% set init parameters 'ModelParams'
 %
 run jointsNsensorsSelectionsForValidation;
-ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
+ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
 
 %% Update iterator and prepare log folders/files
 %
@@ -40,18 +40,17 @@ end
 %% ===================================== CALIBRATION VALIDATION ==============================
 %
 
-%% build input data before calibration
+%% build input data before and after calibration
 %
 switch loadSource
     case 'matFile'
         load './data/dataCache.mat';
     case 'dumpFile'
-        % Build input data without calibration applied
-        [data.bc,sensorsIdxListFile,sensMeasCell.bc] = buildInputDataSet(...
-            'dumpFile',false,loadJointPos,...
-            dataPath,dataSetNb,...
-            subSamplingSize,timeStart,timeStop,...
-            ModelParams);
+        %% Build input data without calibration applied
+        plot = false;
+        data.bc = SensorsData(dataPath,dataSetNb,subSamplingSize,...
+            timeStart,timeStop,plot);
+        [sensorsIdxListFile,sensMeasCell.bc] = data.bc.buildInputDataSet(loadJointPos,ModelParams);
         
         %% Apply calibration and reload input data
         %
@@ -66,11 +65,9 @@ switch loadSource
         end
         
         % Build input data with calibration applied
-        [data.ac,sensorsIdxListFile,sensMeasCell.ac] = buildInputDataSet(...
-            'dumpFile',false,false,...
-            dataPath,dataSetNb,...
-            subSamplingSize,timeStart,timeStop,...
-            ModelParams,calibrationMap);
+        data.ac = SensorsData(dataPath,dataSetNb,subSamplingSize,...
+            timeStart,timeStop,plot,calibrationMap);
+        [sensorsIdxListFile,sensMeasCell.ac] = data.ac.buildInputDataSet(loadJointPos,ModelParams);
         
         % Save data in a Matlab file for faster access in further runs
         if saveToCache

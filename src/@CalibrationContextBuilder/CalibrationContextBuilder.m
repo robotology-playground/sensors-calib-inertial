@@ -1,5 +1,8 @@
 classdef CalibrationContextBuilder < handle
-    % This class holds the context for the cost function to be minimised,
+    % This class holds :
+    % - the robots sensors and joints names definitions as per the robot URDF
+    % model
+    % - the context for the cost function to be minimised,
     % as the init methods and the a specific cost function.
     % 
     % Detailed explanation goes here
@@ -527,8 +530,10 @@ classdef CalibrationContextBuilder < handle
                 list_kHsens{acci,1} = Lb_H_acci;
             end
         end
-        
     end
     
+    methods(Static)
+        ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct)
+    end
 end
 

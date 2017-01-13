@@ -16,9 +16,9 @@ switch callbackdata.Key
         filtParams.type = 'sgolay';
         filtParams.SgolayK = filterContext.SgolayK;
         filtParams.SgolayF = filterContext.SgolayF;
-        save('./data/calib/sgolayFiltParams.mat','filtParams');
+        save(filterContext.contextPath,'filtParams');
     case 'l'
-        load('./data/calib/sgolayFiltParams.mat','filtParams');
+        load(filterContext.contextPath,'filtParams');
         filterContext.SgolayK = filtParams.SgolayK;
         filterContext.SgolayF = filtParams.SgolayF;
     case {'1','2','3','4','5'}
