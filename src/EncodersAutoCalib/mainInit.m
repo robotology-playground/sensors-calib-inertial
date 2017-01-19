@@ -43,4 +43,4 @@ subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 
 % define the set of joints (of whole limb) to calibrate and activate the sensors
 % in that limb.
-jointsToCalibrate.parts = {'left_arm'}; %loop on 1 single cost f 
+parts = {'left_arm'}; %loop on 1 single cost f 

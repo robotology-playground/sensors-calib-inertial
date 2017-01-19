@@ -8,16 +8,6 @@ function ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibe
 %% macros for repetitive names and codes between left and right parts
 %
 
-% controlled joints. All robot joints except wrists and hands
-ctrledJoints_arm = @(side) {...
-    [side '_shoulder_pitch'],[side '_shoulder_roll'],[side '_shoulder_yaw'],...
-    [side '_elbow']};
-
-ctrledJoints_leg = @(side) {...
-    [side '_hip_pitch'],[side '_hip_roll'],[side '_hip_yaw'], ...
-    [side '_knee'],...
-    [side '_ankle_pitch'],[side '_ankle_roll']};
-
 mtbSensorCodes_arm = @(mtbNum) {...
     [mtbNum 'b10'],[mtbNum 'b11'], ...
     [mtbNum 'b12'],[mtbNum 'b13'], ...
@@ -54,12 +44,7 @@ segments_arm = @(side) {[side '_upper_arm'],[side '_forearm'],[side '_hand']};
 %% Build lists for left and right parts
 
 % joints names
-ctrledJoints_left_arm = ctrledJoints_arm('l');
-ctrledJoints_right_arm = ctrledJoints_arm('r');
-ctrledJoints_left_leg = ctrledJoints_leg('l');
-ctrledJoints_right_leg = ctrledJoints_leg('r');
-ctrledJoints_torso = {'torso_pitch','torso_roll','torso_yaw'};
-ctrledJoints_head = {'neck_pitch', 'neck_roll', 'neck_yaw'};
+% from class @RobotModel
 
 % joints DoF
 jointsDofs_left_arm = 16;
@@ -127,7 +112,7 @@ if ~isempty(calibedJointsDq0)
     jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
     
     for i = 1:length(parts)
-        eval(['jointsToCalibrate.ctrledJoints{' num2str(i) '} = ctrledJoints_' parts{i} ';']);
+        jointsToCalibrate.ctrledJoints{i} = RobotModel.jointsListFromPart(parts{i});
         eval(['jointsToCalibrate.calibedJointsDq0{' num2str(i) '} = calibedJointsDq0.' parts{i} ';']);
         eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' parts{i} ';']);
         eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' parts{i} ';']);
