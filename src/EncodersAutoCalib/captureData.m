@@ -4,6 +4,7 @@ close all
 clc
 
 %% Main interface parameters ==============================================
+robotName = 'icubSim';
 parts = {'right_leg','head','torso'};
 dataPath  = '../../data/calibration/dumper/icubSim#1/';
 
@@ -140,15 +141,21 @@ end
 
 %% Training data acquisition
 
+% create Yarp data interface. It can create the necessary yarp ports
+% for logging the data and holds a method for connecting or disconnecting
+% the ports. It also access data previously logged.
+logger = SensorDataYarpI(robotName,parts,dataPath);
+logger.openPorts();
+acquire = @logger.connect;
+
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer(sequences);
+sequencer = MotionSequencer(robotName,sequences,acquire);
 
-% iteratively trigger next motion and acquire data
+% run sequencer until all data is acquired
+sequencer.run();
 
-acquireDataForPart(part,sequences);
-
-ctrlBoardRemap = RemoteControlBoardRemapper('icubSim',parts);
-
-ctrlBoardRemap.moveToPos([0 0 0 0 0 0],'refVel',repmat(4,1,6));
-
-[~,mat]=ctrlBoardRemap.getEncoders()
+% The data acquisition is complete. The sequencer has sent a stop request
+% to the logger through 'acquire' method.
+% The control board device is removed and the yarp devices and objects
+% are deleted along with the objects in this context.
+logger.closePorts();
