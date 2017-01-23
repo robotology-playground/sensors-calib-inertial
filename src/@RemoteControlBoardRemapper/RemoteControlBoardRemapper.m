@@ -18,6 +18,7 @@ classdef RemoteControlBoardRemapper < handle
     end
     
     methods
+        %% Constructor
         function obj = RemoteControlBoardRemapper(robotName,portsPrefix)
             % Create YARP Network device, to initialize YARP classes for communication
             iDynTree.Vector3(); %WORKAROUND for loading yarp right after.
@@ -44,23 +45,29 @@ classdef RemoteControlBoardRemapper < handle
             obj.remoteControlBoardsList = obj.remoteControlBoards.addList();
         end
         
-        open(obj,partList)
-        
-        function close(obj)
-            obj.driver.close();
-        end
-        
+        %% Destructor
         function delete(obj)
             obj.close();
             obj.net.fini();
         end
         
+        %% Open ports
+        open(obj,partList)
+        
+        %% Close ports
+        function close(obj)
+            obj.driver.close();
+        end
+        
+        %% Read joint encoders
         [readedEncoders,readEncsMat] = getEncoders(obj)
         
+        %% Write joint encoders
         setEncoders(obj,desiredPosMat,refType,refParamsMat)
     end
     
     methods(Static = true)
+        %% matlab <-> yarp c++ map functions
         function matArray = toMatlab(self)
             matArray = str2num(self.toString_c());
         end

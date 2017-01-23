@@ -146,10 +146,11 @@ end
 % the ports. It also access data previously logged.
 logger = SensorDataYarpI(robotName,parts,dataPath);
 logger.openPorts();
-acquire = @logger.connect;
+logStart = @logger.connect;
+logStop  = @logger.disconnect;
 
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer(robotName,sequences,acquire);
+sequencer = MotionSequencer(robotName,sequences,logStart,logStop);
 
 % run sequencer until all data is acquired
 sequencer.run();
