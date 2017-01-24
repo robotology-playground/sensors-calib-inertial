@@ -48,10 +48,10 @@ classdef MotionSequencer < handle
                     obj.logStart(sequence.part(acquire));
                     
                     % run the sequencer step
-                    obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel);
-                    
-                    % wait for motion completion (timeout in seconds)
-                    obj.ctrlBoardRemap.waitMotionDone(60);
+                    waitMotionDone = true; timeout = 120; % in seconds
+                    if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
+                        error('Waiting for motion done timeout!');
+                    end
                 end
                 % Stop logging of last step
                 obj.logStop(sequence.part);

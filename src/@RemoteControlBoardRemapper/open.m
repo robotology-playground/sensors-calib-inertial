@@ -25,4 +25,5 @@ obj.driver = yarp.PolyDriver();
 if (~obj.driver.open(obj.options))
     error('Couldn''t open the driver');
 end
+
 end

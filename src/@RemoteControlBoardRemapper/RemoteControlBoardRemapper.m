@@ -63,7 +63,10 @@ classdef RemoteControlBoardRemapper < handle
         [readedEncoders,readEncsMat] = getEncoders(obj)
         
         %% Write joint encoders
-        setEncoders(obj,desiredPosMat,refType,refParamsMat)
+        success = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
+        
+        %% Wait for motion to be completed
+        success = waitMotionDone(obj,timeout)
     end
     
     methods(Static = true)
