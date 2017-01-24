@@ -11,12 +11,16 @@ classdef SensorDataYarpI < handle
     
     properties(SetAccess = protected, GetAccess = public)
         robotName;
-        partList = {};
+        portFromPart = {};
         dataPath;
     end
     
-    methods
-        function obj = SensorDataYarpI(robotName,parts,dataPath)
+    methods(Access = public)
+        function obj = SensorDataYarpI(robotName,dataPath)
+            % Save parameters, define port names and data file path
+            obj.robotName = robotName;
+            obj.dataPath = dataPath;
+            obj.portFromPart = obj.buildPortFromPart(robotName);
             disp('const');
         end
         
@@ -24,12 +28,12 @@ classdef SensorDataYarpI < handle
             disp('dest');
         end
         
-        function openPorts(obj,varargin)
-            disp('open');
+        function newLog(obj,parts)
+            disp('newLog');
         end
         
-        function closePorts(obj,varargin)
-            disp('close')
+        function closeLog(obj)
+            disp('closeLog');
         end
         
         function connect(obj,varargin)
@@ -38,6 +42,27 @@ classdef SensorDataYarpI < handle
         
         function disconnect(obj,varargin)
             disp('disc');
+        end
+    end
+    
+    methods(Access = protected)
+        % only this class and derivates should build the port mapping from
+        % the configuration file
+        function portFromPart = buildPortFromPart(obj,robotName)
+            portFromPart = {};
+            disp('buildPortsMapping');
+        end
+        
+        % we want to avoid several logs in the same part folder (for
+        % instance "/icub/left_leg/inertialMTB","/icub/left_leg/inertialMTB_00001" etc..
+        % so these methods are internally called by newLog() and closeLog()
+        % which handles the switching to a new folder when required.
+        function openPorts(obj,ports)
+            disp('open');
+        end
+        
+        function closePorts(obj,ports)
+            disp('close')
         end
     end
     

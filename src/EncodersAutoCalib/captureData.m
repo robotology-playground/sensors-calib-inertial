@@ -142,16 +142,18 @@ sequences = [sequences;homeCalibLimbs];
 
 %% Training data acquisition
 
-% create Yarp data interface. It can create the necessary yarp ports
+% Create Yarp data interface. It can create the necessary yarp ports
 % for logging the data and holds a method for connecting or disconnecting
 % the ports. It also access data previously logged.
-logger = SensorDataYarpI(robotName,parts,dataPath);
-logger.openPorts();
-logStart = @logger.connect;
-logStop  = @logger.disconnect;
+logger = SensorDataYarpI(robotName,dataPath);
+% Configure callback logger commands
+logCmd.start = @logger.connect;
+logCmd.stop  = @logger.disconnect;
+logCmd.new   = @logger.newLog;
+logCmd.close = @logger.closeLog;
 
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer('EncodersCalibrator',robotName,sequences,logStart,logStop);
+sequencer = MotionSequencer('EncodersCalibrator',robotName,sequences,logCmd);
 
 % run sequencer until all data is acquired
 sequencer.run();
@@ -160,4 +162,3 @@ sequencer.run();
 % to the logger through 'acquire' method.
 % The control board device is removed and the yarp devices and objects
 % are deleted along with the objects in this context.
-logger.closePorts();
