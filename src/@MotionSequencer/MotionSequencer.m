@@ -9,7 +9,7 @@ classdef MotionSequencer < handle
         ctrlApp;
         robotName;
         sequences;
-        logStart;
+        logStart; logStop;
         ctrlBoardRemap;
         partList = {};
     end
@@ -21,6 +21,7 @@ classdef MotionSequencer < handle
             obj.robotName = robotName;
             obj.sequences = sequences;
             obj.logStart = logStart;
+            obj.logStop = logStop;
             
             % create ctrl board remapper
             obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotName,ctrlApp);
@@ -28,24 +29,24 @@ classdef MotionSequencer < handle
         
         function run(obj)
             % process each sequence
-            for sequence = obj.sequences
+            for seqIdx = 1:size(obj.sequences,1)
                 % get next sequence to run
-                sequence = sequence{:};
+                sequence = obj.sequences{seqIdx};
                 
                 % open ctrl board remapper driver
                 obj.ctrlBoardRemap.open(sequence.part);
                 
-                for seqIdx = 1:size(sequence.pos,1)
+                for posIdx = 1:size(sequence.pos,1)
                     % get next position, velocity and acquire flag from the
                     % sequence. Get concatenated matrices for all parts
-                    pos = cell2mat(sequence.pos{seqIdx,:});
-                    vel = cell2mat(sequence.vel{seqIdx,:});
-                    acquire = cell2mat(sequence.acquire{seqIdx,:});
+                    pos = cell2mat(sequence.pos(posIdx,:));
+                    vel = cell2mat(sequence.vel(posIdx,:));
+                    acquire = cell2mat(sequence.acquire(posIdx,:));
                     
                     % Stop logging of parts for which 'acquire' flag is off
                     % Start logging of parts for which 'acquire' flag is on
-                    obj.logStop(sequence.part(~acquire));
-                    obj.logStart(sequence.part(acquire));
+                    %obj.logStop(sequence.part(~acquire));
+                    %obj.logStart(sequence.part(acquire));
                     
                     % run the sequencer step
                     waitMotionDone = true; timeout = 120; % in seconds
@@ -54,7 +55,7 @@ classdef MotionSequencer < handle
                     end
                 end
                 % Stop logging of last step
-                obj.logStop(sequence.part);
+                %obj.logStop(sequence.part);
             end
         end
     end

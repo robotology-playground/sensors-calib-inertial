@@ -11,7 +11,7 @@ dataPath  = '../../data/calibration/dumper/icubSim#1/';
 %% Home single step sequence
 
 % For limbs calibration
-homeCalibLimbs.parts = {...
+homeCalibLimbs.part = {...
     'left_arm','right_arm',...
     'left_leg','right_leg',...
     'torso','head'};
@@ -29,7 +29,7 @@ homeCalibLimbs.vel = {...
     repmat(10,[1 6]),...
     repmat(10,[1 3]),...
     repmat(10,[1 3])};
-homeCalibLimbs.acquire=cell(size(homeCalibLimbs.parts));
+homeCalibLimbs.acquire=cell(size(homeCalibLimbs.part));
 homeCalibLimbs.acquire(:)={false};
 
 % For torso calibration
@@ -132,10 +132,10 @@ end
 sequences = {};
 for seqSet = seqSets
     % decapsulate seqSet
-    seqSet = seqSet{:};
+    currentSeqSet = seqSet{:};
     % concatenate final composition of sequences
-    if ~isempty(seqSet{2}.part)
-        sequences = [sequences;seqSet];
+    if ~isempty(currentSeqSet{2}.part)
+        sequences = [sequences;currentSeqSet];
     end
 end
 
@@ -150,7 +150,7 @@ logStart = @logger.connect;
 logStop  = @logger.disconnect;
 
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer(robotName,sequences,logStart,logStop);
+sequencer = MotionSequencer('EncodersCalibrator',robotName,sequences,logStart,logStop);
 
 % run sequencer until all data is acquired
 sequencer.run();

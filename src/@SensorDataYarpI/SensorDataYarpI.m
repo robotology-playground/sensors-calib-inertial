@@ -32,7 +32,7 @@ classdef SensorDataYarpI < handle
             disp('close')
         end
         
-        function connect(obj,varagin)
+        function connect(obj,varargin)
             disp('con');
         end
         
