@@ -29,4 +29,9 @@ classdef MotionSequencer < handle
         run(obj)
     end
     
+    methods(Static = true, Access = public)
+        seqMap = seqParams2map(seqParams)
+        
+        runSeq = seqMap2runner(seqParamsMap)
+    end
 end
