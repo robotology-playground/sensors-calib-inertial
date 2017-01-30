@@ -6,24 +6,24 @@ for seqIdx = 1:size(obj.sequences,1)
     sequence = obj.sequences{seqIdx};
     
     % open ctrl board remapper driver
-    obj.ctrlBoardRemap.open(sequence.part);
+    obj.ctrlBoardRemap.open(sequence.ctrl.part);
     
-    % request new log creation if current sequence logs any data
-    if isLogRequired(sequence)
-        obj.logCmd.new(sequence.part);
-    end
+    % request new log creation for current sequence
+    logInfo = struct('ctrlApp',obj.ctrlApp,'seqIdx',seqIdx);
+    [sensors,parts] = getSensorsParts4fullSeq(sequence);
+    obj.logCmd.new(logInfo,sensors,parts);
     
-    for posIdx = 1:size(sequence.pos,1)
+    for posIdx = 1:size(sequence.ctrl.pos,1)
         % get next position, velocity and acquire flag from the
         % sequence. Get concatenated matrices for all parts
-        pos = cell2mat(sequence.pos(posIdx,:));
-        vel = cell2mat(sequence.vel(posIdx,:));
-        acquire = cell2mat(sequence.acquire(posIdx,:));
+        pos = sequence.ctrl.pos(posIdx,:);
+        vel = sequence.ctrl.vel(posIdx,:);
         
         % Stop logging of parts for which 'acquire' flag is off
         % Start logging of parts for which 'acquire' flag is on
-        obj.logCmd.stop(sequence.part(~acquire));
-        obj.logCmd.start(sequence.part(acquire));
+        [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx);
+        obj.logCmd.stop(sensors,partsToStop);
+        obj.logCmd.start(sensors,partsToStart);
         
         % run the sequencer step
         waitMotionDone = true; timeout = 120; % in seconds
@@ -41,11 +41,21 @@ end
 
 end
 
-function logRequired = isLogRequired(sequence)
+function [sensors,parts] = getSensorsParts4fullSeq(sequence)
 
-% convert acquire cell array to 1-D matrix
-acquireMat = cell2mat(sequence.acquire(:));
-% count occurences of true
-logRequired = sum(acquireMat)>0;
+% return sensors and respective parts
+sensors = sequence.meas.sensor;
+parts = sequence.meas.part;
+
+end
+
+function [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx)
+
+sensors = sequence.meas.sensor;
+
+[partsToStop,partsToStart] = cellfun(...
+    @(partList,acquireList) [partList{acquireList{posIdx}},partList{~acquireList{posIdx}}],...
+    sequence.meas.part,sequence.meas.acquire,...
+    'UniformOutput',false);
 
 end

@@ -6,7 +6,7 @@ clc
 %% Main interface parameters ==============================================
 robotName = 'icubSim';
 calibedParts = {'right_arm','head'};
-dataPath  = '../../data/calibration/dumper/icubSim#1/';
+dataPath  = '../../data/calibration/dumper';
 
 %% Home single step sequence
 
@@ -203,7 +203,7 @@ end
 remEmpty=@(aListOf2)aListOf2([~isempty(aListOf2{1}) true]);
 sequences = cellfun(...
     @(seqParamsMap1,seqParamsMap2) remEmpty([{seqParamsMap1},{seqParamsMap2}]),...
-    seqHomeParams,seqParamsMapMerged,...
+    seqHomeParamsMap(1:numel(seqParamsMapMerged)),seqParamsMapMerged,...
     'UniformOutput',false);
 % remove encapsulation and add final Goto-end position
 sequences = [sequences{:},{seqEndParamsMap}];
@@ -211,7 +211,7 @@ sequences = [sequences{:},{seqEndParamsMap}];
 
 %% Build sequences from maps to MotionSequencer runner format
 runnerSequences = cellfun(...
-    @(sequence) seqMap2runner(sequence),...
+    @(sequence) MotionSequencer.seqMap2runner(sequence),...
     sequences,...
     'UniformOutput',false);
 
