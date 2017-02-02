@@ -9,7 +9,14 @@ for seqIdx = 1:size(obj.sequences,1)
     obj.ctrlBoardRemap.open(sequence.ctrl.part);
     
     % request new log creation for current sequence
-    logInfo = struct('ctrlApp',obj.ctrlApp,'seqIdx',seqIdx);
+    
+    % This info specifies for which calibration procedure the log can be
+    % used for. Each calibedPart/calibedSensor pair points to a folder name
+    % where to find the files for calibrating the sensors of modality
+    % 'calibedSensor' on the part 'calibedPart'.
+    logInfo = struct(...
+        'calibApp',obj.calibApp,'calibedPart',sequence.calib.part,...
+        'calibedSensors',sequence.calib.sensors);
     [sensors,parts] = getSensorsParts4fullSeq(sequence);
     obj.logCmd.new(logInfo,sensors,parts);
     

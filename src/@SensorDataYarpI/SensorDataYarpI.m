@@ -10,20 +10,25 @@ classdef SensorDataYarpI < handle
     %   - loading of logged data into Matlab structure
     
     properties(SetAccess = protected, GetAccess = public)
-        robotName;
-        dataFolderPath;      % where to create /log_xxxx/dumper/ folder
-        seqDataFolderPath;
+        robotName = '';
+        dataFolderPath = '';      % where to create /log_xxxx/dumper/ folder
+        seqDataFolderPath = '';
+        logInfoFileName = '';
         iteratorUpdated = false;        % true if a first log has been open
-        sensorType2portNameGetter = {}; % sensor type to port name LUT
+        sensorType2portNameGetter = {}; % funcs mapping sensor type to port name
         openports = {};      % current open ports with info to,from,connected
     end
     
     methods(Access = public)
         function obj = SensorDataYarpI(robotName,dataFolderPath)
-            % Save parameters, define port names and data file path
+            % Save parameters, robot name and data file path
             obj.robotName = robotName;
             obj.dataFolderPath = dataFolderPath;
+            % build funcs mapping sensor type to port name, save func handles
             obj.buildSensType2portNgetter();
+            % log info file name (used for restore/save/print of
+            % 'dataLogInfoMap'
+            obj.logInfoFileName = [obj.dataFolderPath '/dataLogInfo'];
         end
         
         function delete(obj)
@@ -32,16 +37,20 @@ classdef SensorDataYarpI < handle
             disp('dest');
         end
         
-        function newLog(obj,logInfo,sensorList,partsList)
-            % set folder name for the data dumper
-            obj.newDataSubFolderPath(logInfo);
+        function newLog(obj,dataLogInfo,sensorList,partsList)
+            % check data log info structure fields
+            if sum(~ismember({'calibApp','calibedPart','calibedSensors'},fieldnames(dataLogInfo)))>0
+                error('Wrong data log info format!');
+            end
+            % set folder name for the data dumper and update log database
+            obj.newDataSubFolderPath(dataLogInfo);
             % close any open ports and log
             obj.closeLog();
             % create ports mapping
             [newKeyList,newPortList] = cellfun(...
-                @(sensor,parts) newPortEntries(sensor,parts),...
-                sensorList,partsList,...
-                'UniformOutput',false);
+                @(sensor,parts) newPortEntries(sensor,parts),... % create objects and return keys
+                sensorList,partsList,...                         % applied to each sensor|parts
+                'UniformOutput',false);                          % return encapsulated output
             obj.openports = containers.Map([newKeyList{:}],[newPortList{:}]);
             % open ports
             obj.openPorts();
@@ -59,7 +68,7 @@ classdef SensorDataYarpI < handle
         function connect(obj,sensorList,partsList)
             % generate the keys from the input lists
             keys = sensorsPartsLists2keys(sensorList,partsList);
-            % flaten list and connect ports
+            % connect ports
             obj.connPorts(keys);
             disp('conn');
         end
@@ -67,9 +76,22 @@ classdef SensorDataYarpI < handle
         function disconnect(obj,sensorList,partsList)
             % generate the keys from the input lists
             keys = sensorsPartsLists2keys(sensorList,partsList);
-            % flaten list and connect ports
+            % disconnect ports
             obj.discPorts(keys);
             disp('disc');
+        end
+        
+        function print(obj)
+            %% Print the sensor data log file located in the logged data folder
+            
+            % Restore map from file
+            dataLogInfoMap = SensorLogDatabase();
+            if exist([obj.logInfoFileName '.mat'],'file') == 2
+                load([obj.logInfoFileName '.mat'],'dataLogInfoMap');
+            end
+            fileID = fopen([obj.logInfoFileName '.txt'],'w');
+            fprintf(fileID,dataLogInfoMap.toTable());
+            fclose(fileID);
         end
     end
     
@@ -108,55 +130,49 @@ classdef SensorDataYarpI < handle
                 'UniformOutput',false);
         end
         
-        function keys = sensorsPartsLists2keys(sensorList,partsList)
-            % DEBUG: remove acc and respective ports
+        function portKeys = sensorsPartsLists2keys(sensorList,partsList)
+            % DEBUG: remove acc and respective ports because they are not
+            % integrated on Gazebo yet
             sensorList = sensorList(~ismember(sensorList,'acc'));
             partsList = partsList(~ismember(sensorList,'acc'));
             % END debug
             
             % generate keys for one sensor
             genKeys4oneSensor = @(sensor,parts) cellfun(...
-                @(part) [sensor part],...
-                parts,...
-                'UniformOutput',false);
+                @(part) [sensor part],... % concatenate key '<sensor><part>'
+                parts,...                 % for each part do...
+                'UniformOutput',false);   % output cells {[key1] key2] ..}
             % generate keys for the whole sensor list
             portKeys = cellfun(...
-                @(sensor,parts) genKeys4oneSensor(sensor,parts),...
-                sensorList,partsList,...
-                'UniformOutput',false);
-            % flatten list
-            keys = [portKeys{:}];
+                @(sensor,parts) genKeys4oneSensor(sensor,parts),... % all keys for 1 sensor
+                sensorList,partsList,...             % go through all sensors n parts
+                'UniformOutput',true);               % concatenate lists from interations
         end
         
-        function newDataSubFolderPath(obj,logInfo)
-            if ~(obj.iteratorUpdated)
-                % Define a default value for 'iterator' in case no iterator
-                % file exists. For reseting the iterator, just delete the file
-                % 'iterator.mat' found in the dumper folder.
-                iterator = 1;
-                
-                % Update iterator
-                iteratorFilePath = [obj.dataFolderPath '/iterator.mat'];
-                if exist(iteratorFilePath,'file') == 2
-                    load(iteratorFilePath,'iterator');
-                    iterator = iterator+1;
-                end
-                save(iteratorFilePath,'iterator');
-                
-                % Track that the update has been done
-                obj.iteratorUpdate = true;
+        function newDataSubFolderPath(obj,dataLogInfo)
+            %% update Map with log info and create folder where to store sensor data
+            
+            % Prepare log folders/files names
+            logInfoFilePath = [obj.logInfoFileName '.mat'];
+            
+            % Restore map from file
+            dataLogInfoMap = SensorLogDatabase();
+            if exist(logInfoFilePath,'file') == 2
+                load(logInfoFilePath,'dataLogInfoMap');
+            end
+            % Add new log entry with log info
+            logFolderRelativePath = dataLogInfoMap.add(...
+                obj.robotName,dataLogInfo.calibApp,...
+                dataLogInfo.calibedSensors,dataLogInfo.calibedPart);
+            
+            % create folder
+            obj.seqDataFolderPath = [obj.dataFolderPath '/' logFolderRelativePath];
+            if system(['mkdir ' obj.seqDataFolderPath],'-echo')
+                error('Couldn''t create log files folder!');
             end
             
-            % Prepare log folders/files
-            obj.seqDataFolderPath = [...
-                obj.dataFolderPath '/' obj.robotName...
-                '#' num2str(iterator) '.' logInfo.sequencerIdx];
-            system(['mkdir ' obj.seqDataFolderPath],'-echo');
-            fileID = fopen([obj.dataFolderPath '/log_' num2str(iterator) '.txt'],'w');
-            fprintf(fileID,'control app. = %s\n',logInfo.ctrlApp);
-            fprintf(fileID,'iterator = %d\n',iterator);
-            fprintf(fileID,'seq Idx = %s\n',logInfo.sequencerIdx);
-            fclose(fileID);
+            % save log info map
+            save(logInfoFilePath,'dataLogInfoMap');
         end
         
         % we want to avoid several logs in the same part folder (for

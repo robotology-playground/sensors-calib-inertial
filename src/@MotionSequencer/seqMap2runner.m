@@ -3,6 +3,10 @@ function runSeq = seqMap2runner( seqParamsMap )
 %   Detailed explanation goes here
 
 %% DEBUG
+runSeq.calib.part = {'right_arm','head'};
+
+runSeq.calib.sensors = {{'joint'},{'joint'}};
+
 runSeq.ctrl.part = {'right_arm','head'};
 
 runSeq.ctrl.pos = {...

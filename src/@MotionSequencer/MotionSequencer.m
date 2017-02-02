@@ -6,7 +6,7 @@ classdef MotionSequencer < handle
     %   remapper moveToPos method.
     
     properties(SetAccess = protected, GetAccess = public)
-        ctrlApp;
+        calibApp;
         robotName;
         sequences;
         logCmd;
@@ -15,15 +15,15 @@ classdef MotionSequencer < handle
     end
     
     methods
-        function obj = MotionSequencer(ctrlApp,robotName,sequences,logCmd)
+        function obj = MotionSequencer(calibApp,robotName,sequences,logCmd)
             % Init class parameters
-            obj.ctrlApp = ctrlApp;
+            obj.calibApp = calibApp;
             obj.robotName = robotName;
             obj.sequences = sequences;
             obj.logCmd = logCmd;
             
             % create ctrl board remapper
-            obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotName,ctrlApp);
+            obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotName,calibApp);
         end
         
         run(obj)
