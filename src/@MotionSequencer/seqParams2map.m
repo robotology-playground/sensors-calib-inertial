@@ -11,12 +11,15 @@ function seqMap = seqParams2map( calibedPart,calibedSensors,seqParams )
 % element of the final map.
 labels = num2cell(seqParams.labels,1);
 val = num2cell(seqParams.val,1);
+emptyValColumn = cell(size(val{1}));
 
 % Add calib label with 'calibedParts' and 'calibedSensors' information
 [calibLabels,calibedVal] = cellfun(...
-    @(calibedSensor) [{'calib'; calibedPart; calibedSensor} cell(size(val,1),1)],...
-    calibedSensors,...
-    'UniformOutput', true);
+    @(calibedSensor) deal(...
+    {'calib'; calibedSensor; calibedPart},...  % 2-create a 'calib' label
+    emptyValColumn),...                        % 3-with empty value section
+    calibedSensors,...             % 1-for each sensor...
+    'UniformOutput', false);       % 4-don't concatenate lists from iterations
 % concatenate with 'seqParams'
 val = [val calibedVal];
 labels = [labels calibLabels];

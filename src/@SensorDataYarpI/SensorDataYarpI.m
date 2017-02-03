@@ -39,7 +39,9 @@ classdef SensorDataYarpI < handle
         
         function newLog(obj,dataLogInfo,sensorList,partsList)
             % check data log info structure fields
-            if sum(~ismember({'calibApp','calibedPart','calibedSensors'},fieldnames(dataLogInfo)))>0
+            if sum(~ismember(...
+                    {'calibApp','calibedPartList','calibedSensorsList'},...
+                    fieldnames(dataLogInfo)))>0
                 error('Wrong data log info format!');
             end
             % set folder name for the data dumper and update log database
@@ -122,12 +124,13 @@ classdef SensorDataYarpI < handle
             
             % for each part in the parts list, create a port entry
             [newKeyList,newPortList] = cellfun(...
-                @(part) [[sensor part],struct(...
-                'from',portNamingRuleFrom(part),...
-                'to',portNamingRuleTo(part),...
-                'conn',false)],...
-                parts,...
-                'UniformOutput',false);
+                @(part) deal([sensor part],...          % 2-create a key
+                struct(...                              % 3-port naming rules for...
+                'from',portNamingRuleFrom(part),...     % source prt
+                'to',portNamingRuleTo(part),...         % sink port
+                'conn',false)),...                      % Yarp link connection state
+                parts,...                               % 1-for each part...
+                'UniformOutput',false);                 % 5-don't concatenate lists from iterations
         end
         
         function portKeys = sensorsPartsLists2keys(sensorList,partsList)
@@ -146,7 +149,7 @@ classdef SensorDataYarpI < handle
             portKeys = cellfun(...
                 @(sensor,parts) genKeys4oneSensor(sensor,parts),... % all keys for 1 sensor
                 sensorList,partsList,...             % go through all sensors n parts
-                'UniformOutput',true);               % concatenate lists from interations
+                'UniformOutput',true);               % concatenate lists from iterations
         end
         
         function newDataSubFolderPath(obj,dataLogInfo)
@@ -163,7 +166,7 @@ classdef SensorDataYarpI < handle
             % Add new log entry with log info
             logFolderRelativePath = dataLogInfoMap.add(...
                 obj.robotName,dataLogInfo.calibApp,...
-                dataLogInfo.calibedSensors,dataLogInfo.calibedPart);
+                dataLogInfo.calibedPartList,dataLogInfo.calibedSensorsList);
             
             % create folder
             obj.seqDataFolderPath = [obj.dataFolderPath '/' logFolderRelativePath];

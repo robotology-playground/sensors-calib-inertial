@@ -11,12 +11,12 @@ for seqIdx = 1:size(obj.sequences,1)
     % request new log creation for current sequence
     
     % This info specifies for which calibration procedure the log can be
-    % used for. Each calibedPart/calibedSensor pair points to a folder name
+    % used for. Each calibedPart/calibedSensors pair points to a folder name
     % where to find the files for calibrating the sensors of modality
     % 'calibedSensor' on the part 'calibedPart'.
     logInfo = struct(...
-        'calibApp',obj.calibApp,'calibedPart',sequence.calib.part,...
-        'calibedSensors',sequence.calib.sensors);
+        'calibApp',obj.calibApp,'calibedPartList',{sequence.calib.part},...
+        'calibedSensorsList',{sequence.calib.sensors});
     [sensors,parts] = getSensorsParts4fullSeq(sequence);
     obj.logCmd.new(logInfo,sensors,parts);
     
@@ -58,11 +58,20 @@ end
 
 function [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx)
 
-sensors = sequence.meas.sensor;
+% lists to be processed:
+% each sensor is associated to a set of parts from where the sensor data is
+% collected (or not depending on the 'acquire' flag). An acquire set and
+% the parts set have the same dimensions.
+sensorList = sequence.meas.sensor;
+partSetList = sequence.meas.part;
+acquireSetList = sequence.meas.acquire;
 
-[partsToStop,partsToStart] = cellfun(...
-    @(partList,acquireList) [partList{acquireList{posIdx}},partList{~acquireList{posIdx}}],...
-    sequence.meas.part,sequence.meas.acquire,...
-    'UniformOutput',false);
-
+% process the lists
+[sensors,partsToStop,partsToStart] = cellfun(...
+    @(sensor,partSet,acquireSet) deal(...
+    sensor,...                                 % 2-sensor (modality)
+    partSet(~acquireSet{posIdx}),...           % 3-stop acquiring data from sensors on those parts
+    partSet(acquireSet{posIdx})),...           % 4-start  acquiring data from sensors on those parts
+    sensorList,partSetList,acquireSetList,...  % 1-for each sensor...
+    'UniformOutput',false);                    % 5-don't concatenate lists from iterations
 end

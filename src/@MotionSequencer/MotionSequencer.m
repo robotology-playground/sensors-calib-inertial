@@ -30,7 +30,7 @@ classdef MotionSequencer < handle
     end
     
     methods(Static = true, Access = public)
-        seqMap = seqParams2map(seqParams)
+        seqMap = seqParams2map(calibedPart,calibedSensors,seqParams)
         
         runSeq = seqMap2runner(seqParamsMap)
     end
