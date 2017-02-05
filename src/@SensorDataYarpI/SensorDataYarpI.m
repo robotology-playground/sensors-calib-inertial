@@ -38,38 +38,47 @@ classdef SensorDataYarpI < handle
         end
         
         function newLog(obj,dataLogInfo,sensorList,partsList)
-            % check data log info structure fields
+            % close any open ports and log
+            obj.closeLog();
+            
+            % check data log info structure fields and sensor/parts lists
             if sum(~ismember(...
                     {'calibApp','calibedPartList','calibedSensorsList'},...
                     fieldnames(dataLogInfo)))>0
                 error('Wrong data log info format!');
             end
+            if isempty(sensorList) || isempty(partsList)
+                error('List of parts or list of sensors is empty!');
+            end
+            
             % set folder name for the data dumper and update log database
             obj.newDataSubFolderPath(dataLogInfo);
-            % close any open ports and log
-            obj.closeLog();
-            % create ports mapping
+            
+            % create ports mapping (needs the folder name for the data
+            % dumper because it stores the subfolders names)
             [newKeyList,newPortList] = cellfun(...
-                @(sensor,parts) newPortEntries(sensor,parts),... % create objects and return keys
+                @(sensor,parts) obj.newPortEntries(sensor,parts),... % create objects and return keys
                 sensorList,partsList,...                         % applied to each sensor|parts
                 'UniformOutput',false);                          % return encapsulated output
             obj.openports = containers.Map([newKeyList{:}],[newPortList{:}]);
+            
             % open ports
             obj.openPorts();
             disp('newLog');
         end
         
         function closeLog(obj)
-            % disconnect all connected ports
-            obj.discPorts(obj.openports);
-            % close all open ports
-            obj.closePorts()
+            % if there are any open ports
+            if ~isempty(obj.openports)
+                obj.discPorts(obj.openports.keys); % disconnect them
+                obj.closePorts();                  % close them
+            end
             disp('closeLog');
         end
         
         function connect(obj,sensorList,partsList)
             % generate the keys from the input lists
-            keys = sensorsPartsLists2keys(sensorList,partsList);
+            keys = obj.sensorsPartsLists2keys(sensorList,partsList);
             % connect ports
             obj.connPorts(keys);
             disp('conn');
@@ -77,7 +86,7 @@ classdef SensorDataYarpI < handle
         
         function disconnect(obj,sensorList,partsList)
             % generate the keys from the input lists
-            keys = sensorsPartsLists2keys(sensorList,partsList);
+            keys = obj.sensorsPartsLists2keys(sensorList,partsList);
             % disconnect ports
             obj.discPorts(keys);
             disp('disc');
@@ -92,10 +101,12 @@ classdef SensorDataYarpI < handle
                 load([obj.logInfoFileName '.mat'],'dataLogInfoMap');
             end
             fileID = fopen([obj.logInfoFileName '.txt'],'w');
-            fprintf(fileID,dataLogInfoMap.toTable());
+            fprintf(fileID,'%s',dataLogInfoMap.toString());
             fclose(fileID);
         end
     end
+    
+    %%===============  PROTECTED METHODS  ================================
     
     methods(Access = protected)
         % only this class and derivates should build the port mapping from
@@ -105,51 +116,48 @@ classdef SensorDataYarpI < handle
             run yarpPortNameRules;
             sensorType = {...
                 'joint_from','acc_from','imu_from',...
-                'joint_to','acc_to','imu_to'};
+                'joint_to','acc_to','imu_to',...
+                'joint_path','acc_path','imu_path'};
             portNamingRule = {...
-                eval(['@(part)' joints_port_rule_icub]),...
-                eval(['@(part)' accSensors_port_rule_icub]),...
-                eval(['@(part)' imuSensors_port_rule_icub]),...
-                eval(['@(part)' joints_port_rule_dumper]),...
-                eval(['@(part)' accSensors_port_rule_dumper]),...
-                eval(['@(part)' imuSensors_port_rule_dumper])};
+                eval(['@(robotname,part)' joints_port_rule_icub]),...
+                eval(['@(robotname,part)' accSensors_port_rule_icub]),...
+                eval(['@(robotname,part)' imuSensors_port_rule_icub]),...
+                eval(['@(robotname,part)' joints_port_rule_dumper]),...
+                eval(['@(robotname,part)' accSensors_port_rule_dumper]),...
+                eval(['@(robotname,part)' imuSensors_port_rule_dumper]),...
+                eval(['@(datapath,part)' joints_folder_rule_dumper]),...
+                eval(['@(datapath,part)' accSensors_folder_rule_dumper]),...
+                eval(['@(datapath,part)' imuSensors_folder_rule_dumper])};
             obj.sensorType2portNameGetter = containers.Map(sensorType,portNamingRule);
             disp('buildPortsMapping');
         end
         
-        function [newKeyList,newPortList] = newPortEntries(sensor,parts)
+        function [newKeyList,newPortList] = newPortEntries(obj,sensor,parts)
+            %% each port(yarp link) entry is a structure with following fields:
+            %  - from: source port
+            %  - to  : sink port
+            %  - path: path to the stored sensor data (*)
+            %  - conn: true if connected, false if not
+            %  - pid : 'yarpdatadumper' process PID that open the port
+            % Note(*): When this method is called, the data folder root
+            % 'dataFolderPath' has already been set.
+            
             % get rules for 'from' and 'to' port naming
             portNamingRuleFrom = obj.sensorType2portNameGetter([sensor '_from']);
             portNamingRuleTo = obj.sensorType2portNameGetter([sensor '_to']);
+            portNamingRulePath = obj.sensorType2portNameGetter([sensor '_path']);
             
             % for each part in the parts list, create a port entry
             [newKeyList,newPortList] = cellfun(...
                 @(part) deal([sensor part],...          % 2-create a key
                 struct(...                              % 3-port naming rules for...
-                'from',portNamingRuleFrom(part),...     % source prt
-                'to',portNamingRuleTo(part),...         % sink port
-                'conn',false)),...                      % Yarp link connection state
+                'from',portNamingRuleFrom(obj.robotName,part),...         % source port
+                'to',portNamingRuleTo(obj.robotName,part),...             % sink port
+                'path',portNamingRulePath(obj.seqDataFolderPath,part),... % path to the stored sensor data
+                'conn',false,...                        % Yarp link connection state
+                'pid',[])),...                          % process PID that open the port
                 parts,...                               % 1-for each part...
                 'UniformOutput',false);                 % 5-don't concatenate lists from iterations
-        end
-        
-        function portKeys = sensorsPartsLists2keys(sensorList,partsList)
-            % DEBUG: remove acc and respective ports because they are not
-            % integrated on Gazebo yet
-            sensorList = sensorList(~ismember(sensorList,'acc'));
-            partsList = partsList(~ismember(sensorList,'acc'));
-            % END debug
-            
-            % generate keys for one sensor
-            genKeys4oneSensor = @(sensor,parts) cellfun(...
-                @(part) [sensor part],... % concatenate key '<sensor><part>'
-                parts,...                 % for each part do...
-                'UniformOutput',false);   % output cells {[key1] key2] ..}
-            % generate keys for the whole sensor list
-            portKeys = cellfun(...
-                @(sensor,parts) genKeys4oneSensor(sensor,parts),... % all keys for 1 sensor
-                sensorList,partsList,...             % go through all sensors n parts
-                'UniformOutput',true);               % concatenate lists from iterations
         end
         
         function newDataSubFolderPath(obj,dataLogInfo)
@@ -184,19 +192,38 @@ classdef SensorDataYarpI < handle
         % which handles the switching to a new folder when required.
         function openPorts(obj)
             % open list of ports through yarpdatadumper
-            for port = obj.openports.values
-                if system(['yarpdatadumper --dir ' obj.dataFolderPath ...
-                        ' --name ' port{:}.to ' --type bottle &'])
-                    error(['couldn''t open port ' port{:} '!']);
+            for key = obj.openports.keys
+                % get port to open
+                port = obj.openports(key{:});
+                % run datadumper and get process PID
+                system('echo $!'); % flush output of previous system commands
+                [status,pid]=system(...
+                    ['yarpdatadumper ' ...    % run data dumper
+                    '--dir ' port.path ...    % set output folder
+                    ' --name ' port.to ' --type bottle ' ... % yarp port, data type
+                    '&> /dev/null & ' ...     % redirect all output to garbage and run process on backgroung
+                    'echo $!']);              % get process PID
+                if status
+                    error(['couldn''t open port ' port.to '!']);
                 end
+                port.pid = str2double(pid); % convert and store PID (removes trail spaces)
+                % double check that PID is attached to a yarpdatadumper process
+                if ~obj.doesPIDmatchDatadumper(port.pid)
+                    error('Wrong yarpdatadumper PID!');
+                end
+                obj.openports(key{:}) = port;
             end
             disp('open ports');
         end
         
         function closePorts(obj)
             % close all previously open ports through yarpdatadumper
-            if system('pkill -9 yarpdatadumper')
-                error(['couldn''t close port ' obj.openports.values{:} '!']);
+            for key = obj.openports.keys
+                % get yarpdatadumper process PID and close port
+                port = obj.openports(key{:});
+                if system(['kill -9 ' num2str(port.pid)])
+                    error(['couldn''t close port ' port.to '!']);
+                end
             end
             % empty list of open ports
             obj.openports = {};            
@@ -205,7 +232,7 @@ classdef SensorDataYarpI < handle
         
         function connPorts(obj,portKeys)
             % return error if some ports to connect are still closed
-            stillClosedPorts = ~ismember(portsKeys,obj.openports.keys);
+            stillClosedPorts = ~isKey(obj.openports,portKeys);
             if sum(stillClosedPorts)>0
                 error(['Trying to connect closed ports: ' portsKeys(stillClosedPorts)]);
             end
@@ -214,36 +241,92 @@ classdef SensorDataYarpI < handle
             for key = portKeys
                 % get 'from', 'to', and update 'conn' attribut
                 port = obj.openports(key{:});
-                % 'yarp connect <output port> <input port>
-                if system(['yarp connect ' port.from ' ' port.to])
-                    error(['couldn''t connect port ' port '!']);
+                if ~port.conn   % if port is not connected
+                    % 'yarp connect <output port> <input port>
+                    if system(['yarp connect ' port.from ' ' port.to])
+                        error(['couldn''t connect port ' port.to '!']);
+                    end
+                    % update 'conn' flag
+                    port.conn = true;
                 end
-                % update 'conn' flag
-                port.conn = true;
             end
             disp('connect ports');
         end
         
         function discPorts(obj,portKeys)
-            % do nothing for ports already disconnected or closed
-            if isempty(obj.openports)
-                return;
-            end
+            % do nothing for ports already closed
+            stillOpenPorts = isKey(obj.openports,portKeys);
             
             % disconnect ports
-            for key = portKeys
+            for key = portKeys(stillOpenPorts)
                 % get 'from', 'to', and update 'conn' attribut
                 port = obj.openports(key{:});
                 % 'yarp disconnect <output port> <input port>
-                if port.conn
+                if port.conn      % if port is connected
                     if system(['yarp disconnect ' port.from ' ' port.to])
-                        error(['couldn''t disconnect port ' port '!']);
+                        error(['couldn''t disconnect port ' port.to '!']);
                     end
+                    % update 'conn' flag
+                    port.conn = false;
                 end
-                % update 'conn' flag
-                port.conn = false;
             end
             disp('disconnect ports');
+        end
+    end
+    
+    %%===============  STATIC PROTECTED METHODS  ======================
+    
+    methods(Static = true,Access = protected)
+        function portKeys = sensorsPartsLists2keys(sensorList,partsList)
+            % DEBUG: remove acc and respective ports because they are not
+            % integrated on Gazebo yet
+            partsList = partsList(~ismember(sensorList,'acc'));
+            sensorList = sensorList(~ismember(sensorList,'acc'));
+            % END debug
+            
+            % generate keys for one sensor
+            genKeys4oneSensor = @(sensor,parts) cellfun(...
+                @(part) [sensor part],... % concatenate key '<sensor><part>'
+                parts,...                 % for each part do...
+                'UniformOutput',false);   % output cells {[key1] key2] ..}
+            % generate keys for the whole sensor list
+            portKeys = cellfun(...
+                @(sensor,parts) genKeys4oneSensor(sensor,parts),... % all keys for 1 sensor
+                sensorList,partsList,...             % go through all sensors n parts
+                'UniformOutput',false);              % cannot concatenate lists from iterations
+            portKeys = [portKeys{:}];                % concatenate them here!
+        end
+    end
+    
+    %%===============  STATIC METHODS  ================================
+
+    methods(Static = true,Access = public)
+        function clean()
+            % kill all the yarpdatadumper processes
+            system('pkill -9 yarpdatadumper');
+            % clean yarp ports
+            system('yarp clean');
+        end
+        
+        function status = doesPIDmatchDatadumper(pid)
+            % get the matching process (only the command wo the parameters)
+            [status,pidCmdRef] = system(['ps -cp ' num2str(pid)]);
+            if status
+                warning('Couldn''t verify the PID');
+            end
+            % parse the first 4 columns into a 1x4 cell
+            pidCmdRef_cols     = textscan(pidCmdRef,'%s %s %s %s');
+            % expand cell contents and filter to get the array of cells as follows:
+            % PID CMD
+            % XXX XXXXX
+            pidCmdRef_array    = [pidCmdRef_cols{[1 4]}];
+            % expected PID/CMD to compare to
+            generatedPidCmd_array = {'PID','CMD';num2str(pid),'yarpdatadumper'};
+            similar = cellfun(...
+                @(elem1,elem2) strcmp(elem1,elem2),...
+                pidCmdRef_array(:),generatedPidCmd_array(:),...
+                'UniformOutput',false);
+            status = (sum(~[similar{:}]) == 0);
         end
     end
 end

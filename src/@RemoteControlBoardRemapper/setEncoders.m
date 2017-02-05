@@ -9,6 +9,11 @@ function success = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varar
 % before timeout.
 % Check desired positions size
 
+% Concatenate desired positions matrices, as per IPositionControl interface 
+% specification. Same for velocities.
+desiredPosMat = [desiredPosMat{:}];
+refParamsMat = [refParamsMat{:}];
+
 success = true; % default value
 
 if length(desiredPosMat) ~= length(obj.jointsList)
