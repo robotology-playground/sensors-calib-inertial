@@ -14,6 +14,17 @@ function success = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varar
 desiredPosMat = [desiredPosMat{:}];
 refParamsMat = [refParamsMat{:}];
 
+if isempty(refParamsMat)
+    switch refType
+        case 'refVel'
+            refParamsMat = repmat(obj.defaultSpeed,size(desiredPosMat));
+        case 'refAcc'
+            refParamsMat = repmat(obj.defaultAcc,size(desiredPosMat));
+        otherwise
+            error('Unsupported reference type');
+    end
+end
+
 success = true; % default value
 
 if length(desiredPosMat) ~= length(obj.jointsList)

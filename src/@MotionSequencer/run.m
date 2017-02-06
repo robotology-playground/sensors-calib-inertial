@@ -1,7 +1,7 @@
 function run(obj)
 
 % process each sequence
-for seqIdx = 1:size(obj.sequences,1)
+for seqIdx = 1:numel(obj.sequences)
     % get next sequence to run
     sequence = obj.sequences{seqIdx};
     
@@ -15,10 +15,10 @@ for seqIdx = 1:size(obj.sequences,1)
     % where to find the files for calibrating the sensors of modality
     % 'calibedSensor' on the part 'calibedPart'.
     logInfo = struct(...
-        'calibApp',obj.calibApp,'calibedPartList',{sequence.calib.part},...
-        'calibedSensorsList',{sequence.calib.sensors});
+        'calibApp',obj.calibApp,'calibedSensorList',{sequence.calib.sensor},...
+        'calibedPartsList',{sequence.calib.part});
     [sensors,parts] = getSensorsParts4fullSeq(sequence);
-    obj.logCmd.new(logInfo,sensors,parts);
+    sequence.logCmd.new(logInfo,sensors,parts);
     
     for posIdx = 1:size(sequence.ctrl.pos,1)
         % get next position, velocity and acquire flag from the
@@ -29,8 +29,8 @@ for seqIdx = 1:size(obj.sequences,1)
         % Stop logging of parts for which 'acquire' flag is off
         % Start logging of parts for which 'acquire' flag is on
         [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx);
-        obj.logCmd.stop(sensors,partsToStop);
-        obj.logCmd.start(sensors,partsToStart);
+        sequence.logCmd.stop(sensors,partsToStop);
+        sequence.logCmd.start(sensors,partsToStart);
         
         % run the sequencer step
         waitMotionDone = true; timeout = 120; % in seconds
@@ -40,7 +40,7 @@ for seqIdx = 1:size(obj.sequences,1)
     end
     
     % Stop logging of last step and close log
-    obj.logCmd.close();
+    sequence.logCmd.close();
     
     % close ctrl board remapper driver
     obj.ctrlBoardRemap.close();
@@ -70,8 +70,8 @@ acquireSetList = sequence.meas.acquire;
 [sensors,partsToStop,partsToStart] = cellfun(...
     @(sensor,partSet,acquireSet) deal(...
     sensor,...                                 % 2-sensor (modality)
-    partSet(~acquireSet{posIdx}),...           % 3-stop acquiring data from sensors on those parts
-    partSet(acquireSet{posIdx})),...           % 4-start  acquiring data from sensors on those parts
+    partSet(~acquireSet(posIdx)),...           % 3-stop acquiring data from sensors on those parts
+    partSet(acquireSet(posIdx))),...           % 4-start  acquiring data from sensors on those parts
     sensorList,partSetList,acquireSetList,...  % 1-for each sensor...
     'UniformOutput',false);                    % 5-don't concatenate lists from iterations
 end

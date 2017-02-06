@@ -28,7 +28,7 @@ classdef SensorLogDatabase < handle
             obj.mapIter = containers.Map('KeyType','int32','ValueType','any');
         end
         
-        function logRelativePath = add(obj,robotName,calibApp,calibedPartList,calibedSensorsList)
+        function logRelativePath = add(obj,robotName,calibApp,calibedSensorList,calibedPartsList)
             % Update the iterator. for all the sensors, we add the same
             % only log entry
             obj.iterator = obj.iterator+1;
@@ -37,19 +37,19 @@ classdef SensorLogDatabase < handle
             % logs at different times of the same robot|sensorType|part
             
             % key generation through sensor list for 1 part
-            genKey1Sensor = @(calibedPart,calibedSensors) cellfun(...
-                @(sensor) deal(...
-                [robotName '.' sensor '.' calibedPart],...  % 2-concatenate key string
+            genKey1Sensor = @(calibedSensor,calibedParts) cellfun(...
+                @(part) deal(...
+                [robotName '.' calibedSensor '.' part],...  % 2-concatenate key string
                 struct(...
-                'robotName',robotName,'calibedSensor',sensor,...
-                'calibedPart',calibedPart)),...             % 3-define structure expanding the key
-                calibedSensors,...                  % 1-for each sensor type
+                'robotName',robotName,'calibedSensor',calibedSensor,...
+                'calibedPart',part)),...            % 3-define structure expanding the key
+                calibedParts,...                    % 1-for each sensor type
                 'UniformOutput',false);             % 4-and put output in a cell
             
             % key generation for all parts
             [logKeys,keyExpanders] = cellfun(...
-                @(part,sensors) genKey1Sensor(part,sensors),... %2-generate sub-list of keys for that part
-                calibedPartList,calibedSensorsList,...  % 1-for each part with associated sensors
+                @(sensor,parts) genKey1Sensor(sensor,parts),... %2-generate sub-list of keys for that part
+                calibedSensorList,calibedPartsList,...  % 1-for each part with associated sensors
                 'UniformOutput',true);                  % 3-concatenate key sub-lists
             
             % add key expanders
@@ -61,8 +61,8 @@ classdef SensorLogDatabase < handle
             
             % Add log entry to the same current map pointed by all the
             % keys 'logKeys'
-            for key = logKeys
-                key = key{:};
+            for ckey = logKeys
+                key = ckey{:};
                 if ~isKey(obj.mapAttr,key)
                     obj.mapAttr(key) = containers.Map('KeyType','int32','ValueType','any');
                 end
@@ -70,7 +70,7 @@ classdef SensorLogDatabase < handle
                 entryMap(obj.iterator) = newEntry;
             end
             
-            % Add log entry to the map of itrators
+            % Add log entry to the map of iterators
             obj.mapIter(obj.iterator) = {newEntry};
             
             % return the log relative path
@@ -90,6 +90,12 @@ classdef SensorLogDatabase < handle
         end
         
         function str = toString(obj)
+%             % create cell array expander
+%             charConv = @(aType) obj.converterKey2RSP(aType);
+%             converter = Converters('V','char',charConv);
+%             % convert mapAttr to cell array
+%             AttrAscellArray = converter.recursiveAny2cellArray(obj.mapAttr);
+            
             str = ['iterator = ' obj.iterator '\n\n'];
 %             str = [str obj.toTable() '\n'];
         end

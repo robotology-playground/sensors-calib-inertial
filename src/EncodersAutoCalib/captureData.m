@@ -5,7 +5,7 @@ clc
 
 %% Main interface parameters ==============================================
 robotName = 'icubSim';
-calibedParts = {'right_arm','head'};
+calibedParts = {'torso'};
 dataPath  = '../../data/calibration/dumper';
 
 %% Home single step sequence
@@ -95,7 +95,7 @@ torso_seqParams.val = {...
 
 head_seqParams.labels = {...
     'ctrl' ,'ctrl'          ,'meas'     ,'meas'     ,'meas';...
-    'pos'  ,'vel'           ,'joint'    ,'joint'    ,'acc' ;...
+    'pos'  ,'vel'           ,'joint'    ,'joint'    ,'imu' ;...
     'head' ,'head'          ,'head'     ,'torso'    ,'head'};
 head_seqParams.val = {...
     [0 0 0],repmat(10,[1 3]),false      ,false      ,false      ;...
@@ -141,6 +141,12 @@ if sum(~ismember(calibedParts,selector.calibedParts))>0
 end
 
 % ==== Build the homing sequences 'seqHomeParamsMap' and the end sequence:
+
+% First, init MotionSequencer static data, clean YARP ports
+clear MotionSequencer;
+SensorDataYarpI.clean();
+
+% Build homing sequences
 seqHomeParamsMap = cellfun(...
     @(seqParams) MotionSequencer.seqParams2map({},{},seqParams),...
     seqHomeParams,...
@@ -207,20 +213,15 @@ end
 %  (each homing sequence matches a calibrating sequence)
 
 % Concatenate pairs of homing/calibrating sequences, dropping empty ones
-remEmpty=@(aListOf2)aListOf2([~isempty(aListOf2{1}) true]);
+remEmpty=@(aListOf2)...
+    aListOf2([(~isempty(aListOf2{1}) && ~isempty(aListOf2{2})),~isempty(aListOf2{2})]);
+
 sequences = cellfun(...
-    @(seqParamsMap1,seqParamsMap2) remEmpty([{seqParamsMap1},{seqParamsMap2}]),...
+    @(seqParamsMap1,seqParamsMap2) remEmpty({seqParamsMap1,seqParamsMap2}),...
     seqHomeParamsMap(1:numel(seqParamsMapMerged)),seqParamsMapMerged,...
     'UniformOutput',false);
 % remove encapsulation and add final Goto-end position
 sequences = [sequences{:},{seqEndParamsMap}];
-
-
-%% Build sequences from maps to MotionSequencer runner format
-runnerSequences = cellfun(...
-    @(sequence) MotionSequencer.seqMap2runner(sequence),...
-    sequences,...
-    'UniformOutput',false);
 
 
 %% Training data acquisition
@@ -236,7 +237,7 @@ logCmd.new   = @logger.newLog;
 logCmd.close = @logger.closeLog;
 
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer('EncodersCalibrator',robotName,runnerSequences,logCmd);
+sequencer = MotionSequencer('EncodersCalibrator',robotName,sequences,logCmd);
 
 % run sequencer until all data is acquired
 sequencer.run();
@@ -248,4 +249,7 @@ sequencer.run();
 
 % print the sensor data log files info
 logger.print();
+
+% Acquisition complete!
+disp('Sensor data acquisition complete !!!');
 

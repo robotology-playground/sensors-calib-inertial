@@ -7,6 +7,12 @@ function seqMap = seqParams2map( calibedPart,calibedSensors,seqParams )
 %   'seqParams' is defined for 1 single part ('calibedPart') and 1 or more
 %   sensor modalities ('calibedSensors').
 
+% if input 'seqParams' is empty, return empty element as well
+if isempty(seqParams)
+    seqMap = [];
+    return;
+end
+
 % Split each field (list) of 'seqParams' into columns. Each column will be an
 % element of the final map.
 labels = num2cell(seqParams.labels,1);
@@ -30,9 +36,14 @@ values = cellfun(...
     labels,val,...
     'UniformOutput', false);
 
-% 'labels' is now a list of pairs {<sensor>;<part>}, each pair being
+% 'labels' is now a list of triples {<action><sensor><part>}, each pair being
 % a unique identifier of a sub-sequence (1 column of 'seqParams')
 keys = cellfun(@(aList) [aList{:}],labels,'UniformOutput', false);
+% Update labels dictionary 'MotionSequencer.labelKeys2ActSensPart'.
+dict = MotionSequencer.labelKeys2ActSensPart; % invoque the static variable
+for iter = 1:numel(keys)
+    dict(keys{iter}) = labels{iter};
+end
 
 % build map
 seqMap = containers.Map(keys,values);

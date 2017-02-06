@@ -7,7 +7,12 @@ classdef RemoteControlBoardRemapper < handle
     % jointsList: [list of strings] for instance {'l_hip_pitch','l_hip_roll','l_knee'}
     %
     
-    properties (SetAccess = protected, GetAccess = public)
+    properties(Constant)
+        defaultSpeed = 10; % m/s
+        defaultAcc   = 2;  % m/s^2
+    end
+    
+    properties(SetAccess = protected, GetAccess = public)
         net;
         robotName;
         jointsList={};

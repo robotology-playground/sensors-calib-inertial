@@ -43,7 +43,7 @@ classdef SensorDataYarpI < handle
             
             % check data log info structure fields and sensor/parts lists
             if sum(~ismember(...
-                    {'calibApp','calibedPartList','calibedSensorsList'},...
+                    {'calibApp','calibedSensorList','calibedPartsList'},...
                     fieldnames(dataLogInfo)))>0
                 error('Wrong data log info format!');
             end
@@ -174,7 +174,7 @@ classdef SensorDataYarpI < handle
             % Add new log entry with log info
             logFolderRelativePath = dataLogInfoMap.add(...
                 obj.robotName,dataLogInfo.calibApp,...
-                dataLogInfo.calibedPartList,dataLogInfo.calibedSensorsList);
+                dataLogInfo.calibedSensorList,dataLogInfo.calibedPartsList);
             
             % create folder
             obj.seqDataFolderPath = [obj.dataFolderPath '/' logFolderRelativePath];
@@ -221,7 +221,7 @@ classdef SensorDataYarpI < handle
             for key = obj.openports.keys
                 % get yarpdatadumper process PID and close port
                 port = obj.openports(key{:});
-                if system(['kill -9 ' num2str(port.pid)])
+                if system(['kill ' num2str(port.pid)])
                     error(['couldn''t close port ' port.to '!']);
                 end
             end
@@ -302,8 +302,6 @@ classdef SensorDataYarpI < handle
 
     methods(Static = true,Access = public)
         function clean()
-            % kill all the yarpdatadumper processes
-            system('pkill -9 yarpdatadumper');
             % clean yarp ports
             system('yarp clean');
         end

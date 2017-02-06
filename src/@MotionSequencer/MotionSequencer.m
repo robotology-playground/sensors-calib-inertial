@@ -5,11 +5,17 @@ classdef MotionSequencer < handle
     %   The class methods produce inputs to the remote control board
     %   remapper moveToPos method.
     
+    properties(Constant)
+        % Static property accessible from any object of the class
+        labelKeys2ActSensPart = containers.Map('KeyType','char','ValueType','any');
+    end
+    
     properties(SetAccess = protected, GetAccess = public)
         calibApp;
         robotName;
         sequences;
         logCmd;
+        dummyCmd;
         ctrlBoardRemap;
         partList = {};
     end
@@ -19,19 +25,37 @@ classdef MotionSequencer < handle
             % Init class parameters
             obj.calibApp = calibApp;
             obj.robotName = robotName;
-            obj.sequences = sequences;
+            % logger commands
             obj.logCmd = logCmd;
+            % dummy commands (used instead of logger commands if logging is
+            % not applicable
+            obj.dummyCmd = obj.buildDummyCmd(logCmd);
+            % Build sequences from maps to MotionSequencer runner format
+            obj.sequences = cellfun(...
+                @(sequence) obj.seqMap2runner(sequence),...
+                sequences,...
+                'UniformOutput',false);
             
             % create ctrl board remapper
             obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotName,calibApp);
         end
+        
+        runSeq = seqMap2runner(obj,seqParamsMap)
         
         run(obj)
     end
     
     methods(Static = true, Access = public)
         seqMap = seqParams2map(calibedPart,calibedSensors,seqParams)
-        
-        runSeq = seqMap2runner(seqParamsMap)
+    end
+    
+    methods(Static = true, Access = protected)
+        function aDummyCmd = buildDummyCmd(logCmd)
+            dummyFunc = @(varargin) {};
+            for cField = fieldnames(logCmd)'
+                field = cField{:};
+                aDummyCmd.(field) = dummyFunc;
+            end
+        end
     end
 end
