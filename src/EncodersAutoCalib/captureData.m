@@ -1,4 +1,5 @@
 %% clear all variables and close all previous figures
+iDynTree.Vector3(); % WORKAROUND for being able to load yarp later.
 clear
 close all
 clc
@@ -128,6 +129,7 @@ selector.seqParams = {...
     torso_seqParams,head_seqParams};
 selector.seqParamsMap = cell(size(selector.seqParams));
 
+            
 %% Build the Map sequences from input parameters
 %
 %  - build the homing sequences 'seqHomeParamsMap'
@@ -253,3 +255,5 @@ logger.print();
 % Acquisition complete!
 disp('Sensor data acquisition complete !!!');
 
+% Uninitialize yarp
+yarp.Network.fini();

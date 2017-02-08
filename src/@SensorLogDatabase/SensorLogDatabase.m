@@ -36,21 +36,13 @@ classdef SensorLogDatabase < handle
             % define the keys pointing to a log or list of logs (several
             % logs at different times of the same robot|sensorType|part
             
-            % key generation through sensor list for 1 part
-            genKey1Sensor = @(calibedSensor,calibedParts) cellfun(...
-                @(part) deal(...
-                [robotName '.' calibedSensor '.' part],...  % 2-concatenate key string
-                struct(...
-                'robotName',robotName,'calibedSensor',calibedSensor,...
-                'calibedPart',part)),...            % 3-define structure expanding the key
-                calibedParts,...                    % 1-for each sensor type
-                'UniformOutput',false);             % 4-and put output in a cell
-            
             % key generation for all parts
             [logKeys,keyExpanders] = cellfun(...
-                @(sensor,parts) genKey1Sensor(sensor,parts),... %2-generate sub-list of keys for that part
+                @(sensor,parts) obj.genKey1Sensor(robotName,sensor,parts),... %2-generate sub-list of keys for that part
                 calibedSensorList,calibedPartsList,...  % 1-for each part with associated sensors
-                'UniformOutput',true);                  % 3-concatenate key sub-lists
+                'UniformOutput',false);                 % 3-concatenate key sub-lists
+            logKeys = [logKeys{:}];
+            keyExpanders = [keyExpanders{:}];
             
             % add key expanders
             obj.key2RSP = [obj.key2RSP;containers.Map(logKeys,keyExpanders)];
@@ -108,6 +100,20 @@ classdef SensorLogDatabase < handle
             else
                 aKey2struct = aKey;
             end
+        end
+    end
+    
+    methods(Static = true)
+        function [keys,fields] = genKey1Sensor(robotName,calibedSensor,calibedParts)
+            % key generation through sensor list for 1 part
+            [keys,fields] = cellfun(...
+                @(part) deal(...
+                [robotName '.' calibedSensor '.' part],...  % 2-concatenate key string
+                struct(...
+                'robotName',robotName,'calibedSensor',calibedSensor,...
+                'calibedPart',part)),...            % 3-define structure expanding the key
+                calibedParts,...                    % 1-for each sensor type
+                'UniformOutput',false);             % 4-and put output in a cell
         end
     end
 end

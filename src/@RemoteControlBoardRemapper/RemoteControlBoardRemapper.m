@@ -26,9 +26,9 @@ classdef RemoteControlBoardRemapper < handle
         %% Constructor
         function obj = RemoteControlBoardRemapper(robotName,portsPrefix)
             % Create YARP Network device, to initialize YARP classes for communication
-            iDynTree.Vector3(); %WORKAROUND for loading yarp right after.
-            obj.net = yarp.Network();
-            obj.net.init();
+            if ~yarp.Network.initialized
+                yarp.Network.init();
+            end
             
             % Save robot name
             obj.robotName = robotName;
@@ -53,7 +53,6 @@ classdef RemoteControlBoardRemapper < handle
         %% Destructor
         function delete(obj)
             obj.close();
-            obj.net.fini();
         end
         
         %% Open ports

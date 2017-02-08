@@ -21,6 +21,11 @@ classdef SensorDataYarpI < handle
     
     methods(Access = public)
         function obj = SensorDataYarpI(robotName,dataFolderPath)
+            % Create YARP Network device, to initialize YARP classes for communication
+            if ~yarp.Network.initialized
+                yarp.Network.init();
+            end
+            
             % Save parameters, robot name and data file path
             obj.robotName = robotName;
             obj.dataFolderPath = dataFolderPath;
@@ -34,7 +39,6 @@ classdef SensorDataYarpI < handle
         function delete(obj)
             % disconnect and close open ports
             obj.closeLog();
-            disp('dest');
         end
         
         function newLog(obj,dataLogInfo,sensorList,partsList)
@@ -64,7 +68,6 @@ classdef SensorDataYarpI < handle
             
             % open ports
             obj.openPorts();
-            disp('newLog');
         end
         
         function closeLog(obj)
@@ -73,7 +76,6 @@ classdef SensorDataYarpI < handle
                 obj.discPorts(obj.openports.keys); % disconnect them
                 obj.closePorts();                  % close them
             end
-            disp('closeLog');
         end
         
         function connect(obj,sensorList,partsList)
@@ -81,7 +83,6 @@ classdef SensorDataYarpI < handle
             keys = obj.sensorsPartsLists2keys(sensorList,partsList);
             % connect ports
             obj.connPorts(keys);
-            disp('conn');
         end
         
         function disconnect(obj,sensorList,partsList)
@@ -89,7 +90,6 @@ classdef SensorDataYarpI < handle
             keys = obj.sensorsPartsLists2keys(sensorList,partsList);
             % disconnect ports
             obj.discPorts(keys);
-            disp('disc');
         end
         
         function print(obj)
@@ -129,7 +129,6 @@ classdef SensorDataYarpI < handle
                 eval(['@(datapath,part)' accSensors_folder_rule_dumper]),...
                 eval(['@(datapath,part)' imuSensors_folder_rule_dumper])};
             obj.sensorType2portNameGetter = containers.Map(sensorType,portNamingRule);
-            disp('buildPortsMapping');
         end
         
         function [newKeyList,newPortList] = newPortEntries(obj,sensor,parts)
@@ -176,7 +175,9 @@ classdef SensorDataYarpI < handle
                 obj.robotName,dataLogInfo.calibApp,...
                 dataLogInfo.calibedSensorList,dataLogInfo.calibedPartsList);
             
-            % create folder
+            % create folder. We use system() instead of the built'in
+            % function because the answer is more accurate: 'false' if the
+            % folder already exists.
             obj.seqDataFolderPath = [obj.dataFolderPath '/' logFolderRelativePath];
             if system(['mkdir ' obj.seqDataFolderPath],'-echo')
                 error('Couldn''t create log files folder!');
@@ -196,7 +197,6 @@ classdef SensorDataYarpI < handle
                 % get port to open
                 port = obj.openports(key{:});
                 % run datadumper and get process PID
-                system('echo $!'); % flush output of previous system commands
                 [status,pid]=system(...
                     ['yarpdatadumper ' ...    % run data dumper
                     '--dir ' port.path ...    % set output folder
@@ -204,7 +204,9 @@ classdef SensorDataYarpI < handle
                     '&> /dev/null & ' ...     % redirect all output to garbage and run process on backgroung
                     'echo $!']);              % get process PID
                 if status
-                    error(['couldn''t open port ' port.to '!']);
+                    error('Couldn''t run yarpdatadumper!');
+                else
+                    disp(['Opened port ' port.to '.']);
                 end
                 port.pid = str2double(pid); % convert and store PID (removes trail spaces)
                 % double check that PID is attached to a yarpdatadumper process
@@ -213,7 +215,6 @@ classdef SensorDataYarpI < handle
                 end
                 obj.openports(key{:}) = port;
             end
-            disp('open ports');
         end
         
         function closePorts(obj)
@@ -222,12 +223,12 @@ classdef SensorDataYarpI < handle
                 % get yarpdatadumper process PID and close port
                 port = obj.openports(key{:});
                 if system(['kill ' num2str(port.pid)])
-                    error(['couldn''t close port ' port.to '!']);
+                    error(['Couldn''t stop yarpdatadumper!' num2str(port.pid)]);
                 end
+                disp(['Closed port ' port.to '.']);
             end
             % empty list of open ports
             obj.openports = {};            
-            disp('close ports')
         end
         
         function connPorts(obj,portKeys)
@@ -243,14 +244,15 @@ classdef SensorDataYarpI < handle
                 port = obj.openports(key{:});
                 if ~port.conn   % if port is not connected
                     % 'yarp connect <output port> <input port>
-                    if system(['yarp connect ' port.from ' ' port.to])
+                    if ~yarp.Network.connect(port.from,port.to)
                         error(['couldn''t connect port ' port.to '!']);
                     end
+                    disp(['Added connection from port ' port.from ' to port ' port.to '.']);
                     % update 'conn' flag
                     port.conn = true;
+                    obj.openports(key{:}) = port;
                 end
             end
-            disp('connect ports');
         end
         
         function discPorts(obj,portKeys)
@@ -263,14 +265,15 @@ classdef SensorDataYarpI < handle
                 port = obj.openports(key{:});
                 % 'yarp disconnect <output port> <input port>
                 if port.conn      % if port is connected
-                    if system(['yarp disconnect ' port.from ' ' port.to])
+                    if ~yarp.Network.disconnect(port.from,port.to)
                         error(['couldn''t disconnect port ' port.to '!']);
                     end
+                    disp(['Removed connection from port ' port.from ' to port ' port.to '.']);
                     % update 'conn' flag
                     port.conn = false;
+                    obj.openports(key{:}) = port;
                 end
             end
-            disp('disconnect ports');
         end
     end
     

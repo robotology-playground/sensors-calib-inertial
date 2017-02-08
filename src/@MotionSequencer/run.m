@@ -70,8 +70,8 @@ acquireSetList = sequence.meas.acquire;
 [sensors,partsToStop,partsToStart] = cellfun(...
     @(sensor,partSet,acquireSet) deal(...
     sensor,...                                 % 2-sensor (modality)
-    partSet(~acquireSet(posIdx)),...           % 3-stop acquiring data from sensors on those parts
-    partSet(acquireSet(posIdx))),...           % 4-start  acquiring data from sensors on those parts
+    partSet(~acquireSet(posIdx,:)),...           % 3-stop acquiring data from sensors on those parts
+    partSet(acquireSet(posIdx,:))),...           % 4-start  acquiring data from sensors on those parts
     sensorList,partSetList,acquireSetList,...  % 1-for each sensor...
     'UniformOutput',false);                    % 5-don't concatenate lists from iterations
 end
