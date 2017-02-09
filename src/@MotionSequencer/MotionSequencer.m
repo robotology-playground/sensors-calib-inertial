@@ -5,11 +5,6 @@ classdef MotionSequencer < handle
     %   The class methods produce inputs to the remote control board
     %   remapper moveToPos method.
     
-    properties(Constant)
-        % Static property accessible from any object of the class
-        labelKeys2ActSensPart = containers.Map('KeyType','char','ValueType','any');
-    end
-    
     properties(SetAccess = protected, GetAccess = public)
         calibApp;
         robotName;
@@ -17,10 +12,9 @@ classdef MotionSequencer < handle
         logCmd;
         dummyCmd;
         ctrlBoardRemap;
-        partList = {};
     end
     
-    methods
+    methods(Access = public)
         function obj = MotionSequencer(calibApp,robotName,sequences,logCmd)
             % Init class parameters
             obj.calibApp = calibApp;
@@ -40,13 +34,11 @@ classdef MotionSequencer < handle
             obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotName,calibApp);
         end
         
-        runSeq = seqMap2runner(obj,seqParamsMap)
-        
         run(obj)
     end
     
-    methods(Static = true, Access = public)
-        seqMap = seqParams2map(calibedPart,calibedSensors,seqParams)
+    methods(Access = protected)
+        runSeq = seqMap2runner(obj,seqParamsMap);
     end
     
     methods(Static = true, Access = protected)

@@ -11,7 +11,8 @@ function runSeq = seqMap2runner( obj,seqParamsMap )
 for cellKey = seqParamsMap.keys
     key = cellKey{:};
     % expand key into labels
-    keyLabels = obj.labelKeys2ActSensPart(key);
+    dict = SequenceParams.labelKeys2ActSensPart;
+    keyLabels = dict(key);
     % set the resulting field of the result array to the value seqParamsMap(key)
     runSeq.(keyLabels{1}).(keyLabels{2}).(keyLabels{3}) = seqParamsMap(key).val;
 end

@@ -39,8 +39,8 @@ values = cellfun(...
 % 'labels' is now a list of triples {<action><sensor><part>}, each pair being
 % a unique identifier of a sub-sequence (1 column of 'seqParams')
 keys = cellfun(@(aList) [aList{:}],labels,'UniformOutput', false);
-% Update labels dictionary 'MotionSequencer.labelKeys2ActSensPart'.
-dict = MotionSequencer.labelKeys2ActSensPart; % invoque the static variable
+% Update labels dictionary 'SequenceParams.labelKeys2ActSensPart'.
+dict = SequenceParams.labelKeys2ActSensPart; % invoque the static variable
 for iter = 1:numel(keys)
     dict(keys{iter}) = labels{iter};
 end

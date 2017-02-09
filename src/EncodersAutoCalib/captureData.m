@@ -127,7 +127,6 @@ selector.seqParams = {...
     left_arm_seqParams,right_arm_seqParams,...
     left_leg_seqParams,right_leg_seqParams,...
     torso_seqParams,head_seqParams};
-selector.seqParamsMap = cell(size(selector.seqParams));
 
             
 %% Build the Map sequences from input parameters
@@ -137,93 +136,17 @@ selector.seqParamsMap = cell(size(selector.seqParams));
 %  - build the calibrating sequences 'seqParamsMap'
 %  - merge the calibrating sequences 'seqParamsMapMerged'
 
-% Check that requested calibrated parts are handled
-if sum(~ismember(calibedParts,selector.calibedParts))>0
-    error('...the part list is empty or at least one part in the list is not handled!');
-end
-
 % ==== Build the homing sequences 'seqHomeParamsMap' and the end sequence:
 
 % First, init MotionSequencer static data, clean YARP ports
-clear MotionSequencer;
+clear SequenceParams;
 SensorDataYarpI.clean();
 
-% Build homing sequences
-seqHomeParamsMap = cellfun(...
-    @(seqParams) MotionSequencer.seqParams2map({},{},seqParams),...
-    seqHomeParams,...
-    'UniformOutput',false);
+% Init sequence parameters from data acquisition input configuration
+sequenceParams = SequenceParams(calibedParts,selector,seqHomeParams,seqEndParams);
 
-seqEndParamsMap = MotionSequencer.seqParams2map({},{},seqEndParams);
-
-% ==== Use selector for filtering sequence parameters of requested parts:
-% Filter selector tables keeping only parts requested for calibration
-filter = ismember(selector.calibedParts,calibedParts);
-filteredSelector = structfun(@(list) list(filter),selector,'UniformOutput',false);
-
-% From this point on, the list of parts to be calibrated is irrelevant. We
-% will index parameters by pos/part,vel/part and sensor/part keys, actually
-% required for feeding the control board driver and opening the right yarp
-% ports for dumping the sensor data (joints, accelerometers, gyros,
-% etc...).
-
-% ==== build the calibrating sequences 'seqParamsMap':
-% Go through seqParams structures in the selector and convert each structure
-% into a map (filteredSelector.seqParamsMap)
-filteredSelector.seqParamsMap = cellfun(...
-    @(calibedPart,calibedSensors,seqParams) ...
-    MotionSequencer.seqParams2map(calibedPart,calibedSensors,seqParams),...
-    filteredSelector.calibedParts,...
-    filteredSelector.calibedSensors,...
-    filteredSelector.seqParams,...
-    'UniformOutput',false);
-
-% ==== Merge all maps into macro maps (1 macro map per sequence):
-% - first, init seqParamsMapMerged (empty macro maps)
-seqParamsMapMerged(1,1:max(cell2mat(filteredSelector.setIdx)))={containers.Map()};
-% - merge sequence with next map in the list
-for idx = 1:numel(filteredSelector.seqParamsMap)
-    % select both current sequence and next map to be merged
-    sequence = seqParamsMapMerged{filteredSelector.setIdx{idx}};
-    seqParamsMap = filteredSelector.seqParamsMap{idx};
-    
-    % merge in both orders:
-    mergedSeqA = [sequence;seqParamsMap]; % 'seqParamsMap' elements overwrites common ones in 'sequence'
-    mergedSeqB = [seqParamsMap;sequence]; % 'sequence' elements overwrites common ones in 'seqParamsMap'
-    
-    % list elements holding 'meas' label (potencially conflicting)
-    ctrlOrMeasLabels = cellfun(@(aStruct) aStruct.labels{1},mergedSeqA.values,'UniformOutput',false);
-    keys = mergedSeqA.keys;
-    measElemsKeys = keys(ismember(ctrlOrMeasLabels,'meas'));
-    
-    % fine merge those conflicting elements
-    orLogicLists = @(a,b) num2cell(cell2mat(a) | cell2mat(b),2);
-    mergedValue = @(a,b) struct('labels',{a.labels},'val',{orLogicLists(a.val,b.val)});
-    measElemsValues = cellfun(...
-        @(key) mergedValue(mergedSeqA(key),mergedSeqB(key)),...
-        measElemsKeys,...
-        'UniformOutput',false);
-    
-    % update sequence
-    seqParamsMapMerged{filteredSelector.setIdx{idx}} = ...
-        [mergedSeqA;containers.Map(measElemsKeys,measElemsValues)];
-end
-
-
-%% Fuse homing and calibrating Map sequences
-%
-%  (each homing sequence matches a calibrating sequence)
-
-% Concatenate pairs of homing/calibrating sequences, dropping empty ones
-remEmpty=@(aListOf2)...
-    aListOf2([(~isempty(aListOf2{1}) && ~isempty(aListOf2{2})),~isempty(aListOf2{2})]);
-
-sequences = cellfun(...
-    @(seqParamsMap1,seqParamsMap2) remEmpty({seqParamsMap1,seqParamsMap2}),...
-    seqHomeParamsMap(1:numel(seqParamsMapMerged)),seqParamsMapMerged,...
-    'UniformOutput',false);
-% remove encapsulation and add final Goto-end position
-sequences = [sequences{:},{seqEndParamsMap}];
+% Build sequences for the motion runner
+sequences = sequenceParams.buildMapSequences();
 
 
 %% Training data acquisition
