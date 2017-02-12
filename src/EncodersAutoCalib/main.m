@@ -6,7 +6,7 @@ clc
 
 %% Main interface parameters ==============================================
 
-run mainInit;
+run jointEncodersCalibDevConfig;
 
 %% set joint/sensor init parameters
 %

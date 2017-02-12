@@ -34,7 +34,7 @@ classdef MotionSequencer < handle
             obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotName,calibApp);
         end
         
-        run(obj)
+        acqSensorDataAccessor = run(obj);
     end
     
     methods(Access = protected)

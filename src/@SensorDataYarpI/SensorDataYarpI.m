@@ -17,13 +17,16 @@ classdef SensorDataYarpI < handle
         iteratorUpdated = false;        % true if a first log has been open
         sensorType2portNameGetter = {}; % funcs mapping sensor type to port name
         openports = {};      % current open ports with info to,from,connected
+        uninitYarpAtDelete = false;
     end
     
     methods(Access = public)
         function obj = SensorDataYarpI(robotName,dataFolderPath)
-            % Create YARP Network device, to initialize YARP classes for communication
+            % Create YARP Network device, for initializing YARP classes for
+            % communication, if not yet initialized
             if ~yarp.Network.initialized
                 yarp.Network.init();
+                obj.uninitYarpAtDelete = true;
             end
             
             % Save parameters, robot name and data file path
@@ -39,9 +42,12 @@ classdef SensorDataYarpI < handle
         function delete(obj)
             % disconnect and close open ports
             obj.closeLog();
+            if obj.uninitYarpAtDelete
+                yarp.Network.fini();
+            end
         end
         
-        function newLog(obj,dataLogInfo,sensorList,partsList)
+        function seqDataFolderPath = newLog(obj,dataLogInfo,sensorList,partsList)
             % close any open ports and log
             obj.closeLog();
             
@@ -68,6 +74,9 @@ classdef SensorDataYarpI < handle
             
             % open ports
             obj.openPorts();
+            
+            % return log folder
+            seqDataFolderPath = obj.seqDataFolderPath;
         end
         
         function closeLog(obj)

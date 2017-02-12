@@ -1,4 +1,4 @@
-function run(obj)
+function acqSensorDataAccessor = run(obj)
 
 % process each sequence
 for seqIdx = 1:numel(obj.sequences)
@@ -18,7 +18,7 @@ for seqIdx = 1:numel(obj.sequences)
         'calibApp',obj.calibApp,'calibedSensorList',{sequence.calib.sensor},...
         'calibedPartsList',{sequence.calib.part});
     [sensors,parts] = getSensorsParts4fullSeq(sequence);
-    sequence.logCmd.new(logInfo,sensors,parts);
+    obj.sequences{seqIdx}.seqDataFolderPath = sequence.logCmd.new(logInfo,sensors,parts);
     
     for posIdx = 1:size(sequence.ctrl.pos,1)
         % get next position, velocity and acquire flag from the
@@ -45,6 +45,9 @@ for seqIdx = 1:numel(obj.sequences)
     % close ctrl board remapper driver
     obj.ctrlBoardRemap.close();
 end
+
+% Return sensor stored data information for the calibrators
+acqSensorDataAccessor = AcqSensorDataAccessor(obj.sequences);
 
 end
 

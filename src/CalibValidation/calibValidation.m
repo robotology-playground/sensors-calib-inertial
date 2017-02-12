@@ -8,7 +8,7 @@ clc
 
 %% Main interface parameters ==============================================
 
-run calibValidationInit;
+run sensorDiagnosisDevConfig;
 
 %% set init parameters 'ModelParams'
 %

@@ -15,6 +15,7 @@ classdef SequenceParams < handle
         filteredSelector = struct();
         seqHomeParams = {};
         seqEndParams = struct();
+        sequences = {};
     end
     
     methods(Access = public)
@@ -43,12 +44,17 @@ classdef SequenceParams < handle
             obj.seqEndParams = seqEndParams;
         end
         
-        % Build sequences in the MotionSequencer format
-        sequences = buildMapSequences(obj)
+        % Builds sequences in the MotionSequencer format
+        sequences = buildMapSequences(obj);
+    end
+    
+    methods(Access = protected)
+        % Merges all maps into macro maps (1 macro map per sequence)
+        seqParamsMapMerged = mergeMapSequences(obj);
     end
     
     methods(Static = true, Access = protected)
-        seqMap = seqParams2map(calibedPart,calibedSensors,seqParams)
+        seqMap = seqParams2map(calibedPart,calibedSensors,seqParams);
     end
     
 end

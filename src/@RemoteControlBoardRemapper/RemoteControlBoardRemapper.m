@@ -20,6 +20,7 @@ classdef RemoteControlBoardRemapper < handle
         axesNames; axesList; remoteControlBoards; remoteControlBoardsList;
         options;
         driver;
+        uninitYarpAtDelete = false;
     end
     
     methods
@@ -28,6 +29,7 @@ classdef RemoteControlBoardRemapper < handle
             % Create YARP Network device, to initialize YARP classes for communication
             if ~yarp.Network.initialized
                 yarp.Network.init();
+                obj.uninitYarpAtDelete = true;
             end
             
             % Save robot name
@@ -53,6 +55,9 @@ classdef RemoteControlBoardRemapper < handle
         %% Destructor
         function delete(obj)
             obj.close();
+            if obj.uninitYarpAtDelete
+                yarp.Network.fini();
+            end
         end
         
         %% Open ports
