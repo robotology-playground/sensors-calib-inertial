@@ -1,5 +1,6 @@
 *~
 /build*/
+/dumper/
 *kdev*
 *.orig
 tags
@@ -27,3 +28,5 @@ extern/bnt_time_varying/src/utils/sgolayfilt.m
 src/EncodersAutoCalib/app/scripts/
 src/models/
 src/utils/plotSensorMeasToEstAngleImprovmtBarGraph.m
+matlab-workspace
+octave-workspace
