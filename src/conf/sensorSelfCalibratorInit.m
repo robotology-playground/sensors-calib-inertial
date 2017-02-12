@@ -11,7 +11,7 @@ modelPath = '../models/iCubGenova05/iCubFull.urdf';
 calibrationType = 'standard';
 
 %% standard calibration tasks checklist
-runDagnosis = true;
+runDiagnosis = false;
 calibrateAccelerometers = false;
 calibrateIMU = false;
 calibrateJointEncoders = true;

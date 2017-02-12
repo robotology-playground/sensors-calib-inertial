@@ -45,7 +45,7 @@ logCmd.new   = @logger.newLog;
 logCmd.close = @logger.closeLog;
 
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer('EncodersCalibrator',robotName,sequences,logCmd);
+sequencer = MotionSequencer(motionSequenceProfile,robotName,sequences,logCmd);
 
 % run sequencer until all data is acquired
 acqSensorDataAccessor = sequencer.run();

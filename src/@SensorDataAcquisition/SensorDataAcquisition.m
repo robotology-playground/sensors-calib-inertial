@@ -3,7 +3,8 @@ classdef SensorDataAcquisition < handle
     %   Detailed explanation goes here
     
     methods(Static = true, Access = public)
-        acqSensorDataAccessor = acquireSensorData();
+        acqSensorDataAccessor = ...
+            acquireSensorData(motionSequenceProfile,robotName,dataPath,calibedParts);
     end
     
     methods(Static = true, Access = protected)

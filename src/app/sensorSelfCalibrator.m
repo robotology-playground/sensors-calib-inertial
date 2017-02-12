@@ -45,7 +45,8 @@ end
 if calibrateJointEncoders
     % Acquire accelerometers measurements while moving the joints following
     % a profile tagged 'jointsCalibrator'
-    acqSensorDataAccessor = acquireSensorData('jointsCalibrator',robotName,dataPath,calibedParts);
+    acqSensorDataAccessor = SensorDataAcquisition.acquireSensorData(...
+        'jointsCalibrator',robotName,dataPath,calibedParts);
     
     % Run diagnosis on sensor data
     
