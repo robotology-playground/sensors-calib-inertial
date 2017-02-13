@@ -1,17 +1,14 @@
-%% clear all variables and close all previous figures
-clear
-close all
-clc
-
+function newCalibrationMap = calibrateSensors(...
+    modelPath,calibrationMap,...
+    calibedParts,calibedJointsIdxes,dataPath)
 
 %% Main interface parameters ==============================================
 
-run jointEncodersCalibDevConfig;
+run jointEncodersCalibratorDevConfig;
 
-%% set joint/sensor init parameters
-%
-run jointsNsensorsSelections;
-ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
+[optimFunction,options] = JointEncodersCalibrator.getOptimConfig();
+
+ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(calibedParts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
 if strcmp(runMode,'target')
@@ -43,16 +40,6 @@ eval(['costFunction = @myCalibContext.' costFunctionSelect]);
 %% Parsing configuration
 %
 
-% Load existing inertial sensors calibration
-if exist(calibrationMapFile,'file') == 2
-    load(calibrationMapFile,'calibrationMap');
-end
-
-if ~exist('calibrationMap','var')
-    warning('calibrationMap not found');
-    calibrationMap = containers.Map('KeyType','char','ValueType','any');
-end
-
 switch runMode
     case 'simu'
         load 'dataSimu.mat';
@@ -60,7 +47,7 @@ switch runMode
     case 'target'
         % build sensor data parser
         plot = false; loadJointPos = true;
-        data = SensorsData(dataPath,dataSetNb,subSamplingSize,...
+        data = SensorsData(dataPath,'',subSamplingSize,...
             timeStart,timeStop,plot);
         data.buildInputDataSet(loadJointPos,ModelParams);
         
@@ -236,10 +223,8 @@ for iter = 1:length(ModelParams.parts)
     calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
 end
 
-% Save updated calibration
-if saveCalib
-    save('./data/calibrationMap.mat','calibrationMap');
-end
+% Return calibration (actually points to the same object. TO BE IMPROVED)
+newCalibrationMap = calibrationMap;
 
 % log data
 save('./data/minimResult.mat', ...
@@ -248,4 +233,4 @@ save('./data/minimResult.mat', ...
     'data','offsetsConfigGrid', ...
     'optimalDq','exitflag','output','averageOptimalDq','std_optDq_offsetsGrid','std_optDq_subsets');
 
-
+end

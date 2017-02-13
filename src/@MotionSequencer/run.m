@@ -1,5 +1,8 @@
 function acqSensorDataAccessor = run(obj)
 
+% init logged sequences
+loggedSeqs = {};
+
 % process each sequence
 for seqIdx = 1:numel(obj.sequences)
     % get next sequence to run
@@ -18,7 +21,10 @@ for seqIdx = 1:numel(obj.sequences)
         'calibApp',obj.calibApp,'calibedSensorList',{sequence.calib.sensor},...
         'calibedPartsList',{sequence.calib.part});
     [sensors,parts] = getSensorsParts4fullSeq(sequence);
-    obj.sequences{seqIdx}.seqDataFolderPath = sequence.logCmd.new(logInfo,sensors,parts);
+    sequence.seqDataFolderPath = sequence.logCmd.new(logInfo,sensors,parts);
+    if ~isempty(sequence.seqDataFolderPath)
+        loggedSeqs = [loggedSeqs sequence];
+    end
     
     for posIdx = 1:size(sequence.ctrl.pos,1)
         % get next position, velocity and acquire flag from the
@@ -47,7 +53,7 @@ for seqIdx = 1:numel(obj.sequences)
 end
 
 % Return sensor stored data information for the calibrators
-acqSensorDataAccessor = AcqSensorDataAccessor(obj.sequences);
+acqSensorDataAccessor = AcqSensorDataAccessor(loggedSeqs);
 
 end
 

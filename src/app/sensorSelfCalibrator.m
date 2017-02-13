@@ -18,14 +18,28 @@ clc
 yarp.Network.init();
 
 % load application main interface parameters
-run sensorSelfCalibratorInit;
+init = loadInit('sensorSelfCalibratorInit');
+% Convert 'calibedJointsIdxes' to matlab indexes
+init.calibedJointsIdxes = structfun(...
+    @(field) field+1,init.calibedJointsIdxes,'UniformOutput',false);
+
+% Load calibration parameters
+% Load existing sensors calibration (joint encoders, inertial & FT sensors, etc)
+if exist(init.calibrationMapFile,'file') == 2
+    load(init.calibrationMapFile,'calibrationMap');
+end
+
+if ~exist('calibrationMap','var')
+    warning('calibrationMap not found');
+    calibrationMap = containers.Map('KeyType','char','ValueType','any');
+end
 
 % All below procedures are optional and checked/unchecked in the main
 % interface parameters
 
 %% 1 - Run a diagnosis
 
-if runDiagnosis
+if init.runDiagnosis
     % Acquire sensors measurements data while moving randomly the joints at
     % different accelerations and speeds. data batch tag = 'Random'.
     
@@ -34,34 +48,49 @@ if runDiagnosis
 end
 
 %% 2 - Calibrate the accelerometers gains/offsets
-if calibrateAccelerometers
+if init.calibrateAccelerometers
 end
 
 %% 3 - Calibrate the IMU accelerometers
-if calibrateIMU
+if init.calibrateIMU
 end
 
 %% 4 - Calibrate the encoders joint offsets
-if calibrateJointEncoders
+if init.calibrateJointEncoders
     % Acquire accelerometers measurements while moving the joints following
     % a profile tagged 'jointsCalibrator'
     acqSensorDataAccessor = SensorDataAcquisition.acquireSensorData(...
-        'jointsCalibrator',robotName,dataPath,calibedParts);
+        'jointEncodersCalibrator',init.robotName,init.dataPath,init.calibedParts);
     
-    % Run diagnosis on sensor data
+    % Get data folder path list for joints calibration on required parts.
+    % If the prior sensor data acquisition was done in N motion sequences
+    % (it is the case for calibrating the torso which needs a dedicated
+    % sequence), we get a folder path per sequence, so N paths.
+    [dataFolderPathList,calibedPartsList] = acqSensorDataAccessor.getFolderPaths('joint');
     
-    % calibrate joint encoders
-    
+    %% calibrate joint encoders. If the torso has to be calibrated, it
+    % should be before the arms since their orientation depends on the
+    % torso. In the below loop processing, 'calibrationMap' (inpu/output)
+    % is updated at each call to 'calibrateSensors'.
+    cellfun(@(folderPath,calibedParts) ...
+        JointEncodersCalibrator.calibrateSensors(...
+        init.modelPath,calibrationMap,...
+        calibedParts,init.calibedJointsIdxes,folderPath),...
+        dataFolderPathList,calibedPartsList);
 end
 
 %% 5 - Calibrate the FT sensors gains/offsets
-if calibrateFTsensors
+if init.calibrateFTsensors
 end
 
 %% 5 - Calibrate the gyroscopes
-if calibrateGyroscopes
+if init.calibrateGyroscopes
 end
 
+%% Save calibration
+if init.saveCalibration
+    save('calibrationMap.mat','calibrationMap');
+end
 
 %% Uninitialize yarp
 yarp.Network.fini();

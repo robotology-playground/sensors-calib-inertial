@@ -59,7 +59,7 @@ end
 
 % Load data from dump files
 for i = 1 : length(obj.parts)
-    file = [obj.path obj.parts{i} '/' obj.type{i} obj.dataSetNb '/data.log'];
+    file = [obj.path '/' obj.parts{i} '/' obj.type{i} obj.dataSetNb '/data.log'];
     % this buffer Id avoids reading the same file twice
     bufferId = ['buffer_' obj.parts{i} '_' obj.type{i}(1:end-2)];
     
