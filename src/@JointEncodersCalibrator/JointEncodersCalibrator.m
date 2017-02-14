@@ -1,6 +1,9 @@
 classdef JointEncodersCalibrator
-    %JointEncodersCalibrator Summary of this class goes here
-    %   Detailed explanation goes here
+    %JointEncodersCalibrator Holds all methods for joint encoders calibration
+    %   'calibrateSensors()' is the main procedure for calibrating the
+    %   joint encoders. 'getOptimConfig()' configures the lsqnonlin non
+    %   linear solver for the least squares optimization run by the main
+    %   procedure.
     
     methods(Static = true, Access = public)
         newCalibrationMap = calibrateSensors(...

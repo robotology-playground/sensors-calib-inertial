@@ -66,11 +66,12 @@ if init.calibrateJointEncoders
     % If the prior sensor data acquisition was done in N motion sequences
     % (it is the case for calibrating the torso which needs a dedicated
     % sequence), we get a folder path per sequence, so N paths.
-    [dataFolderPathList,calibedPartsList] = acqSensorDataAccessor.getFolderPaths('joint');
+    [dataFolderPathList,calibedPartsList] = ...
+        acqSensorDataAccessor.getFolderPaths4calibedSensor('joint');
     
     %% calibrate joint encoders. If the torso has to be calibrated, it
     % should be before the arms since their orientation depends on the
-    % torso. In the below loop processing, 'calibrationMap' (inpu/output)
+    % torso. In the below loop processing, 'calibrationMap' (input/output)
     % is updated at each call to 'calibrateSensors'.
     cellfun(@(folderPath,calibedParts) ...
         JointEncodersCalibrator.calibrateSensors(...

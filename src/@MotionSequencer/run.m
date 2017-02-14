@@ -1,6 +1,7 @@
 function acqSensorDataAccessor = run(obj)
 
-% init logged sequences
+% init logged sequences. These information will be needed by the calibrators for 
+% retrieving the acquired data they require.
 loggedSeqs = {};
 
 % process each sequence
@@ -21,7 +22,12 @@ for seqIdx = 1:numel(obj.sequences)
         'calibApp',obj.calibApp,'calibedSensorList',{sequence.calib.sensor},...
         'calibedPartsList',{sequence.calib.part});
     [sensors,parts] = getSensorsParts4fullSeq(sequence);
+    % As the logger triggers a new data acquisition, it returns the
+    % respective created folder. The folder path, along with the 'sequence'
+    % information will be returned to the caller function for further use
+    % by the calibrators.
     sequence.seqDataFolderPath = sequence.logCmd.new(logInfo,sensors,parts);
+    % Skip this sequence if we are not actuall acquiring data.
     if ~isempty(sequence.seqDataFolderPath)
         loggedSeqs = [loggedSeqs sequence];
     end
