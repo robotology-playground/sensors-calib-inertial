@@ -8,7 +8,8 @@ classdef JointEncodersCalibrator
     methods(Static = true, Access = public)
         newCalibrationMap = calibrateSensors(...
             modelPath,calibrationMap,...
-            calibedParts,calibedJointsIdxes,dataPath);
+            calibedParts,calibedJointsIdxes,dataPath,...
+            measedSensorList,measedPartsList);
     end
     
     methods(Static = true, Access = protected)

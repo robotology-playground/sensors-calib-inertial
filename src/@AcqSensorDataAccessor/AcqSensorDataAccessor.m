@@ -20,14 +20,20 @@ classdef AcqSensorDataAccessor < handle
         % 'getFolderPaths()' returns the list of data set folders and respective
         % calibrated parts.
         function [dataFolderPathList,calibedPartsList] = getFolderPaths4calibedSensor(obj,sensor)
-            for seqIdx = 1:numel(obj.sequences)
-                % select next sequence
-                sequence = obj.sequences{seqIdx};
-                % get parts holding the calibrated sensors of modality 'sensor'
-                calibedPartsList{seqIdx} = sequence.calib.part{ismember(sequence.calib.sensor,sensor)};
-                % get the respective data folder
-                dataFolderPathList{seqIdx} = sequence.seqDataFolderPath;
-            end
+            [dataFolderPathList,calibedPartsList] = cellfun(...
+                @(sequence) deal(...           % 1-for each sequence...
+                sequence.seqDataFolderPath,... % 2-get the respective data folder
+                ... % 3-get parts holding the calibrated sensors of modality 'sensor'
+                sequence.calib.part{ismember(sequence.calib.sensor,sensor)}),...
+                obj.sequences,'UniformOutput',false);
+        end
+        
+        function [measedSensorLists,measedPartsLists] = getMeasedSensorsParts(obj)
+            [measedSensorLists,measedPartsLists] = cellfun(...
+                @(sequence) deal(...        % 1-for each sequence...
+                sequence.meas.sensor,...    % 2-get the list of sensors
+                sequence.meas.part),...      % 3-get the list of parts for each sensor
+                obj.sequences,'UniformOutput',false);
         end
     end
     

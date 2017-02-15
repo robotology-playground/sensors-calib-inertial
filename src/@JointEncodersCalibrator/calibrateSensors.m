@@ -1,6 +1,7 @@
 function newCalibrationMap = calibrateSensors(...
     modelPath,calibrationMap,...
-    calibedParts,calibedJointsIdxes,dataPath)
+    calibedParts,calibedJointsIdxes,dataPath,...
+    measedSensorList,measedPartsList)
 
 %% Main interface parameters ==============================================
 
@@ -8,7 +9,10 @@ run jointEncodersCalibratorDevConfig;
 
 [optimFunction,options] = JointEncodersCalibrator.getOptimConfig();
 
-ModelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(calibedParts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct);
+modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
+    measedSensorList,measedPartsList,...
+    calibedParts,calibedJointsIdxes,calibedJointsDq0,...
+    mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
 if strcmp(runMode,'target')
@@ -49,18 +53,16 @@ switch runMode
         plot = false; loadJointPos = true;
         data = SensorsData(dataPath,'',subSamplingSize,...
             timeStart,timeStop,plot);
-        data.buildInputDataSet(loadJointPos,ModelParams);
+        data.buildInputDataSet(loadJointPos,modelParams);
         
     otherwise
         disp('Unknown run mode !!')
 end
 
-%% init joints and sensors lists. The order in ModelParams.parts sets the order 
-%  in which the joints lists for all parts are concatenated, as well as Dq0
-%  and Dq.
-for part = 1 : length(ModelParams.parts)
-    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,part,ModelParams);
-end
+%% init joints and sensors lists. The order in modelParams.jointMeasedParts sets 
+%  the order in which the joints lists for all parts are concatenated, as well as
+%  Dq0 and Dq.
+Dq0 = myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,modelParams);
 
 
 %% OPTIMIZATION
@@ -73,7 +75,6 @@ subsetVec_size = round(data.nSamples*subsetVec_size_frac);
 subsetVec_idx = round(linspace(1,data.nSamples,subsetVec_size));
 % Starting point for optimization and boundaries. The format of Dq is
 % defined by Dq0. Dq0 
-Dq0 = cell2mat(ModelParams.jointsToCalibrate.calibedJointsDq0)';
 lowerBoundary = Dq0 - startPoint2Boundary;
 upperBoundary = Dq0 + startPoint2Boundary;
 
@@ -135,7 +136,7 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
         myCalibContext.loadJointNsensorsDataSubset(subsetVec_idx);
         
         % cost before optimisation
-        initialCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,@lsqnonlin,true,'');
+        initialCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,@lsqnonlin,false,'');
         fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
         (initialCost'*initialCost)/(data.nrOfMTBAccs*length(subsetVec_idx))
         
@@ -170,7 +171,7 @@ for offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
         optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx) + myCalibContext.DqiEnc;
         
         % cost after optimisation
-        optimCost = costFunction(optimalDq(:,i,offsetsConfigIdx),data,subsetVec_idx,@lsqnonlin,true,'Optim');
+        optimCost = costFunction(optimalDq(:,i,offsetsConfigIdx),data,subsetVec_idx,@lsqnonlin,false,'Optim');
         fprintf('Mean cost after optimization (in (m.s^{-2})^2):\n');
         (optimCost'*optimCost)/(data.nrOfMTBAccs*length(subsetVec_idx))
     end
@@ -204,22 +205,23 @@ std_optDq_subsets
 %
 
 % Split computed offsets matrix into part wise cells
-calib = mat2cell(averageOptimalDq,lengths(ModelParams.jointsToCalibrate.calibedJointsDq0{:}));
+calib = mat2cell(averageOptimalDq,lengths(modelParams.jointsToCalibrate.calibedJointsDq0{:}));
 
 % Merge new calibrated joint offsets with old 'calibrationMap'.
 % The result matrix optimalDq has the same format as Dq and Dq0.
-% Dq0 results from the concatenation of the ModelParams.jointsToCalibrate.calibedJointsDq0
+% Dq0 results from the concatenation of the modelParams.jointsToCalibrate.calibedJointsDq0
 % matrices.
-for iter = 1:length(ModelParams.parts)
-    mapKey = strcat('jointsOffsets_',ModelParams.parts{iter}); % set map key
+[~,calibedPartsIdxes] = ismember(modelParams.calibedParts,modelParams.jointMeasedParts);
+for iter = calibedPartsIdxes
+    mapKey = strcat('jointsOffsets_',modelParams.jointMeasedParts{iter}); % set map key
     % get current value or set a default one (zeros)
     if isKey(calibrationMap,mapKey)
         mapValue = calibrationMap(mapKey); % get current value
     else
-        mapValue = zeros(ModelParams.jointsToCalibrate.jointsDofs{iter},1); % init default value
+        mapValue = zeros(modelParams.jointsToCalibrate.jointsDofs{iter},1); % init default value
     end
-    mapValue(ModelParams.jointsToCalibrate.calibedJointsIdxes{iter}) = ...
-        mapValue(ModelParams.jointsToCalibrate.calibedJointsIdxes{iter}) + calib{iter}; % add calibrated values
+    mapValue(modelParams.jointsToCalibrate.calibedJointsIdxes{iter}) = ...
+        mapValue(modelParams.jointsToCalibrate.calibedJointsIdxes{iter}) + calib{iter}; % add calibrated values
     calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
 end
 
@@ -229,7 +231,7 @@ newCalibrationMap = calibrationMap;
 % log data
 save('./data/minimResult.mat', ...
     'costFunctionSelect','shuffle','number_of_subset_init',...
-    'ModelParams', ...
+    'modelParams', ...
     'data','offsetsConfigGrid', ...
     'optimalDq','exitflag','output','averageOptimalDq','std_optDq_offsetsGrid','std_optDq_subsets');
 

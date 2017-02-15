@@ -34,6 +34,7 @@ classdef CalibrationContextBuilder < handle
         sub_q0i
         sub_dqi
         sub_d2qi
+        Dq0;
         DqiEnc  = [];             %% virtual joint offsets from the encoders.
         %% specific to APPROACH 2: measurements projected on each link
         traversal_Lk              %% full traversal for computing the link positions
@@ -139,54 +140,101 @@ classdef CalibrationContextBuilder < handle
             
         end
         
-        function buildSensorsNjointsIDynTreeListsForActivePart(obj,data,part,ModelParams)
+        function Dq0 = buildSensorsNjointsIDynTreeListsForActivePart(obj,data,modelParams)
             % load segments list for current part (ex: segments of left leg part
             % are: 'l_upper_leg', 'l_lower_leg', 'l_foot'.
-            obj.segments = [obj.segments ModelParams.jointsToCalibrate.partSegments{part}];
+            obj.segments = modelParams.jointsToCalibrate.partSegments;
             
             %% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
             % Go through 'data.frames', 'data.parts' and 'data.labels' and build :
-            % - the joint list to calibrate mapped into the iDynTree indices
+            % - the joint list (controlled) mapped into the iDynTree indices
             % - the sensor list for the current part (part: right_leg, left_arm,...).
             % This is a list of indexes, that will be later used for retrieving the
             % sensor predicted measurements and the real measure from the captured data.
-            for frame = 1:length(data.frames)
-                if strcmp(data.parts(frame),ModelParams.parts(part))
-                    if strcmp(data.type(frame),'inertialMTB') || strcmp(data.type(frame),'inertialMTI')
-                        obj.sensorsIdxListModel = [obj.sensorsIdxListModel ...
-                            obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,...
-                            char(data.frames{frame}))];
-                        obj.sensorsIdxListFile = [obj.sensorsIdxListFile frame];
-                    elseif strcmp(data.type{frame}, 'stateExt:o')
-                        obj.jointsIdxFile = frame; % There is only 1 vector q for each part (limb)
-                    else
-                        error('costFunctionSigma: wrong type ',...
-                            'Error.\nWrong data type of sensor data. Valid types are "inertialMTB" and "stateExt:o" !!');
-                    end
-                end
-            end
             
-            % mapping of 'ModelParams.jointsToCalibrate.ctrledJoints' into the iDynTree joint list.
-            ctrledJoints = [];
-            for joint = 1:length(ModelParams.jointsToCalibrate.ctrledJoints{part})
-                % get controlled and calibrated joints indexes.
-                % +1 is for matlab indexing
-                ctrledJoints(joint) = 1 + obj.estimator.model.getJointIndex(ModelParams.jointsToCalibrate.ctrledJoints{part}{joint});
-            end
-            %subset of calibrated joints
-            calibedJoints = ctrledJoints(ModelParams.jointsToCalibrate.calibedJointsIdxes{part});
-            % concatenate with previous lists from other parts
-            obj.ctrledJointsIdxFromModel = [obj.ctrledJointsIdxFromModel ctrledJoints];
-            obj.calibJointsIdxFromModel = [obj.calibJointsIdxFromModel calibedJoints];
+            %=== Mapping the inertial sensors measurements to iDynTree
+            %
+            % obj.sensorsIdxListFile, obj.sensorsIdxListModel
+            
+            allDataTypeIdxes = 1:numel(data.type);
+            % Identify the inertial sensor frames in the 'data' structure
+            obj.sensorsIdxListFile = allDataTypeIdxes(ismember(data.type,{'inertialMTB','inertialMTI'}));
+            
+            % Get respective indexes from the model
+            obj.sensorsIdxListModel = cellfun(@(frame) ...
+                obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,char(frame)),...
+                data.frames(obj.sensorsIdxListFile),...
+                'UniformOutput',false);
+            obj.sensorsIdxListModel = cell2mat(obj.sensorsIdxListModel);
+            
+            %=== Mapping the joint encoders measurements to iDynTree
+            %
+            % obj.jointsIdxFile, obj.ctrledJointsIdxFromModel
+            %
+            % obj.q0i, obj.dqi, obj.d2qi
+            
+            % Identify the joint state frames in the 'data' structure
+            obj.jointsIdxFile = allDataTypeIdxes(ismember(data.type,{'stateExt:o'}));
+            
+            % Get the respective controlled parts in 'data'
+            modelParamsCtrledParts = data.parts(obj.jointsIdxFile);
+            
+            % Get respective indexes in 'modelParams'
+            modelParamsCtrledPartsIdxes = cellfun(@(key) ...
+                modelParams.jointsToCalibrate.mapIdx(key),...
+                modelParamsCtrledParts,...
+                'UniformOutput',true);
+            
+            % Get full list of controlled joints
+            modelParamsCtrledJoints = [modelParams.jointsToCalibrate.ctrledJoints{modelParamsCtrledPartsIdxes}];
+            
+            % Get respective controlled joints indexes from iDynTree
+            obj.ctrledJointsIdxFromModel = ...
+                cellfun(@(joint) ...
+                1 + obj.estimator.model.getJointIndex(joint),...
+                modelParamsCtrledJoints,...
+                'UniformOutput',true);
             
             % Select from label index the joints associated to the current processed part.
-            qsRad    = ['qsRad_' data.labels{obj.jointsIdxFile}];
-            dqsRad   = ['dqsRad_' data.labels{obj.jointsIdxFile}];
-            d2qsRad  = ['d2qsRad_' data.labels{obj.jointsIdxFile}];
+            [obj.q0i,obj.dqi,obj.d2qi] = cellfun(@(label) deal(...
+                data.parsedParams.(['qsRad_' label])',...
+                data.parsedParams.(['dqsRad_' label])',...
+                data.parsedParams.(['d2qsRad_' label])'),...
+                data.labels(obj.jointsIdxFile),...
+                'UniformOutput',false);
+            % Transpose the resulting matrices (q dimension -> lines, time dimension -> columns)
+            obj.q0i  = [obj.q0i{:}]';
+            obj.dqi  = [obj.dqi{:}]';
+            obj.d2qi = [obj.d2qi{:}]';
             
-            eval(['obj.q0i = [obj.q0i; data.parsedParams.' qsRad '];']);
-            eval(['obj.dqi = [obj.dqi; data.parsedParams.' dqsRad '];']);
-            eval(['obj.d2qi = [obj.d2qi; data.parsedParams.' d2qsRad '];']);            
+            %% === Map the calibration joint position vectors Dq and Dq0 to iDynTree
+            %
+            %      (no need to map them to the read qi,dqi,d2qi. these
+            %      vectors will be set directly by the optimization solver
+            %      and added to the iDynTree vector.
+            
+            % Get indexes of calibrated parts
+            [~,calibedPartsIdxes] = ...
+                ismember(modelParams.calibedParts,modelParams.jointMeasedParts);
+            
+            % Get full list of calibrated joints and starting point offset Dq0
+            [modelParamsCalibedJoints,modelParamsCalibedDq0] = cellfun(...
+                @(joints,calibedDq0,calibedIdxes) deal(...
+                joints(calibedIdxes),calibedDq0(calibedIdxes)),...
+                modelParams.jointsToCalibrate.ctrledJoints(calibedPartsIdxes),...
+                modelParams.jointsToCalibrate.calibedJointsDq0(calibedPartsIdxes),...
+                modelParams.jointsToCalibrate.calibedJointsIdxes(calibedPartsIdxes),...
+                'UniformOutput',false);
+            modelParamsCalibedJoints = [modelParamsCalibedJoints{:}];
+            [Dq0,obj.Dq0] = deal(cell2mat(modelParamsCalibedDq0)); % decapsulation
+            [Dq0,obj.Dq0] = deal(Dq0(:),obj.Dq0(:)); % make sure they are vertical vectors
+            
+            % Get respective calibrated joints indexes from iDynTree
+            obj.calibJointsIdxFromModel = ...
+                cellfun(@(joint) ...
+                1 + obj.estimator.model.getJointIndex(joint),...
+                modelParamsCalibedJoints,...
+                'UniformOutput',true);
         end
         
         function loadJointNsensorsDataSubset(obj,subsetVec_idx)
@@ -533,7 +581,10 @@ classdef CalibrationContextBuilder < handle
     end
     
     methods(Static)
-        ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct)
+        modelParams = jointsNsensorsDefinitions(...
+            measedSensorList,measedPartsList,...
+            calibedParts,calibedJointsIdxes,calibedJointsDq0,...
+            mtbSensorAct);
     end
 end
 
