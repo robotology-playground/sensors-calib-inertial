@@ -287,7 +287,7 @@ fprintf('Processed raw sensors\n')
 
 
 for i = 1 : length(obj.parts)
-    if strcmp(obj.type{i}, 'stateExt:o');
+    if strcmp(obj.type{i}, 'stateExt:o')
         qs    = ['qs_' obj.labels{i}];
         dqs   = ['dqs_' obj.labels{i}];
         d2qs  = ['d2qs_' obj.labels{i}];

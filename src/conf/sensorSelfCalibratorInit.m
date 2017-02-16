@@ -72,3 +72,10 @@ calibedJointsIdxes.right_leg = 0:5;
 calibedJointsIdxes.torso = 0:2;
 calibedJointsIdxes.head = 0:2;
 
+% Sensor data acquisition: ['new'|'last'|<id>]
+sensorDataAcq = 'new';
+
+% wrap parameters
+jointEncodersCalib = struct('calibedParts',calibedParts,'calibedJointsIdxes',calibedJointsIdxes,'sensorDataAcq',sensorDataAcq);
+clear calibedParts calibedJointsIdxes sensorDataAcq;
+

@@ -18,10 +18,22 @@ clc
 yarp.Network.init();
 
 % load application main interface parameters
-init = loadInit('sensorSelfCalibratorInit');
-% Convert 'calibedJointsIdxes' to matlab indexes
-init.calibedJointsIdxes = structfun(...
-    @(field) field+1,init.calibedJointsIdxes,'UniformOutput',false);
+init = Init.load('sensorSelfCalibratorInit');
+
+% Set parameters from environment
+if isempty(init.robotName)
+    init.robotName = getenv('YARP_ROBOT_NAME');
+end
+if isempty(init.modelPath)
+    % Let Yarp resource finder get the model path for 'robotName'. Trash the
+    % error/warning output and get only the result path
+    [status,path] = system('yarp resource --find model.urdf 2> /dev/null');
+    if status
+        error('robot model not found !!');
+    end
+    path = strip(path); % remove spaces from the sides of the string
+    init.modelPath = strip(path,'"'); % remove the quotation marks
+end
 
 % Load calibration parameters
 % Load existing sensors calibration (joint encoders, inertial & FT sensors, etc)
@@ -57,10 +69,25 @@ end
 
 %% 4 - Calibrate the encoders joint offsets
 if init.calibrateJointEncoders
-    % Acquire accelerometers measurements while moving the joints following
-    % a profile tagged 'jointsCalibrator'
-    acqSensorDataAccessor = SensorDataAcquisition.acquireSensorData(...
-        'jointEncodersCalibrator',init.robotName,init.dataPath,init.calibedParts);
+    % unwrap the parameters specific to joint encoders calibration
+    Init.unWrap(init.jointEncodersCalib);
+    
+    % Convert 'calibedJointsIdxes' to matlab indexes
+    calibedJointsIdxes = structfun(...
+        @(field) field+1,calibedJointsIdxes,'UniformOutput',false);
+    
+    switch sensorDataAcq
+        case 'new'
+            % Acquire accelerometers measurements while moving the joints following
+            % a profile tagged 'jointsCalibrator'
+            acqSensorDataAccessor = SensorDataAcquisition.acquireSensorData(...
+                'jointEncodersCalibrator',init.robotName,init.dataPath,calibedParts);
+            save('acqSensorDataAccessor.mat','acqSensorDataAccessor');
+            
+        case 'last'
+            load('acqSensorDataAccessor.mat','acqSensorDataAccessor');
+        otherwise
+    end
     
     % Get data folder path list for joints calibration on required parts.
     % If the prior sensor data acquisition was done in N motion sequences
@@ -80,7 +107,7 @@ if init.calibrateJointEncoders
     cellfun(@(folderPath,calibedParts,measedSensorList,measedPartsList) ...
         JointEncodersCalibrator.calibrateSensors(...
         init.modelPath,calibrationMap,...
-        calibedParts,init.calibedJointsIdxes,folderPath,...
+        calibedParts,calibedJointsIdxes,folderPath,...
         measedSensorList,measedPartsList),...
         dataFolderPathList,calibedPartsList,measedSensorLists,measedPartsLists);
 end
