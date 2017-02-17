@@ -4,6 +4,10 @@ function acqSensorDataAccessor = run(obj)
 % retrieving the acquired data they require.
 loggedSeqs = {};
 
+% Schedule the logging of a new calibration iteration (for handling data
+% logger counters)
+obj.logCmd.sched();
+
 % process each sequence
 for seqIdx = 1:numel(obj.sequences)
     % get next sequence to run
@@ -20,7 +24,7 @@ for seqIdx = 1:numel(obj.sequences)
     % 'calibedSensor' on the part 'calibedPart'.
     logInfo = struct(...
         'calibApp',obj.calibApp,'calibedSensorList',{sequence.calib.sensor},...
-        'calibedPartsList',{sequence.calib.part});
+        'calibedPartsList',{sequence.calib.part},'sequence',sequence);
     [sensors,parts] = getSensorsParts4fullSeq(sequence);
     % As the logger triggers a new data acquisition, it returns the
     % respective created folder. The folder path, along with the 'sequence'

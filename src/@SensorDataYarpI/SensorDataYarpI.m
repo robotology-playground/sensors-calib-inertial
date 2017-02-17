@@ -13,8 +13,7 @@ classdef SensorDataYarpI < handle
         robotName = '';
         dataFolderPath = '';      % where to create /log_xxxx/dumper/ folder
         seqDataFolderPath = '';
-        logInfoFileName = '';
-        iteratorUpdated = false;        % true if a first log has been open
+        dataLogInfoMap = [];
         sensorType2portNameGetter = {}; % funcs mapping sensor type to port name
         openports = {};      % current open ports with info to,from,connected
         uninitYarpAtDelete = false;
@@ -34,9 +33,8 @@ classdef SensorDataYarpI < handle
             obj.dataFolderPath = dataFolderPath;
             % build funcs mapping sensor type to port name, save func handles
             obj.buildSensType2portNgetter();
-            % log info file name (used for restore/save/print of
-            % 'dataLogInfoMap'
-            obj.logInfoFileName = [obj.dataFolderPath '/dataLogInfo'];
+            % map for storing sensor data log context information
+            obj.dataLogInfoMap = SensorLogDatabase(obj.dataFolderPath);
         end
         
         function delete(obj)
@@ -47,16 +45,15 @@ classdef SensorDataYarpI < handle
             end
         end
         
+        function scheduleNewAcquisition(obj)
+            obj.dataLogInfoMap.scheduleNewAcquisition();
+        end
+        
         function seqDataFolderPath = newLog(obj,dataLogInfo,sensorList,partsList)
             % close any open ports and log
             obj.closeLog();
             
-            % check data log info structure fields and sensor/parts lists
-            if sum(~ismember(...
-                    {'calibApp','calibedSensorList','calibedPartsList'},...
-                    fieldnames(dataLogInfo)))>0
-                error('Wrong data log info format!');
-            end
+            % check sensor/parts lists
             if isempty(sensorList) || isempty(partsList)
                 error('List of parts or list of sensors is empty!');
             end
@@ -103,14 +100,8 @@ classdef SensorDataYarpI < handle
         
         function print(obj)
             %% Print the sensor data log file located in the logged data folder
-            
-            % Restore map from file
-            dataLogInfoMap = SensorLogDatabase();
-            if exist([obj.logInfoFileName '.mat'],'file') == 2
-                load([obj.logInfoFileName '.mat'],'dataLogInfoMap');
-            end
-            fileID = fopen([obj.logInfoFileName '.txt'],'w');
-            fprintf(fileID,'%s',dataLogInfoMap.toString());
+            fileID = fopen('dataLogInfoMap.txt','w');
+            fprintf(fileID,'%s',obj.dataLogInfoMap.toString());
             fclose(fileID);
         end
     end
@@ -171,18 +162,9 @@ classdef SensorDataYarpI < handle
         function newDataSubFolderPath(obj,dataLogInfo)
             %% update Map with log info and create folder where to store sensor data
             
-            % Prepare log folders/files names
-            logInfoFilePath = [obj.logInfoFileName '.mat'];
-            
-            % Restore map from file
-            dataLogInfoMap = SensorLogDatabase();
-            if exist(logInfoFilePath,'file') == 2
-                load(logInfoFilePath,'dataLogInfoMap');
-            end
-            % Add new log entry with log info
-            logFolderRelativePath = dataLogInfoMap.add(...
-                obj.robotName,dataLogInfo.calibApp,...
-                dataLogInfo.calibedSensorList,dataLogInfo.calibedPartsList);
+            % Add new log entry with log info (will be associated to a new
+            % unique iterator in 'dataLogInfoMap')
+            logFolderRelativePath = obj.dataLogInfoMap.add(obj.robotName,dataLogInfo);
             
             % create folder. We use system() instead of the built'in
             % function because the answer is more accurate: 'false' if the
@@ -191,9 +173,6 @@ classdef SensorDataYarpI < handle
             if system(['mkdir ' obj.seqDataFolderPath],'-echo')
                 error('Couldn''t create log files folder!');
             end
-            
-            % save log info map
-            save(logInfoFilePath,'dataLogInfoMap');
         end
         
         % we want to avoid several logs in the same part folder (for
