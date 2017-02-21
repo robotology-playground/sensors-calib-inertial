@@ -39,7 +39,7 @@ sequences = sequenceParams.buildMapSequences();
 % the ports. It also access data previously logged.
 logger = SensorDataYarpI(robotName,dataPath);
 % Configure callback logger commands
-logCmd.sched = @scheduleNewAcquisition;
+logCmd.sched = @logger.scheduleNewAcquisition;
 logCmd.new   = @logger.newLog;
 logCmd.close = @logger.closeLog;
 logCmd.start = @logger.connect;

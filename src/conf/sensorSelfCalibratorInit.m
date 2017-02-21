@@ -76,6 +76,6 @@ calibedJointsIdxes.head = 0:2;
 sensorDataAcq = 'new';
 
 % wrap parameters
-jointEncodersCalib = struct('calibedParts',calibedParts,'calibedJointsIdxes',calibedJointsIdxes,'sensorDataAcq',sensorDataAcq);
+jointEncodersCalib = struct('calibedParts',{calibedParts},'calibedJointsIdxes',calibedJointsIdxes,'sensorDataAcq',sensorDataAcq);
 clear calibedParts calibedJointsIdxes sensorDataAcq;
 

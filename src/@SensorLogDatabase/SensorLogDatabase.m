@@ -140,7 +140,7 @@ classdef SensorLogDatabase < handle
             
             % save log info to a file
             dataLogInfoMap = obj;
-            save(logInfoFilePath,'dataLogInfoMap');
+            save([obj.logInfoFileName '.mat'],'dataLogInfoMap');
         end
         
         function logInfo = getLast1(obj,robotName,calibedSensor)

@@ -146,11 +146,20 @@ classdef SensorDataYarpI < handle
             portNamingRuleTo = obj.sensorType2portNameGetter([sensor '_to']);
             portNamingRulePath = obj.sensorType2portNameGetter([sensor '_path']);
             
+            switch sensor
+                case 'acc'
+                    convert = containers.Map(...
+                        {'left_arm','right_arm','left_leg','right_leg','torso','head'},...
+                        {'left_hand','right_hand','left_leg','right_leg','torso','head'});
+                otherwise
+                    convert = @(part) part;
+            end
+            
             % for each part in the parts list, create a port entry
             [newKeyList,newPortList] = cellfun(...
                 @(part) deal([sensor part],...          % 2-create a key
                 struct(...                              % 3-port naming rules for...
-                'from',portNamingRuleFrom(obj.robotName,part),...         % source port
+                'from',portNamingRuleFrom(obj.robotName,convert(part)),...         % source port
                 'to',portNamingRuleTo(obj.robotName,part),...             % sink port
                 'path',portNamingRulePath(obj.seqDataFolderPath,part),... % path to the stored sensor data
                 'conn',false,...                        % Yarp link connection state

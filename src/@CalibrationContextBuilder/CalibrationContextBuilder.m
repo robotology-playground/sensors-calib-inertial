@@ -174,7 +174,7 @@ classdef CalibrationContextBuilder < handle
             % obj.q0i, obj.dqi, obj.d2qi
             
             % Identify the joint state frames in the 'data' structure
-            obj.jointsIdxFile = allDataTypeIdxes(ismember(data.type,{'stateExt:o'}));
+            obj.jointsIdxFile = allDataTypeIdxes(ismember(data.type,{'stateExt:i'}));
             
             % Get the respective controlled parts in 'data'
             modelParamsCtrledParts = data.parts(obj.jointsIdxFile);
