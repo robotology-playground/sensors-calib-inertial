@@ -4,8 +4,11 @@
 
 %% Common parameters
 robotName = 'icubSim';
-dataPath  = '../../data/calibration/dumper';
+dataPath  = '../../data/dumper';
 modelPath = '../models/iCubGenova05/iCubFull.urdf';
+%calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
+calibrationMapFile = 'calibrationMap.mat';
+saveCalibration = false;
 
 %% Standard or custom calibration
 calibrationType = 'standard';
@@ -68,4 +71,11 @@ calibedJointsIdxes.left_leg = 0:5;
 calibedJointsIdxes.right_leg = 0:5;
 calibedJointsIdxes.torso = 0:2;
 calibedJointsIdxes.head = 0:2;
+
+% Sensor data acquisition: ['new'|'last'|<id>]
+sensorDataAcq = 'new';
+
+% wrap parameters
+jointEncodersCalib = struct('calibedParts',{calibedParts},'calibedJointsIdxes',calibedJointsIdxes,'sensorDataAcq',{sensorDataAcq});
+clear calibedParts calibedJointsIdxes sensorDataAcq;
 

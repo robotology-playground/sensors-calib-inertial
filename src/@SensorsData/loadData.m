@@ -17,7 +17,7 @@ end
 % length(obj.parts) is the lists (parts, labels, ndof) length in 'data'
 % structure. list length = number of sensors (ex: 11 acc + "leg_position").
 % For instance, for the leg, q_1 to q_6 are seen like a single sensor of 6
-% dof ("leg_position"), and that's the way it is read from stateExt:o.
+% dof ("leg_position"), and that's the way it is read from stateExt:i.
 
 % Create function handles for assigning variables :
 %   q_<labels{i}>, dq_<labels{i}>, d2q_<labels{i}>
@@ -32,7 +32,7 @@ end
 %     
 %     eval(['meas{i}.t = @(x) obj.t_' obj.labels{i} ' = x;']);
 %     
-%     if strcmp(obj.type{i}, 'stateExt:o');
+%     if strcmp(obj.type{i}, 'stateExt:i');
 %         eval(['meas{i}.q = @(x) obj.q_' obj.labels{i} ' = x;']);
 %         eval(['meas{i}.dq = @(x) obj.dq_' obj.labels{i} ' = x;']);
 %         eval(['meas{i}.d2q = @(x) obj.d2q_' obj.labels{i} ' = x;']);
@@ -59,11 +59,11 @@ end
 
 % Load data from dump files
 for i = 1 : length(obj.parts)
-    file = [obj.path obj.parts{i} '/' obj.type{i} obj.dataSetNb '/data.log'];
+    file = [obj.path '/' obj.parts{i} '/' obj.type{i} obj.dataSetNb '/data.log'];
     % this buffer Id avoids reading the same file twice
     bufferId = ['buffer_' obj.parts{i} '_' obj.type{i}(1:end-2)];
     
-    if strcmp(obj.type{i}, 'stateExt:o');
+    if strcmp(obj.type{i}, 'stateExt:i')
         q    = ['q_' obj.labels{i}];
         dq   = ['dq_' obj.labels{i}];
         d2q  = ['d2q_' obj.labels{i}];
@@ -162,7 +162,7 @@ close all
 dtime   = time(1);
 for i = 1 : length(obj.parts)
    
-   if strcmp(obj.type{i}, 'stateExt:o')
+   if strcmp(obj.type{i}, 'stateExt:i')
       q    = ['obj.parsedParams.q_' obj.labels{i}];
       dq   = ['obj.parsedParams.dq_' obj.labels{i}];
       d2q  = ['obj.parsedParams.d2q_' obj.labels{i}];
@@ -186,7 +186,7 @@ end
 obj.parsedParams.time = time    - dtime;
 
 for i = 1 : length(obj.parts)
-   if obj.visualize{i} && strcmp(obj.type{i}, 'stateExt:o')
+   if obj.visualize{i} && strcmp(obj.type{i}, 'stateExt:i')
       q    = ['obj.parsedParams.q_' obj.labels{i}];
       dq   = ['obj.parsedParams.dq_' obj.labels{i}];
       d2q  = ['obj.parsedParams.d2q_' obj.labels{i}];
@@ -239,7 +239,7 @@ for i = 1 : length(obj.parts)
     % acc_gain must be applied before the calibration matrix
     % since the calibration procedure is done after acc_gain
     % is set.
-    if ~strcmp(obj.type{i}, 'stateExt:o')
+    if ~strcmp(obj.type{i}, 'stateExt:i')
         acc_gain = obj.calib{i}.gain;
         centre = obj.calib{i}.centre;
         C = obj.calib{i}.C;
@@ -274,7 +274,7 @@ fprintf('Processed raw sensors\n')
 %
 % % Convert qs_xxx, dqs_xxx, d2qs_xxx variables from degrees to radians
 % for i = 1 : length(obj.parts)
-%     if strcmp(obj.type{i}, 'stateExt:o');
+%     if strcmp(obj.type{i}, 'stateExt:i');
 %         meas{i}.qsRad([obj.qs_rleg].*pi/180);
 %         meas{i}.dqsRad([obj.dqs_rleg].*pi/180);
 %         meas{i}.d2qsRad([obj.d2qs_rleg].*pi/180);
@@ -287,7 +287,7 @@ fprintf('Processed raw sensors\n')
 
 
 for i = 1 : length(obj.parts)
-    if strcmp(obj.type{i}, 'stateExt:o');
+    if strcmp(obj.type{i}, 'stateExt:i')
         qs    = ['qs_' obj.labels{i}];
         dqs   = ['dqs_' obj.labels{i}];
         d2qs  = ['d2qs_' obj.labels{i}];

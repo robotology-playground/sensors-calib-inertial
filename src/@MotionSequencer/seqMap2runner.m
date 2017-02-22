@@ -85,9 +85,9 @@ end
 
 % % EXAMPLE
 % 
-% runSeq.calib.part = {'right_arm','head'};
+% runSeq.calib.sensor = {'joint'};
 % 
-% runSeq.calib.sensors = {{'joint'},{'joint'}};
+% runSeq.calib.part = {{'right_arm','head'}};
 % 
 % runSeq.ctrl.part = {'right_arm','head'};
 % 

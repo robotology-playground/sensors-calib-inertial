@@ -8,7 +8,7 @@ seqEndParams = struct();
 selector = struct();
 
 switch seqProfileTag
-    case 'jointsCalibrator'
+    case 'jointEncodersCalibrator'
         run jointsCalibratorSequenceProfile;
     otherwise
         error('Unknown sequence profile !!');

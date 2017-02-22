@@ -1,4 +1,7 @@
-function ModelParams = jointsNsensorsDefinitions(parts,calibedJointsIdxes,calibedJointsDq0,mtbSensorAct)
+function modelParams = jointsNsensorsDefinitions(...
+    measedSensorList,measedPartsList,...
+    calibedParts,calibedJointsIdxes,calibedJointsDq0,...
+    mtbSensorAct)
 %% Joints and Sensors selection
 %
 % - Select the joints to calibrate through the respective indexes in the port data
@@ -111,6 +114,12 @@ if ~isempty(calibedJointsDq0)
     jointsToCalibrate.ctrledJointsIdxes = {}; % element index on the data from yarp port
     jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
     
+    % 'jointsToCalibrate' holds information for measured and calibrated
+    % joints. Use the list of parts associated to measured joint encoders
+    parts = [measedPartsList{ismember(measedSensorList,'joint')}];
+    
+    % Build 'jointsToCalibrate'
+    jointsToCalibrate.mapIdx = containers.Map('KeyType','char','ValueType','uint8');
     for i = 1:length(parts)
         jointsToCalibrate.ctrledJoints{i} = RobotModel.jointsListFromPart(parts{i});
         eval(['jointsToCalibrate.calibedJointsDq0{' num2str(i) '} = calibedJointsDq0.' parts{i} ';']);
@@ -118,6 +127,7 @@ if ~isempty(calibedJointsDq0)
         eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' parts{i} ';']);
         eval(['jointsToCalibrate.ctrledJointsIdxes{' num2str(i) '} = 1:' num2str(length(jointsToCalibrate.ctrledJoints{i})) ';']);
         eval(['jointsToCalibrate.calibedJointsIdxes{' num2str(i) '} = calibedJointsIdxes.' parts{i} ';']);
+        jointsToCalibrate.mapIdx(parts{i}) = i;
     end
     
     % Process the selection for the structure 'jointsToCalibrate' definition
@@ -125,7 +135,10 @@ if ~isempty(calibedJointsDq0)
         jointsToCalibrate.calibedJointsDq0{i}=jointsToCalibrate.calibedJointsDq0{i}(jointsToCalibrate.calibedJointsIdxes{i});
     end
     
-    ModelParams.jointsToCalibrate = jointsToCalibrate;
+    % Save parameters to output structure
+    modelParams.jointsToCalibrate = jointsToCalibrate;
+    modelParams.calibedParts = calibedParts; % parts for calibrated joint encoders
+    modelParams.jointMeasedParts = parts;    % parts for measured joint encoders
 end
 
 mtbSensorCodes_list = {};
@@ -133,6 +146,10 @@ mtbSensorLink_list = {};
 mtbSensorAct_list = {};
 mtxSensorType_list = {};
 
+% 'mtbSensorXXX' and 'mtxSensorXXX' hold information for measured inertial
+% joints. Use the list of parts associated to measured accelerometers and
+% IMUs.
+parts = [measedPartsList{ismember(measedSensorList,{'acc','imu'})}];
 for i = 1:length(parts)
     eval(['mtbSensorCodes_list{' num2str(i) '} = mtbSensorCodes_' parts{i} ';']);
     eval(['mtbSensorLink_list{' num2str(i) '} = mtbSensorLink_' parts{i} ';']);
@@ -140,9 +157,10 @@ for i = 1:length(parts)
     eval(['mtxSensorType_list{' num2str(i) '} = mtxSensorType_' parts{i} ';']);
 end
 
-ModelParams.parts = parts;
-ModelParams.mtbSensorCodes_list = mtbSensorCodes_list;
-ModelParams.mtbSensorLink_list = mtbSensorLink_list;
-ModelParams.mtbSensorAct_list = mtbSensorAct_list;
-ModelParams.mtxSensorType_list = mtxSensorType_list;
+% Save parameters to output structure
+modelParams.accMeasedParts = parts; % parts for measured inertial sensors
+modelParams.mtbSensorCodes_list = mtbSensorCodes_list;
+modelParams.mtbSensorLink_list = mtbSensorLink_list;
+modelParams.mtbSensorAct_list = mtbSensorAct_list;
+modelParams.mtxSensorType_list = mtxSensorType_list;
 
