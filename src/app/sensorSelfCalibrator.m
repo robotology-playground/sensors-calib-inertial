@@ -76,7 +76,7 @@ if init.calibrateJointEncoders
     calibedJointsIdxes = structfun(...
         @(field) field+1,calibedJointsIdxes,'UniformOutput',false);
     
-    switch sensorDataAcq
+    switch sensorDataAcq{1}
         case 'new'
             % Acquire accelerometers measurements while moving the joints following
             % a profile tagged 'jointsCalibrator'
@@ -87,6 +87,8 @@ if init.calibrateJointEncoders
         case 'last'
             load('acqSensorDataAccessor.mat','acqSensorDataAccessor');
         otherwise
+            load([init.dataPath '/dataLogInfo.mat'],'dataLogInfoMap');
+            acqSensorDataAccessor = dataLogInfoMap.get(sensorDataAcq{:});
     end
     
     % Get data folder path list for joints calibration on required parts.
@@ -94,7 +96,7 @@ if init.calibrateJointEncoders
     % (it is the case for calibrating the torso which needs a dedicated
     % sequence), we get a folder path per sequence, so N paths.
     [dataFolderPathList,calibedPartsList] = ...
-        acqSensorDataAccessor.getFolderPaths4calibedSensor('joint');
+        acqSensorDataAccessor.getFolderPaths4calibedSensor('joint',init.dataPath);
     
     % For each sequence, get the logged sensors list and respective
     % supporting parts

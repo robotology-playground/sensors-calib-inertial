@@ -38,9 +38,10 @@ classdef SensorLogDatabase < handle
         seqIterator = 0;   % counter as a unique identifyer of the log entry
         calibIterator = 0; % counter as a unique identifyer of a calibrator iteration
         schedCalibIterator = []; % scheduled next counter value, triggered by a calibrator
-        mapAttr = {}; % map using key = [robotName '.' sensor '.' calibedPart]
-        key2RSP = {};
-        mapIter = {}; % map using key = seqIterator
+        mapAttr = []; % map using key = [robotName '.' sensor '.' calibedPart]
+        key2RSP = [];
+        mapIter = []; % map using key = seqIterator
+        dataFolderPath = '';
         logInfoFileName = '';
     end
     
@@ -121,38 +122,77 @@ classdef SensorLogDatabase < handle
             end
             
             % define log entry level 2
-            logPath = [...
+            logRelativePath = [...
                 robotName '.' dataLogInfo.calibApp ...
                 '#' num2str(obj.calibIterator) '.seq#' num2str(obj.seqIterator)];
+            dataLogInfo.sequence.seqDataFolderPath = logRelativePath;
             
             newEntryLvl2 = struct(...
                 'calibApp',dataLogInfo.calibApp,...
                 'calibIterator',obj.calibIterator,...
                 'seqIterator',obj.seqIterator,...
                 'sequence',dataLogInfo.sequence,...
-                'logPath',logPath);
+                'logPath',logRelativePath);
             
             % Add log entry to the map of iterators
             obj.mapIter(obj.seqIterator) = newEntryLvl2;
             
-            % return the log relative path
-            logRelativePath = logPath;
-            
             % save log info to a file
-            dataLogInfoMap = obj;
+            dataLogInfoMap = obj; %#ok<NASGU>
             save([obj.logInfoFileName '.mat'],'dataLogInfoMap');
         end
         
-        function logInfo = getLast1(obj,robotName,calibedSensor)
-            logInfo = {};
+        function acqSensorDataAccessor = get(obj,varargin)
+            switch varargin{1}
+                case 'robotName'
+                    acqSensorDataAccessor = obj.get1(varargin{2},varargin{4},varargin{6});
+                case 'calibrator'
+                    acqSensorDataAccessor = obj.get2(varargin{2});
+                case 'seq'
+                    acqSensorDataAccessor = obj.get3(varargin(2:nargin-1));
+                otherwise
+                    error('Unknow option !!');
+            end
         end
         
-        function logInfo = getLast2(obj,robotName,calibedSensor,calibedPartList)
-            logInfo = {};
+        function acqSensorDataAccessor = get1(obj,robotName,calibedSensor,calibedPartList)
+            % generate the access key and get the pointed element
+            [keys,~] = obj.genKey1Sensor(robotName,calibedSensor,calibedPartList);
+            % build the iterator list with the last iterator from each key
+            iteratorList = cellfun(...
+                @(entryLvl1) max(cell2mat(entryLvl1.values)),...
+                obj.mapAttr.values(keys),...
+                'UniformOutput',false);
+            % get the accessor from the method taking a list of iterators
+            acqSensorDataAccessor = obj.get3(iteratorList);
         end
         
-        function logInfo = getLast3(obj,iterator)
-            logInfo = {};
+        function acqSensorDataAccessor = get2(obj,calibIterator)
+            % get the entryLvl1 having the 'calibIterator'
+            entryLvl1MatchingCalibIterator = cellfun(...
+                @(entryLvl1) isKey(entryLvl1,calibIterator),...
+                obj.mapAttr.values,...
+                'UniformOutput',true);
+            % for the matching entryLvl1, get the iterator associated to calibIterator
+            entryLvl1List = obj.mapAttr.values;
+            iteratorList = cellfun(...
+                @(entryLvl1) entryLvl1(calibIterator),...
+                entryLvl1List(entryLvl1MatchingCalibIterator),...
+                'UniformOutput',false);
+            % get the accessor from the method taking a list of iterators
+            acqSensorDataAccessor = obj.get3(iteratorList);
+        end
+        
+        function acqSensorDataAccessor = get3(obj,iteratorList)
+            % remove repetitions
+            iteratorListWOrep = unique(cell2mat(iteratorList));
+            % get entryLvl2 list
+            seqList = arrayfun(...
+                @(iterator) getfield(obj.mapIter(iterator),'sequence'),...
+                iteratorListWOrep,...
+                'UniformOutput',false); %#ok<GFLD>
+            % get sequence list
+            acqSensorDataAccessor = AcqSensorDataAccessor(seqList);
         end
         
         function str = toString(obj)

@@ -49,7 +49,7 @@ classdef SensorDataYarpI < handle
             obj.dataLogInfoMap.scheduleNewAcquisition();
         end
         
-        function seqDataFolderPath = newLog(obj,dataLogInfo,sensorList,partsList)
+        function logFolderRelativePath = newLog(obj,dataLogInfo,sensorList,partsList)
             % close any open ports and log
             obj.closeLog();
             
@@ -59,7 +59,7 @@ classdef SensorDataYarpI < handle
             end
             
             % set folder name for the data dumper and update log database
-            obj.newDataSubFolderPath(dataLogInfo);
+            logFolderRelativePath = obj.newDataSubFolderPath(dataLogInfo);
             
             % create ports mapping (needs the folder name for the data
             % dumper because it stores the subfolders names)
@@ -71,9 +71,6 @@ classdef SensorDataYarpI < handle
             
             % open ports
             obj.openPorts();
-            
-            % return log folder
-            seqDataFolderPath = obj.seqDataFolderPath;
         end
         
         function closeLog(obj)
@@ -168,7 +165,7 @@ classdef SensorDataYarpI < handle
                 'UniformOutput',false);                 % 5-don't concatenate lists from iterations
         end
         
-        function newDataSubFolderPath(obj,dataLogInfo)
+        function logFolderRelativePath = newDataSubFolderPath(obj,dataLogInfo)
             %% update Map with log info and create folder where to store sensor data
             
             % Add new log entry with log info (will be associated to a new
