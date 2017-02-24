@@ -4,7 +4,7 @@
 %%
 
 % 'simu' or 'target' mode
-runMode = 'target';
+loadSource = 'dumpfile';
 offsetsGridResolution = 10*pi/180; % step between 2 offsets for each joint DOF (degrees)
 offsetsGridRange = 5*pi/180; % min/max (degrees)
 offsetedQsIdxs = 1:6;

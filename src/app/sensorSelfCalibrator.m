@@ -80,7 +80,7 @@ calibedSensors = {'acc','joint','ftSensor','gyro'};
 
 % build maps for above lists
 taskInitParamsMap = containers.Map(calibratorTasks,taskInitParams);
-calibedSensorMap = containers.Map(calibratorTasks,calibedSensors);
+calibedSensorsMap = containers.Map(calibratorTasks,calibedSensors);
 acqSensorDataAccessorMap = containers.Map('KeyType','char','ValueType','any');
 
 % filter activated tasks and parameters
@@ -118,11 +118,11 @@ if init.runDiagnosis
             SensorDiagnosis.runDiagnosis(...
             init.modelPath,calibrationMap,...
             paths,sensors,parts,... % actual params passed through the func handle
-            taskInitParams.savePlot);
+            taskInitParams.loadJointPos,taskInitParams.savePlot);
         % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
         runCalibratorOrDiagnosis(...
             init,taskInitParams,diagFuncH,...
-            acqSensorDataAccessorMap(task),calibedSensorMap(task));
+            acqSensorDataAccessorMap(task),calibedSensorsMap(task));
     end
     
 end

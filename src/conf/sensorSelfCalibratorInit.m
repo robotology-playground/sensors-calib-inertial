@@ -96,7 +96,8 @@ clear acquiredParts mtbSensorAct savePlot loadJointPos sensorDataAcq taskSpecifi
 % Only the accelerometers from these parts (limbs) will be calibrated
 calibedParts = {'left_leg','right_leg'};
 
-% some sensors are de-activated because of faulty behaviour
+% some sensors are de-activated because of faulty behaviour, bad calibration 
+% or wrong frame definition
 mtbSensorAct.left_arm = [10:13 8:9 7];
 mtbSensorAct.right_arm = [10:13 8:9 7];
 mtbSensorAct.left_leg = 1:13;

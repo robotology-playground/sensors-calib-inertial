@@ -1,5 +1,5 @@
 classdef SensorDiagnosis
-    %SensorDiagnosis Holds all methods for run a diagnosis on sensor data
+    %SensorDiagnosis Holds all methods for running a diagnosis on sensor data
     %   'runDiagnosis()' is the main procedure for checking the inertial
     %   sensors data and plotting the key performance indicators related to
     %   the sensors calibration.

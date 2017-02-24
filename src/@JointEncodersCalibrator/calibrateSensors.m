@@ -22,7 +22,7 @@ modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
     mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
-if strcmp(runMode,'target')
+if strcmp(loadSource,'dumpFile')
     offsetsGridRange = 0;
     offsetedQsIdxs = 1;
 end
@@ -48,22 +48,27 @@ myCalibContext = CalibrationContextBuilder(modelPath);
 eval(['costFunction = @myCalibContext.' costFunctionSelect]);
 
 
-%% Parsing configuration
+%% build input data for calibration
 %
 
-switch runMode
-    case 'simu'
-        load 'dataSimu.mat';
+switch loadSource
+    case 'cache'
+        load([dataPath '/dataCache.mat'],'data');
         
-    case 'target'
+    case 'dumpFile'
         % build sensor data parser
         plot = false; loadJointPos = true;
         data = SensorsData(dataPath,'',subSamplingSize,...
             timeStart,timeStop,plot);
         data.buildInputDataSet(loadJointPos,modelParams);
         
+        % Save data in a Matlab file for faster access in further runs
+        if saveToCache
+            save([dataPath '/dataCache.mat'],'data');
+        end
+        
     otherwise
-        disp('Unknown run mode !!')
+        disp('Unknown data source !!')
 end
 
 %% init joints and sensors lists. The order in modelParams.jointMeasedParts sets 
