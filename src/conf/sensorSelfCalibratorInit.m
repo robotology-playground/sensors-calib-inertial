@@ -16,7 +16,7 @@ saveCalibration = false;
 calibrationType = 'standard';
 
 %% standard calibration tasks checklist
-acquireSensors = false;
+acquireSensorsTestData = false;
 calibrateAccelerometers = false;
 calibrateJointEncoders = true;
 calibrateFTsensors = false;
@@ -43,7 +43,7 @@ runDiagnosis = true;
 %% Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
-acquiredParts = {'left_leg'};
+acquiredParts = {'left_leg','right_leg'};
 % Profile = ... TBD!!
 
 % Fine selection of the accelerometers:

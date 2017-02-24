@@ -61,22 +61,25 @@ end
 isTaskScheduled = [...
     init.calibrateAccelerometers,...
     init.calibrateJointEncoders,...
+    init.acquireSensorsTestData,...
     init.calibrateFTsensors,...
     init.calibrateGyroscopes];
 
 calibratorTasks = {...
     'accelerometersCalibrator',...
     'jointEncodersCalibrator',...
+    'sensorsTestDataAcquisition',...
     'ftSensorsCalibrator',...
     'gyroscopesCalibrator'};
 
 taskInitParams = {...
     init.accelerometersCalib,...
     init.jointEncodersCalib,...
+    init.sensorsTestDataAcq,...
     init.ftSensorsCalib,...
     init.gyroscopesCalib};
 
-calibedSensors = {'acc','joint','ftSensor','gyro'};
+calibedSensors = {'acc','joint','acc','ftSensor','gyro'};
 
 % build maps for above lists
 taskInitParamsMap = containers.Map(calibratorTasks,taskInitParams);
@@ -86,7 +89,7 @@ acqSensorDataAccessorMap = containers.Map('KeyType','char','ValueType','any');
 % filter activated tasks and parameters
 calibratorTasks = calibratorTasks(isTaskScheduled);
 
-%% 0 - Acquire sensor data
+%% 1 - Acquire sensor data
 % 
 % Get stored sensor data or acquire new sensor data for each scheduled
 % calibrator task
@@ -104,7 +107,7 @@ end
 % Save eventual changes of last acquired data accessors to file
 save('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
 
-%% 1 - Run diagnosis on acquired data
+%% 2 - Run diagnosis on acquired data
 %
 
 if init.runDiagnosis
@@ -131,29 +134,63 @@ end
 
 % 2.1 - Calibrate the accelerometers gains/offsets
 if init.calibrateAccelerometers
+    % calibrator task and function
+    task = 'accelerometersCalibrator';
+    
+    % calibrator function
+    calibratorH = @(~,taskSpec,path,sensors,parts) ...
+        AccelerometersCalibrator.calibrateSensors(...
+        calibrationMap,...
+        taskSpec,path,sensors,parts); % actual params passed through the func handle
+    
+    % Calibrate the accelerometers
+    runCalibratorOrDiagnosis(...
+        init,init.accelerometersCalib,calibratorH,...
+        acqSensorDataAccessorMap(task),'acc');
 end
 
 % 2.2 - Calibrate the encoders joint offsets
 if init.calibrateJointEncoders
     % calibrator task and function
     task = 'jointEncodersCalibrator';
+    
     % calibrator function
     calibratorH = @(calParts,taskSpec,path,sensors,parts) ...
         JointEncodersCalibrator.calibrateSensors(...
         init.modelPath,calibrationMap,...
         calParts,taskSpec,path,sensors,parts); % actual params passed through the func handle
     
-    % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
+    % Calibrate the joint encoders
     runCalibratorOrDiagnosis(...
         init,init.jointEncodersCalib,calibratorH,...
         acqSensorDataAccessorMap(task),'joint');
 end
 
-% 2.3 - Calibrate the gyroscopes
+% 2.3 - Run diagnosis on acquired data
+if init.runDiagnosis
+    % Run diagnosis for the each scheduled calibrator task
+    for cTask = calibratorTasks
+        % unwrap cTask and get task init params
+        task = cell2mat(cTask);
+        taskInitParams = taskInitParamsMap(task);
+        % calibrator function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
+        diagFuncH = @(~,~,path,sensors,parts) ...
+            SensorDiagnosis.runDiagnosis(...
+            init.modelPath,calibrationMap,...
+            paths,sensors,parts,... % actual params passed through the func handle
+            taskInitParams.loadJointPos,taskInitParams.savePlot);
+        % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
+        runCalibratorOrDiagnosis(...
+            init,taskInitParams,diagFuncH,...
+            acqSensorDataAccessorMap(task),calibedSensorsMap(task));
+    end
+end
+
+% 2.4 - Calibrate the gyroscopes
 if init.calibrateGyroscopes
 end
 
-% 2.4 - Calibrate the FT sensors gains/offsets
+% 2.5 - Calibrate the FT sensors gains/offsets
 if init.calibrateFTsensors
 end
 

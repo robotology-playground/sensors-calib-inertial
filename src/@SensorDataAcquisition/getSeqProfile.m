@@ -4,12 +4,14 @@ function [seqHomeParams,seqEndParams,selector] = getSeqProfile(seqProfileTag)
 
 % default output
 seqHomeParams = {};
-seqEndParams = struct();
-selector = struct();
+seqEndParams = struct([]);
+selector = struct([]);
 
 switch seqProfileTag
     case 'jointEncodersCalibrator'
         run jointsCalibratorSequenceProfile;
+    case 'accelerometersCalibrator'
+        run accelerometersCalibratorSequenceProfile;
     otherwise
         error('Unknown sequence profile !!');
 end
