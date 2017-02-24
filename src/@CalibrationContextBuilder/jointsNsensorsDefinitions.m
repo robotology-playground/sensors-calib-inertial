@@ -162,7 +162,7 @@ parts = [measedPartsList{ismember(measedSensorList,{'acc','imu'})}];
 for i = 1:length(parts)
     eval(['mtbSensorCodes_list{' num2str(i) '} = mtbSensorCodes_' parts{i} ';']);
     eval(['mtbSensorLink_list{' num2str(i) '} = mtbSensorLink_' parts{i} ';']);
-    eval(['mtbSensorAct_list{' num2str(i) '} = cell2mat(mtbSensorAct.' parts{i} ');']);
+    eval(['mtbSensorAct_list{' num2str(i) '} = mtbSensorAct.' parts{i} ';']);
     eval(['mtxSensorType_list{' num2str(i) '} = mtxSensorType_' parts{i} ';']);
 end
 

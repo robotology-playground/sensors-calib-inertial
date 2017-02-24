@@ -79,6 +79,7 @@ mtbSensorAct.head = 1;
 % classification information are saved in text format for easier search from
 % a file explorer.
 savePlot = true;
+loadJointPos = true;
 
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'new'};
@@ -86,8 +87,8 @@ sensorDataAcq = {'new'};
 % wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as
 % a calibrator task)
 taskSpecificParams = struct('mtbSensorAct',mtbSensorAct);
-sensorsTestDataAcq = struct('calibedParts',{acquiredParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'sensorDataAcq',{sensorDataAcq});
-clear acquiredParts mtbSensorAct savePlot sensorDataAcq taskSpecificParams;
+sensorsTestDataAcq = struct('calibedParts',{acquiredParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'loadJointPos',loadJointPos,'sensorDataAcq',{sensorDataAcq});
+clear acquiredParts mtbSensorAct savePlot loadJointPos sensorDataAcq taskSpecificParams;
 
 %% MTB/IMU accelerometers gains/offsets calibration
 
@@ -108,14 +109,15 @@ mtbSensorAct.head = 1;
 % classification information are saved in text format for easier search from
 % a file explorer.
 savePlot = true;
+loadJointPos = false;
 
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'new'};
 
 % wrap parameters
 taskSpecificParams = struct('mtbSensorAct',mtbSensorAct);
-accelerometersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'sensorDataAcq',{sensorDataAcq});
-clear calibedParts mtbSensorAct savePlot sensorDataAcq taskSpecificParams;
+accelerometersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'loadJointPos',loadJointPos,'sensorDataAcq',{sensorDataAcq});
+clear calibedParts mtbSensorAct savePlot loadJointPos sensorDataAcq taskSpecificParams;
 
 %% Joint encoders offsets calibration
 
@@ -156,14 +158,15 @@ calibedJointsIdxes.head = 0:2;
 % classification information are saved in text format for easier search from
 % a file explorer.
 savePlot = true;
+loadJointPos = true;
 
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'calibrator',7};
 
 % wrap parameters
 taskSpecificParams = struct('calibedJointsIdxes',calibedJointsIdxes);
-jointEncodersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'sensorDataAcq',{sensorDataAcq});
-clear calibedParts calibedJointsIdxes savePlot sensorDataAcq taskSpecificParams;
+jointEncodersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'loadJointPos',loadJointPos,'sensorDataAcq',{sensorDataAcq});
+clear calibedParts calibedJointsIdxes savePlot loadJointPos sensorDataAcq taskSpecificParams;
 
 %% FT sensors gains/offsets calibration (TBD)
 

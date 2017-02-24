@@ -90,9 +90,7 @@ if loadJointPos
     nrOfMTBAccs = length(sensorsIdxListFile);
 
     % init joints and sensors lists
-    for part = 1 : length(ModelParams.parts)
-        myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data.bc,part,ModelParams);
-    end
+    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data.bc,ModelParams);
     
     % load joint positions
     myCalibContext.loadJointNsensorsDataSubset(1:data.bc.nSamples);

@@ -32,15 +32,6 @@ timeStart = 1;  % starting time in capture data file (in seconds)
 timeStop  = -1; % ending time in capture data file (in seconds). If -1, use the end time from log
 subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 
-%% init lists for motion sensors activation. Don't edit this section
-%
-mtbSensorAct.left_arm(1:7) = {false};
-mtbSensorAct.right_arm(1:7) = {false};
-mtbSensorAct.left_leg(1:13) = {false};
-mtbSensorAct.right_leg(1:13) = {false};
-mtbSensorAct.torso(1:4) = {false};
-mtbSensorAct.head(1) = {false};
-
 %% Define parameters for all joints (calibrated or not)
 %
 
@@ -56,9 +47,9 @@ calibedJointsDq0.head = [0 0 0];
 %  or wrong frame definition
 
 % set to 'true' activated sensors
-mtbSensorAct.left_arm(1:7) = {true};
-mtbSensorAct.right_arm(1:7) = {true};
-mtbSensorAct.left_leg(1:13) = {true};
-mtbSensorAct.right_leg(1:13) = {true};
-mtbSensorAct.torso(1:4) = {true};
-mtbSensorAct.head(1) = {true};
+mtbSensorAct.left_arm = [10:13 8:9 7];
+mtbSensorAct.right_arm = [10:13 8:9 7];
+mtbSensorAct.left_leg = 1:13;
+mtbSensorAct.right_leg = 1:13;
+mtbSensorAct.torso = 7:10;
+mtbSensorAct.head = 1;
