@@ -8,6 +8,13 @@ function modelParams = jointsNsensorsDefinitions(...
 % - Define parameters for all joints (calibrated or not)
 % - Select activated sensors
 
+% Preset some input parameters
+if isempty(calibedParts)
+    calibedJointsIdxes = structfun(@(field) [],calibedJointsIdxes,'UniformOutput',false);
+    calibedJointsDq0 = structfun(@(field) [],calibedJointsDq0,'UniformOutput',false);
+end
+
+
 %% macros for repetitive names and codes between left and right parts
 %
 
@@ -104,42 +111,44 @@ mtxSensorType_right_leg = mtxSensorType_left_leg;
 mtxSensorType_torso(1:4) = {'inertialMTB'};
 mtxSensorType_head(1) = {'inertialMTI'};
 
-%% Build access lists
+%% Build access lists for joints information
 %
-if ~isempty(calibedJointsDq0)
-    jointsToCalibrate.ctrledJoints = {};
-    jointsToCalibrate.calibedJointsDq0 = {};
-    jointsToCalibrate.partSegments = {};
-    jointsToCalibrate.jointsDofs = {};
-    jointsToCalibrate.ctrledJointsIdxes = {}; % element index on the data from yarp port
-    jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
-    
-    % 'jointsToCalibrate' holds information for measured and calibrated
-    % joints. Use the list of parts associated to measured joint encoders
-    parts = [measedPartsList{ismember(measedSensorList,'joint')}];
-    
-    % Build 'jointsToCalibrate'
-    jointsToCalibrate.mapIdx = containers.Map('KeyType','char','ValueType','uint8');
-    for i = 1:length(parts)
-        jointsToCalibrate.ctrledJoints{i} = RobotModel.jointsListFromPart(parts{i});
-        eval(['jointsToCalibrate.calibedJointsDq0{' num2str(i) '} = calibedJointsDq0.' parts{i} ';']);
-        eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' parts{i} ';']);
-        eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' parts{i} ';']);
-        eval(['jointsToCalibrate.ctrledJointsIdxes{' num2str(i) '} = 1:' num2str(length(jointsToCalibrate.ctrledJoints{i})) ';']);
-        eval(['jointsToCalibrate.calibedJointsIdxes{' num2str(i) '} = calibedJointsIdxes.' parts{i} ';']);
-        jointsToCalibrate.mapIdx(parts{i}) = i;
-    end
-    
-    % Process the selection for the structure 'jointsToCalibrate' definition
-    for i = 1:length(parts)
-        jointsToCalibrate.calibedJointsDq0{i}=jointsToCalibrate.calibedJointsDq0{i}(jointsToCalibrate.calibedJointsIdxes{i});
-    end
-    
-    % Save parameters to output structure
-    modelParams.jointsToCalibrate = jointsToCalibrate;
-    modelParams.calibedParts = calibedParts; % parts for calibrated joint encoders
-    modelParams.jointMeasedParts = parts;    % parts for measured joint encoders
+
+jointsToCalibrate.ctrledJoints = {};
+jointsToCalibrate.calibedJointsDq0 = {};
+jointsToCalibrate.partSegments = {};
+jointsToCalibrate.jointsDofs = {};
+jointsToCalibrate.ctrledJointsIdxes = {}; % element index on the data from yarp port
+jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
+
+% 'jointsToCalibrate' holds information for measured and calibrated
+% joints. Use the list of parts associated to measured joint encoders
+parts = [measedPartsList{ismember(measedSensorList,'joint')}];
+
+% Build 'jointsToCalibrate'
+jointsToCalibrate.mapIdx = containers.Map('KeyType','char','ValueType','uint8');
+for i = 1:length(parts)
+    jointsToCalibrate.ctrledJoints{i} = RobotModel.jointsListFromPart(parts{i});
+    eval(['jointsToCalibrate.calibedJointsDq0{' num2str(i) '} = calibedJointsDq0.' parts{i} ';']);
+    eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' parts{i} ';']);
+    eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' parts{i} ';']);
+    eval(['jointsToCalibrate.ctrledJointsIdxes{' num2str(i) '} = 1:' num2str(length(jointsToCalibrate.ctrledJoints{i})) ';']);
+    eval(['jointsToCalibrate.calibedJointsIdxes{' num2str(i) '} = calibedJointsIdxes.' parts{i} ';']);
+    jointsToCalibrate.mapIdx(parts{i}) = i;
 end
+
+% Process the selection for the structure 'jointsToCalibrate' definition
+for i = 1:length(parts)
+    jointsToCalibrate.calibedJointsDq0{i}=jointsToCalibrate.calibedJointsDq0{i}(jointsToCalibrate.calibedJointsIdxes{i});
+end
+
+% Save parameters to output structure
+modelParams.jointsToCalibrate = jointsToCalibrate;
+modelParams.calibedParts = calibedParts; % parts for calibrated joint encoders
+modelParams.jointMeasedParts = parts;    % parts for measured joint encoders
+
+%% Build access lists for inertial sensors information
+%
 
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};

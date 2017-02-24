@@ -3,11 +3,12 @@
 %====================================================================
 
 %% Common parameters
-robotName = 'icubSim';
+robotName = 'icub';
 dataPath  = '../../data/dumper';
-modelPath = '../models/iCubGenova05/iCubFull.urdf';
+modelPath = '../models/iCubGenova02/iCubGenova02.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
-calibrationMapFile = 'calibrationMap.mat';
+%calibrationMapFile = 'calibrationMap.mat';
+calibrationMapFile = '';
 saveCalibration = false;
 
 
@@ -15,11 +16,14 @@ saveCalibration = false;
 calibrationType = 'standard';
 
 %% standard calibration tasks checklist
-runDiagnosis = false;
+acquireSensors = false;
 calibrateAccelerometers = false;
 calibrateJointEncoders = true;
 calibrateFTsensors = false;
 calibrateGyroscopes = false;
+
+%% Diagnosis and visualization
+runDiagnosis = true;
 
 %% Custom calibration sequence
 % the below structured list defines the tasks sequence and their set of
@@ -36,10 +40,11 @@ calibrateGyroscopes = false;
 %     };
 
 
-%% Sensors diagnosis (only accelerometers for now)
+%% Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
-diagnosedParts = {'left_leg'};
+acquiredParts = {'left_leg'};
+% Profile = ... TBD!!
 
 % Fine selection of the accelerometers:
 % Select (set to 'true') the accelerometers to analyse through the respective indexes.
@@ -73,14 +78,16 @@ mtbSensorAct.head = 1;
 % printed in a new folder indexed by a unique iteration number. Log
 % classification information are saved in text format for easier search from
 % a file explorer.
-logTest = true;
+savePlot = true;
 
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'new'};
 
-% wrap parameters
-sensorDiagnosis = struct('diagnosedParts',{diagnosedParts},'mtbSensorAct',mtbSensorAct,'logTest',logTest,'sensorDataAcq',{sensorDataAcq});
-clear diagnosedParts mtbSensorAct logTest sensorDataAcq;
+% wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as
+% a calibrator task)
+taskSpecificParams = struct('mtbSensorAct',mtbSensorAct);
+sensorsTestDataAcq = struct('calibedParts',{acquiredParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'sensorDataAcq',{sensorDataAcq});
+clear acquiredParts mtbSensorAct savePlot sensorDataAcq taskSpecificParams;
 
 %% MTB/IMU accelerometers gains/offsets calibration
 
@@ -96,13 +103,19 @@ mtbSensorAct.right_leg = 1:13;
 mtbSensorAct.torso = 7:10;
 mtbSensorAct.head = 1;
 
+% Save generated figures: if this flag is set to true, all data is saved and figures 
+% printed in a new folder indexed by a unique iteration number. Log
+% classification information are saved in text format for easier search from
+% a file explorer.
+savePlot = true;
+
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'new'};
 
 % wrap parameters
-accelerometersCalib = struct('calibedParts',{calibedParts},'mtbSensorAct',mtbSensorAct,'sensorDataAcq',{sensorDataAcq});
-clear calibedParts mtbSensorAct sensorDataAcq;
-
+taskSpecificParams = struct('mtbSensorAct',mtbSensorAct);
+accelerometersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'sensorDataAcq',{sensorDataAcq});
+clear calibedParts mtbSensorAct savePlot sensorDataAcq taskSpecificParams;
 
 %% Joint encoders offsets calibration
 
@@ -138,12 +151,19 @@ calibedJointsIdxes.right_leg = 0:5;
 calibedJointsIdxes.torso = 0:2;
 calibedJointsIdxes.head = 0:2;
 
+% Save generated figures: if this flag is set to true, all data is saved and figures 
+% printed in a new folder indexed by a unique iteration number. Log
+% classification information are saved in text format for easier search from
+% a file explorer.
+savePlot = true;
+
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'calibrator',7};
 
 % wrap parameters
-jointEncodersCalib = struct('calibedParts',{calibedParts},'calibedJointsIdxes',calibedJointsIdxes,'sensorDataAcq',{sensorDataAcq});
-clear calibedParts calibedJointsIdxes sensorDataAcq;
+taskSpecificParams = struct('calibedJointsIdxes',calibedJointsIdxes);
+jointEncodersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'sensorDataAcq',{sensorDataAcq});
+clear calibedParts calibedJointsIdxes savePlot sensorDataAcq taskSpecificParams;
 
 %% FT sensors gains/offsets calibration (TBD)
 

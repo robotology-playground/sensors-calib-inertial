@@ -29,9 +29,6 @@ obj.loadData();
 %% build input data for calibration or validation of calibration
 %
 
-% Select full data subset to use on ellipsoid fitting
-subsetVec_idx = linspace(1,obj.nSamples,obj.nSamples);
-
 % Go through 'obj.frames', and get measurement variables indexes:
 sensorsIdxListFile = [];
 for frame = 1:length(obj.frames)
@@ -46,7 +43,7 @@ end
 sensMeasCell = cell(1,length(sensorsIdxListFile));
 for acc_i = 1:length(sensorsIdxListFile)
     ys = ['ys_' obj.labels{sensorsIdxListFile(acc_i)}];
-    eval(['sensMeas = obj.parsedParams.' ys '(:,subsetVec_idx);']);
+    eval(['sensMeas = obj.parsedParams.' ys ';']);
     sensMeasCell{1,acc_i} = sensMeas';
 end
 

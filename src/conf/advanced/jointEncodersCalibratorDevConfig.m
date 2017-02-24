@@ -17,14 +17,14 @@ randomDataIdxesFile = './data/randomIdx.mat';
 startPoint2Boundary = 20*pi/180; % 20 deg
 % cost function: 'costFunctionSigma' / 'costFunctionSigmaProjOnEachLink'
 costFunctionSelect = 'costFunctionSigma';
-shuffle = true;
+shuffle = false;
 
 % The main single data bucket of (timeStop-timeStart)/10ms samples is sub-sampled to
 % 'subSamplingSize' samples. A subset of 'subSamplingSize*subsetVec_size_frac' is
 % then selected for running the optimisation on.
 % The subset can be selected randomly.
 % The subset size = 1/number_of_subset_init of the total data set size
-number_of_subset_init = 5;
+number_of_subset_init = 1;
 subsetVec_size_frac = 1/number_of_subset_init;
 
 % Start and end point of data samples
@@ -56,8 +56,8 @@ calibedJointsDq0.head = [0 0 0];
 %  or wrong frame definition
 
 % set to 'true' activated sensors
-mtbSensorAct.left_arm([1 2 4]) = {true};
-mtbSensorAct.right_arm([2 4]) = {true};
+mtbSensorAct.left_arm(1:7) = {true};
+mtbSensorAct.right_arm(1:7) = {true};
 mtbSensorAct.left_leg(1:13) = {true};
 mtbSensorAct.right_leg(1:13) = {true};
 mtbSensorAct.torso(1:4) = {true};

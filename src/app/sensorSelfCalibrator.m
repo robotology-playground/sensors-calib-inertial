@@ -14,6 +14,7 @@ clear
 close all
 clc
 
+
 % Create YARP Network device, for initializing YARP classes for communication
 yarp.Network.init();
 
@@ -46,80 +47,114 @@ if ~exist('calibrationMap','var')
     calibrationMap = containers.Map('KeyType','char','ValueType','any');
 end
 
+% Load last acquired data accessors from file
+if exist('lastAcqSensorDataAccessorMap.mat','file') == 2
+    load('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
+end
+if ~exist('lastAcqSensorDataAccessorMap','var')
+    lastAcqSensorDataAccessorMap = containers.Map('KeyType','char','ValueType','any');
+end
+
 % All below procedures are optional and checked/unchecked in the main
 % interface parameters
 
-%% 1 - Run a diagnosis
+isTaskScheduled = [...
+    init.calibrateAccelerometers,...
+    init.calibrateJointEncoders,...
+    init.calibrateFTsensors,...
+    init.calibrateGyroscopes];
 
-if init.runDiagnosis
-    % Acquire sensors measurements data while moving randomly the joints at
-    % different accelerations and speeds. data batch tag = 'Random'.
+calibratorTasks = {...
+    'accelerometersCalibrator',...
+    'jointEncodersCalibrator',...
+    'ftSensorsCalibrator',...
+    'gyroscopesCalibrator'};
+
+taskInitParams = {...
+    init.accelerometersCalib,...
+    init.jointEncodersCalib,...
+    init.ftSensorsCalib,...
+    init.gyroscopesCalib};
+
+calibedSensors = {'acc','joint','ftSensor','gyro'};
+
+% build maps for above lists
+taskInitParamsMap = containers.Map(calibratorTasks,taskInitParams);
+calibedSensorMap = containers.Map(calibratorTasks,calibedSensors);
+acqSensorDataAccessorMap = containers.Map('KeyType','char','ValueType','any');
+
+% filter activated tasks and parameters
+calibratorTasks = calibratorTasks(isTaskScheduled);
+
+%% 0 - Acquire sensor data
+% 
+% Get stored sensor data or acquire new sensor data for each scheduled
+% calibrator task
+
+for cTask = calibratorTasks
+    % unwrap cTask
+    task = cell2mat(cTask);
     
-    % Acquire training sensors data over a grid (will eventually be used for
-    % calibrating the accelerometers. data batch tag = 'AccCalibrator'.
+    % Get or acquire sensor data
+    getOrAcquireData(...
+        init,task,taskInitParamsMap,...
+        acqSensorDataAccessorMap,lastAcqSensorDataAccessorMap);
 end
 
-%% 2 - Calibrate the accelerometers gains/offsets
+% Save eventual changes of last acquired data accessors to file
+save('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
+
+%% 1 - Run diagnosis on acquired data
+%
+
+if init.runDiagnosis
+    % Run diagnosis for the each scheduled calibrator task
+    for cTask = calibratorTasks
+        % unwrap cTask and get task init params
+        task = cell2mat(cTask);
+        taskInitParams = taskInitParamsMap(task);
+        % calibrator function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
+        diagFuncH = @(~,~,path,sensors,parts) ...
+            SensorDiagnosis.runDiagnosis(...
+            init.modelPath,calibrationMap,...
+            paths,sensors,parts,... % actual params passed through the func handle
+            taskInitParams.savePlot);
+        % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
+        runCalibratorOrDiagnosis(...
+            init,taskInitParams,diagFuncH,...
+            acqSensorDataAccessorMap(task),calibedSensorMap(task));
+    end
+    
+end
+
+%% 2 - Run the calibrators
+
+% 2.1 - Calibrate the accelerometers gains/offsets
 if init.calibrateAccelerometers
 end
 
-%% 3 - Calibrate the IMU accelerometers
-if init.calibrateIMU
-end
-
-%% 4 - Calibrate the encoders joint offsets
+% 2.2 - Calibrate the encoders joint offsets
 if init.calibrateJointEncoders
-    % unwrap the parameters specific to joint encoders calibration
-    Init.unWrap(init.jointEncodersCalib);
-    
-    % Convert 'calibedJointsIdxes' to matlab indexes
-    calibedJointsIdxes = structfun(...
-        @(field) field+1,calibedJointsIdxes,'UniformOutput',false);
-    
-    switch sensorDataAcq{1}
-        case 'new'
-            % Acquire accelerometers measurements while moving the joints following
-            % a profile tagged 'jointsCalibrator'
-            acqSensorDataAccessor = SensorDataAcquisition.acquireSensorData(...
-                'jointEncodersCalibrator',init.robotName,init.dataPath,calibedParts);
-            save('acqSensorDataAccessor.mat','acqSensorDataAccessor');
-            
-        case 'last'
-            load('acqSensorDataAccessor.mat','acqSensorDataAccessor');
-        otherwise
-            load([init.dataPath '/dataLogInfo.mat'],'dataLogInfoMap');
-            acqSensorDataAccessor = dataLogInfoMap.get(sensorDataAcq{:});
-    end
-    
-    % Get data folder path list for joints calibration on required parts.
-    % If the prior sensor data acquisition was done in N motion sequences
-    % (it is the case for calibrating the torso which needs a dedicated
-    % sequence), we get a folder path per sequence, so N paths.
-    [dataFolderPathList,calibedPartsList] = ...
-        acqSensorDataAccessor.getFolderPaths4calibedSensor('joint',init.dataPath);
-    
-    % For each sequence, get the logged sensors list and respective
-    % supporting parts
-    [measedSensorLists,measedPartsLists] = acqSensorDataAccessor.getMeasedSensorsParts();
-    
-    %% calibrate joint encoders. If the torso has to be calibrated, it
-    % should be before the arms since their orientation depends on the
-    % torso. In the below loop processing, 'calibrationMap' (input/output)
-    % is updated at each call to 'calibrateSensors'.
-    cellfun(@(folderPath,calibedParts,measedSensorList,measedPartsList) ...
+    % calibrator task and function
+    task = 'jointEncodersCalibrator';
+    % calibrator function
+    calibratorH = @(calParts,taskSpec,path,sensors,parts) ...
         JointEncodersCalibrator.calibrateSensors(...
         init.modelPath,calibrationMap,...
-        calibedParts,calibedJointsIdxes,folderPath,...
-        measedSensorList,measedPartsList),...
-        dataFolderPathList,calibedPartsList,measedSensorLists,measedPartsLists);
+        calParts,taskSpec,path,sensors,parts); % actual params passed through the func handle
+    
+    % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
+    runCalibratorOrDiagnosis(...
+        init,init.jointEncodersCalib,calibratorH,...
+        acqSensorDataAccessorMap(task),'joint');
 end
 
-%% 5 - Calibrate the FT sensors gains/offsets
-if init.calibrateFTsensors
-end
-
-%% 5 - Calibrate the gyroscopes
+% 2.3 - Calibrate the gyroscopes
 if init.calibrateGyroscopes
+end
+
+% 2.4 - Calibrate the FT sensors gains/offsets
+if init.calibrateFTsensors
 end
 
 %% Save calibration
@@ -129,4 +164,88 @@ end
 
 %% Uninitialize yarp
 yarp.Network.fini();
+
+
+%%
+%%===================================================================================
+% Static local functions
+%%===================================================================================
+
+% Gets stored sensor data or triggers a sensor data acquisition for the
+% scheduled task: acquisition of test data; data for calibrating the joint encoders,
+% the accelerometers, or other sensors
+function getOrAcquireData(...
+    init,task,taskInitParamsMap,...
+    acqSensorDataAccessorMap,lastAcqSensorDataAccessorMap)
+
+% [in] init :    application script init config parameters
+% [in] task :    calibrator task ('accelerometersCalibrator','jointEncodersCalibrator',...)
+% [in] taskInitParamsMap :    subset of config parameters for the scheduled task
+% [in/out] acqSensorDataAccessorMap :        acquired data accessors
+% [in/out] lastAcqSensorDataAccessorMap :    last instances of acquired data accessors
+
+% unwrap the parameters specific to joint encoders calibration
+Init.unWrap(taskInitParamsMap(task));
+
+switch sensorDataAcq{1}
+    case 'new'
+        % Acquire sensor measurements while moving the joints following
+        % a profile defined by the task
+        acqSensorDataAccessorMap(task) = SensorDataAcquisition.acquireSensorData(...
+            task,init.robotName,init.dataPath,calibedParts);
+        % save the acquired data info
+        lastAcqSensorDataAccessorMap(task) = acqSensorDataAccessorMap(task);
+        
+    case 'last'
+        if isempty(lastAcqSensorDataAccessorMap)...
+                || ~isKey(lastAcqSensorDataAccessorMap,task)
+            error(['No data has been acquired yet for the task ' task ' !!']);
+        end
+        acqSensorDataAccessorMap(task) = lastAcqSensorDataAccessorMap(task);
+        
+    otherwise
+        load([init.dataPath '/dataLogInfo.mat'],'dataLogInfoMap');
+        acqSensorDataAccessorMap(task) = dataLogInfoMap.get(sensorDataAcq{:});
+end
+
+end
+
+
+% Harvest the parameters and runs the calibration task
+function runCalibratorOrDiagnosis(...
+    init,taskInitParams,calibratorFuncH,...
+    acqSensorDataAccessor,calibedSensor)
+
+% [in] init :              application script init config parameters
+% [in] taskInitParams :    subset of config parameters for the scheduled task
+% [in] calibratorFuncH:    calibrator main function handle
+% [in] acqSensorDataAccessor :    acquired data accessor
+% [in] calibedSensor :            sensor to be calibrated
+% [in/out] calibrationMap :       calibration parameters database (accs,joints,...)
+
+% unwrap the parameters specific to the calibration task
+Init.unWrap(taskInitParams);
+
+% Get data folder path list for joints calibration on required parts.
+% If the prior sensor data acquisition was done in N motion sequences
+% (it is the case for calibrating the torso which needs a dedicated
+% sequence), we get a folder path per sequence, so N paths.
+[dataFolderPathList,calibedPartsList] = ...
+    acqSensorDataAccessor.getFolderPaths4calibedSensor(calibedSensor,init.dataPath);
+
+% For each sequence, get the logged sensors list and respective
+% supporting parts
+[measedSensorLists,measedPartsLists] = acqSensorDataAccessor.getMeasedSensorsParts();
+
+%% calibrate joint encoders. If the torso has to be calibrated, it
+% should be before the arms since their orientation depends on the
+% torso. In the below loop processing, 'calibrationMap' (input/output)
+% is updated at each call to 'calibrateSensors'.
+cellfun(@(folderPath,calibedParts,measedSensorList,measedPartsList) ...
+    calibratorFuncH(...
+    calibedParts,taskSpecificParams,folderPath,...
+    measedSensorList,measedPartsList),...
+    dataFolderPathList,calibedPartsList,measedSensorLists,measedPartsLists);
+
+end
 
