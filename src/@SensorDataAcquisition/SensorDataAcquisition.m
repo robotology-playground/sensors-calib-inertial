@@ -1,4 +1,4 @@
-classdef SensorDataAcquisition < handle
+classdef SensorDataAcquisition
     %UNTITLED2 Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -9,6 +9,8 @@ classdef SensorDataAcquisition < handle
     
     methods(Static = true, Access = protected)
         [seqHomeParams,seqEndParams,selector] = getSeqProfile(seqProfileTag);
+        
+        seqParams = setValFromGrid(gridParams,acqVel,transVel,labels);
     end
 end
 
