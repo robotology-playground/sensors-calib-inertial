@@ -84,11 +84,15 @@ loadJointPos = true;
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'new'};
 
+% Motion sequence profile
+motionSeqProfile = 'jointsCalibratorSequenceProfile';
+%motionSeqProfile = 'accelerometersCalibratorSequenceProfile';
+
 % wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as
 % a calibrator task)
-taskSpecificParams = struct('mtbSensorAct',mtbSensorAct);
+taskSpecificParams = struct('mtbSensorAct',mtbSensorAct,'motionSeqProfile',motionSeqProfile);
 sensorsTestDataAcq = struct('calibedParts',{acquiredParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'loadJointPos',loadJointPos,'sensorDataAcq',{sensorDataAcq});
-clear acquiredParts mtbSensorAct savePlot loadJointPos sensorDataAcq taskSpecificParams;
+clear acquiredParts mtbSensorAct savePlot loadJointPos sensorDataAcq motionSeqProfile taskSpecificParams;
 
 %% MTB/IMU accelerometers gains/offsets calibration
 

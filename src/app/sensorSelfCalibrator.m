@@ -116,7 +116,7 @@ if init.runDiagnosis
         % unwrap cTask and get task init params
         task = cell2mat(cTask);
         taskInitParams = taskInitParamsMap(task);
-        % calibrator function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
+        % diagnosis function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
         diagFuncH = @(~,~,path,sensors,parts) ...
             SensorDiagnosis.runDiagnosis(...
             init.modelPath,calibrationMap,...
@@ -229,7 +229,7 @@ switch sensorDataAcq{1}
         % Acquire sensor measurements while moving the joints following
         % a profile defined by the task
         acqSensorDataAccessorMap(task) = SensorDataAcquisition.acquireSensorData(...
-            task,init.robotName,init.dataPath,calibedParts);
+            task,taskSpecificParams,init.robotName,init.dataPath,calibedParts);
         % save the acquired data info
         lastAcqSensorDataAccessorMap(task) = acqSensorDataAccessorMap(task);
         

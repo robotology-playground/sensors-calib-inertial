@@ -4,11 +4,11 @@ classdef SensorDataAcquisition
     
     methods(Static = true, Access = public)
         acqSensorDataAccessor = ...
-            acquireSensorData(motionSequenceProfile,robotName,dataPath,calibedParts);
+            acquireSensorData(task,taskSpecificParams,robotName,dataPath,calibedParts);
     end
     
     methods(Static = true, Access = protected)
-        [seqHomeParams,seqEndParams,selector] = getSeqProfile(seqProfileTag);
+        [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams);
         
         seqParams = setValFromGrid(gridParams,acqVel,transVel,labels);
     end
