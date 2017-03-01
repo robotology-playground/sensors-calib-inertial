@@ -1,8 +1,7 @@
 function runDiagnosis(...
     modelPath,calibrationMap,...
     taskSpecificParams,dataPath,...
-    measedSensorList,measedPartsList,...
-    loadJointPos,savePlot)
+    measedSensorList,measedPartsList)
 
 % Unwrap task specific parameters (defines 'calibedJointsIdxes')
 Init.unWrap(taskSpecificParams);
@@ -10,11 +9,11 @@ Init.unWrap(taskSpecificParams);
 % Advanced interface parameters
 run sensorDiagnosisDevConfig;
 
-%% set init parameters 'ModelParams'
+%% set init parameters 'modelParams'
 %
 modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
     measedSensorList,measedPartsList,...
-    {},{},{},...
+    {},[],[],...
     mtbSensorAct);
 
 %% Update iterator and prepare log folders/files
@@ -23,8 +22,8 @@ if savePlot
     % create folders
     dataFolder = [dataPath '/diag'];
     figsFolder = [dataFolder '/log_' num2str(iterator)];
-    mkdir dataFolder;
-    mkdir figsFolder;
+    mkdir(dataFolder);
+    mkdir(figsFolder);
     
     % handle iterator
     if exist([dataFolder '/iterator.mat'],'file') == 2
@@ -55,12 +54,12 @@ switch loadSource
         plot = false;
         data.bc = SensorsData(dataPath,'',subSamplingSize,...
             timeStart,timeStop,plot);
-        [sensorsIdxListFile,sensMeasCell.bc] = data.bc.buildInputDataSet(loadJointPos,ModelParams);
+        [sensorsIdxListFile,sensMeasCell.bc] = data.bc.buildInputDataSet(loadJointPos,modelParams);
         
         % Build input data with calibration applied
         data.ac = SensorsData(dataPath,'',subSamplingSize,...
             timeStart,timeStop,plot,calibrationMap);
-        [sensorsIdxListFile,sensMeasCell.ac] = data.ac.buildInputDataSet(loadJointPos,ModelParams);
+        [sensorsIdxListFile,sensMeasCell.ac] = data.ac.buildInputDataSet(loadJointPos,modelParams);
         
         % Save data in a Matlab file for faster access in further runs
         if saveToCache
@@ -71,12 +70,12 @@ switch loadSource
 end
 
 % iteration list
-%activeAccs = ModelParams.mtbSensorCodes_list{1}(cell2mat(ModelParams.mtbSensorAct_list));
+%activeAccs = modelParams.mtbSensorCodes_list{1}(cell2mat(modelParams.mtbSensorAct_list));
 
 
 %% Check anysotropy of gains and offsets
 %
-% checkAccelerometersAnysotropy(...
+% SensorDiagnosis.checkAccelerometersAnysotropy(...
 %     data.bc,data.ac,sensorsIdxListFile,...
 %     sensMeasCell.bc,sensMeasCell.ac,...
 %     figsFolder,savePlot,loadJointPos);
@@ -90,32 +89,32 @@ if loadJointPos
     nrOfMTBAccs = length(sensorsIdxListFile);
 
     % init joints and sensors lists
-    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data.bc,ModelParams);
+    myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data.bc,modelParams);
     
     % load joint positions
     myCalibContext.loadJointNsensorsDataSubset(1:data.bc.nSamples);
     
     % cost before calibration
     [initialCost,sensMeasCell.bc,sensEstCell.bc] = costFunction(0,data.bc,1:data.bc.nSamples,@lsqnonlin,false,'');
-    fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
+    fprintf('Mean cost before calibration (in (m.s^{-2})^2):\n');
     (initialCost'*initialCost)/(nrOfMTBAccs*data.bc.nSamples)
     
     % cost after calibration
     [finalCost,sensMeasCell.ac,sensEstCell.ac] = costFunction(0,data.ac,1:data.ac.nSamples,@lsqnonlin,false,'');
-    fprintf('Mean cost before optimization (in (m.s^{-2})^2):\n');
+    fprintf('Mean cost after calibration (in (m.s^{-2})^2):\n');
     (finalCost'*finalCost)/(nrOfMTBAccs*data.ac.nSamples)
 
     %% Plot joint trajectories
     %
-    plotJointTrajectories(data,ModelParams,figsFolder,savePlot);
+    SensorDiagnosis.plotJointTrajectories(data,modelParams,figsFolder,savePlot);
     
     %% Plot predicted sensor variables VS sensor sensor measurements
     %
-    checkSensorMeasVsEst(...
+    SensorDiagnosis.checkSensorMeasVsEst(...
         data,sensorsIdxListFile,...
         sensMeasCell.bc,sensEstCell.bc,...
         figsFolder,savePlot,'bc')
-    checkSensorMeasVsEst(...
+    SensorDiagnosis.checkSensorMeasVsEst(...
         data,sensorsIdxListFile,...
         sensMeasCell.ac,sensEstCell.ac,...
         figsFolder,savePlot,'ac')

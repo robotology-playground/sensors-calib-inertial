@@ -28,7 +28,7 @@ run accelerometersCalibratorDevConfig;
 % Build inertial sensors parameters
 modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
     measedSensorList,measedPartsList,...
-    {},struct([]),struct([]),...  % no need for calibration parts information
+    {},[],[],...  % no need for calibration parts information
     mtbSensorAct);
 
 %% build input data for calibration

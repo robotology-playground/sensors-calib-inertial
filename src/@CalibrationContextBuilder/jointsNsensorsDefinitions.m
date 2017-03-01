@@ -8,13 +8,6 @@ function modelParams = jointsNsensorsDefinitions(...
 % - Define parameters for all joints (calibrated or not)
 % - Select activated sensors
 
-% Preset some input parameters
-if isempty(calibedParts)
-    calibedJointsIdxes = structfun(@(field) [],calibedJointsIdxes,'UniformOutput',false);
-    calibedJointsDq0 = structfun(@(field) [],calibedJointsDq0,'UniformOutput',false);
-end
-
-
 %% macros for repetitive names and codes between left and right parts
 %
 
@@ -124,6 +117,16 @@ jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
 % 'jointsToCalibrate' holds information for measured and calibrated
 % joints. Use the list of parts associated to measured joint encoders
 parts = [measedPartsList{ismember(measedSensorList,'joint')}];
+
+% Preset some input parameters
+parts = [measedPartsList{ismember(measedSensorList,'joint')}];
+if isempty(calibedParts)
+    for cPart = parts
+        part = cell2mat(cPart);
+        calibedJointsIdxes.(part) = [];
+        calibedJointsDq0.(part) = [];
+    end
+end
 
 % Build 'jointsToCalibrate'
 jointsToCalibrate.mapIdx = containers.Map('KeyType','char','ValueType','uint8');

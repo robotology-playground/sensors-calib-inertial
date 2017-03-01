@@ -14,6 +14,8 @@ clear
 close all
 clc
 
+%Clear static data
+clear RobotModel Timers RemoteControlBoardRemapper;
 
 % Create YARP Network device, for initializing YARP classes for communication
 yarp.Network.init();
@@ -107,29 +109,6 @@ end
 % Save eventual changes of last acquired data accessors to file
 save('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
 
-%% 2 - Run diagnosis on acquired data
-%
-
-if init.runDiagnosis
-    % Run diagnosis for the each scheduled calibrator task
-    for cTask = calibratorTasks
-        % unwrap cTask and get task init params
-        task = cell2mat(cTask);
-        taskInitParams = taskInitParamsMap(task);
-        % diagnosis function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
-        diagFuncH = @(~,~,path,sensors,parts) ...
-            SensorDiagnosis.runDiagnosis(...
-            init.modelPath,calibrationMap,...
-            paths,sensors,parts,... % actual params passed through the func handle
-            taskInitParams.loadJointPos,taskInitParams.savePlot);
-        % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
-        runCalibratorOrDiagnosis(...
-            init,taskInitParams,diagFuncH,...
-            acqSensorDataAccessorMap(task),calibedSensorsMap(task));
-    end
-    
-end
-
 %% 2 - Run the calibrators
 
 % 2.1 - Calibrate the accelerometers gains/offsets
@@ -173,12 +152,11 @@ if init.runDiagnosis
         % unwrap cTask and get task init params
         task = cell2mat(cTask);
         taskInitParams = taskInitParamsMap(task);
-        % calibrator function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
+        % diagnosis function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
         diagFuncH = @(~,~,path,sensors,parts) ...
             SensorDiagnosis.runDiagnosis(...
-            init.modelPath,calibrationMap,...
-            paths,sensors,parts,... % actual params passed through the func handle
-            taskInitParams.loadJointPos,taskInitParams.savePlot);
+            init.modelPath,calibrationMap,taskInitParams.taskSpecificParams,...
+            path,sensors,parts); % actual params passed through the func handle
         % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
         runCalibratorOrDiagnosis(...
             init,taskInitParams,diagFuncH,...

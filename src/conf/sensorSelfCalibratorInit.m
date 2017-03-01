@@ -81,18 +81,29 @@ mtbSensorAct.head = 1;
 savePlot = true;
 loadJointPos = true;
 
-% Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'new'};
-
 % Motion sequence profile
 motionSeqProfile = 'jointsCalibratorSequenceProfile';
 %motionSeqProfile = 'accelerometersCalibratorSequenceProfile';
 
+% Wrap parameters specific to calibrator or diagnosis functions processing
+taskSpecificParams = struct(...
+    'mtbSensorAct',mtbSensorAct,...
+    'savePlot',savePlot,...
+    'loadJointPos',loadJointPos,...
+    'motionSeqProfile',motionSeqProfile);
+
+% Sensor data acquisition: ['new'|'last'|<id>]
+sensorDataAcq = {'last'};
+
 % wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as
 % a calibrator task)
-taskSpecificParams = struct('mtbSensorAct',mtbSensorAct,'motionSeqProfile',motionSeqProfile);
-sensorsTestDataAcq = struct('calibedParts',{acquiredParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'loadJointPos',loadJointPos,'sensorDataAcq',{sensorDataAcq});
-clear acquiredParts mtbSensorAct savePlot loadJointPos sensorDataAcq motionSeqProfile taskSpecificParams;
+sensorsTestDataAcq = struct(...
+    'calibedParts',{acquiredParts},...
+    'taskSpecificParams',taskSpecificParams,...
+    'sensorDataAcq',{sensorDataAcq});
+
+clear acquiredParts mtbSensorAct savePlot loadJointPos ...
+    sensorDataAcq motionSeqProfile taskSpecificParams;
 
 %% MTB/IMU accelerometers gains/offsets calibration
 
@@ -116,13 +127,23 @@ mtbSensorAct.head = 1;
 savePlot = true;
 loadJointPos = false;
 
+% Wrap parameters specific to calibrator or diagnosis functions processing
+taskSpecificParams = struct(...
+    'mtbSensorAct',mtbSensorAct,...
+    'savePlot',savePlot,...
+    'loadJointPos',loadJointPos);
+
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'new'};
 
 % wrap parameters
-taskSpecificParams = struct('mtbSensorAct',mtbSensorAct);
-accelerometersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'loadJointPos',loadJointPos,'sensorDataAcq',{sensorDataAcq});
-clear calibedParts mtbSensorAct savePlot loadJointPos sensorDataAcq taskSpecificParams;
+accelerometersCalib = struct(...
+    'calibedParts',{calibedParts},...
+    'taskSpecificParams',taskSpecificParams,...
+    'sensorDataAcq',{sensorDataAcq});
+
+clear calibedParts mtbSensorAct savePlot loadJointPos ...
+    sensorDataAcq taskSpecificParams;
 
 %% Joint encoders offsets calibration
 
@@ -165,13 +186,23 @@ calibedJointsIdxes.head = 0:2;
 savePlot = true;
 loadJointPos = true;
 
+% Wrap parameters specific to calibrator or diagnosis functions processing
+taskSpecificParams = struct(...
+    'calibedJointsIdxes',calibedJointsIdxes,...
+    'savePlot',savePlot,...
+    'loadJointPos',loadJointPos);
+
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'calibrator',7};
 
 % wrap parameters
-taskSpecificParams = struct('calibedJointsIdxes',calibedJointsIdxes);
-jointEncodersCalib = struct('calibedParts',{calibedParts},'taskSpecificParams',taskSpecificParams,'savePlot',savePlot,'loadJointPos',loadJointPos,'sensorDataAcq',{sensorDataAcq});
-clear calibedParts calibedJointsIdxes savePlot loadJointPos sensorDataAcq taskSpecificParams;
+jointEncodersCalib = struct(...
+    'calibedParts',{calibedParts},...
+    'taskSpecificParams',taskSpecificParams,...
+    'sensorDataAcq',{sensorDataAcq});
+
+clear calibedParts calibedJointsIdxes savePlot loadJointPos ...
+    sensorDataAcq taskSpecificParams;
 
 %% FT sensors gains/offsets calibration (TBD)
 

@@ -4,8 +4,8 @@ function [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecific
 
 % default output
 seqHomeParams = {};
-seqEndParams = struct([]);
-selector = struct([]);
+seqEndParams = struct();
+selector = struct();
 
 switch task
     case 'jointEncodersCalibrator'
