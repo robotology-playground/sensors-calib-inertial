@@ -2,9 +2,9 @@ function [qT,qA,dqT,dqA,measTag] = buildGrid(qTparams,qAparams,acqVel,transVel)
 
 % Unwrap parameters
 % (A:acquire motion parameters. T:transient motion parameters).
-Init.unWrap_n(qTparams,T);
-Init.unWrap_n(qAparams,A);
-qinterv1 = (qmax1-qmin1)/nbInterv1; qinterv2 = (qmax2-qmin2)/nbInterv2;
+Init.unWrap_n(qTparams,'T');
+Init.unWrap_n(qAparams,'A');
+qintervT = (qmaxT-qminT)/nbIntervT;
 
 % Create grid of qT|qA joint angles.
 % For instance, if qT spans from 1 to 4, and qA has values min|max=-5|5,
@@ -17,10 +17,10 @@ qinterv1 = (qmax1-qmin1)/nbInterv1; qinterv2 = (qmax2-qmin2)/nbInterv2;
 %      5     5     5     5  qA
 %     20    20    20    20  v
 %
-[qTGrid,qAGrid] = meshgrid(qmin1:qinterv1:qmax1,[qmin2 qmax2]);
+[qTGrid,qAGrid] = meshgrid(qminT:qintervT:qmaxT,[qminA qmaxA]);
 
 % Define a reordering table matching the format of qT and qA
-qApathIdxesOverGrid = getPathOnGrid(qAGrid);
+qApathIdxesOverGrid = GridGenerator.getPathOnGrid(qAGrid);
 
 % Reshape qT and qA grids to column vectors reordering the elements
 % as per 'idxesMat'.
@@ -35,6 +35,6 @@ dqT = repmat(transVel,size(qT));
 dqA = repmat(acqVel,size(qA));
 
 % Measurement tags
-measTag = getMeasTagsFromPaths(qT);
+measTag = GridGenerator.getMeasTagsFromPaths(qT);
 
 end

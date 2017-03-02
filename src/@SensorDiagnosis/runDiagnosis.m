@@ -18,12 +18,12 @@ modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
 
 %% Update iterator and prepare log folders/files
 %
+figsFolder = '';
+
 if savePlot
-    % create folders
+    % create data folder
     dataFolder = [dataPath '/diag'];
-    figsFolder = [dataFolder '/log_' num2str(iterator)];
     mkdir(dataFolder);
-    mkdir(figsFolder);
     
     % handle iterator
     if exist([dataFolder '/iterator.mat'],'file') == 2
@@ -31,6 +31,10 @@ if savePlot
         iterator = iterator+1;
     end
     save([dataFolder '/iterator.mat'],'iterator');
+    
+    % create figures folder
+    figsFolder = [dataFolder '/log_' num2str(iterator)];
+    mkdir(figsFolder);
     
     % create log info file
     fileID = fopen([dataFolder '/log_' num2str(iterator) '.txt'],'w');
