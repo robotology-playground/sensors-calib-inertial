@@ -1,4 +1,4 @@
-function newCalibrationMap = calibrateSensors(...
+function calibrateSensors(...
     calibrationMap,...
     taskSpecificParams,dataPath,...
     measedSensorList,measedPartsList)
@@ -83,8 +83,5 @@ end
 calibratedFrames = data.frames(1,sensorsIdxListFile);
 calibMapExt = containers.Map(calibratedFrames,calib);
 calibrationMap = [calibrationMap;calibMapExt];
-
-% Return calibration (actually points to the same object. TO BE IMPROVED)
-newCalibrationMap = calibrationMap;
 
 end

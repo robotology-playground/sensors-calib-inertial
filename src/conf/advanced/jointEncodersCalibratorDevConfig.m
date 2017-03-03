@@ -4,7 +4,8 @@
 %%
 
 % 'simu' or 'target' mode
-loadSource = 'dumpfile';
+loadSource = 'dumpFile';
+saveToCache = false;
 offsetsGridResolution = 10*pi/180; % step between 2 offsets for each joint DOF (degrees)
 offsetsGridRange = 5*pi/180; % min/max (degrees)
 offsetedQsIdxs = 1:6;
@@ -46,7 +47,7 @@ calibedJointsDq0.head = [0 0 0];
 %% some sensors are de-activated because of faulty behaviour, bad calibration 
 %  or wrong frame definition
 
-% set to 'true' activated sensors
+% Enumerate the activated sensors
 mtbSensorAct.left_arm = [10:13 8:9 7];
 mtbSensorAct.right_arm = [10:13 8:9 7];
 mtbSensorAct.left_leg = 1:13;

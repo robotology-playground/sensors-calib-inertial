@@ -179,17 +179,29 @@ calibedJointsIdxes.right_leg = 0:5;
 calibedJointsIdxes.torso = 0:2;
 calibedJointsIdxes.head = 0:2;
 
+% some sensors are de-activated because of faulty behaviour, bad calibration 
+% or wrong frame definition
+mtbSensorAct.left_arm = [10:13 8:9 7];
+mtbSensorAct.right_arm = [10:13 8:9 7];
+mtbSensorAct.left_leg = 1:13;
+mtbSensorAct.right_leg = 1:13;
+mtbSensorAct.torso = 7:10;
+mtbSensorAct.head = 1;
+
 % Save generated figures: if this flag is set to true, all data is saved and figures 
 % printed in a new folder indexed by a unique iteration number. Log
 % classification information are saved in text format for easier search from
 % a file explorer.
-savePlot = true;
+savePlot = false;
 loadJointPos = true;
+
+
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
     'calibedJointsIdxes',calibedJointsIdxes,...
     'savePlot',savePlot,...
+    'mtbSensorAct',mtbSensorAct,...
     'loadJointPos',loadJointPos);
 
 % Sensor data acquisition: ['new'|'last'|<id>]

@@ -15,7 +15,7 @@ close all
 clc
 
 %Clear static data
-clear RobotModel Timers RemoteControlBoardRemapper;
+clear RobotModel Timers RemoteControlBoardRemapper SequenceParams;
 
 % Create YARP Network device, for initializing YARP classes for communication
 yarp.Network.init();

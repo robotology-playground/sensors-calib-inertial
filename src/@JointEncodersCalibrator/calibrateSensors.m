@@ -1,4 +1,4 @@
-function newCalibrationMap = calibrateSensors(...
+function calibrateSensors(...
     modelPath,calibrationMap,...
     calibedParts,taskSpecificParams,dataPath,...
     measedSensorList,measedPartsList)
@@ -59,7 +59,7 @@ switch loadSource
         % build sensor data parser
         plot = false; loadJointPos = true;
         data = SensorsData(dataPath,'',subSamplingSize,...
-            timeStart,timeStop,plot);
+            timeStart,timeStop,plot,calibrationMap);
         data.buildInputDataSet(loadJointPos,modelParams);
         
         % Save data in a Matlab file for faster access in further runs
@@ -236,9 +236,6 @@ for iter = calibedPartsIdxes
         mapValue(modelParams.jointsToCalibrate.calibedJointsIdxes{iter}) + calib{iter}; % add calibrated values
     calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
 end
-
-% Return calibration (actually points to the same object. TO BE IMPROVED)
-newCalibrationMap = calibrationMap;
 
 % log data
 save('./data/minimResult.mat', ...

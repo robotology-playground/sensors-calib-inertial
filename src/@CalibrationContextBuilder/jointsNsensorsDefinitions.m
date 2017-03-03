@@ -127,6 +127,14 @@ if isempty(calibedParts)
         calibedJointsDq0.(part) = [];
     end
 end
+if isempty(mtbSensorAct)
+    mtbSensorAct.left_arm = [10:13 8:9 7];
+    mtbSensorAct.right_arm = [10:13 8:9 7];
+    mtbSensorAct.left_leg = 1:13;
+    mtbSensorAct.right_leg = 1:13;
+    mtbSensorAct.torso = 7:10;
+    mtbSensorAct.head = 1;
+end
 
 % Build 'jointsToCalibrate'
 jointsToCalibrate.mapIdx = containers.Map('KeyType','char','ValueType','uint8');
