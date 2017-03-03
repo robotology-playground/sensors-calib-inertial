@@ -8,8 +8,8 @@ dataPath  = '../../data/dumper';
 modelPath = '../models/iCubGenova02/iCubGenova02.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 %calibrationMapFile = 'calibrationMap.mat';
-calibrationMapFile = '';
-saveCalibration = false;
+calibrationMapFile = ['../conf/calibration/' robotName '_calibrationMap.mat'];
+saveCalibration = true;
 
 
 %% Standard or custom calibration
@@ -40,7 +40,7 @@ runDiagnosis = true;
 %     };
 
 
-%% Acquire only sensors test data (only accelerometers for now)
+%% 'acquireSensorsTestData': Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
 acquiredParts = {'left_leg','right_leg'};
@@ -105,7 +105,7 @@ sensorsTestDataAcq = struct(...
 clear acquiredParts mtbSensorAct savePlot loadJointPos ...
     sensorDataAcq motionSeqProfile taskSpecificParams;
 
-%% MTB/IMU accelerometers gains/offsets calibration
+%% 'calibrateAccelerometers': MTB/IMU accelerometers gains/offsets calibration
 
 % Calibrated parts:
 % Only the accelerometers from these parts (limbs) will be calibrated
@@ -145,7 +145,7 @@ accelerometersCalib = struct(...
 clear calibedParts mtbSensorAct savePlot loadJointPos ...
     sensorDataAcq taskSpecificParams;
 
-%% Joint encoders offsets calibration
+%% 'calibrateJointEncoders' Joint encoders offsets calibration
 
 % Calibrated parts:
 % Only the joint encoders from these parts (limbs) will be calibrated

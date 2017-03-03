@@ -174,7 +174,7 @@ end
 
 %% Save calibration
 if init.saveCalibration
-    save('calibrationMap.mat','calibrationMap');
+    save(init.calibrationMapFile,'calibrationMap');
 end
 
 %% Uninitialize yarp

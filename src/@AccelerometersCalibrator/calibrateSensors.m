@@ -43,7 +43,7 @@ switch loadSource
         plot = false; loadJointPos = false;
         data = SensorsData(dataPath,'',subSamplingSize,...
             timeStart,timeStop,plot);
-        [sensorsIdxListFile,sensMeasCell] = data.buildInputDataSet(loadJointPos,ModelParams);
+        [sensorsIdxListFile,sensMeasCell] = data.buildInputDataSet(loadJointPos,modelParams);
         
         % Save data in a Matlab file for faster access in further runs
         if saveToCache
@@ -82,6 +82,9 @@ end
 % Create mapping extension with new calibrated frames
 calibratedFrames = data.frames(1,sensorsIdxListFile);
 calibMapExt = containers.Map(calibratedFrames,calib);
-calibrationMap = [calibrationMap;calibMapExt];
+for cKey = calibMapExt.keys   % go through all elements of the map extension
+    key = cell2mat(cKey);     % decapsulate key
+    calibrationMap(key) = calibMapExt(key);
+end
 
 end

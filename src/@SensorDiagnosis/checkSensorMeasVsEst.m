@@ -1,7 +1,7 @@
 function checkSensorMeasVsEst(...
     data,sensorsIdxListFile,...
     sensMeasCell,sensEstCell,...
-    figsFolder,logTest,logtag)
+    figsFolder,savePlot,logtag)
 
 % number of measurement samples
 subSamplingSize = size(sensMeasCell,1);
@@ -43,7 +43,7 @@ for acc_i = accIter
     legend('Location','BestOutside','measured acc.','estimated acc.');
     hold off;
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_v3dAccEstVSaccMeas']);
 end
@@ -77,7 +77,7 @@ for acc_i = accIter
         'estimated x','estimated y','estimated z');
     hold off;
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_xyzAccEstVSaccMeas']);
 end
@@ -111,7 +111,7 @@ for acc_i = accIter
     legend('Location','BestOutside','norm(measured)','norm(estimated)','norm(measured-estimated)');
     hold off;
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_normAccEstVSaccMeas']);
 end
@@ -140,7 +140,7 @@ for acc_i = accIter
     ylabel('Angle (degrees)','Fontsize',12);
     hold off
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_angleAccEstVSaccMeas']);
 end

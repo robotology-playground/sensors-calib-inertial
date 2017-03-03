@@ -1,4 +1,4 @@
-function plotJointTrajectories(data,modelParams,figsFolder,logTest)
+function plotJointTrajectories(data,modelParams,figsFolder,savePlot)
 
 % compute time series
 time = data.ac.tInit + data.ac.parsedParams.time(:);
@@ -22,7 +22,7 @@ ylabel('Joints positions (degrees)','Fontsize',12);
 legend('Location','BestOutside',modelParams.jointsToCalibrate.ctrledJoints{1});
 set(gca,'FontSize',12);
 
-if logTest
+if savePlot
     set(gcf,'PaperPositionMode','auto');
     print('-dpng','-r300','-opengl',[figsFolder '/jointTraject']);
 end
