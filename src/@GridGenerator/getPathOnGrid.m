@@ -1,4 +1,4 @@
-function pathIdxesOverGrid = getPathOnGrid(aGrid)
+function pathIdxesOverGrid = getPathOnGrid(~,aGrid)
 
 % Define the sequence depicted below (in zigzags):
 %

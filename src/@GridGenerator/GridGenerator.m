@@ -1,4 +1,4 @@
-classdef GridGenerator
+classdef GridGenerator < handle
     %GridGenerator Generates a joint positions sequence following  grid.
     %   The grid motion is defined as 2 orthogonal sets of continuous, evenly
     %   spaced and parallel lines, as we span the space of 2 joint position 
@@ -6,14 +6,17 @@ classdef GridGenerator
     %   takes a limited series of values as the other spans a given continuous
     %   range.
     
-    methods(Static = true, Access = public)
-        [qT,qA,dqT,dqA,measTag] = buildGrid(qTparams,qAparams,acqVel,transVel);
+    methods(Access = public)
+        function obj = GridGenerator()
+        end
+        
+        [qT,qA,dqT,dqA,measTag] = buildGrid(obj,qTparams,qAparams,acqVel,transVel);
     end
     
-    methods(Static = true, Access = protected)
-        pathIdxesOverGrid = getPathOnGrid(aGrid);
+    methods(Access = protected)
+        pathIdxesOverGrid = getPathOnGrid(obj,aGrid);
         
-        measTag = getMeasTagsFromPaths(qT);
+        measTag = getMeasTagsFromPaths(obj,qT);
     end
 end
 

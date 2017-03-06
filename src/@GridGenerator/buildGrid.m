@@ -1,4 +1,4 @@
-function [qT,qA,dqT,dqA,measTag] = buildGrid(qTparams,qAparams,acqVel,transVel)
+function [qT,qA,dqT,dqA,measTag] = buildGrid(obj,qTparams,qAparams,acqVel,transVel)
 
 % Unwrap parameters
 % (A:acquire motion parameters. T:transient motion parameters).
@@ -20,7 +20,7 @@ qintervT = (qmaxT-qminT)/nbIntervT;
 [qTGrid,qAGrid] = meshgrid(qminT:qintervT:qmaxT,[qminA qmaxA]);
 
 % Define a reordering table matching the format of qT and qA
-qApathIdxesOverGrid = GridGenerator.getPathOnGrid(qAGrid);
+qApathIdxesOverGrid = obj.getPathOnGrid(qAGrid);
 
 % Reshape qT and qA grids to column vectors reordering the elements
 % as per 'idxesMat'.
@@ -35,6 +35,6 @@ dqT = repmat(transVel,size(qT));
 dqA = repmat(acqVel,size(qA));
 
 % Measurement tags
-measTag = GridGenerator.getMeasTagsFromPaths(qT);
+measTag = obj.getMeasTagsFromPaths(qT);
 
 end

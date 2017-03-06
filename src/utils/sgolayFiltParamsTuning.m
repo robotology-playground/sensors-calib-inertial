@@ -7,13 +7,13 @@ clc
 
 % 'matFile' or 'dumpFile' mode
 saveToCache = false;
-loadFromCache = true;
+loadFromCache = false;
 saveFiltParams = false;
 loadFiltParams = false;
 
 % model and data capture file
-modelPath = '../models/iCubGenova05/iCubFull.urdf';
-dataPath  = '../../data/calibration/dumper/iCubGenova05_#3/';
+dataPath  = '../../data/dumper/icubSim.accelerometersCalibrator#25.seq#25';
+modelPath = '../models/icubSim/icub.urdf';
 dataSetNb = '';
 contextPath = '../AccelAutoCalib/data/calib/sgolayFiltParams.mat';
 
@@ -29,13 +29,25 @@ filtParams.type = 'none';
 
 % define the limb from which we will calibrate all the sensors.
 % Activate all the sensors of that limb.
-jointsToCalibrate.parts = {'left_leg'};
+jointsToCalibrate.parts = {'right_leg'};
 
 %%=========================================================================
 
-%% set init parameters 'ModelParams'
+%% set init parameters 'modelParams'
 %
-run jointsNsensorsDefinitions;
+measedSensorList = {'acc','joint'};
+measedPartsList = {{'right_leg'},{'right_leg'}};
+mtbSensorAct.left_arm = [10:13 8:9 7];
+mtbSensorAct.right_arm = [10:13 8:9 7];
+mtbSensorAct.left_leg = 1:13;
+mtbSensorAct.right_leg = 1:13;
+mtbSensorAct.torso = 7:10;
+mtbSensorAct.head = 1;
+
+modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
+    measedSensorList,measedPartsList,...
+    {},[],[],...  % no need for calibration parts information
+    mtbSensorAct);
 
 %% Get sensor output data
 %
@@ -46,11 +58,25 @@ else
 end
 
 % Retrieve all captured data 
-[data,sensorsIdxListFile,~] = buildInputDataSet(...
-    loadSource,saveToCache,false,...
-    dataPath,dataSetNb,...
-    subSamplingSize,timeStart,timeStop,...
-    ModelParams,[],filtParams);
+switch loadSource
+    case 'cache'
+        load([dataPath '/dataCache.mat'],'data');
+        
+    case 'dumpFile'
+        % build sensor data parser
+        plot_ = false; loadJointPos = false;
+        data = SensorsData(dataPath,'',subSamplingSize,...
+            timeStart,timeStop,plot_,[],filtParams);
+        [sensorsIdxListFile,~] = data.buildInputDataSet(loadJointPos,modelParams);
+        
+        % Save data in a Matlab file for faster access in further runs
+        if saveToCache
+            save([dataPath '/dataCache.mat'],'data');
+        end
+        
+    otherwise
+        disp('Unknown data source !!')
+end
 
 acc_list = 1:length(sensorsIdxListFile);
 
@@ -78,7 +104,7 @@ for acc_i = acc_list
     
     % create figure and press-key handler
     figure('Name',['{x,y,z} Components of raw sensor ' num2str(sensorsIdxListFile(acc_i))],...
-        'WindowKeyPressFcn',{@tuneFilter,filterContext});
+        'WindowKeyPressFcn',{@FilterContext.tuneFilter,filterContext});
     set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
     
     % Plot original signal components X, Y, Z

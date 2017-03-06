@@ -9,9 +9,9 @@ selector = struct();
 
 switch task
     case 'jointEncodersCalibrator'
-        run jointsCalibratorSequenceProfile;
+        run jointsCalibratorSequenceProfileWOsuspend;
     case 'accelerometersCalibrator'
-        run accelerometersCalibratorSequenceProfile;
+        run accelerometersCalibratorSequenceProfileWOsuspend;
     case 'sensorsTestDataAcquisition'
         run(taskSpecificParams.motionSeqProfile);
     otherwise

@@ -32,8 +32,8 @@ homeCalibTorso.val = {...
 % define grid motion patterns for each limb
 
 %% common parameters
-gridBuilder = GridGenerator();
-acqVel = 4; transVel = 10;
+gridBuilder = GridGeneratorWOsuspend();
+acqVel = 4; transVel = 4;
 
 %% Left and right arms
 left_arm_seqParams.labels = {...

@@ -1,4 +1,4 @@
-function seqParams = setValFromGrid(gridParams,acqVel,transVel,labels)
+function seqParams = setValFromGrid(gridBuilder,gridParams,acqVel,transVel,labels)
 
 % parse the grid parameters (creates vars 'part1','joint1','part2'...)
 q1params = cell2struct(gridParams(2,:),gridParams(1,:),2);
@@ -10,11 +10,11 @@ q2params.part = part;
 % create sequence where q1 spans once from qmin1 to qmax2 step by step, and
 % q2 spans its range in a continuous way.
 seqX = cell(1,5);
-[seqX{1:5}] = GridGenerator.buildGrid(q1params,q2params,acqVel,transVel);
+[seqX{1:5}] = gridBuilder.buildGrid(q1params,q2params,acqVel,transVel);
 
 % create sequence where q1 and q2 now have their roles inverted
 seqY = cell(1,5);
-[seqY{[2 1 4 3 5]}] = GridGenerator.buildGrid(q2params,q1params,acqVel,transVel);
+[seqY{[2 1 4 3 5]}] = gridBuilder.buildGrid(q2params,q1params,acqVel,transVel);
 
 % concatenate and extract final vectors...
 seq = cellfun(@(cellX,cellY) [cellX;cellY],seqX,seqY,'UniformOutput',false);
