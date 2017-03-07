@@ -126,6 +126,11 @@ if init.calibrateAccelerometers
     runCalibratorOrDiagnosis(...
         init,init.accelerometersCalib,calibratorH,...
         acqSensorDataAccessorMap(task),'acc');
+    
+    % Save calibration
+    if init.saveCalibration
+        save(init.calibrationMapFile,'calibrationMap');
+    end
 end
 
 % 2.2 - Calibrate the encoders joint offsets
@@ -143,6 +148,11 @@ if init.calibrateJointEncoders
     runCalibratorOrDiagnosis(...
         init,init.jointEncodersCalib,calibratorH,...
         acqSensorDataAccessorMap(task),'joint');
+    
+    % Save calibration
+    if init.saveCalibration
+        save(init.calibrationMapFile,'calibrationMap');
+    end
 end
 
 % 2.3 - Run diagnosis on acquired data
@@ -170,11 +180,6 @@ end
 
 % 2.5 - Calibrate the FT sensors gains/offsets
 if init.calibrateFTsensors
-end
-
-%% Save calibration
-if init.saveCalibration
-    save(init.calibrationMapFile,'calibrationMap');
 end
 
 %% Uninitialize yarp

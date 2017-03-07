@@ -120,52 +120,49 @@ classdef SensorsData < handle
             LIN_ACC_1RST_IDX = 3;
             LIN_ACC_LAST_IDX = 4;
 
-            % Number of activated sensors for current part are ('true'
-            % flag count)
-            obj.nrOfMTBAccs = obj.nrOfMTBAccs + sum(sensorActs);
+            % Number of activated sensors for current part
+            obj.nrOfMTBAccs = obj.nrOfMTBAccs + numel(sensorActs);
             
-            for iter = 1:length(sensorActs)
-                if sensorActs(iter)
-                    %ADDSENSTODATA Add a sensor to the data structure
-                    % there is no naming convention yet. ex of sensor frame: [r_upper_leg_mtb_acc_11b3]
-                    % ex of sensor label: [11b3_acc]
-                    switch mtxSensorTypes{iter}
-                        case 'inertialMTI'
-                            offset = obj.offsetMTI;
-                            frameTag = '_mti_acc_';
-                            acc_gain = 1; % raw fullscale to m/s^2 conversion
-                        case 'inertialMTB'
-                            offset = obj.offsetMTB; % TBD. improve: not needed for ETH iCub
-                            frameTag = '_mtb_acc_';
-                            acc_gain = 5.9855e-04; % raw fullscale to m/s^2 conversion
-                        otherwise
-                            error('Unknown sensor type !!');
-                    end
-                    
-                    indexList = strcat(num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_1RST_IDX)), ...
-                        ':',num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_LAST_IDX)));
-                    
-                    % define frame string
-                    fullFrameStr = strcat(mtbSensorLinks{iter},frameTag,mtbSensorCodes{iter});
-                    % get calibration for this sensor
-                    if isKey(obj.calibrationMap,fullFrameStr)
-                        calibMap = obj.calibrationMap(fullFrameStr);
-                    else
-                        calibMap.centre=[0 0 0]'; calibMap.radii=[1 1 1]';
-                        calibMap.quat=[1 0 0 0]'; calibMap.R=eye(3);
-                        calibMap.C=eye(3); % calibration matrix
-                        calibMap.gain=acc_gain;  % raw fullscale to m/s^2 conversion
-                    end
-                    
-                    obj.addSensToData(  part, ...
-                                        fullFrameStr, ...
-                                        strcat(mtbSensorCodes{iter},'_acc'), ...
-                                        3, ...
-                                        indexList, ...
-                                        mtxSensorTypes{iter}, ...
-                                        calibMap, ...
-                                        visualize && obj.plot);
+            for iter = sensorActs(:)'
+                %ADDSENSTODATA Add a sensor to the data structure
+                % there is no naming convention yet. ex of sensor frame: [r_upper_leg_mtb_acc_11b3]
+                % ex of sensor label: [11b3_acc]
+                switch mtxSensorTypes{iter}
+                    case 'inertialMTI'
+                        offset = obj.offsetMTI;
+                        frameTag = '_mti_acc_';
+                        acc_gain = 1; % raw fullscale to m/s^2 conversion
+                    case 'inertialMTB'
+                        offset = obj.offsetMTB; % TBD. improve: not needed for ETH iCub
+                        frameTag = '_mtb_acc_';
+                        acc_gain = 5.9855e-04; % raw fullscale to m/s^2 conversion
+                    otherwise
+                        error('Unknown sensor type !!');
                 end
+                
+                indexList = strcat(num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_1RST_IDX)), ...
+                    ':',num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_LAST_IDX)));
+                
+                % define frame string
+                fullFrameStr = strcat(mtbSensorLinks{iter},frameTag,mtbSensorCodes{iter})
+                % get calibration for this sensor
+                if isKey(obj.calibrationMap,fullFrameStr)
+                    calibMap = obj.calibrationMap(fullFrameStr);
+                else
+                    calibMap.centre=[0 0 0]'; calibMap.radii=[1 1 1]';
+                    calibMap.quat=[1 0 0 0]'; calibMap.R=eye(3);
+                    calibMap.C=eye(3); % calibration matrix
+                    calibMap.gain=acc_gain;  % raw fullscale to m/s^2 conversion
+                end
+                
+                obj.addSensToData(  part, ...
+                    fullFrameStr, ...
+                    strcat(mtbSensorCodes{iter},'_acc'), ...
+                    3, ...
+                    indexList, ...
+                    mtxSensorTypes{iter}, ...
+                    calibMap, ...
+                    visualize && obj.plot);
             end
         end
 

@@ -14,7 +14,8 @@ time = data.ac.tInit + data.ac.parsedParams.time(:);
 
 %% ============ 3D vectors ===============================================
 %
-figure('Name', '3D vectors sensor measurement VS sensor estimation');
+figure('Name', '3D vectors sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('3D vectors of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 % origin of the vectors = origin of the sensor frame
@@ -50,7 +51,8 @@ end
 
 %% ============ vector components ========================================
 %
-figure('Name', 'components of sensor measurement VS sensor estimation');
+figure('Name', 'components of sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('components of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 subplotIdx = 0;
@@ -84,7 +86,8 @@ end
 
 %% ============ vector norms =============================================
 %
-figure('Name', 'Norm of sensor measurement VS sensor estimation');
+figure('Name', 'Norm of sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('Norm of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 subplotIdx = 0;
@@ -118,7 +121,8 @@ end
 
 %% ============ angle between vectors ====================================
 %
-figure('Name', 'Angle of sensor measurement VS sensor estimation');
+figure('Name', 'Angle of sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('Angle of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 subplotIdx = 0;

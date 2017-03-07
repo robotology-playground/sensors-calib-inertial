@@ -4,7 +4,7 @@ function plotJointTrajectories(data,modelParams,figsFolder,savePlot)
 time = data.ac.tInit + data.ac.parsedParams.time(:);
 
 %% Plot joint trajectories
-figure('Name','chain joint positions q');
+figure('Name','chain joint positions q','WindowStyle', 'docked');
 set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
 title('chain joint positions q','Fontsize',16,'FontWeight','bold');
 hold on

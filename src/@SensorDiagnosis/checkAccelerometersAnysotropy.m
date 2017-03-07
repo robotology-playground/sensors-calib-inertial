@@ -54,7 +54,10 @@ for acc_i = accIter
         FID = 1;
     end
     
-    figure('Name',['calibration of MTB sensor ' data.ac.labels{sensorsIdxListFile(acc_i)}]);
+    figure(...
+        'Name',['calibration of MTB sensor ' data.ac.labels{sensorsIdxListFile(acc_i)}],...
+        'WindowStyle', 'docked');
+    
     %set(gcf,'PositionMode','manual','Units','centimeters','Position',[5 5 50 200]);
     set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
 
@@ -120,7 +123,10 @@ dOrientListBCmat = cell2mat(dOrientListBC);
 dOrientListACmat = cell2mat(dOrientListAC);
 
 % Plot
-figure;
+figure(...
+    'Name',['calibration of MTB sensor ' ...
+    cellArrayOfStr2str(',',data.ac.labels(sensorsIdxListFile(accIter)))],...
+    'WindowStyle', 'docked');
 
 bar([mean(dOrientListBCmat,1)' mean(dOrientListACmat,1)']);
 

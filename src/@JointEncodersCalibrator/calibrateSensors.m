@@ -216,14 +216,15 @@ std_optDq_subsets
 %% Format and save calibration in the main calibration map
 %
 
-% Split computed offsets matrix into part wise cells
-calib = mat2cell(averageOptimalDq,lengths(modelParams.jointsToCalibrate.calibedJointsDq0{:}));
-
 % Merge new calibrated joint offsets with old 'calibrationMap'.
 % The result matrix optimalDq has the same format as Dq and Dq0.
 % Dq0 results from the concatenation of the modelParams.jointsToCalibrate.calibedJointsDq0
 % matrices.
 [~,calibedPartsIdxes] = ismember(modelParams.calibedParts,modelParams.jointMeasedParts);
+
+% Split computed offsets matrix into part wise cells
+calib = mat2cell(averageOptimalDq,lengths(modelParams.jointsToCalibrate.calibedJointsDq0{calibedPartsIdxes}));
+
 for iter = calibedPartsIdxes
     mapKey = strcat('jointsOffsets_',modelParams.jointMeasedParts{iter}); % set map key
     % get current value or set a default one (zeros)

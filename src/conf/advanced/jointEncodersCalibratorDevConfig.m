@@ -43,14 +43,3 @@ calibedJointsDq0.left_leg = [0 0 0 0 0 0];
 calibedJointsDq0.right_leg = [0 0 0 0 0 0];
 calibedJointsDq0.torso = [0 0 0];
 calibedJointsDq0.head = [0 0 0];
-
-%% some sensors are de-activated because of faulty behaviour, bad calibration 
-%  or wrong frame definition
-
-% Enumerate the activated sensors
-mtbSensorAct.left_arm = [10:13 8:9 7];
-mtbSensorAct.right_arm = [10:13 8:9 7];
-mtbSensorAct.left_leg = 1:13;
-mtbSensorAct.right_leg = 1:13;
-mtbSensorAct.torso = 7:10;
-mtbSensorAct.head = 1;
