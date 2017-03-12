@@ -1,4 +1,4 @@
-function [seqHomeParams,seqEndParams,selector] = getSeqProfile(seqProfileTag)
+function [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams)
 %getSeqProfile Loads the sequence profile parameters from a script ini file
 %   The script holding the sequence parameters is selected by the tag 'seqProfileTag' 
 
@@ -7,11 +7,15 @@ seqHomeParams = {};
 seqEndParams = struct();
 selector = struct();
 
-switch seqProfileTag
+switch task
     case 'jointEncodersCalibrator'
-        run jointsCalibratorSequenceProfile;
+        run jointsCalibratorSequenceProfileWOsuspend;
+    case 'accelerometersCalibrator'
+        run accelerometersCalibratorSequenceProfileWOsuspend;
+    case 'sensorsTestDataAcquisition'
+        run(taskSpecificParams.motionSeqProfile);
     otherwise
-        error('Unknown sequence profile !!');
+        error('Unknown task (sequence profile) !!');
 end
 
 end

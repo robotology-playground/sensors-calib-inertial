@@ -79,7 +79,7 @@ function [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posId
 
 % lists to be processed:
 % each sensor is associated to a set of parts from where the sensor data is
-% collected (or not depending on the 'acquire' flag). An acquire set and
+% collected (or not, depending on the 'acquire' flag). An acquire set and
 % the parts set have the same dimensions.
 sensorList = sequence.meas.sensor;
 partSetList = sequence.meas.part;

@@ -18,14 +18,20 @@ legJoints = @(side) {...
 % Parts list
 parts = {'left_arm','right_arm','left_leg','right_leg','torso','head'};
 
-% Joints lists: All robot joints except wrists and hands
+% Joints lists: All robot joints except wrists and hands.
+% These joint lists are the ones given to the Yarp PolyDriver by the
+% RemoteControlBoardRemapper (for controlling the joint motors)
+% (refer to 'setEncoders/getEncoders methods). So the order in '.ctrledJoints'
+% list has to match the one of the q vector in stateExt:o yarp port.
+% TO_BE_IMPROVED.
 jointsLists = {...
     armJoints('l'),armJoints('r'),...
     legJoints('l'),legJoints('r'),...
-    {'torso_pitch','torso_roll','torso_yaw'},...
-    {'neck-pitch', 'neck-roll', 'neck_yaw'}};
+    {'torso_yaw','torso_roll','torso_pitch'},...
+    {'neck_pitch', 'neck_roll', 'neck_yaw'}};
 
 % Build map table
 jointsListFromPart = containers.Map(parts,jointsLists);
+
 end
 

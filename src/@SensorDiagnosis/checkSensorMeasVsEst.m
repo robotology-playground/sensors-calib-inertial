@@ -1,7 +1,7 @@
 function checkSensorMeasVsEst(...
     data,sensorsIdxListFile,...
     sensMeasCell,sensEstCell,...
-    figsFolder,logTest,logtag)
+    figsFolder,savePlot,logtag)
 
 % number of measurement samples
 subSamplingSize = size(sensMeasCell,1);
@@ -14,7 +14,8 @@ time = data.ac.tInit + data.ac.parsedParams.time(:);
 
 %% ============ 3D vectors ===============================================
 %
-figure('Name', '3D vectors sensor measurement VS sensor estimation');
+figure('Name', '3D vectors sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('3D vectors of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 % origin of the vectors = origin of the sensor frame
@@ -43,14 +44,15 @@ for acc_i = accIter
     legend('Location','BestOutside','measured acc.','estimated acc.');
     hold off;
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_v3dAccEstVSaccMeas']);
 end
 
 %% ============ vector components ========================================
 %
-figure('Name', 'components of sensor measurement VS sensor estimation');
+figure('Name', 'components of sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('components of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 subplotIdx = 0;
@@ -77,14 +79,15 @@ for acc_i = accIter
         'estimated x','estimated y','estimated z');
     hold off;
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_xyzAccEstVSaccMeas']);
 end
 
 %% ============ vector norms =============================================
 %
-figure('Name', 'Norm of sensor measurement VS sensor estimation');
+figure('Name', 'Norm of sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('Norm of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 subplotIdx = 0;
@@ -111,14 +114,15 @@ for acc_i = accIter
     legend('Location','BestOutside','norm(measured)','norm(estimated)','norm(measured-estimated)');
     hold off;
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_normAccEstVSaccMeas']);
 end
 
 %% ============ angle between vectors ====================================
 %
-figure('Name', 'Angle of sensor measurement VS sensor estimation');
+figure('Name', 'Angle of sensor measurement VS sensor estimation',...
+    'WindowStyle', 'docked');
 title('Angle of sensors measurement VS estimation','Fontsize',16,'FontWeight','bold');
 
 subplotIdx = 0;
@@ -140,7 +144,7 @@ for acc_i = accIter
     ylabel('Angle (degrees)','Fontsize',12);
     hold off
 end
-if logTest
+if savePlot
     set(gca,'FontSize',12);
     print('-dpng','-r300','-opengl',[figsFolder '/' logtag '_angleAccEstVSaccMeas']);
 end

@@ -63,63 +63,75 @@ for i = 1 : length(obj.parts)
     % this buffer Id avoids reading the same file twice
     bufferId = ['buffer_' obj.parts{i} '_' obj.type{i}(1:end-2)];
     
-    if strcmp(obj.type{i}, 'stateExt:i')
-        q    = ['q_' obj.labels{i}];
-        dq   = ['dq_' obj.labels{i}];
-        d2q  = ['d2q_' obj.labels{i}];
-        t    = ['time_' obj.labels{i}];
-        % trigger and register the unique read of the file
-        eval(['readFile_' bufferId ' = isempty(readFile_' bufferId ');']);
-        eval(['readFile = readFile_' bufferId]);
-        % Read file.
-        if readFile
-            [qBuff,dqBuff,d2qBuff,tStateBuff] = readStateExt(obj.ndof{i},file);
-            qBuff = qBuff + obj.calib{i};
-        end
-        % Parse file content.
-        % (dynamicaly create new fields of "data")
-        eval(['obj.parsedParams.' t ' = tStateBuff;']);
-        eval(['obj.parsedParams.'  q  '= qBuff(' mat2str(obj.index{i}) ',:);']);
-        eval(['obj.parsedParams.' dq  '= dqBuff(' mat2str(obj.index{i}) ',:);']);
-        eval(['obj.parsedParams.' d2q '= d2qBuff(' mat2str(obj.index{i}) ',:);']);
-        
-        if obj.diff_q
-            eval(['obj.parsedParams.'   q '(:, :   )= filt(obj.parsedParams.'   q ''',filtParams{:})'' ;'])
-            eval(['obj.parsedParams.'  dq '(:,2:end)= 1/mean(diff(obj.parsedParams.' t ')).*diff(obj.parsedParams.'  q ''')'' ;'])
-            eval(['obj.parsedParams.'   dq '(:, :   )= filt(obj.parsedParams.'   dq ''',filtParams{:})'' ;'])
-            eval(['obj.parsedParams.' d2q '(:,2:end)= 1/mean(diff(obj.parsedParams.' t ')).*diff(obj.parsedParams.' dq ''')'' ;'])
-        end
-        
-    else
-        y    = ['y_' obj.labels{i}];
-        t    = ['time_' obj.labels{i}];
-        % trigger and register the unique read of the file
-        eval(['readFile_' bufferId ' = isempty(readFile_' bufferId ');']);
-        eval(['readFile = readFile_' bufferId]);
-        % Read file.
-        if readFile
-            % extract time and MTB sensor data
-            [yBuff,tAccBuff] = readDataDumper(file);
-            % parse the MTB sensor metadata and build the sensor mapping
-            obj.mapMTBids(yBuff);
-        end
-        % Parse file content.
-        fprintf('Loaded sensor %s\n',obj.labels{i})
-        eval(['obj.parsedParams.' t ' = tAccBuff;']);
-        % retrieve the correct offsets to index 'yBuff[]'. The offsets are retrieved 
-        % using the sensor mapping built from the metadata parsing.
-        eval(['obj.parsedParams.' y '= yBuff(:,' obj.mapMTBlabel2offset(obj.labels{i}) ');']);
-        
-        
-        if(strcmp(y(end-2:end), 'imu') && obj.diff_imu)
-            eval(['obj.parsedParams.' y '(2:end,4:6)= 1/mean(diff(obj.parsedParams.' t ')).*diff(filt(obj.parsedParams.' y '(:,4:6),filtParams{:}));'])
-        end
-        eval(['obj.parsedParams.' t ' = obj.parsedParams.' t ''';']);
-        eval(['obj.parsedParams.' y '= obj.parsedParams.' y ''';']);
-        
-        % add filtering
-        eval(['obj.parsedParams.' y '=filt(obj.parsedParams.' y ''',filtParams{:})'';']);
-        
+    % select sensor data parser
+    switch obj.type{i}
+        case 'inertialMTB'
+            initParser = @(dataBuffer) obj.mapMTBids(dataBuffer);
+            getSensorDataPosition = @(sensorLabel) obj.mapMTBlabel2position(sensorLabel);
+        case 'inertial'
+            initParser = @(dataBuffer) {};
+            getSensorDataPosition = @(sensorLabel) '4:6';
+        otherwise
+    end
+    
+    % read the file and parse the data
+    switch obj.type{i}
+        case 'stateExt:i'
+            q    = ['q_' obj.labels{i}];
+            dq   = ['dq_' obj.labels{i}];
+            d2q  = ['d2q_' obj.labels{i}];
+            t    = ['time_' obj.labels{i}];
+            % trigger and register the unique read of the file
+            eval(['readFile_' bufferId ' = isempty(readFile_' bufferId ');']);
+            eval(['readFile = readFile_' bufferId]);
+            % Read file.
+            if readFile
+                [qBuff,dqBuff,d2qBuff,tStateBuff] = readStateExt(obj.ndof{i},file);
+                qBuff = qBuff + obj.calib{i};
+            end
+            % Parse file content.
+            % (dynamicaly create new fields of "data")
+            eval(['obj.parsedParams.' t ' = tStateBuff;']);
+            eval(['obj.parsedParams.'  q  '= qBuff(' mat2str(obj.index{i}) ',:);']);
+            eval(['obj.parsedParams.' dq  '= dqBuff(' mat2str(obj.index{i}) ',:);']);
+            eval(['obj.parsedParams.' d2q '= d2qBuff(' mat2str(obj.index{i}) ',:);']);
+            
+            if obj.diff_q
+                eval(['obj.parsedParams.'   q '(:, :   )= filt(obj.parsedParams.'   q ''',filtParams{:})'' ;'])
+                eval(['obj.parsedParams.'  dq '(:,2:end)= 1/mean(diff(obj.parsedParams.' t ')).*diff(obj.parsedParams.'  q ''')'' ;'])
+                eval(['obj.parsedParams.'   dq '(:, :   )= filt(obj.parsedParams.'   dq ''',filtParams{:})'' ;'])
+                eval(['obj.parsedParams.' d2q '(:,2:end)= 1/mean(diff(obj.parsedParams.' t ')).*diff(obj.parsedParams.' dq ''')'' ;'])
+            end
+            
+        case {'inertialMTB','inertial'}
+            y    = ['y_' obj.labels{i}];
+            t    = ['time_' obj.labels{i}];
+            % trigger and register the unique read of the file
+            eval(['readFile_' bufferId ' = isempty(readFile_' bufferId ');']);
+            eval(['readFile = readFile_' bufferId]);
+            % Read file.
+            if readFile
+                % extract time and MTB sensor data
+                [yBuff,tAccBuff] = readDataDumper(file);
+                % parse the MTB sensor metadata and build the sensor mapping
+                initParser(yBuff);
+            end
+            % Parse file content.
+            fprintf('Loaded sensor %s\n',obj.labels{i})
+            eval(['obj.parsedParams.' t ' = tAccBuff;']);
+            % retrieve the correct offsets to index 'yBuff[]'. The offsets are retrieved
+            % using the sensor mapping built from the metadata parsing.
+            eval(['obj.parsedParams.' y '= yBuff(:,' getSensorDataPosition(obj.labels{i}) ');']);
+            
+            if(strcmp(y(end-2:end), 'imu') && obj.diff_imu)
+                eval(['obj.parsedParams.' y '(2:end,4:6)= 1/mean(diff(obj.parsedParams.' t ')).*diff(filt(obj.parsedParams.' y '(:,4:6),filtParams{:}));'])
+            end
+            eval(['obj.parsedParams.' t ' = obj.parsedParams.' t ''';']);
+            eval(['obj.parsedParams.' y '= obj.parsedParams.' y ''';']);
+            
+            % add filtering
+            eval(['obj.parsedParams.' y '=filt(obj.parsedParams.' y ''',filtParams{:})'';']);
+            
     end
 end
 

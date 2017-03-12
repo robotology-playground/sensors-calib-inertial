@@ -10,7 +10,6 @@ classdef CalibrationContextBuilder < handle
     properties (SetAccess = public, GetAccess = public)
         grav_idyn             %% gravity iDynTree object
         dofs                  %% joint information: DOF
-        mtbSensorAct          %% activation of sensors
         qi_idyn               %% joint position iDynTree object
         dqi_idyn              %% joint velocity iDynTree object
         d2qi_idyn             %% joint acceleration iDynTree object
@@ -158,7 +157,7 @@ classdef CalibrationContextBuilder < handle
             
             allDataTypeIdxes = 1:numel(data.type);
             % Identify the inertial sensor frames in the 'data' structure
-            obj.sensorsIdxListFile = allDataTypeIdxes(ismember(data.type,{'inertialMTB','inertialMTI'}));
+            obj.sensorsIdxListFile = allDataTypeIdxes(ismember(data.type,{'inertialMTB','inertial'}));
             
             % Get respective indexes from the model
             obj.sensorsIdxListModel = cellfun(@(frame) ...
@@ -185,7 +184,9 @@ classdef CalibrationContextBuilder < handle
                 modelParamsCtrledParts,...
                 'UniformOutput',true);
             
-            % Get full list of controlled joints
+            % Get full list of controlled joints. The order in
+            % '.ctrledJoints' list has to match the one of the q vector in
+            % stateExt:o yarp port.
             modelParamsCtrledJoints = [modelParams.jointsToCalibrate.ctrledJoints{modelParamsCtrledPartsIdxes}];
             
             % Get respective controlled joints indexes from iDynTree
@@ -218,16 +219,21 @@ classdef CalibrationContextBuilder < handle
                 ismember(modelParams.calibedParts,modelParams.jointMeasedParts);
             
             % Get full list of calibrated joints and starting point offset Dq0
-            [modelParamsCalibedJoints,modelParamsCalibedDq0] = cellfun(...
-                @(joints,calibedDq0,calibedIdxes) deal(...
-                joints(calibedIdxes),calibedDq0(calibedIdxes)),...
-                modelParams.jointsToCalibrate.ctrledJoints(calibedPartsIdxes),...
-                modelParams.jointsToCalibrate.calibedJointsDq0(calibedPartsIdxes),...
-                modelParams.jointsToCalibrate.calibedJointsIdxes(calibedPartsIdxes),...
-                'UniformOutput',false);
-            modelParamsCalibedJoints = [modelParamsCalibedJoints{:}];
-            [Dq0,obj.Dq0] = deal(cell2mat(modelParamsCalibedDq0)); % decapsulation
-            [Dq0,obj.Dq0] = deal(Dq0(:),obj.Dq0(:)); % make sure they are vertical vectors
+            if ~isempty(calibedPartsIdxes)
+                [modelParamsCalibedJoints,modelParamsCalibedDq0] = cellfun(...
+                    @(joints,calibedDq0,calibedIdxes) deal(...
+                    joints(calibedIdxes),calibedDq0(calibedIdxes)),...
+                    modelParams.jointsToCalibrate.ctrledJoints(calibedPartsIdxes),...
+                    modelParams.jointsToCalibrate.calibedJointsDq0(calibedPartsIdxes),...
+                    modelParams.jointsToCalibrate.calibedJointsIdxes(calibedPartsIdxes),...
+                    'UniformOutput',false);
+                modelParamsCalibedJoints = [modelParamsCalibedJoints{:}];
+                [Dq0,obj.Dq0] = deal(cell2mat(modelParamsCalibedDq0)); % decapsulation
+                [Dq0,obj.Dq0] = deal(Dq0(:),obj.Dq0(:)); % make sure they are vertical vectors
+            else
+                modelParamsCalibedJoints = {};
+                [Dq0,obj.Dq0] = deal([],[]);
+            end
             
             % Get respective calibrated joints indexes from iDynTree
             obj.calibJointsIdxFromModel = ...

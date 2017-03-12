@@ -1,7 +1,7 @@
 function checkAccelerometersAnysotropy(...
     data_bc,data_ac,sensorsIdxListFile,...
     sensMeasCell_bc,sensMeasCell_ac,...
-    figsFolder,logTest,loadJointPos)
+    figsFolder,savePlot,~)
 
 % measurements before and after calibration
 [data.bc,data.ac] = deal(data_bc,data_ac);
@@ -22,15 +22,15 @@ dOrientListBC = cell(1,length(sensorsIdxListFile));
 dOrientListAC = cell(1,length(sensorsIdxListFile));
 
 for acc_i = accIter
-    %% distance to a centered sphere (R=9.807) before calibration
-    [~,~,dOrient.bc,~] = ellipsoid_proj_distance_fromExp(...
+    %% distance to a sphere (R=9.807) centered on 0, before calibration
+    [~,~,dOrient.bc,~] = SensorDiagnosis.ellipsoid_proj_distance_fromExp(...
         sensMeasCell.bc{1,acc_i}(:,1),...
         sensMeasCell.bc{1,acc_i}(:,2),...
         sensMeasCell.bc{1,acc_i}(:,3),...
         [0 0 0]',[9.807 9.807 9.807]',eye(3,3));
     
-    %% distance to a centered sphere (R=9.807) after calibration
-    [~,~,dOrient.ac,~] = ellipsoid_proj_distance_fromExp(...
+    %% distance to a sphere (R=9.807) centered on 0, after calibration
+    [~,~,dOrient.ac,~] = SensorDiagnosis.ellipsoid_proj_distance_fromExp(...
         sensMeasCell.ac{1,acc_i}(:,1),...
         sensMeasCell.ac{1,acc_i}(:,2),...
         sensMeasCell.ac{1,acc_i}(:,3),...
@@ -48,13 +48,16 @@ time = data.ac.tInit + data.ac.parsedParams.time(:);
 for acc_i = accIter
     %% Plot distributions
     % Check if we should print to a log file
-    if logTest
+    if savePlot
         FID = fopen([figsFolder '/distrib_' data.ac.labels{sensorsIdxListFile(acc_i)} '.txt'],'w');
     else
         FID = 1;
     end
     
-    figure('Name',['calibration of MTB sensor ' data.ac.labels{sensorsIdxListFile(acc_i)}]);
+    figure(...
+        'Name',['calibration of MTB sensor ' data.ac.labels{sensorsIdxListFile(acc_i)}],...
+        'WindowStyle', 'docked');
+    
     %set(gcf,'PositionMode','manual','Units','centimeters','Position',[5 5 50 200]);
     set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
 
@@ -62,8 +65,8 @@ for acc_i = accIter
     subplot(1,3,1);
     title('distribution of distances to a centered \newline sphere (R=9.807)',...
         'Fontsize',16,'FontWeight','bold');
-    prevh=plotNprintDistrb(FID,dOrientList{1,acc_i}.bc,false,'auto',1);
-    plotNprintDistrb(FID,dOrientList{1,acc_i}.ac,true,[7/255 100/255 26/255],0.6,prevh);
+    prevh=SensorDiagnosis.plotNprintDistrb(FID,dOrientList{1,acc_i}.bc,false,'auto',1);
+    SensorDiagnosis.plotNprintDistrb(FID,dOrientList{1,acc_i}.ac,true,[7/255 100/255 26/255],0.6,prevh);
 
     % close file
     if FID ~= 1
@@ -98,9 +101,9 @@ for acc_i = accIter
     %% plot fitting
     subplot(1,3,3);
     title('Projection on ground truth \newline sphere manifold after calibration','Fontsize',16,'FontWeight','bold');
-    plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.ac{1,acc_i});
+    SensorDiagnosis.plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.ac{1,acc_i});
 
-    if logTest
+    if savePlot
         set(gcf,'PaperPositionMode','auto');
         print('-dpng','-r300','-opengl',[figsFolder '/figs_' data.ac.labels{sensorsIdxListFile(acc_i)}]);
     end    
@@ -120,7 +123,10 @@ dOrientListBCmat = cell2mat(dOrientListBC);
 dOrientListACmat = cell2mat(dOrientListAC);
 
 % Plot
-figure;
+figure(...
+    'Name',['calibration of MTB sensor ' ...
+    cellArrayOfStr2str(',',data.ac.labels(sensorsIdxListFile(accIter)))],...
+    'WindowStyle', 'docked');
 
 bar([mean(dOrientListBCmat,1)' mean(dOrientListACmat,1)']);
 
@@ -129,10 +135,10 @@ ylabel('distance (m/s^2)','Fontsize',20);
 grid on;
 
 hold on;
-errorbar([1:length(accIter)]-0.15,mean(dOrientListBCmat,1)',...
+errorbar((1:length(accIter))-0.15,mean(dOrientListBCmat,1)',...
     std(dOrientListBCmat,0,1)',...
     'r*','lineWidth',2.5);
-errorbar([1:length(accIter)]+0.15,mean(dOrientListACmat,1)',...
+errorbar((1:length(accIter))+0.15,mean(dOrientListACmat,1)',...
     std(dOrientListACmat,0,1)',...
     'b*','lineWidth',2.5);
 hold off
@@ -140,7 +146,7 @@ hold off
 legend('mean before calibration','mean after calibration',...
     '\sigma before calibration','\sigma after calibration');
 
-if logTest
+if savePlot
     set(gcf,'PaperPositionMode','auto');
     print('-dpng','-r300','-opengl',[figsFolder '/AllDistribBefNaft']);
 end

@@ -39,6 +39,13 @@ classdef Init < handle
                 assignin('caller',field,aStruct.(field));
             end
         end
+        
+        function unWrap_n(aStruct,n)
+            for cField = fieldnames(aStruct)'
+                field = cell2mat(cField);  % field string
+                assignin('caller',[field n],aStruct.(field));
+            end
+        end
     end
 end
 

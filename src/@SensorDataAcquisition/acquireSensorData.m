@@ -1,7 +1,8 @@
-function acqSensorDataAccessor = acquireSensorData(motionSequenceProfile,robotName,dataPath,calibedParts)
+function acqSensorDataAccessor = acquireSensorData(...
+    task,taskSpecificParams,robotName,dataPath,calibedParts)
 
-% motionSequenceProfile: this selects the motion sequence parameters
-%                        (controlled parts, measured sensors)
+% task:      this selects the motion sequence parameters
+%            (controlled parts, measured sensors)
 % robotName: yarp robot name
 % dataPath: main data folder path where the logger will store the sensor data
 % calibedParts: parts to be calibrated. This will select which parts to
@@ -9,7 +10,7 @@ function acqSensorDataAccessor = acquireSensorData(motionSequenceProfile,robotNa
 
 % Load sequence profile parameters
 [seqHomeParams,seqEndParams,selector] = ...
-    SensorDataAcquisition.getSeqProfile(motionSequenceProfile);
+    SensorDataAcquisition.getSeqProfile(task,taskSpecificParams);
 
             
 %% Build the Map sequences from input parameters
@@ -46,7 +47,7 @@ logCmd.start = @logger.connect;
 logCmd.stop  = @logger.disconnect;
 
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer(motionSequenceProfile,robotName,sequences,logCmd);
+sequencer = MotionSequencer(task,robotName,sequences,logCmd);
 
 % run sequencer until all data is acquired
 acqSensorDataAccessor = sequencer.run();

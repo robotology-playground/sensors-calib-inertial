@@ -1,14 +1,16 @@
-classdef SensorDataAcquisition < handle
+classdef SensorDataAcquisition
     %UNTITLED2 Summary of this class goes here
     %   Detailed explanation goes here
     
     methods(Static = true, Access = public)
         acqSensorDataAccessor = ...
-            acquireSensorData(motionSequenceProfile,robotName,dataPath,calibedParts);
+            acquireSensorData(task,taskSpecificParams,robotName,dataPath,calibedParts);
+        
+        seqParams = setValFromGrid(gridBuilder,gridParams,acqVel,transVel,labels);
     end
     
     methods(Static = true, Access = protected)
-        [seqHomeParams,seqEndParams,selector] = getSeqProfile(seqProfileTag);
+        [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams);
     end
 end
 

@@ -11,6 +11,10 @@ function modelParams = jointsNsensorsDefinitions(...
 %% macros for repetitive names and codes between left and right parts
 %
 
+part2mtbNum = containers.Map(...
+    {'left_arm','right_arm','left_leg','right_leg','torso','head'},...
+    {'1b','2b','10b','11b','9b','1x'});
+
 mtbSensorCodes_arm = @(mtbNum) {...
     [mtbNum 'b10'],[mtbNum 'b11'], ...
     [mtbNum 'b12'],[mtbNum 'b13'], ...
@@ -49,13 +53,13 @@ segments_arm = @(side) {[side '_upper_arm'],[side '_forearm'],[side '_hand']};
 % joints names
 % from class @RobotModel
 
-% joints DoF
-jointsDofs_left_arm = 16;
-jointsDofs_right_arm = 16;
+% joints DoF (TO_BE_IMPROVED)
+jointsDofs_left_arm = 7; % 7 for 'icubSim', 16 for 'icub'
+jointsDofs_right_arm = 7; % 7 for 'icubSim', 16 for 'icub'
 jointsDofs_left_leg = 6;
 jointsDofs_right_leg = 6;
 jointsDofs_torso = 3;
-jointsDofs_head = 6;
+jointsDofs_head = 3; % 3 for 'icubSim', 6 for 'icub'
 
 % We define a segment i as a link for which parent joint i and joint i+1 axis
 % are not concurrent. For instance 'root_link', 'r_upper_leg', 'r_lower_leg',
@@ -92,7 +96,7 @@ mtbSensorLink_left_leg = mtbSensorLink_leg('l');
 
 mtbSensorLink_right_leg = mtbSensorLink_leg('r');
 
-mtbSensorLink_torso = {'chest'};
+mtbSensorLink_torso = {'chest','chest','chest','chest'};
 
 mtbSensorLink_head = {'head'};
 
@@ -102,44 +106,63 @@ mtxSensorType_right_arm = mtxSensorType_left_arm;
 mtxSensorType_left_leg(1:13) = {'inertialMTB'};
 mtxSensorType_right_leg = mtxSensorType_left_leg;
 mtxSensorType_torso(1:4) = {'inertialMTB'};
-mtxSensorType_head(1) = {'inertialMTI'};
+mtxSensorType_head(1) = {'inertial'};
 
-%% Build access lists
+%% Build access lists for joints information
 %
-if ~isempty(calibedJointsDq0)
-    jointsToCalibrate.ctrledJoints = {};
-    jointsToCalibrate.calibedJointsDq0 = {};
-    jointsToCalibrate.partSegments = {};
-    jointsToCalibrate.jointsDofs = {};
-    jointsToCalibrate.ctrledJointsIdxes = {}; % element index on the data from yarp port
-    jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
-    
-    % 'jointsToCalibrate' holds information for measured and calibrated
-    % joints. Use the list of parts associated to measured joint encoders
-    parts = [measedPartsList{ismember(measedSensorList,'joint')}];
-    
-    % Build 'jointsToCalibrate'
-    jointsToCalibrate.mapIdx = containers.Map('KeyType','char','ValueType','uint8');
-    for i = 1:length(parts)
-        jointsToCalibrate.ctrledJoints{i} = RobotModel.jointsListFromPart(parts{i});
-        eval(['jointsToCalibrate.calibedJointsDq0{' num2str(i) '} = calibedJointsDq0.' parts{i} ';']);
-        eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' parts{i} ';']);
-        eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' parts{i} ';']);
-        eval(['jointsToCalibrate.ctrledJointsIdxes{' num2str(i) '} = 1:' num2str(length(jointsToCalibrate.ctrledJoints{i})) ';']);
-        eval(['jointsToCalibrate.calibedJointsIdxes{' num2str(i) '} = calibedJointsIdxes.' parts{i} ';']);
-        jointsToCalibrate.mapIdx(parts{i}) = i;
+
+jointsToCalibrate.ctrledJoints = {};
+jointsToCalibrate.calibedJointsDq0 = {};
+jointsToCalibrate.partSegments = {};
+jointsToCalibrate.jointsDofs = {};
+jointsToCalibrate.ctrledJointsIdxes = {}; % element index on the data from yarp port
+jointsToCalibrate.calibedJointsIdxes = {}; % subset within the controlled joints
+
+% 'jointsToCalibrate' holds information for measured and calibrated
+% joints. Use the list of parts associated to measured joint encoders
+parts = [measedPartsList{ismember(measedSensorList,'joint')}];
+
+% Preset some input parameters
+if isempty(calibedParts)
+    for cPart = parts
+        part = cell2mat(cPart);
+        calibedJointsIdxes.(part) = [];
+        calibedJointsDq0.(part) = [];
     end
-    
-    % Process the selection for the structure 'jointsToCalibrate' definition
-    for i = 1:length(parts)
-        jointsToCalibrate.calibedJointsDq0{i}=jointsToCalibrate.calibedJointsDq0{i}(jointsToCalibrate.calibedJointsIdxes{i});
-    end
-    
-    % Save parameters to output structure
-    modelParams.jointsToCalibrate = jointsToCalibrate;
-    modelParams.calibedParts = calibedParts; % parts for calibrated joint encoders
-    modelParams.jointMeasedParts = parts;    % parts for measured joint encoders
 end
+if isempty(mtbSensorAct)
+    mtbSensorAct.left_arm = [10:13 8:9 7];
+    mtbSensorAct.right_arm = [10:13 8:9 7];
+    mtbSensorAct.left_leg = 1:13;
+    mtbSensorAct.right_leg = 1:13;
+    mtbSensorAct.torso = 7:10;
+    mtbSensorAct.head = 1;
+end
+
+% Build 'jointsToCalibrate'
+jointsToCalibrate.mapIdx = containers.Map('KeyType','char','ValueType','uint8');
+for i = 1:length(parts)
+    jointsToCalibrate.ctrledJoints{i} = RobotModel.jointsListFromPart(parts{i});
+    eval(['jointsToCalibrate.calibedJointsDq0{' num2str(i) '} = calibedJointsDq0.' parts{i} ';']);
+    eval(['jointsToCalibrate.partSegments{' num2str(i) '} = segments_' parts{i} ';']);
+    eval(['jointsToCalibrate.jointsDofs{' num2str(i) '} = jointsDofs_' parts{i} ';']);
+    eval(['jointsToCalibrate.ctrledJointsIdxes{' num2str(i) '} = 1:' num2str(length(jointsToCalibrate.ctrledJoints{i})) ';']);
+    eval(['jointsToCalibrate.calibedJointsIdxes{' num2str(i) '} = calibedJointsIdxes.' parts{i} ';']);
+    jointsToCalibrate.mapIdx(parts{i}) = i;
+end
+
+% Process the selection for the structure 'jointsToCalibrate' definition
+for i = 1:length(parts)
+    jointsToCalibrate.calibedJointsDq0{i}=jointsToCalibrate.calibedJointsDq0{i}(jointsToCalibrate.calibedJointsIdxes{i});
+end
+
+% Save parameters to output structure
+modelParams.jointsToCalibrate = jointsToCalibrate;
+modelParams.calibedParts = calibedParts; % parts for calibrated joint encoders
+modelParams.jointMeasedParts = parts;    % parts for measured joint encoders
+
+%% Build access lists for inertial sensors information
+%
 
 mtbSensorCodes_list = {};
 mtbSensorLink_list = {};
@@ -153,7 +176,8 @@ parts = [measedPartsList{ismember(measedSensorList,{'acc','imu'})}];
 for i = 1:length(parts)
     eval(['mtbSensorCodes_list{' num2str(i) '} = mtbSensorCodes_' parts{i} ';']);
     eval(['mtbSensorLink_list{' num2str(i) '} = mtbSensorLink_' parts{i} ';']);
-    eval(['mtbSensorAct_list{' num2str(i) '} = cell2mat(mtbSensorAct.' parts{i} ');']);
+    mtbSensorAct_list{i} = sensorShortCodes2Idxes(...
+        parts{i},part2mtbNum,mtbSensorAct.(parts{i}),mtbSensorCodes_list{i});
     eval(['mtxSensorType_list{' num2str(i) '} = mtxSensorType_' parts{i} ';']);
 end
 
@@ -164,3 +188,19 @@ modelParams.mtbSensorLink_list = mtbSensorLink_list;
 modelParams.mtbSensorAct_list = mtbSensorAct_list;
 modelParams.mtxSensorType_list = mtxSensorType_list;
 
+end
+
+%===== Local functions ========
+
+function idxes = sensorShortCodes2Idxes(part,part2mtbNum,mtbSensorAct,mtbSensorCodes)
+
+codes2idxesMap = containers.Map(mtbSensorCodes,num2cell(1:numel(mtbSensorCodes)));
+
+codes = arrayfun(...
+    @(shortCode) [part2mtbNum(part) num2str(shortCode)],...
+    mtbSensorAct,...
+    'UniformOutput',false);
+
+idxes = cell2mat(codes2idxesMap.values(codes));
+
+end

@@ -275,12 +275,6 @@ classdef SensorDataYarpI < handle
     
     methods(Static = true,Access = protected)
         function portKeys = sensorsPartsLists2keys(sensorList,partsList)
-            % DEBUG: remove acc and respective ports because they are not
-            % integrated on Gazebo yet
-            partsList = partsList(~ismember(sensorList,'acc'));
-            sensorList = sensorList(~ismember(sensorList,'acc'));
-            % END debug
-            
             % generate keys for one sensor
             genKeys4oneSensor = @(sensor,parts) cellfun(...
                 @(part) [sensor part],... % concatenate key '<sensor><part>'

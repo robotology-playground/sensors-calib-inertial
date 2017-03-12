@@ -1,21 +1,28 @@
-function newCalibrationMap = calibrateSensors(...
+function calibrateSensors(...
     modelPath,calibrationMap,...
-    calibedParts,calibedJointsIdxes,dataPath,...
+    calibedParts,taskSpecificParams,dataPath,...
     measedSensorList,measedPartsList)
 
-%% Main interface parameters ==============================================
+% Unwrap task specific parameters (defines 'calibedJointsIdxes')
+Init.unWrap(taskSpecificParams);
 
+% Convert 'calibedJointsIdxes' (just unwrapped) to matlab indexes
+calibedJointsIdxes = structfun(...
+    @(field) field+1,calibedJointsIdxes,'UniformOutput',false);
+
+% Advanced interface parameters
 run jointEncodersCalibratorDevConfig;
 
 [optimFunction,options] = JointEncodersCalibrator.getOptimConfig();
 
+% Build joint encoders and inertial sensors parameters
 modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
     measedSensorList,measedPartsList,...
     calibedParts,calibedJointsIdxes,calibedJointsDq0,...
     mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
-if strcmp(runMode,'target')
+if strcmp(loadSource,'dumpFile')
     offsetsGridRange = 0;
     offsetedQsIdxs = 1;
 end
@@ -41,22 +48,27 @@ myCalibContext = CalibrationContextBuilder(modelPath);
 eval(['costFunction = @myCalibContext.' costFunctionSelect]);
 
 
-%% Parsing configuration
+%% build input data for calibration
 %
 
-switch runMode
-    case 'simu'
-        load 'dataSimu.mat';
+switch loadSource
+    case 'cache'
+        load([dataPath '/dataCache.mat'],'data');
         
-    case 'target'
+    case 'dumpFile'
         % build sensor data parser
         plot = false; loadJointPos = true;
         data = SensorsData(dataPath,'',subSamplingSize,...
-            timeStart,timeStop,plot);
+            timeStart,timeStop,plot,calibrationMap);
         data.buildInputDataSet(loadJointPos,modelParams);
         
+        % Save data in a Matlab file for faster access in further runs
+        if saveToCache
+            save([dataPath '/dataCache.mat'],'data');
+        end
+        
     otherwise
-        disp('Unknown run mode !!')
+        disp('Unknown data source !!')
 end
 
 %% init joints and sensors lists. The order in modelParams.jointMeasedParts sets 
@@ -204,14 +216,15 @@ std_optDq_subsets
 %% Format and save calibration in the main calibration map
 %
 
-% Split computed offsets matrix into part wise cells
-calib = mat2cell(averageOptimalDq,lengths(modelParams.jointsToCalibrate.calibedJointsDq0{:}));
-
 % Merge new calibrated joint offsets with old 'calibrationMap'.
 % The result matrix optimalDq has the same format as Dq and Dq0.
 % Dq0 results from the concatenation of the modelParams.jointsToCalibrate.calibedJointsDq0
 % matrices.
 [~,calibedPartsIdxes] = ismember(modelParams.calibedParts,modelParams.jointMeasedParts);
+
+% Split computed offsets matrix into part wise cells
+calib = mat2cell(averageOptimalDq,lengths(modelParams.jointsToCalibrate.calibedJointsDq0{calibedPartsIdxes}));
+
 for iter = calibedPartsIdxes
     mapKey = strcat('jointsOffsets_',modelParams.jointMeasedParts{iter}); % set map key
     % get current value or set a default one (zeros)
@@ -224,9 +237,6 @@ for iter = calibedPartsIdxes
         mapValue(modelParams.jointsToCalibrate.calibedJointsIdxes{iter}) + calib{iter}; % add calibrated values
     calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
 end
-
-% Return calibration (actually points to the same object. TO BE IMPROVED)
-newCalibrationMap = calibrationMap;
 
 % log data
 save('./data/minimResult.mat', ...
