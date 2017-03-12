@@ -75,8 +75,6 @@ for acc_i = sensorsIdxListFile
     calib{acc_i}.radii = radii/9.807;
     % compute full calibration matrix combining elongation and rotation
     calib{acc_i}.C = calib{acc_i}.R'*inv(diag(calib{acc_i}.radii))*calib{acc_i}.R;
-    % raw fullscale to m/s^2 conversion
-    calib{acc_i}.gain = 5.9855e-04;
 end
 
 % Create mapping extension with new calibrated frames

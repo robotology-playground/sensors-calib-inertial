@@ -33,7 +33,7 @@ obj.loadData();
 sensorsIdxListFile = [];
 for frame = 1:length(obj.frames)
     switch obj.type{frame}
-        case {'inertialMTB','inertialMTI'}
+        case {'inertialMTB','inertial'}
             sensorsIdxListFile = [sensorsIdxListFile frame];
         otherwise
     end

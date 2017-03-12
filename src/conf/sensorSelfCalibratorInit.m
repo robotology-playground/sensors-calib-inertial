@@ -3,9 +3,10 @@
 %====================================================================
 
 %% Common parameters
-robotName = 'icub';
+robotName = 'icubSim'; % 'icub' or 'icubSim'
 dataPath  = '../../data/dumper';
-modelPath = '../models/iCubGenova02/iCubGenova02.urdf';
+modelPath = '../models/icubSim/icub.urdf';
+%modelPath = '../models/iCubGenova04/icub.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 %calibrationMapFile = 'calibrationMap.mat';
 calibrationMapFile = ['../conf/calibration/' robotName '_calibrationMap.mat'];
@@ -162,7 +163,7 @@ calibedParts = {'left_leg','right_leg'};
 %      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |  
 % leg:          0     1    2     |   3       |         4      5          |
 %
-%               pitch roll yaw   |
+%               yaw   roll pitch |
 % torso:        0     1    2     |
 %
 %               pitch roll yaw   |

@@ -10,7 +10,6 @@ classdef CalibrationContextBuilder < handle
     properties (SetAccess = public, GetAccess = public)
         grav_idyn             %% gravity iDynTree object
         dofs                  %% joint information: DOF
-        mtbSensorAct          %% activation of sensors
         qi_idyn               %% joint position iDynTree object
         dqi_idyn              %% joint velocity iDynTree object
         d2qi_idyn             %% joint acceleration iDynTree object
@@ -158,7 +157,7 @@ classdef CalibrationContextBuilder < handle
             
             allDataTypeIdxes = 1:numel(data.type);
             % Identify the inertial sensor frames in the 'data' structure
-            obj.sensorsIdxListFile = allDataTypeIdxes(ismember(data.type,{'inertialMTB','inertialMTI'}));
+            obj.sensorsIdxListFile = allDataTypeIdxes(ismember(data.type,{'inertialMTB','inertial'}));
             
             % Get respective indexes from the model
             obj.sensorsIdxListModel = cellfun(@(frame) ...
@@ -185,7 +184,9 @@ classdef CalibrationContextBuilder < handle
                 modelParamsCtrledParts,...
                 'UniformOutput',true);
             
-            % Get full list of controlled joints
+            % Get full list of controlled joints. The order in
+            % '.ctrledJoints' list has to match the one of the q vector in
+            % stateExt:o yarp port.
             modelParamsCtrledJoints = [modelParams.jointsToCalibrate.ctrledJoints{modelParamsCtrledPartsIdxes}];
             
             % Get respective controlled joints indexes from iDynTree

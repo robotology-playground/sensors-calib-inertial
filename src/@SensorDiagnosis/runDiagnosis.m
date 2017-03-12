@@ -73,10 +73,6 @@ switch loadSource
         disp('Unknown data source !!')
 end
 
-% iteration list
-%activeAccs = modelParams.mtbSensorCodes_list{1}(cell2mat(modelParams.mtbSensorAct_list));
-
-
 %% Check anysotropy of gains and offsets
 %
 SensorDiagnosis.checkAccelerometersAnysotropy(...

@@ -32,7 +32,7 @@ classdef SensorsData < handle
         % metadata) to MTB labels. These tables are built when loading the
         % sensor data.
         mapMTBpos2code = {};
-        mapMTBlabel2offset = {}; %>
+        mapMTBlabel2position = {}; %>
         type        = {};
         calib       = {};
         visualize   = {};
@@ -128,13 +128,13 @@ classdef SensorsData < handle
                 % there is no naming convention yet. ex of sensor frame: [r_upper_leg_mtb_acc_11b3]
                 % ex of sensor label: [11b3_acc]
                 switch mtxSensorTypes{iter}
-                    case 'inertialMTI'
+                    case 'inertial'
                         offset = obj.offsetMTI;
-                        frameTag = '_mti_acc_';
+                        fullFrameStr = strcat(mtbSensorLinks{iter},'_imu_acc_',mtbSensorCodes{iter})
                         acc_gain = 1; % raw fullscale to m/s^2 conversion
                     case 'inertialMTB'
                         offset = obj.offsetMTB; % TBD. improve: not needed for ETH iCub
-                        frameTag = '_mtb_acc_';
+                        fullFrameStr = strcat(mtbSensorLinks{iter},'_mtb_acc_',mtbSensorCodes{iter})
                         acc_gain = 5.9855e-04; % raw fullscale to m/s^2 conversion
                     otherwise
                         error('Unknown sensor type !!');
@@ -143,8 +143,6 @@ classdef SensorsData < handle
                 indexList = strcat(num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_1RST_IDX)), ...
                     ':',num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_LAST_IDX)));
                 
-                % define frame string
-                fullFrameStr = strcat(mtbSensorLinks{iter},frameTag,mtbSensorCodes{iter})
                 % get calibration for this sensor
                 if isKey(obj.calibrationMap,fullFrameStr)
                     calibMap = obj.calibrationMap(fullFrameStr);
@@ -152,8 +150,9 @@ classdef SensorsData < handle
                     calibMap.centre=[0 0 0]'; calibMap.radii=[1 1 1]';
                     calibMap.quat=[1 0 0 0]'; calibMap.R=eye(3);
                     calibMap.C=eye(3); % calibration matrix
-                    calibMap.gain=acc_gain;  % raw fullscale to m/s^2 conversion
                 end
+                
+                calibMap.gain=acc_gain;  % raw fullscale to m/s^2 conversion
                 
                 obj.addSensToData(  part, ...
                     fullFrameStr, ...
