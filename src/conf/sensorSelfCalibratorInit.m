@@ -2,29 +2,33 @@
 % This configuration file defines the main application parameters
 %====================================================================
 
-%% Common parameters
-robotName = 'icubSim'; % 'icub' or 'icubSim'
+%% Common model and calibration input parameters
+robotName = 'icub'; % 'icub' or 'icubSim'
 dataPath  = '../../data/dumper';
-modelPath = '../models/icubSim/icub.urdf';
-%modelPath = '../models/iCubGenova04/icub.urdf';
+%modelPath = '../models/icubSim/icub.urdf';
+modelPath = '../models/iCubGenova04/icub.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 %calibrationMapFile = 'calibrationMap.mat';
 calibrationMapFile = ['../conf/calibration/' robotName '_calibrationMap.mat'];
-saveCalibration = true;
-
 
 %% Standard or custom calibration
 calibrationType = 'standard';
 
 %% standard calibration tasks checklist
-acquireSensorsTestData = false;
+acquireSensorsTestData  = false;
 calibrateAccelerometers = false;
-calibrateJointEncoders = true;
-calibrateFTsensors = false;
-calibrateGyroscopes = false;
+calibrateJointEncoders  = true;
+calibrateFTsensors      = false;
+calibrateGyroscopes     = false;
 
 %% Diagnosis and visualization
 runDiagnosis = true;
+
+%% Common output parameters
+saveCalibration = false;
+defaultSavePlot = true;
+defaultExportPlot = true;
+
 
 %% Custom calibration sequence
 % the below structured list defines the tasks sequence and their set of
@@ -44,7 +48,7 @@ runDiagnosis = true;
 %% 'acquireSensorsTestData': Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
-acquiredParts = {'left_leg','right_leg'};
+acquiredParts = {'torso','head','left_leg','right_leg'};
 % Profile = ... TBD!!
 
 % Fine selection of the accelerometers:
@@ -79,17 +83,19 @@ mtbSensorAct.head = 1;
 % printed in a new folder indexed by a unique iteration number. Log
 % classification information are saved in text format for easier search from
 % a file explorer.
-savePlot = true;
+savePlot = defaultSavePlot;
+exportPlot = defaultExportPlot;
 loadJointPos = true;
 
 % Motion sequence profile
-motionSeqProfile = 'jointsCalibratorSequenceProfile';
-%motionSeqProfile = 'accelerometersCalibratorSequenceProfile';
+%motionSeqProfile = 'jointsCalibratorSequenceProfile';
+motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
     'mtbSensorAct',mtbSensorAct,...
     'savePlot',savePlot,...
+    'exportPlot',exportPlot,...
     'loadJointPos',loadJointPos,...
     'motionSeqProfile',motionSeqProfile);
 
@@ -103,14 +109,14 @@ sensorsTestDataAcq = struct(...
     'taskSpecificParams',taskSpecificParams,...
     'sensorDataAcq',{sensorDataAcq});
 
-clear acquiredParts mtbSensorAct savePlot loadJointPos ...
+clear acquiredParts mtbSensorAct savePlot exportPlot loadJointPos ...
     sensorDataAcq motionSeqProfile taskSpecificParams;
 
 %% 'calibrateAccelerometers': MTB/IMU accelerometers gains/offsets calibration
 
 % Calibrated parts:
 % Only the accelerometers from these parts (limbs) will be calibrated
-calibedParts = {'left_leg','right_leg'};
+calibedParts = {'torso','head'};
 
 % some sensors are de-activated because of faulty behaviour, bad calibration 
 % or wrong frame definition
@@ -125,17 +131,19 @@ mtbSensorAct.head = 1;
 % printed in a new folder indexed by a unique iteration number. Log
 % classification information are saved in text format for easier search from
 % a file explorer.
-savePlot = true;
+savePlot = defaultSavePlot;
+exportPlot = defaultExportPlot;
 loadJointPos = false;
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
     'mtbSensorAct',mtbSensorAct,...
     'savePlot',savePlot,...
+    'exportPlot',exportPlot,...
     'loadJointPos',loadJointPos);
 
 % Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'new'};
+sensorDataAcq = {'last'};
 
 % wrap parameters
 accelerometersCalib = struct(...
@@ -143,14 +151,14 @@ accelerometersCalib = struct(...
     'taskSpecificParams',taskSpecificParams,...
     'sensorDataAcq',{sensorDataAcq});
 
-clear calibedParts mtbSensorAct savePlot loadJointPos ...
+clear calibedParts mtbSensorAct savePlot exportPlot loadJointPos ...
     sensorDataAcq taskSpecificParams;
 
 %% 'calibrateJointEncoders' Joint encoders offsets calibration
 
 % Calibrated parts:
 % Only the joint encoders from these parts (limbs) will be calibrated
-calibedParts = {'left_leg','right_leg'};
+calibedParts = {'torso'};
 
 % Fine selection of joint encoders:
 % Select the joints to calibrate through the respective indexes. These indexes match 
@@ -193,20 +201,20 @@ mtbSensorAct.head = 1;
 % printed in a new folder indexed by a unique iteration number. Log
 % classification information are saved in text format for easier search from
 % a file explorer.
-savePlot = false;
+savePlot = defaultSavePlot;
+exportPlot = defaultExportPlot;
 loadJointPos = true;
-
-
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
     'calibedJointsIdxes',calibedJointsIdxes,...
     'mtbSensorAct',mtbSensorAct,...
     'savePlot',savePlot,...
+    'exportPlot',exportPlot,...
     'loadJointPos',loadJointPos);
 
 % Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'calibrator',7};
+sensorDataAcq = {'seq',53};
 
 % wrap parameters
 jointEncodersCalib = struct(...
@@ -214,7 +222,7 @@ jointEncodersCalib = struct(...
     'taskSpecificParams',taskSpecificParams,...
     'sensorDataAcq',{sensorDataAcq});
 
-clear calibedParts calibedJointsIdxes savePlot loadJointPos ...
+clear calibedParts calibedJointsIdxes savePlot exportPlot loadJointPos ...
     sensorDataAcq taskSpecificParams;
 
 %% FT sensors gains/offsets calibration (TBD)

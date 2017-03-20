@@ -1,7 +1,13 @@
 function runDiagnosis(...
-    modelPath,calibrationMap,...
-    taskSpecificParams,dataPath,...
-    measedSensorList,measedPartsList)
+    modelPath,calibrationMap,figuresHandlerMap,task,... % params specific to this diagnosis function
+    taskSpecificParams,dataPath,measedSensorList,measedPartsList)
+
+% Parameters specific to this diagnosis function:
+% [in]     modelPath: path to the URDF model (input parameter for iDynTree)
+% [in]     calibrationMap: sensors calibration parameters
+% [in/out] figuresHandlerMap: Map with class objects handling the figures generated
+% in this function.
+% [in]     task: calibration task that generated the sensor data.
 
 % Unwrap task specific parameters (defines 'calibedJointsIdxes')
 Init.unWrap(taskSpecificParams);
@@ -18,32 +24,13 @@ modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
 
 %% Update iterator and prepare log folders/files
 %
-figsFolder = '';
 
-if savePlot
-    % create data folder
-    dataFolder = [dataPath '/diag'];
-    mkdir(dataFolder);
-    
-    % handle iterator
-    if exist([dataFolder '/iterator.mat'],'file') == 2
-        load([dataFolder '/iterator.mat'],'iterator');
-        iterator = iterator+1;
-    end
-    save([dataFolder '/iterator.mat'],'iterator');
-    
-    % create figures folder
-    figsFolder = [dataFolder '/log_' num2str(iterator)];
-    mkdir(figsFolder);
-    
-    % create log info file
-    fileID = fopen([dataFolder '/log_' num2str(iterator) '.txt'],'w');
-    fprintf(fileID,'modelPath = %s\n',modelPath);
-    fprintf(fileID,'dataPath = %s\n',dataPath);
-    fprintf(fileID,'calibrationVersion = %s\n','TO_BE_DONE');
-    fprintf(fileID,'iterator = %d\n',iterator);
-    fclose(fileID);
-end
+% define data folder
+dataFolder = [dataPath '/diag'];
+
+% Create figures handler
+figuresHandler = DiagPlotFiguresHandler(dataFolder);
+figuresHandlerMap(task) = figuresHandler;
 
 %% ===================================== CALIBRATION VALIDATION ==============================
 %
@@ -52,7 +39,7 @@ end
 %
 switch loadSource
     case 'cache'
-        load([dataFolder '/dataCache.mat']);
+        load([dataPath '/dataCache.mat']);
     case 'dumpFile'
         % Build input data without calibration applied
         plot = false;
@@ -67,7 +54,7 @@ switch loadSource
         
         % Save data in a Matlab file for faster access in further runs
         if saveToCache
-            save([dataFolder '/dataCache.mat'],'data','sensorsIdxListFile','sensMeasCell');
+            save([dataPath '/dataCache.mat'],'data','sensorsIdxListFile','sensMeasCell');
         end
     otherwise
         disp('Unknown data source !!')
@@ -78,7 +65,7 @@ end
 SensorDiagnosis.checkAccelerometersAnysotropy(...
     data.bc,data.ac,sensorsIdxListFile,...
     sensMeasCell.bc,sensMeasCell.ac,...
-    figsFolder,savePlot,loadJointPos);
+    figuresHandler);
 
 if loadJointPos
     %% Generate predicted measurements
@@ -96,28 +83,44 @@ if loadJointPos
     
     % cost before calibration
     [initialCost,sensMeasCell.bc,sensEstCell.bc] = costFunction(0,data.bc,1:data.bc.nSamples,@lsqnonlin,false,'');
-    fprintf('Mean cost before calibration (in (m.s^{-2})^2):\n');
-    (initialCost'*initialCost)/(nrOfMTBAccs*data.bc.nSamples)
+    fprintf('Mean cost before calibration (in (m.s^{-2})^2):\n %f\n',...
+        (initialCost'*initialCost)/(nrOfMTBAccs*data.bc.nSamples));
     
     % cost after calibration
     [finalCost,sensMeasCell.ac,sensEstCell.ac] = costFunction(0,data.ac,1:data.ac.nSamples,@lsqnonlin,false,'');
-    fprintf('Mean cost after calibration (in (m.s^{-2})^2):\n');
-    (finalCost'*finalCost)/(nrOfMTBAccs*data.ac.nSamples)
-
+    fprintf('Mean cost after calibration (in (m.s^{-2})^2):\n %f\n',...
+        (finalCost'*finalCost)/(nrOfMTBAccs*data.ac.nSamples));
+    
     %% Plot joint trajectories
     %
-    SensorDiagnosis.plotJointTrajectories(data,modelParams,figsFolder,savePlot);
+    SensorDiagnosis.plotJointTrajectories(data,modelParams,figuresHandler);
     
     %% Plot predicted sensor variables VS sensor sensor measurements
     %
     SensorDiagnosis.checkSensorMeasVsEst(...
         data,sensorsIdxListFile,...
         sensMeasCell.bc,sensEstCell.bc,...
-        figsFolder,savePlot,'bc')
+        figuresHandler,'bc')
     SensorDiagnosis.checkSensorMeasVsEst(...
         data,sensorsIdxListFile,...
         sensMeasCell.ac,sensEstCell.ac,...
-        figsFolder,savePlot,'ac')
+        figuresHandler,'ac')
+end
+
+% Save the plots into matlab figure files and eventually export them to PNG
+% files.
+if savePlot
+    % save plots
+    [figsFolder,iterator] = figuresHandler.saveFigures(exportPlot);
+    % create log info file
+    fileID = fopen([figsFolder '.txt'],'w');
+    fprintf(fileID,'modelPath = %s\n',modelPath);
+    fprintf(fileID,'dataPath = %s\n',dataPath);
+    fprintf(fileID,'calibration map :\n');
+    fprintf(fileID,'\t sensors = TO BE DONE\n');
+    fprintf(fileID,'\t values = TO BE DONE\n');
+    fprintf(fileID,'iterator = %d\n',iterator);
+    fclose(fileID);
 end
 
 end

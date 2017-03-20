@@ -1,4 +1,4 @@
-function h = plotNprintDistrb(FID,dOrient,fitGaussian,color,alpha,prevh,axbc,axac)
+function [h,ditribLogString] = plotNprintDistrb(dOrient,fitGaussian,color,alpha,prevh,axbc,axac)
 % Plots data in the active figure
 %
 hold on
@@ -46,7 +46,10 @@ end
 xlabel('Oriented distance to surface (m/s^2)','Fontsize',12);
 ylabel('Normalized number of occurence','Fontsize',12);
 hold off
-fprintf(FID,['distribution of distances to a centered sphere\n'...
+
+% Return string with the distribution parameters for logging purposes
+ditribLogString = sprintf(...
+    ['distribution of distances to a centered sphere\n'...
     'mean:%d m/s^2\n'...
     'standard deviation:%d m/s^2\n'],mean(dOrient,1),std(dOrient,0,1));
 

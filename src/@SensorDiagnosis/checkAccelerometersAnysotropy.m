@@ -1,7 +1,7 @@
 function checkAccelerometersAnysotropy(...
     data_bc,data_ac,sensorsIdxListFile,...
     sensMeasCell_bc,sensMeasCell_ac,...
-    figsFolder,savePlot,~)
+    figuresHandler)
 
 % measurements before and after calibration
 [data.bc,data.ac] = deal(data_bc,data_ac);
@@ -47,31 +47,29 @@ time = data.ac.tInit + data.ac.parsedParams.time(:);
 
 for acc_i = accIter
     %% Plot distributions
-    % Check if we should print to a log file
-    if savePlot
-        FID = fopen([figsFolder '/distrib_' data.ac.labels{sensorsIdxListFile(acc_i)} '.txt'],'w');
-    else
-        FID = 1;
-    end
     
-    figure(...
+    figH = figure(...
         'Name',['calibration of MTB sensor ' data.ac.labels{sensorsIdxListFile(acc_i)}],...
         'WindowStyle', 'docked');
     
-    %set(gcf,'PositionMode','manual','Units','centimeters','Position',[5 5 50 200]);
-    set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
-
+    % Add figure to the figure handler
+    figLabel = ['figs_' data.ac.labels{sensorsIdxListFile(acc_i)}];
+    figuresHandler.addFigure(figH,figLabel);
+    
+    % If the figure is not docked, use the below command to display it full
+    % screen.
+    %set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
+    
     % distr of signed distances before calibration
     subplot(1,3,1);
     title('distribution of distances to a centered \newline sphere (R=9.807)',...
         'Fontsize',16,'FontWeight','bold');
-    prevh=SensorDiagnosis.plotNprintDistrb(FID,dOrientList{1,acc_i}.bc,false,'auto',1);
-    SensorDiagnosis.plotNprintDistrb(FID,dOrientList{1,acc_i}.ac,true,[7/255 100/255 26/255],0.6,prevh);
-
-    % close file
-    if FID ~= 1
-        fclose(FID);
-    end
+    [prevh,ditribLogStringBC]=SensorDiagnosis.plotNprintDistrb(dOrientList{1,acc_i}.bc,false,'auto',1);
+    [~    ,ditribLogStringAC]=SensorDiagnosis.plotNprintDistrb(dOrientList{1,acc_i}.ac,true,[7/255 100/255 26/255],0.6,prevh);
+    
+    % Add log string with the distribution parameters to the figure handler
+    distribLogLabel = ['distrib_' data.ac.labels{sensorsIdxListFile(acc_i)}];
+    figuresHandler.addDistribLog([ditribLogStringBC '\n' ditribLogStringAC],distribLogLabel);
     
     %% Plot norm uniformity improvement
     subplot(1,3,2);
@@ -102,11 +100,6 @@ for acc_i = accIter
     subplot(1,3,3);
     title('Projection on ground truth \newline sphere manifold after calibration','Fontsize',16,'FontWeight','bold');
     SensorDiagnosis.plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.ac{1,acc_i});
-
-    if savePlot
-        set(gcf,'PaperPositionMode','auto');
-        print('-dpng','-r300','-opengl',[figsFolder '/figs_' data.ac.labels{sensorsIdxListFile(acc_i)}]);
-    end    
 end
 
 %% Plot bar graph of all accelerometers distributions before and after calibration
@@ -123,10 +116,13 @@ dOrientListBCmat = cell2mat(dOrientListBC);
 dOrientListACmat = cell2mat(dOrientListAC);
 
 % Plot
-figure(...
+figH = figure(...
     'Name',['calibration of MTB sensor ' ...
     cellArrayOfStr2str(',',data.ac.labels(sensorsIdxListFile(accIter)))],...
     'WindowStyle', 'docked');
+
+% Add figure to the figure handler
+figuresHandler.addFigure(figH,'AllDistribBefNaft');
 
 bar([mean(dOrientListBCmat,1)' mean(dOrientListACmat,1)']);
 
@@ -146,9 +142,6 @@ hold off
 legend('mean before calibration','mean after calibration',...
     '\sigma before calibration','\sigma after calibration');
 
-if savePlot
-    set(gcf,'PaperPositionMode','auto');
-    print('-dpng','-r300','-opengl',[figsFolder '/AllDistribBefNaft']);
 end
 
 

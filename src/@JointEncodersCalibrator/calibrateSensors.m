@@ -1,7 +1,6 @@
 function calibrateSensors(...
-    modelPath,calibrationMap,...
-    calibedParts,taskSpecificParams,dataPath,...
-    measedSensorList,measedPartsList)
+    modelPath,calibrationMap,... % params specific to this calibrator
+    calibedParts,taskSpecificParams,dataPath,measedSensorList,measedPartsList)
 
 % Unwrap task specific parameters (defines 'calibedJointsIdxes')
 Init.unWrap(taskSpecificParams);

@@ -6,7 +6,7 @@ classdef SensorDiagnosis
     
     methods(Static = true, Access = public)
         runDiagnosis(...
-            modelPath,calibrationMap,...
+            modelPath,calibrationMap,figuresHandlerMap,task,...
             calibedParts,calibedJointsIdxes,dataPath,...
             measedSensorList,measedPartsList);
     end
@@ -28,7 +28,7 @@ classdef SensorDiagnosis
         
         plotJointTrajectories(data,ModelParams,figsFolder,savePlot);
         
-        h = plotNprintDistrb(FID,dOrient,fitGaussian,color,alpha,prevh,axbc,axac);
+        [h,ditribLogString] = plotNprintDistrb(dOrient,fitGaussian,color,alpha,prevh,axbc,axac);
     end
     
 end

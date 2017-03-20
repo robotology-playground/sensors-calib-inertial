@@ -119,7 +119,7 @@ if init.calibrateAccelerometers
     % calibrator function
     calibratorH = @(~,taskSpec,path,sensors,parts) ...
         AccelerometersCalibrator.calibrateSensors(...
-        calibrationMap,...
+        calibrationMap,...            % params specific to this calibrator
         taskSpec,path,sensors,parts); % actual params passed through the func handle
     
     % Calibrate the accelerometers
@@ -141,7 +141,7 @@ if init.calibrateJointEncoders
     % calibrator function
     calibratorH = @(calParts,taskSpec,path,sensors,parts) ...
         JointEncodersCalibrator.calibrateSensors(...
-        init.modelPath,calibrationMap,...
+        init.modelPath,calibrationMap,...      % params specific to this calibrator
         calParts,taskSpec,path,sensors,parts); % actual params passed through the func handle
     
     % Calibrate the joint encoders
@@ -157,16 +157,21 @@ end
 
 % 2.3 - Run diagnosis on acquired data
 if init.runDiagnosis
+    % Create the list of figure handlers (1 per task). These handlers will
+    % hold the figures handles and properties
+    figuresHandlerMap = containers.Map('KeyType','char','ValueType','any');
+    
     % Run diagnosis for the each scheduled calibrator task
     for cTask = calibratorTasks
         % unwrap cTask and get task init params
         task = cell2mat(cTask);
         taskInitParams = taskInitParamsMap(task);
         % diagnosis function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
-        diagFuncH = @(~,~,path,sensors,parts) ...
+        diagFuncH = @(~,taskSpec,path,sensors,parts) ...
             SensorDiagnosis.runDiagnosis(...
-            init.modelPath,calibrationMap,taskInitParams.taskSpecificParams,...
-            path,sensors,parts); % actual params passed through the func handle
+            init.modelPath,calibrationMap,... % params specific to this calibrator
+            figuresHandlerMap,task,...        % ...
+            taskSpec,path,sensors,parts);     % actual params passed through the func handle
         % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
         runCalibratorOrDiagnosis(...
             init,taskInitParams,diagFuncH,...
@@ -241,7 +246,6 @@ function runCalibratorOrDiagnosis(...
 % [in] calibratorFuncH:    calibrator main function handle
 % [in] acqSensorDataAccessor :    acquired data accessor
 % [in] calibedSensor :            sensor to be calibrated
-% [in/out] calibrationMap :       calibration parameters database (accs,joints,...)
 
 % unwrap the parameters specific to the calibration task
 Init.unWrap(taskInitParams);
