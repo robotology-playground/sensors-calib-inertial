@@ -1,9 +1,0 @@
-<application>
-	<name>Inertial_sensors_auto_calibration</name>
-	<application>
-		<name>Inertial_sensors_auto_calibration-left_leg</name>
-	</application>
-	<application>
-		<name>Inertial_sensors_auto_calibration-right_leg</name>
-	</application>
-</application>

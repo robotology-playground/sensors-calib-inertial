@@ -15,7 +15,7 @@ loadFiltParams = false;
 dataPath  = '../../data/dumper/icubSim.accelerometersCalibrator#25.seq#25';
 modelPath = '../models/icubSim/icub.urdf';
 dataSetNb = '';
-contextPath = '../AccelAutoCalib/data/calib/sgolayFiltParams.mat';
+contextPath = '../../data/calibration/sgolayFiltParams.mat';
 
 % Start and end point of data samples
 timeStart = 1;  % starting time in capture data file (in seconds)

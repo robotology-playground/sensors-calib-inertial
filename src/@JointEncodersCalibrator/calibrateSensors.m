@@ -196,6 +196,8 @@ std_optDq_offsetsGrid = std(optimalDq,0,3);
 % Standard deviation across random subsets
 std_optDq_subsets = std(optimalDq,0,2);
 
+
+% Display the results
 fprintf('Final optimization results. Each column stands for a random init of the data subset.\n');
 fprintf('Optimal offsets Dq (in degrees):\n');
 optimalDq
@@ -211,6 +213,9 @@ fprintf('Standard deviation across offsets grid:\n');
 std_optDq_offsetsGrid
 fprintf('Standard deviation across random subsets:\n');
 std_optDq_subsets
+
+% Plot the results
+JointEncodersCalibrator.plotJointsOffsets(averageOptimalDq,std_optDq_subsets);
 
 %% Format and save calibration in the main calibration map
 %
@@ -236,12 +241,5 @@ for iter = calibedPartsIdxes
         mapValue(modelParams.jointsToCalibrate.calibedJointsIdxes{iter}) + calib{iter}; % add calibrated values
     calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
 end
-
-% log data
-save('./data/minimResult.mat', ...
-    'costFunctionSelect','shuffle','number_of_subset_init',...
-    'modelParams', ...
-    'data','offsetsConfigGrid', ...
-    'optimalDq','exitflag','output','averageOptimalDq','std_optDq_offsetsGrid','std_optDq_subsets');
 
 end

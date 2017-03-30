@@ -14,6 +14,8 @@ classdef JointEncodersCalibrator
     
     methods(Static = true, Access = protected)
         [optimFunction,options] = getOptimConfig();
+        
+        plotJointsOffsets(mean_optDq,std_optDq);
     end
     
 end

@@ -9,7 +9,7 @@ dataPath  = '../../data/dumper';
 modelPath = '../models/iCubGenova04/icub.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 %calibrationMapFile = 'calibrationMap.mat';
-calibrationMapFile = ['../conf/calibration/' robotName '_calibrationMap.mat'];
+calibrationMapFile = ['../../data/calibration/' robotName '_calibrationMap.mat'];
 
 %% Standard or custom calibration
 calibrationType = 'standard';

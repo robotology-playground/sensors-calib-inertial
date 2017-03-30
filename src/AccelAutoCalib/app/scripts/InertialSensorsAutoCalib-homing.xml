@@ -1,9 +1,0 @@
-<application>
-	<name>Inertial_sensors_auto_calibration-homing</name>
-	<module>
-		<name>yarpmotorgui</name>
-		<parameters>--context AccelAutoCalib --from homePoseAccelJointsAutoCalib.ini</parameters>
-		<node>localhost</node>
-		<tag>yarpmotorgui-homing</tag>
-	</module>
-</application>
