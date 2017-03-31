@@ -7,7 +7,6 @@ dumper/
 data/
 html/
 tmp/
-sgolay
 /src/models/
 matlab-workspace
 octave-workspace
