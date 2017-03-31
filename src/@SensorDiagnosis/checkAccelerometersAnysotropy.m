@@ -126,7 +126,8 @@ figuresHandler.addFigure(figH,'AllDistribBefNaft');
 
 bar([mean(dOrientListBCmat,1)' mean(dOrientListACmat,1)']);
 
-xlabel('MTB board index','Fontsize',20);
+set(gca,'XTick',1:length(sensorsIdxListFile(accIter)),'XTickLabel',data.ac.labels(sensorsIdxListFile(accIter)));
+xlabel('MTB board labels','Fontsize',20);
 ylabel('distance (m/s^2)','Fontsize',20);
 grid on;
 

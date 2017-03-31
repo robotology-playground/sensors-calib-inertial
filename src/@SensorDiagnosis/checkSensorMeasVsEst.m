@@ -1,4 +1,4 @@
-function checkSensorMeasVsEst(...
+function angleList = checkSensorMeasVsEst(...
     data,sensorsIdxListFile,...
     sensMeasCell,sensEstCell,...
     figuresHandler,logtag)
@@ -129,23 +129,32 @@ title('Angle of sensors measurement VS estimation','Fontsize',16,'FontWeight','b
 figLabel = [logtag '_angleAccEstVSaccMeas'];
 figuresHandler.addFigure(figH,figLabel);
 
+% each iteration of the for loop will feed a subplot
 subplotIdx = 0;
+% at each iteration, save the computed angle for the function output
+angleList = zeros(subSamplingSize,length(accIter));
+% compute the angles
 for acc_i = accIter
+    % define subplot for the current selected sensor
     subplotIdx = subplotIdx+1;
     subplot(max(1,ceil(length(accIter)/4)),min(4,length(accIter)),subplotIdx);
     hold on;
     
+    % compute angles for the current selected sensor
     angleMat = zeros(subSamplingSize,1);
     for ts = 1:subSamplingSize
         angleMat(ts) = Angle.va2vb(sensEstCell{ts,acc_i},sensMeasCell{ts,acc_i});
     end
     
+    % plot angles
     plot(time,angleMat*180/pi,'r','lineWidth',2.0);
-    
     title(data.ac.labels{sensorsIdxListFile(acc_i)});
     grid ON;
     xlabel('Time (sec)','Fontsize',12);
     ylabel('Angle (degrees)','Fontsize',12);
     hold off
+    
+    % save angles for the function output
+    angleList(:,acc_i) = angleMat(:);
 end
 
