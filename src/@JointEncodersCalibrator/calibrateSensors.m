@@ -1,6 +1,9 @@
 function calibrateSensors(...
-    modelPath,calibrationMap,... % params specific to this calibrator
+    model,...
     calibedParts,taskSpecificParams,dataPath,measedSensorList,measedPartsList)
+
+% Get calibration map
+calibrationMap = model.calibrationMap;
 
 % Unwrap task specific parameters (defines 'calibedJointsIdxes')
 Init.unWrap(taskSpecificParams);
@@ -27,7 +30,7 @@ if strcmp(loadSource,'dumpFile')
 end
 
 % create the calibration context implementing the cost function
-myCalibContext = CalibrationContextBuilder(modelPath);
+myCalibContext = CalibrationContextBuilder(model.estimator);
 % % DEBUG
 % waitforbuttonpress;
 % list_kHsens = myCalibContext.getListTransforms('base_link');

@@ -47,7 +47,7 @@ classdef CalibrationContextBuilder < handle
     end
     
     methods
-        function obj = CalibrationContextBuilder(urdfModel)
+        function obj = CalibrationContextBuilder(estimator)
             %% Prepare inputs for updating the kinematics information in the estimator
             %
             % Compute the kinematics information necessary for the accelerometer
@@ -60,19 +60,9 @@ classdef CalibrationContextBuilder < handle
             grav = [0.0;0.0;-9.81];
             obj.grav_idyn.fromMatlab(grav);
             
-            %% Create the estimator and model...
+            %% Set the estimator and model...
             %
-            % Create an estimator class, load the respective model from URDF file and
-            % set the robot state constant parameters
-            
-            % Create estimator class
-            obj.estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
-            
-            % Load model and sensors from the URDF file
-            obj.estimator.loadModelAndSensorsFromFile(urdfModel);
-            
-            % Check if the model was correctly created by printing the model
-            obj.estimator.model.toString()
+            obj.estimator = estimator;
             
             % Base link index for later applying forward kynematics
             % (specific to APPROACH 1)
