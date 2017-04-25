@@ -1,6 +1,6 @@
 function runDiagnosis(...
-    model,figuresHandlerMap,task,... % params specific to this diagnosis function
-    taskSpecificParams,dataPath,measedSensorList,measedPartsList)
+    dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,...
+    figuresHandlerMap,task) % params specific to this diagnosis function
 
 % Parameters specific to this diagnosis function:
 % [in]     model: robot model (calibration data and model dynamics estimator)
