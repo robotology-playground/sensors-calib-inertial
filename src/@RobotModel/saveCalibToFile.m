@@ -3,8 +3,7 @@ function saveCalibToFile(obj)
 %                object creation.
 
 calibrationMap = obj.calibrationMap;
-save('Save calibrationMap');
-%save(obj.calibrationMapFile,'calibrationMap');
+save(obj.calibrationMapFile,'calibrationMap');
 
 end
 

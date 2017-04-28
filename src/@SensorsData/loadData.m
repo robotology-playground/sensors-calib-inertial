@@ -66,11 +66,11 @@ for i = 1 : length(obj.parts)
     % select sensor data parser
     switch obj.type{i}
         case 'inertialMTB'
-            initParser = @(dataBuffer) obj.mapMTBids(dataBuffer);
+            initParser = @(dataBuffer) obj.parseMTBdata(dataBuffer);
             getSensorDataPosition = @(sensorLabel) obj.mapMTBlabel2position(sensorLabel);
         case 'inertial'
-            initParser = @(dataBuffer) {};
-            getSensorDataPosition = @(sensorLabel) '4:6';
+            initParser = @(dataBuffer) obj.parseIMUdata(dataBuffer);
+            getSensorDataPosition = @(sensorLabel) obj.mapIMUlabel2position(sensorLabel);
         otherwise
     end
     

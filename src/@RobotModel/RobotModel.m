@@ -25,10 +25,13 @@ classdef RobotModel < handle
         urdfModelFile = '';
         calibrationMapFile = '';
         calibrationMap;
-        estimator; % iDynTree.ExtWrenchesAndJointTorquesEstimator
+        estimator;  % iDynTree.ExtWrenchesAndJointTorquesEstimator
+        jointsDbase;  % Joint database built from iDynTree model parameters
+        sensorsDbase; % Sensor database built from iDynTree model parameters
     end
     
     methods(Access = public)
+        % Constructor
         function obj = RobotModel(robotName,urdfModelFile,calibrationMapFile)
             % Set parameters from environment if needed
             if isempty(robotName)
@@ -43,6 +46,9 @@ classdef RobotModel < handle
                 end
                 path = strip(path); % remove spaces from the sides of the string
                 urdfModelFile = strip(path,'"'); % remove the quotation marks
+            end
+            if isempty(calibrationMapFile)
+                calibrationMapFile = ['../../data/calibration/' robotName '_calibrationMap.mat'];
             end
             
             % set class attributes
@@ -66,17 +72,44 @@ classdef RobotModel < handle
             
             % Check if the model was correctly created by printing the model
             obj
+            
+            % Build a typical database from the URDF model parameters
+            % previously loaded in iDynTree, allowing to query elements
+            % matching specified properties.
+            obj.jointsDbase = JointsDbase();
+            obj.sensorsDbase = SensorsDbase();
+            
         end
         
+        % Load all sensors calibration parameters from the file path set at
+        % model object instantiation.
         loadCalibFromFile(obj);
         
+        % Save all sensors calibration parameters to the file path set at
+        % model object instantiation.
         saveCalibToFile(obj);
         
+        % Refined display of the object
         display(obj);
+        
+        % Build old interface structure such that RobotModel class
+        % introduction doesn't impact the calibrators and the yarp data
+        % parsing current design.
+        modelParams = buildModelParams(obj,...
+            measedSensorList,measedPartsList,...
+            calibedParts,calibedJointsIdxes,calibedJointsDq0,...
+            mtbSensorAct);
+        
+        % Rebuild the 'jointsDbase' and 'sensorsDbase' databases.
+        buildDatabse(obj);
     end
     
     methods(Static = true, Access = protected)
-        jointsList = buildJointsLists();
+        jointList = buildJointsLists();
+    end
+    
+    methods(Static = true, Access = public)
+        part = link2part(link);
     end
 end
 

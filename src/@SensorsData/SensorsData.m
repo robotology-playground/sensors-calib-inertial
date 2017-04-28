@@ -22,25 +22,26 @@ classdef SensorsData < handle
         diff_q    = 0;    %derivate the angular velocity of the IMUs
         calibrationMap;
         filtParams;
+        
         %% parsed parameters from files and model
         parts       = {};
         labels      = {};
         frames      = {};
         ndof        = {};
         index       = {};
+        
         %<For mapping MTB pos ids (as they appear in the YARP port
         % metadata) to MTB labels. These tables are built when loading the
         % sensor data.
         mapMTBpos2code = {};
         mapMTBlabel2position = {}; %>
+        mapIMUlabel2position = {}; % for parsing IMU data
+        
         type        = {};
         calib       = {};
         visualize   = {};
         parsedParams    ;
-        %% parsers for each type of sensor
-        offsetMTB   = [2 6 4 6];
-        %offsetMTB   = [0 4 2 4];
-        offsetMTI   = [0 12 4 6];
+        
         nrOfMTBAccs = 0; % total number of activated MTB acc. or IMU acc.
     end
     
@@ -71,101 +72,44 @@ classdef SensorsData < handle
             obj.plot = plot;
         end
         
-        function addMTXsensToData(obj, part, mtbSensorCodes, mtbSensorLinks, sensorActs, mtxSensorTypes, visualize)
-            %% define offsets for parsing Linear Acceleration data from MTB accelerometers
-            %
-            % Refer to wiki:
-            % https://github.com/robotology/codyco-modules/wiki/External-Inertial-Sensors-for-iCubGenova02
-            %
-            % a = (n  6.0  (a1  b1 t1 x1 y1 z1)   .... (an  bn tn xn yn xn))
-            % n  = number of sensors published on the port
-            % ai = pos of sensor ... see enum type
-            % bi = accel (1) or gyro (2)
-            % ti = ?
-            %
-            % | size  | 1 |  1  |   6  |            6           | ...
-            % | offset| 1 |  2  | 3..8 |2+6*(i-1)+1..2+6*(i-1)+6| ...
-            % | Field | n | 6.0 |a1..z1| ai  bi  ti  xi  yi  zi | ...
-            % 
-            % header_length = 2;
-            % full_acc_size = 6;
-            % lin_acc_first_idx = 4;
-            % lin_acc_last_idx = 6;
-            %
-            % => defined in offsetMTB[]
-            %
-            %
-            %% define offsets for parsing Linear Acceleration data from the Head IMU
-            %
-            % Refer to wiki:
-            % http://eris.liralab.it/wiki/Inertial_Sensor
-            %
-            % The output consists in 12 double, organized as follows:
-            % 
-            % euler angles [3]: deg
-            % linear acceleration [3]: m/s^2
-            % angular speed [3]: deg/s (* see note1)
-            % magnetic field [3]: arbitrary units
-            %
-            % header_length = 0;
-            % full_acc_size = 12;
-            % lin_acc_first_idx = 4;
-            % lin_acc_last_idx = 6;
-            %
-            % => defined in offsetMTI[]
-            %
-            %% offsets selectors:
-            HEADER_LENGTH = 1;
-            FULL_ACC_SIZE = 2;
-            LIN_ACC_1RST_IDX = 3;
-            LIN_ACC_LAST_IDX = 4;
-
+        function addMTXsensToData(obj, sensorsDbase, part, sensorLabels, visualize)
             % Number of activated sensors for current part
-            obj.nrOfMTBAccs = obj.nrOfMTBAccs + numel(sensorActs);
+            obj.nrOfMTBAccs = obj.nrOfMTBAccs + numel(sensorLabels);
             
-            for iter = sensorActs(:)'
-                %ADDSENSTODATA Add a sensor to the data structure
-                % there is no naming convention yet. ex of sensor frame: [r_upper_leg_mtb_acc_11b3]
+            for cLabel = sensorLabels(:)'
+                % Get sensor label frame and type. There is no naming
+                % convention yet.
+                % ex of sensor frame: [r_upper_leg_mtb_acc_11b3]
                 % ex of sensor label: [11b3_acc]
-                switch mtxSensorTypes{iter}
-                    case 'inertial'
-                        offset = obj.offsetMTI;
-                        fullFrameStr = strcat(mtbSensorLinks{iter},'_imu_acc_',mtbSensorCodes{iter})
-                        acc_gain = 1; % raw fullscale to m/s^2 conversion
-                    case 'inertialMTB'
-                        offset = obj.offsetMTB; % TBD. improve: not needed for ETH iCub
-                        fullFrameStr = strcat(mtbSensorLinks{iter},'_mtb_acc_',mtbSensorCodes{iter})
-                        acc_gain = 5.9855e-04; % raw fullscale to m/s^2 conversion
-                    otherwise
-                        error('Unknown sensor type !!');
-                end
-                
-                indexList = strcat(num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_1RST_IDX)), ...
-                    ':',num2str(offset(HEADER_LENGTH)+offset(FULL_ACC_SIZE)*(iter-1)+offset(LIN_ACC_LAST_IDX)));
+                sensorLabel = cell2mat(clabel);
+                sensorFrame = sensorsDbase.getSensorFrame(sensorLabel);
+                sensorType = sensorsDbase.getSensorType(sensorLabel);
                 
                 % get calibration for this sensor
-                if isKey(obj.calibrationMap,fullFrameStr)
-                    calibMap = obj.calibrationMap(fullFrameStr);
+                if isKey(obj.calibrationMap,sensorFrame)
+                    calibMap = obj.calibrationMap(sensorFrame);
                 else
                     calibMap.centre=[0 0 0]'; calibMap.radii=[1 1 1]';
                     calibMap.quat=[1 0 0 0]'; calibMap.R=eye(3);
                     calibMap.C=eye(3); % calibration matrix
                 end
                 
-                calibMap.gain=acc_gain;  % raw fullscale to m/s^2 conversion
+                % Get the fullscale gain (raw fullscale to m/s^2 conversion)
+                calibMap.gain=sensorsDbase.activeSensorGain(sensorLabel);
                 
+                % Add a sensor to the data structure.
                 obj.addSensToData(  part, ...
-                    fullFrameStr, ...
-                    strcat(mtbSensorCodes{iter},'_acc'), ...
+                    sensorFrame, ...
+                    sensorLabel, ...
                     3, ...
-                    indexList, ...
-                    mtxSensorTypes{iter}, ...
+                    [], ...
+                    sensorType, ...
                     calibMap, ...
                     visualize && obj.plot);
             end
         end
 
-        function addEncSensToData(obj, part, jointsNdofs, ctrledJointsIdxes, visualize)
+        function addEncSensToData(obj, ~, part, jointsNdofs, ctrledJointsIdxes, visualize)
             % define joint calibration string
             mapKey = strcat('jointsOffsets_',part);
             % get calibration for the joint encoders of this part

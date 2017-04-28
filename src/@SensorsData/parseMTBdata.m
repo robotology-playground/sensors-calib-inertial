@@ -1,5 +1,12 @@
-function mapMTBids(obj,yBuff)
-% Builds the map between the MTB ids from the inertialMTB metadata into MTB sensor codes
+function parseMTBdata(obj,yBuff)
+% Parses the MTB data on the '/icub/<part>/inertialMTB' YARP port.
+% Builds the map between the MTB ids from the inertialMTB metadata into MTB sensor
+% codes and define the respective offsets for parsing accelerometers data from
+% the yarp frames.
+%
+% Refer to wiki:
+% https://github.com/robotology/codyco-modules/wiki/External-Inertial-Sensors-for-iCubGenova02
+%
 
 %% ==== EMS Data format ====
 %
@@ -14,6 +21,10 @@ function mapMTBids(obj,yBuff)
 % ti = time stamp.
 % xi,yi,zi = the 3 measurement channels of the accelerometer (non calibrated)
 %
+% | size  | 1 |  1  |   6  |            6           | ...
+% | offset| 1 |  2  | 3..8 |2+6*(i-1)+1..2+6*(i-1)+6| ...
+% | Field | n | 6.0 |a1..z1| ai  bi  ti  xi  yi  zi | ...
+
 header_length = 2;
 version = 6;
 sensorDataLength = 6;
