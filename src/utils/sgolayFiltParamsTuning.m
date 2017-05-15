@@ -44,9 +44,9 @@ mtbSensorAct.right_leg = 1:13;
 mtbSensorAct.torso = 7:10;
 mtbSensorAct.head = 1;
 
-modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
+modelParams = model.buildModelParams(...
     measedSensorList,measedPartsList,...
-    {},[],[],...  % no need for calibration parts information
+    {},[],...  % no need for calibration parts information
     mtbSensorAct);
 
 %% Get sensor output data

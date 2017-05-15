@@ -3,7 +3,8 @@ classdef RobotModel < handle
     %   The class constructor retrieves the model parameters from the URDF
     %   file: joints list, links list, sensor frames and types, DOFs of
     %   each joint. For that purpose, an iDynTree model 'iDynTree::Model'
-    %   could be created and populated by 
+    %   is created and populated by the main app script through the
+    %   iDynTree bindings.
     %   It then associates the sensor frames to labels as an abstraction
     %   between the model specific frame names and the names used in the
     %   application interface.
@@ -14,11 +15,7 @@ classdef RobotModel < handle
     %   'iDynTree.ExtWrenchesAndJointTorquesEstimator' for computing the
     %   predicted link accelerations.
     %   The model also holds the sensor calibration parameters and the
-    % joint/motor parameters (PWM to torque rate, friction parameters, ...).
-    
-    properties(Constant = true, GetAccess = public)
-        jointsListFromPart = RobotModel.buildJointsLists();
-    end
+    %   joint/motor parameters (PWM to torque rate, friction parameters, ...).
     
     properties(GetAccess = public, SetAccess = protected)
         robotName = '';
@@ -61,8 +58,7 @@ classdef RobotModel < handle
             
             %% Create the iDynTree estimator and model...
             %
-            % Create an estimator class, load the respective model from URDF file and
-            % set the robot state constant parameters
+            % Create an estimator class, load the respective model from URDF file
             
             % Create estimator class
             obj.estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
@@ -70,15 +66,11 @@ classdef RobotModel < handle
             % Load model and sensors from the URDF file
             obj.estimator.loadModelAndSensorsFromFile(urdfModelFile);
             
-            % Check if the model was correctly created by printing the model
-            obj
-            
             % Build a typical database from the URDF model parameters
             % previously loaded in iDynTree, allowing to query elements
             % matching specified properties.
-            obj.jointsDbase = JointsDbase();
-            obj.sensorsDbase = SensorsDbase();
-            
+            obj.jointsDbase = JointsDbase(obj.estimator.model);
+            obj.sensorsDbase = SensorsDbase(obj.estimator.sensors);
         end
         
         % Load all sensors calibration parameters from the file path set at
@@ -97,15 +89,11 @@ classdef RobotModel < handle
         % parsing current design.
         modelParams = buildModelParams(obj,...
             measedSensorList,measedPartsList,...
-            calibedParts,calibedJointsIdxes,calibedJointsDq0,...
+            calibedParts,calibedJointsIdxes,...
             mtbSensorAct);
         
         % Rebuild the 'jointsDbase' and 'sensorsDbase' databases.
-        buildDatabse(obj);
-    end
-    
-    methods(Static = true, Access = protected)
-        jointList = buildJointsLists();
+        buildDatabase(obj);
     end
     
     methods(Static = true, Access = public)

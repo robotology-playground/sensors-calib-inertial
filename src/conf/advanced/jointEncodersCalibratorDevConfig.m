@@ -37,9 +37,4 @@ subSamplingSize = 1000; % number of samples after sub-sampling the raw data
 %
 
 % Optimization starting point
-calibedJointsDq0.left_arm = [0 0 0 0];
-calibedJointsDq0.right_arm = [0 0 0 0];
-calibedJointsDq0.left_leg = [0 0 0 0 0 0];
-calibedJointsDq0.right_leg = [0 0 0 0 0 0];
-calibedJointsDq0.torso = [0 0 0];
-calibedJointsDq0.head = [0 0 0];
+calibedJointsMaxDq0 = 5;

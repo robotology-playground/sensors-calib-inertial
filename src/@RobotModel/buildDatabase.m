@@ -1,4 +1,4 @@
-function buildDatabse( obj )
+function buildDatabase( obj )
 %buildDatabse Rebuild the databases from the current loaded parameters 
 %   The databases allow to query elements matching specified
 %   properties. This function rebuilds:

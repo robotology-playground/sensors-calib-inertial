@@ -372,7 +372,7 @@ classdef CalibrationContextBuilder < handle
         end
         
         function e = costFunctionSigmaProjOnEachLink(obj,Dq,data,subsetVec_idx,optimFunction)
-            % We defined in 'jointsNsensorsDefinitions' a segment i as a link for which
+            % We had defined in 'buildModelParams' a segment i as a link for which
             % parent joint i and joint i+1 axis are not concurrent. For instance 'root_link',
             % 'r_upper_leg', 'r_lower_leg', 'r_foot' are segments of the right leg. 'r_hip_1',
             % 'r_hip2' and r_hip_3' are part of the 3 DoF hip joint.
@@ -574,13 +574,6 @@ classdef CalibrationContextBuilder < handle
                 list_kHsens{acci,1} = Lb_H_acci;
             end
         end
-    end
-    
-    methods(Static)
-        modelParams = jointsNsensorsDefinitions(...
-            measedSensorList,measedPartsList,...
-            calibedParts,calibedJointsIdxes,calibedJointsDq0,...
-            mtbSensorAct);
     end
 end
 

@@ -76,8 +76,18 @@ classdef DataBase < handle
         % input parameters 'inputPropsStruct'.
         elemHandleList = getElemList(obj,inputPropsStruct);
         
-        % Retrieve list of 
+        % Retrieve the 'outputPropName' property of elements matching input
+        % properties specified in 'inputPropsStruct'.
         propList = getPropList(obj,inputPropsStruct,outputPropName);
+        
+        % Set to 'propValueToSet' the 'inputPropName' property of elements matching
+        % input properties specified in 'inputPropsStruct'.
+        success = setProp(obj,inputPropsStruct,inputPropName,propValueToSet);
+        
+        % Set the 'inputPropName' property of the database elements from
+        % 'inputPropKeysToValues'. This table assigns the value to set for
+        % each element identified by a key.
+        success = setPropList(obj,inputPropKeysToValues,inputPropName);
     end
     
     methods(Access = protected)

@@ -84,6 +84,19 @@ classdef SensorsData < handle
                 sensorLabel = cell2mat(clabel);
                 sensorFrame = sensorsDbase.getSensorFrame(sensorLabel);
                 sensorType = sensorsDbase.getSensorType(sensorLabel);
+                % WORKAROUND begin
+                switch sensorType
+                    case 'mtb_acc'
+                        tmpType = 'inertialMTB';
+                    case 'imu_acc'
+                        tmpType = 'inertial';
+                    case {'ems_acc','mtb_gyro','ems_gyro'}
+                        error('Not yet supported type!');
+                    otherwise
+                        error('Unsupported type!');
+                end
+                sensorType = tmpType;
+                % WORKAROUND end
                 
                 % get calibration for this sensor
                 if isKey(obj.calibrationMap,sensorFrame)
@@ -95,7 +108,7 @@ classdef SensorsData < handle
                 end
                 
                 % Get the fullscale gain (raw fullscale to m/s^2 conversion)
-                calibMap.gain=sensorsDbase.activeSensorGain(sensorLabel);
+                calibMap.gain=sensorsDbase.getSensorGain(sensorLabel);
                 
                 % Add a sensor to the data structure.
                 obj.addSensToData(  part, ...
