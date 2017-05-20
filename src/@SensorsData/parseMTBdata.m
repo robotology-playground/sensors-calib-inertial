@@ -40,7 +40,7 @@ sensorTimestpNmeasOffset = 2;
 % type_none          = 0;
 % type_accelerometer = 1;
 % type_gyroscope     = 2;
-mtbType = {'_none','_acc','_gyro'};
+mtbType = {'none','mtb_acc','mtb_gyro'};
 
 % unique id for every possible inertial sensor positioned on iCub. So far we can host
 % up to 63 different positions. The actual positions on iCub are documented on
@@ -151,7 +151,7 @@ for offset = sensorMetaOffsets
     % map it to the sensor code (ex: '10b1')
     mtbCode = obj.mapMTBpos2code{mtbPos+1}; % +1 because of matlab indexing
     % parse the sensor type '_acc' or '_gyro' then build the sensor label.
-    mtbLabel = [mtbCode mtbType{yBuff(1,1+offset+sensorTypeOffset)+1}]; % +1 because of matlab indexing
+    mtbLabel = [mtbType{yBuff(1,1+offset+sensorTypeOffset)+1} '_' mtbCode]; % +1 because of matlab indexing
     obj.mapMTBlabel2position(mtbLabel) = [num2str(1+offset+sensorDataStartOffset) ':' num2str(1+offset+sensorDataStopOffset)];
 end
 

@@ -1,5 +1,5 @@
 function fullscaleGainList = getSensorFullscaleGains( obj,sensorLabelList )
-%getSensorGain Get the sensor gain from a given sensor unique label.
+%getSensorFullscaleGains Get the sensor gain from a given sensor unique label.
 %   Even if we usually get the same gain for all sensors of a given
 %   type, we consider the possibiity to have  specific gain for each
 %   sensor (for instance each IMU).

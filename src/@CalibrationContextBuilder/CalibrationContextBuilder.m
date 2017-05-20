@@ -130,10 +130,6 @@ classdef CalibrationContextBuilder < handle
         end
         
         function Dq0 = buildSensorsNjointsIDynTreeListsForActivePart(obj,data,modelParams)
-            % load segments list for current part (ex: segments of left leg part
-            % are: 'l_upper_leg', 'l_lower_leg', 'l_foot'.
-            obj.segments = modelParams.jointsToCalibrate.partSegments;
-            
             %% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
             % Go through 'data.frames', 'data.parts' and 'data.labels' and build :
             % - the joint list (controlled) mapped into the iDynTree indices

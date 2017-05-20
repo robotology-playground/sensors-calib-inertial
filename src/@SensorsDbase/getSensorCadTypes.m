@@ -1,5 +1,5 @@
 function sensorTypeList = getSensorCadTypes( obj,sensorLabelList )
-%getSensorType Get the sensor type from a given sensor unique label.
+%getSensorCadTypes Get the sensor type from a given sensor unique label.
 %   Known returned sensor types:
 %   'mtb_acc','imu_acc','ems_acc','mtb_gyro','ems_gyro'.
 %

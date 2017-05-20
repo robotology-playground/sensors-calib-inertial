@@ -1,5 +1,5 @@
 function sensorFrameList = getSensorFrames( obj,sensorLabelList )
-%getSensorFrame Get the sensor frame from a given sensor unique label.
+%getSensorFrames Get the sensor frame from a given sensor unique label.
 %   The sensor frame is a sensor ID within iDynTree context.
 %   ex of returned sensor frame: 'r_upper_leg_mtb_acc_11b3'
 %
