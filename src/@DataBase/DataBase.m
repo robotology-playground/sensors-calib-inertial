@@ -3,11 +3,20 @@ classdef DataBase < handle
     %   It can be used for instance for building a robot model with
     %   multiple mappings between the model parameters.
     
+    properties(Access = protected)
+        % mapping of the property names to column indexes
+        name2colIdx@containers.Map;
+        % list of func handles mapping the property value to the row idx
+        name2rowIdxHandleList = {}; 
+    end
+    
     properties(GetAccess = public, SetAccess = protected)
         propKeyList = {};
         propNameList = {};
         propValueList = {};
         ready = false; % initial database not built
+        nbElems = 0;
+        nbNames = 0;
     end
     
     methods(Access = public)
@@ -67,31 +76,31 @@ classdef DataBase < handle
             obj.ready = false;
         end
         
-        % Rebuild database. If returned value is false, it means the
+        % Build or rebuild database. If returned value is false, it means the
         % database is not consistent (wrong element types, mismatch between
         % properties list and values list sizes,...).
         success = build(obj);
         
-        % Retrieve handles pointing to elements which properties match the
-        % input parameters 'inputPropsStruct'.
-        elemHandleList = getElemList(obj,inputPropsStruct);
-        
         % Retrieve the 'outputPropName' property of elements matching input
         % properties specified in 'inputPropsStruct'.
-        propList = getPropList(obj,inputPropsStruct,outputPropName);
+        propList = getPropList(obj,queryPropsStruct,outputPropName);
         
         % Set to 'propValueToSet' the 'inputPropName' property of elements matching
         % input properties specified in 'inputPropsStruct'.
-        success = setProp(obj,inputPropsStruct,inputPropName,propValueToSet);
+        success = setProp(obj,queryPropsStruct,propNameToSet,propValueToSet);
         
         % Set the 'inputPropName' property of the database elements from
         % 'inputPropKeysToValues'. This table assigns the value to set for
         % each element identified by a key.
-        success = setPropList(obj,inputPropKeysToValues,inputPropName);
+        success = setPropList(obj,...
+            queryKeyName,queryKeyValues,...
+            propNameToSet,propValuesToSet);
     end
     
     methods(Access = protected)
+        % Retrieve indexes of elements which properties match the input
+        % parameters 'inputPropsStruct'.
+        elemRowIdxList = getElemRowIdxList(obj,queryPropsStruct);
     end
     
 end
-

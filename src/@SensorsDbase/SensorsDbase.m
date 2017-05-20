@@ -80,23 +80,23 @@ classdef SensorsDbase < DataBase
         % 'sensorUiIDlist', along with part, is the UI set of parameters
         % identifying a unique sensor.
         % ex of returned sensor label: [11b3_acc]
-        sensorLabelList = getSensorlabels(part,sensorUiIDlist);
+        sensorLabelList = getSensorlabels(obj,part,sensorUiIDlist);
         
         % Get the sensor frame (sensor ID within iDynTree context) from a
         % given sensor unique label.
         % ex of returned sensor frame: 'r_upper_leg_mtb_acc_11b3'
-        sensorFrame = getSensorFrame(sensorLabel);
+        sensorFrameList = getSensorFrames(obj,sensorLabelList);
         
         % Get the sensor type from a given sensor unique label.
         % Known returned sensor types:
         % 'mtb_acc','imu_acc','ems_acc','mtb_gyro','ems_gyro'.
-        sensorType = getSensorType(sensorLabel);
+        sensorTypeList = getSensorCadTypes(obj,sensorLabelList);
         
         % Get the sensor gain from a given sensor unique label. Even if we
         % usually get the same gain for all sensors of a given type, we
         % consider the possibiity to have  specific gain for each sensor
         % (for instance each IMU).
-        sensorGain = getSensorGain(sensorLabel);
+        fullscaleGainList = getSensorFullscaleGains(obj,sensorLabelList);
     end
     
     methods(Static = true, Access = protected)

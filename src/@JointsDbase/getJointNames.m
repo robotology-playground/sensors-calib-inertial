@@ -2,11 +2,11 @@ function jointNameList = getJointNames( obj,part )
 %getJointNames Get joints names from a given part
 
 % build query (input properties to match)
-inputProp.queryFormat = 1;
-inputProp.queryData = {'part',part};
+inputProp.format = 1;
+inputProp.data = {'part',part};
 
 % query data
-%jointNameList = obj.getPropList(inputProp,'jointName');
+jointNameListDbase = obj.getPropList(inputProp,'jointName');
 
 %% WORKAROUND begin:
 % the joints list 'jointNameList' should be orederd as in the app GUI and
@@ -14,6 +14,8 @@ inputProp.queryData = {'part',part};
 % 
 % macros for repetitive names and codes between left and right parts
 %
+persistent jointsListFromPart;
+
 armJoints = @(side) {...
     [side '_shoulder_pitch'],[side '_shoulder_roll'],[side '_shoulder_yaw'],...
     [side '_elbow'],[side '_wrist_prosup'],[side '_wrist_pitch'],[side '_wrist_yaw']};
@@ -37,8 +39,9 @@ jointsLists = {...
 jointsListFromPart = containers.Map(parts,jointsLists);
 
 % query data
-[~,jointNameListReorderedIdx] = ismember(jointNameList,jointsListFromPart(part));
-reordJointNameList = jointNameList(jointNameListReorderedIdx);
+refJointNameList = jointsListFromPart(part);
+jointNameListReorderedBitmap = ismember(refJointNameList,jointNameListDbase);
+reordJointNameList = refJointNameList(jointNameListReorderedBitmap);
 %% WORKAROUND end.
 
 jointNameList = reordJointNameList(:)';

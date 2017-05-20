@@ -1,17 +1,32 @@
-function success = setPropList( obj,inputPropKeysToValues,inputPropName )
-%setPropList Set the 'inputPropName' property of the database elements from
-%            'inputPropKeysToValues'.
+function success = setPropList( obj,...
+    queryKeyName,queryKeyValues,...
+    propNameToSet,propValuesToSet )
+%setPropList Select elements which <inputKeyName> is among <inputKeyValues> and set
+%            the <propNameToSet> respective properties to <propValuesToSet> values.
 %   
-%   inputPropKeysToValues : assigns the value to set for each element identified
-%                           by a key.
-%   inputPropName         : property (of the matching database element) to set.
+%   inputKeyName   : key property name (type) where to search for the values.
 %   
-%   Note: 'inputPropKeysToValues' has the following format:
+%   inputKeyValues : list of key property values to match.
 %   
-%   {<key name1>,<prop value1>;...
-%    <key name2>,<prop value2>;...
-%    ...
-%    <key nameK>,<prop valueK>}
+%   propNameToSet  : property (of the matching database element) to set.
+%   
+%   propValuesToSet: list of values to set to the matching element's <propNameToSet>
+%                    property.
 %
+
+% build query (input properties to match)
+inputQuery.format = 2;
+inputQuery.data = {queryKeyName,queryKeyValues};
+
+% get line Idx of the queried element
+elemRowIdxList = obj.getElemRowIdxList(inputQuery);
+
+% get the output property column
+propNameCol = obj.name2colIdx(propNameToSet);
+
+% set queried value
+obj.propValueList(elemRowIdxList,propNameCol) = propValuesToSet;
+
+success = true;
 
 end

@@ -1,4 +1,4 @@
-function sensorLabelList = getSensorlabels( part,sensorUiIDlist )
+function sensorLabelList = getSensorlabels( obj,part,sensorUiIDlist )
 %getSensorlabels Get sensor labels identified by the set <part,sensorUiIDlist>.
 %   'sensorUiIDlist', along with part, is the UI set of parameters
 %   identifying a unique sensor.
@@ -17,8 +17,8 @@ hwIds = arrayfun(...
     'UniformOutput',false);
 
 % build query (input properties to match)
-inputProp.queryFormat = 2;
-inputProp.queryData = {'sensorHwId',hwIds};
+inputProp.format = 2;
+inputProp.data = {'sensorHwId',hwIds};
 
 % query data
 labelList = obj.getPropList(inputProp,'sensorLabel');

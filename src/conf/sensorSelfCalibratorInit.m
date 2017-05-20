@@ -9,7 +9,7 @@ dataPath  = '../../data/dumper';
 modelPath = '../models/iCubGenova04/icub.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 %calibrationMapFile = 'calibrationMap.mat';
-calibrationMapFile = ['../../data/calibration/' robotName '_calibrationMap.mat'];
+calibrationMapFile = '';
 
 %% Standard or custom calibration
 calibrationType = 'standard';
@@ -26,8 +26,8 @@ runDiagnosis = true;
 
 %% Common output parameters
 saveCalibration = false;
-defaultSavePlot = true;
-defaultExportPlot = true;
+defaultSavePlot = false;
+defaultExportPlot = false;
 
 
 %% Custom calibration sequence
@@ -48,7 +48,7 @@ defaultExportPlot = true;
 %% 'acquireSensorsTestData': Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
-acquiredParts = {'torso','head','left_leg','right_leg'};
+acquiredParts = {'torso'};
 % Profile = ... TBD!!
 
 % Fine selection of the accelerometers:
@@ -100,7 +100,7 @@ taskSpecificParams = struct(...
     'motionSeqProfile',motionSeqProfile);
 
 % Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'last'};
+sensorDataAcq = {'seq',53};
 
 % wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as
 % a calibrator task)

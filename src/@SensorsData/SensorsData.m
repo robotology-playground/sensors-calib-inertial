@@ -82,8 +82,8 @@ classdef SensorsData < handle
                 % ex of sensor frame: [r_upper_leg_mtb_acc_11b3]
                 % ex of sensor label: [11b3_acc]
                 sensorLabel = cell2mat(clabel);
-                sensorFrame = sensorsDbase.getSensorFrame(sensorLabel);
-                sensorType = sensorsDbase.getSensorType(sensorLabel);
+                sensorFrame = sensorsDbase.getSensorFrames(sensorLabel);
+                sensorType = sensorsDbase.getSensorCadTypes(sensorLabel);
                 % WORKAROUND begin
                 switch sensorType
                     case 'mtb_acc'
