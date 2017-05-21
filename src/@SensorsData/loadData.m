@@ -66,11 +66,11 @@ for i = 1 : length(obj.parts)
     % select sensor data parser
     switch obj.type{i}
         case 'inertialMTB'
-            initParser = @(dataBuffer) obj.mapMTBids(dataBuffer);
+            initParser = @(dataBuffer) obj.parseMTBdata(dataBuffer);
             getSensorDataPosition = @(sensorLabel) obj.mapMTBlabel2position(sensorLabel);
         case 'inertial'
-            initParser = @(dataBuffer) {};
-            getSensorDataPosition = @(sensorLabel) '4:6';
+            initParser = @(dataBuffer) obj.parseIMUdata(dataBuffer);
+            getSensorDataPosition = @(sensorLabel) obj.mapIMUlabel2position(sensorLabel);
         otherwise
     end
     
@@ -271,7 +271,7 @@ for i = 1 : length(obj.parts)
         eval(['obj.parsedParams.' ys '(4:6,:) = ' ...
             'deg_to_rad*obj.parsedParams.' ys '(4:6,:);']);
     end
-    if( strcmp(obj.labels{i}(end-2:end),'acc') )
+    if( ~isempty(regexp(obj.labels{i},'mtb_acc|ems_acc|imu_acc','match')) )
         eval(['nbSamples = size(obj.parsedParams.' ys '(1:3,:),2);']);
         eval(['obj.parsedParams.' ys '(1:3,:) = ' ...
             'C*(obj.parsedParams.' ys '(1:3,:)*acc_gain-repmat(centre,1,nbSamples));']);        

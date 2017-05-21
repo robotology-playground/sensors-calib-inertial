@@ -31,15 +31,10 @@ subsetVec_size_frac = 1/number_of_subset_init;
 % Start and end point of data samples
 timeStart = 1;  % starting time in capture data file (in seconds)
 timeStop  = -1; % ending time in capture data file (in seconds). If -1, use the end time from log
-subSamplingSize = 1000; % number of samples after sub-sampling the raw data
+subSamplingSize = 400; % number of samples after sub-sampling the raw data
 
 %% Define parameters for all joints (calibrated or not)
 %
 
 % Optimization starting point
-calibedJointsDq0.left_arm = [0 0 0 0];
-calibedJointsDq0.right_arm = [0 0 0 0];
-calibedJointsDq0.left_leg = [0 0 0 0 0 0];
-calibedJointsDq0.right_leg = [0 0 0 0 0 0];
-calibedJointsDq0.torso = [0 0 0];
-calibedJointsDq0.head = [0 0 0];
+calibedJointsMaxDq0 = 5;

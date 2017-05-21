@@ -1,13 +1,16 @@
 function runDiagnosis(...
-    modelPath,calibrationMap,figuresHandlerMap,task,... % params specific to this diagnosis function
-    taskSpecificParams,dataPath,measedSensorList,measedPartsList)
+    dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,...
+    figuresHandlerMap,task) % params specific to this diagnosis function
 
 % Parameters specific to this diagnosis function:
-% [in]     modelPath: path to the URDF model (input parameter for iDynTree)
+% [in]     model: robot model (calibration data and model dynamics estimator)
 % [in]     calibrationMap: sensors calibration parameters
 % [in/out] figuresHandlerMap: Map with class objects handling the figures generated
 % in this function.
 % [in]     task: calibration task that generated the sensor data.
+
+% Get calibration map
+calibrationMap = model.calibrationMap;
 
 % Unwrap task specific parameters (defines 'calibedJointsIdxes')
 Init.unWrap(taskSpecificParams);
@@ -17,9 +20,9 @@ run sensorDiagnosisDevConfig;
 
 %% set init parameters 'modelParams'
 %
-modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
+modelParams = model.buildModelParams(...
     measedSensorList,measedPartsList,...
-    {},[],[],...
+    {},[],...  % no need for calibration parts information
     mtbSensorAct);
 
 %% Update iterator and prepare log folders/files
@@ -71,7 +74,7 @@ if loadJointPos
     %% Generate predicted measurements
     %
     % create the calibration context implementing the cost function
-    myCalibContext = CalibrationContextBuilder(modelPath);
+    myCalibContext = CalibrationContextBuilder(model.estimator);
     costFunction = @myCalibContext.costFunctionSigma;
     nrOfMTBAccs = length(sensorsIdxListFile);
 
@@ -121,11 +124,11 @@ if savePlot
     [figsFolder,iterator] = figuresHandler.saveFigures(exportPlot);
     % create log info file
     fileID = fopen([figsFolder '.txt'],'w');
-    fprintf(fileID,'modelPath = %s\n',modelPath);
+    fprintf(fileID,'modelPath = %s\n',model.urdfModelFile);
     fprintf(fileID,'dataPath = %s\n',dataPath);
     fprintf(fileID,'calibration map :\n');
-    fprintf(fileID,'\t sensors = TO BE DONE\n');
-    fprintf(fileID,'\t values = TO BE DONE\n');
+    fprintf(fileID,'\t sensors = %s\n',calibrationMap.keys);
+    fprintf(fileID,'\t values = %f\n',calibrationMap.values);
     fprintf(fileID,'iterator = %d\n',iterator);
     fclose(fileID);
 end

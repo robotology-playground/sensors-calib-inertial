@@ -3,6 +3,10 @@ function checkSensorMeasVsEstAngleImprovmt(...
     angleList_bc,angleList_ac,...
     figuresHandler)
 
+% convert angles from radians to degrees
+angleList_bc = angleList_bc*180/pi;
+angleList_ac = angleList_ac*180/pi;
+
 % check the size of 'sensorsIdxListFile'
 if length(sensorsIdxListFile)~=size(angleList_bc,2)
     error('Wrong number of sensors doesn''t match the size of angles list');

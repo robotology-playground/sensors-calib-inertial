@@ -1,6 +1,9 @@
 function calibrateSensors(...
-    modelPath,calibrationMap,... % params specific to this calibrator
-    calibedParts,taskSpecificParams,dataPath,measedSensorList,measedPartsList)
+    dataPath,calibedParts,measedSensorList,measedPartsList,...
+    model,taskSpecificParams)
+
+% Get calibration map
+calibrationMap = model.calibrationMap;
 
 % Unwrap task specific parameters (defines 'calibedJointsIdxes')
 Init.unWrap(taskSpecificParams);
@@ -12,12 +15,15 @@ calibedJointsIdxes = structfun(...
 % Advanced interface parameters
 run jointEncodersCalibratorDevConfig;
 
+% Set the init vector Dq0 for the optimisation
+model.jointsDbase.setAllJointsMaxCalibDq0(calibedJointsMaxDq0);
+
 [optimFunction,options] = JointEncodersCalibrator.getOptimConfig();
 
 % Build joint encoders and inertial sensors parameters
-modelParams = CalibrationContextBuilder.jointsNsensorsDefinitions(...
+modelParams = model.buildModelParams(...
     measedSensorList,measedPartsList,...
-    calibedParts,calibedJointsIdxes,calibedJointsDq0,...
+    calibedParts,calibedJointsIdxes,...
     mtbSensorAct);
 
 % in target mode, don't apply any prior offsets
@@ -27,7 +33,7 @@ if strcmp(loadSource,'dumpFile')
 end
 
 % create the calibration context implementing the cost function
-myCalibContext = CalibrationContextBuilder(modelPath);
+myCalibContext = CalibrationContextBuilder(model.estimator);
 % % DEBUG
 % waitforbuttonpress;
 % list_kHsens = myCalibContext.getListTransforms('base_link');

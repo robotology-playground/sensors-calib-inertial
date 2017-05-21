@@ -23,31 +23,10 @@ yarp.Network.init();
 % load application main interface parameters
 init = Init.load('sensorSelfCalibratorInit');
 
-% Set parameters from environment
-if isempty(init.robotName)
-    init.robotName = getenv('YARP_ROBOT_NAME');
-end
-if isempty(init.modelPath)
-    % Let Yarp resource finder get the model path for 'robotName'. Trash the
-    % error/warning output and get only the result path
-    [status,path] = system('yarp resource --find model.urdf 2> /dev/null');
-    if status
-        error('robot model not found !!');
-    end
-    path = strip(path); % remove spaces from the sides of the string
-    init.modelPath = strip(path,'"'); % remove the quotation marks
-end
-
-% Load calibration parameters
-% Load existing sensors calibration (joint encoders, inertial & FT sensors, etc)
-if exist(init.calibrationMapFile,'file') == 2
-    load(init.calibrationMapFile,'calibrationMap');
-end
-
-if ~exist('calibrationMap','var')
-    warning('calibrationMap not found');
-    calibrationMap = containers.Map('KeyType','char','ValueType','any');
-end
+% Create robot model. The model holds the robot name, the parameters
+% extracted from the URDF model, the sensor calibration parameters and the
+% joint/motor parameters (PWM to torque rate, friction parameters, ...).
+model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
 
 % Load last acquired data accessors from file
 if exist('lastAcqSensorDataAccessorMap.mat','file') == 2
@@ -117,20 +96,14 @@ if init.calibrateAccelerometers
     task = 'accelerometersCalibrator';
     
     % calibrator function
-    calibratorH = @(~,taskSpec,path,sensors,parts) ...
+    calibratorH = @(path,~,sensors,parts,model,taskSpec) ...
         AccelerometersCalibrator.calibrateSensors(...
-        calibrationMap,...            % params specific to this calibrator
-        taskSpec,path,sensors,parts); % actual params passed through the func handle
+        path,sensors,parts,model,taskSpec); % actual params passed through the func handle
     
     % Calibrate the accelerometers
     runCalibratorOrDiagnosis(...
-        init,init.accelerometersCalib,calibratorH,...
+        init,model,init.accelerometersCalib,calibratorH,...
         acqSensorDataAccessorMap(task),'acc');
-    
-    % Save calibration
-    if init.saveCalibration
-        save(init.calibrationMapFile,'calibrationMap');
-    end
 end
 
 % 2.2 - Calibrate the encoders joint offsets
@@ -139,20 +112,14 @@ if init.calibrateJointEncoders
     task = 'jointEncodersCalibrator';
     
     % calibrator function
-    calibratorH = @(calParts,taskSpec,path,sensors,parts) ...
+    calibratorH = @(path,calParts,sensors,parts,model,taskSpec) ...
         JointEncodersCalibrator.calibrateSensors(...
-        init.modelPath,calibrationMap,...      % params specific to this calibrator
-        calParts,taskSpec,path,sensors,parts); % actual params passed through the func handle
+        path,calParts,sensors,parts,model,taskSpec); % actual params passed through the func handle
     
     % Calibrate the joint encoders
     runCalibratorOrDiagnosis(...
-        init,init.jointEncodersCalib,calibratorH,...
+        init,model,init.jointEncodersCalib,calibratorH,...
         acqSensorDataAccessorMap(task),'joint');
-    
-    % Save calibration
-    if init.saveCalibration
-        save(init.calibrationMapFile,'calibrationMap');
-    end
 end
 
 % 2.3 - Run diagnosis on acquired data
@@ -167,14 +134,13 @@ if init.runDiagnosis
         task = cell2mat(cTask);
         taskInitParams = taskInitParamsMap(task);
         % diagnosis function. Doesn't require 'calibedParts' & 'calibedJointsIdxes'
-        diagFuncH = @(~,taskSpec,path,sensors,parts) ...
+        diagFuncH = @(path,~,sensors,parts,model,taskSpec) ...
             SensorDiagnosis.runDiagnosis(...
-            init.modelPath,calibrationMap,... % params specific to this calibrator
-            figuresHandlerMap,task,...        % ...
-            taskSpec,path,sensors,parts);     % actual params passed through the func handle
+            path,sensors,parts,model,taskSpec,... % actual params passed through the func handle
+            figuresHandlerMap,task);              % params specific to this calibrator
         % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
         runCalibratorOrDiagnosis(...
-            init,taskInitParams,diagFuncH,...
+            init,model,taskInitParams,diagFuncH,...
             acqSensorDataAccessorMap(task),calibedSensorsMap(task));
     end
 end
@@ -238,7 +204,7 @@ end
 
 % Harvest the parameters and runs the calibration task
 function runCalibratorOrDiagnosis(...
-    init,taskInitParams,calibratorFuncH,...
+    init,model,taskInitParams,calibratorFuncH,...
     acqSensorDataAccessor,calibedSensor)
 
 % [in] init :              application script init config parameters
@@ -261,15 +227,20 @@ Init.unWrap(taskInitParams);
 % supporting parts
 [measedSensorLists,measedPartsLists] = acqSensorDataAccessor.getMeasedSensorsParts();
 
-%% calibrate joint encoders. If the torso has to be calibrated, it
-% should be before the arms since their orientation depends on the
-% torso. In the below loop processing, 'calibrationMap' (input/output)
+% In the case of joint encoders calibration, if the torso has to be
+% calibrated, it should be before the arms since their orientation depends
+% on the torso. In the below loop processing, 'calibrationMap' (input/output)
 % is updated at each call to 'calibrateSensors'.
 cellfun(@(folderPath,calibedParts,measedSensorList,measedPartsList) ...
     calibratorFuncH(...
-    calibedParts,taskSpecificParams,folderPath,...
-    measedSensorList,measedPartsList),...
-    dataFolderPathList,calibedPartsList,measedSensorLists,measedPartsLists);
+    folderPath,calibedParts,measedSensorList,measedPartsList,... % params we iterate on
+    model,taskSpecificParams),...                                % params common to all sequences
+    dataFolderPathList,calibedPartsList,measedSensorLists,measedPartsLists); % cellfun iterates over these lists
+
+% Save calibration
+if init.saveCalibration
+    model.saveCalibToFile();
+end
 
 end
 

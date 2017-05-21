@@ -47,7 +47,7 @@ classdef CalibrationContextBuilder < handle
     end
     
     methods
-        function obj = CalibrationContextBuilder(urdfModel)
+        function obj = CalibrationContextBuilder(estimator)
             %% Prepare inputs for updating the kinematics information in the estimator
             %
             % Compute the kinematics information necessary for the accelerometer
@@ -60,19 +60,9 @@ classdef CalibrationContextBuilder < handle
             grav = [0.0;0.0;-9.81];
             obj.grav_idyn.fromMatlab(grav);
             
-            %% Create the estimator and model...
+            %% Set the estimator and model...
             %
-            % Create an estimator class, load the respective model from URDF file and
-            % set the robot state constant parameters
-            
-            % Create estimator class
-            obj.estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
-            
-            % Load model and sensors from the URDF file
-            obj.estimator.loadModelAndSensorsFromFile(urdfModel);
-            
-            % Check if the model was correctly created by printing the model
-            obj.estimator.model.toString()
+            obj.estimator = estimator;
             
             % Base link index for later applying forward kynematics
             % (specific to APPROACH 1)
@@ -140,10 +130,6 @@ classdef CalibrationContextBuilder < handle
         end
         
         function Dq0 = buildSensorsNjointsIDynTreeListsForActivePart(obj,data,modelParams)
-            % load segments list for current part (ex: segments of left leg part
-            % are: 'l_upper_leg', 'l_lower_leg', 'l_foot'.
-            obj.segments = modelParams.jointsToCalibrate.partSegments;
-            
             %% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.
             % Go through 'data.frames', 'data.parts' and 'data.labels' and build :
             % - the joint list (controlled) mapped into the iDynTree indices
@@ -382,7 +368,7 @@ classdef CalibrationContextBuilder < handle
         end
         
         function e = costFunctionSigmaProjOnEachLink(obj,Dq,data,subsetVec_idx,optimFunction)
-            % We defined in 'jointsNsensorsDefinitions' a segment i as a link for which
+            % We had defined in 'buildModelParams' a segment i as a link for which
             % parent joint i and joint i+1 axis are not concurrent. For instance 'root_link',
             % 'r_upper_leg', 'r_lower_leg', 'r_foot' are segments of the right leg. 'r_hip_1',
             % 'r_hip2' and r_hip_3' are part of the 3 DoF hip joint.
@@ -584,13 +570,6 @@ classdef CalibrationContextBuilder < handle
                 list_kHsens{acci,1} = Lb_H_acci;
             end
         end
-    end
-    
-    methods(Static)
-        modelParams = jointsNsensorsDefinitions(...
-            measedSensorList,measedPartsList,...
-            calibedParts,calibedJointsIdxes,calibedJointsDq0,...
-            mtbSensorAct);
     end
 end
 

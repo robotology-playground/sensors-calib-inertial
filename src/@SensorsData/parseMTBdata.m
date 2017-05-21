@@ -1,5 +1,12 @@
-function mapMTBids(obj,yBuff)
-% Builds the map between the MTB ids from the inertialMTB metadata into MTB sensor codes
+function parseMTBdata(obj,yBuff)
+% Parses the MTB data on the '/icub/<part>/inertialMTB' YARP port.
+% Builds the map between the MTB ids from the inertialMTB metadata into MTB sensor
+% codes and define the respective offsets for parsing accelerometers data from
+% the yarp frames.
+%
+% Refer to wiki:
+% https://github.com/robotology/codyco-modules/wiki/External-Inertial-Sensors-for-iCubGenova02
+%
 
 %% ==== EMS Data format ====
 %
@@ -14,6 +21,10 @@ function mapMTBids(obj,yBuff)
 % ti = time stamp.
 % xi,yi,zi = the 3 measurement channels of the accelerometer (non calibrated)
 %
+% | size  | 1 |  1  |   6  |            6           | ...
+% | offset| 1 |  2  | 3..8 |2+6*(i-1)+1..2+6*(i-1)+6| ...
+% | Field | n | 6.0 |a1..z1| ai  bi  ti  xi  yi  zi | ...
+
 header_length = 2;
 version = 6;
 sensorDataLength = 6;
@@ -29,7 +40,7 @@ sensorTimestpNmeasOffset = 2;
 % type_none          = 0;
 % type_accelerometer = 1;
 % type_gyroscope     = 2;
-mtbType = {'_none','_acc','_gyro'};
+mtbType = {'none','mtb_acc','mtb_gyro'};
 
 % unique id for every possible inertial sensor positioned on iCub. So far we can host
 % up to 63 different positions. The actual positions on iCub are documented on
@@ -140,7 +151,7 @@ for offset = sensorMetaOffsets
     % map it to the sensor code (ex: '10b1')
     mtbCode = obj.mapMTBpos2code{mtbPos+1}; % +1 because of matlab indexing
     % parse the sensor type '_acc' or '_gyro' then build the sensor label.
-    mtbLabel = [mtbCode mtbType{yBuff(1,1+offset+sensorTypeOffset)+1}]; % +1 because of matlab indexing
+    mtbLabel = [mtbType{yBuff(1,1+offset+sensorTypeOffset)+1} '_' mtbCode]; % +1 because of matlab indexing
     obj.mapMTBlabel2position(mtbLabel) = [num2str(1+offset+sensorDataStartOffset) ':' num2str(1+offset+sensorDataStopOffset)];
 end
 
