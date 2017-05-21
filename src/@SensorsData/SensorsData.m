@@ -107,7 +107,7 @@ classdef SensorsData < handle
                 end
                 
                 % Get the fullscale gain (raw fullscale to m/s^2 conversion)
-                calibMap.gain=sensorsDbase.getSensorFullscaleGains(sensorLabel);
+                calibMap.gain=cell2mat(sensorsDbase.getSensorFullscaleGains(sensorLabel));
                 
                 % Add a sensor to the data structure.
                 obj.addSensToData(  part, ...

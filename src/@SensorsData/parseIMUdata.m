@@ -20,6 +20,6 @@ function parseIMUdata(obj,~)
 %
 
 % The robot has only 1 IMU installed in the head, we labelled '1x1_acc'
-obj.mapIMUlabel2position = containers.Map({'1x1_acc'},{'4:6'});
+obj.mapIMUlabel2position = containers.Map({'imu_acc_1x1'},{'4:6'});
 
 end
