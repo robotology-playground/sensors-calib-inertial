@@ -1,24 +1,23 @@
-classdef JointEncodersCalibrator < Calibrator
-    %JointEncodersCalibrator Holds all methods for joint encoders calibration
+classdef LowlevTauCtrlCalibrator < Calibrator
+    %LowlevTauCtrlCalibrator Holds all methods for low level joint torque control calibration
     %   'calibrateSensors()' is the main procedure for calibrating the
-    %   joint encoders. 'getOptimConfig()' configures the lsqnonlin non
-    %   linear solver for the least squares optimization run by the main
-    %   procedure.
+    %   low level parameters. These parameters include the PWM voltage to
+    %   torque rate, the vicuous and Coulomb friction parameters.
     
     properties(Constant=true, Access=protected)
-        singletonObj = JointEncodersCalibrator();
+        singletonObj = LowlevTauCtrlCalibrator();
     end
     
     properties(Constant=true, Access=public)
-        task@char = 'jointEncodersCalibrator';
+        task@char = 'LowlevTauCtrlCalibrator';
         
-        initSection@char = 'jointEncodersCalib';
+        initSection@char = 'lowLevelTauCtrlCalib';
         
-        calibedSensorType@char = 'joint';
+        calibedSensorType@char = 'LLTctrl';
     end
     
     methods(Access=protected)
-        function obj = JointEncodersCalibrator()
+        function obj = LowlevTauCtrlCalibrator()
         end
     end
     
@@ -26,18 +25,18 @@ classdef JointEncodersCalibrator < Calibrator
         % this function should initialize properly the shared attribute
         % 'singletonObj' and returns the handler to the caller
         function theInstance = instance()
-            theInstance = JointEncodersCalibrator.singletonObj;
+            theInstance = LowlevTauCtrlCalibrator.singletonObj;
         end
+    end
+    
+    methods(Access=public)
+        run(obj,init,model,lastAcqSensorDataAccessorMap);
     end
     
     methods(Static=true, Access=protected)
         calibrateSensors(...
             dataPath,calibedParts,measedSensorList,measedPartsList,...
             model,taskSpecificParams);
-        
-        [optimFunction,options] = getOptimConfig();
-        
-        plotJointsOffsets(mean_optDq,std_optDq);
     end
     
 end
