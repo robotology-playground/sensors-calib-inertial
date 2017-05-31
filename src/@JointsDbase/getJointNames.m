@@ -12,10 +12,28 @@ jointNameListDbase = obj.getPropList(inputProp,'jointName');
 % the joints list 'jointNameList' should be orederd as in the app GUI and
 % YARP indexes, so we force that order here.
 % 
-% macros for repetitive names and codes between left and right parts
+% Fine selection of joint encoders:
+% Select the joints to calibrate through the respective indexes. These indexes match 
+% the joint names listed below, as per the joint naming convention described in 
+% 'http://wiki.icub.org/wiki/ICub_Model_naming_conventions', except for the torso.
 %
+%      shoulder pitch roll yaw   |   elbow   |   wrist prosup pitch yaw   |  
+% arm:          0     1    2     |   3       |         4      5     6     |
+%
+%      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |  
+% leg:          0     1    2     |   3       |         4      5          |
+%
+%               yaw   roll pitch |
+% torso:        0     1    2     |
+%
+%               pitch roll yaw   |
+% head:         0     1    2     |
+%
+
+% static defintion of the joint names
 persistent jointsListFromPart;
 
+% macros for repetitive names and codes between left and right parts
 armJoints = @(side) {...
     [side '_shoulder_pitch'],[side '_shoulder_roll'],[side '_shoulder_yaw'],...
     [side '_elbow'],[side '_wrist_prosup'],[side '_wrist_pitch'],[side '_wrist_yaw']};

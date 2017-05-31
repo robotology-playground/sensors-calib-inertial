@@ -31,7 +31,7 @@ for seqIdx = 1:numel(obj.sequences)
     % information will be returned to the caller function for further use
     % by the calibrators.
     sequence.seqDataFolderPath = sequence.logCmd.new(logInfo,sensors,parts);
-    % Skip this sequence if we are not actuall acquiring data.
+    % Skip this sequence if we are not actually acquiring data.
     if ~isempty(sequence.seqDataFolderPath)
         loggedSeqs = [loggedSeqs sequence];
     end

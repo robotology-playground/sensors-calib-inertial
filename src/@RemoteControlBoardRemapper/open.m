@@ -2,7 +2,7 @@ function open(obj,partList)
 
 obj.jointsList = {};
 for part = partList
-    obj.jointsList = [obj.jointsList RobotModel.jointsListFromPart(part{:})];
+    obj.jointsList = [obj.jointsList obj.robotModel.jointsDbase.getJointNames(part{:})];
     % {:} converts from cell to string
 end
 

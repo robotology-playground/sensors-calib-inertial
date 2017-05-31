@@ -15,6 +15,7 @@ classdef RemoteControlBoardRemapper < handle
     properties(SetAccess = protected, GetAccess = public)
         net;
         robotName;
+        robotModel;
         jointsList={};
         % YARP objects
         axesNames; axesList; remoteControlBoards; remoteControlBoardsList;
@@ -25,15 +26,16 @@ classdef RemoteControlBoardRemapper < handle
     
     methods
         %% Constructor
-        function obj = RemoteControlBoardRemapper(robotName,portsPrefix)
+        function obj = RemoteControlBoardRemapper(robotModel,portsPrefix)
             % Create YARP Network device, to initialize YARP classes for communication
             if ~yarp.Network.initialized
                 yarp.Network.init();
                 obj.uninitYarpAtDelete = true;
             end
             
-            % Save robot name
-            obj.robotName = robotName;
+            % Save robot model
+            obj.robotModel = robotModel;
+            obj.robotName = robotModel.robotName;
             
             % Create a RemoteControlBoardRemapper device
             % for controlling just the torso+head chain
@@ -52,7 +54,8 @@ classdef RemoteControlBoardRemapper < handle
             obj.remoteControlBoardsList = obj.remoteControlBoards.addList();
         end
         
-        %% Destructor
+        %%
+        % Destructor
         function delete(obj)
             obj.close();
             if obj.uninitYarpAtDelete
@@ -60,21 +63,21 @@ classdef RemoteControlBoardRemapper < handle
             end
         end
         
-        %% Open ports
+        % Open ports
         open(obj,partList)
         
-        %% Close ports
+        % Close ports
         function close(obj)
             obj.driver.close();
         end
         
-        %% Read joint encoders
+        % Read joint encoders
         [readedEncoders,readEncsMat] = getEncoders(obj)
         
-        %% Write joint encoders
+        % Write joint encoders
         success = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
         
-        %% Wait for motion to be completed
+        % Wait for motion to be completed
         success = waitMotionDone(obj,timeout)
     end
     

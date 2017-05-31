@@ -164,8 +164,8 @@ calibedParts = {'torso'};
 % the joint names listed below, as per the joint naming convention described in 
 % 'http://wiki.icub.org/wiki/ICub_Model_naming_conventions', except for the torso.
 %
-%      shoulder pitch roll yaw   |   elbow   |   wrist prosup roll yaw   |  
-% arm:          0     1    2     |   3       |         4      5    6     |
+%      shoulder pitch roll yaw   |   elbow   |   wrist prosup pitch yaw   |  
+% arm:          0     1    2     |   3       |         4      5     6     |
 %
 %      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |  
 % leg:          0     1    2     |   3       |         4      5          |
@@ -235,8 +235,8 @@ calibedParts = {'left_leg'};
 % the joint names listed below, as per the joint naming convention described in 
 % 'http://wiki.icub.org/wiki/ICub_Model_naming_conventions', except for the torso.
 %
-%      shoulder pitch roll yaw   |   elbow   |   wrist prosup roll yaw   |  
-% arm:          0     1    2     |   3       |         4      5    6     |
+%      shoulder pitch roll yaw   |   elbow   |   wrist prosup pitch yaw   |  
+% arm:          0     1    2     |   3       |         4      5     6     |
 %
 %      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |  
 % leg:          0     1    2     |   3       |         4      5          |

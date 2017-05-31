@@ -1,9 +1,9 @@
 function acqSensorDataAccessor = acquireSensorData(...
-    task,taskSpecificParams,robotName,dataPath,calibedParts)
+    task,taskSpecificParams,robotModel,dataPath,calibedParts)
 
 % task:      this selects the motion sequence parameters
 %            (controlled parts, measured sensors)
-% robotName: yarp robot name
+% robotModel: robot model
 % dataPath: main data folder path where the logger will store the sensor data
 % calibedParts: parts to be calibrated. This will select which parts to
 %               move and which yarp port to collect data from
@@ -38,7 +38,7 @@ sequences = sequenceParams.buildMapSequences();
 % Create Yarp data interface. It can create the necessary yarp ports
 % for logging the data and holds a method for connecting or disconnecting
 % the ports. It also access data previously logged.
-logger = SensorDataYarpI(robotName,dataPath);
+logger = SensorDataYarpI(robotModel.robotName,dataPath);
 % Configure callback logger commands
 logCmd.sched = @logger.scheduleNewAcquisition;
 logCmd.new   = @logger.newLog;
@@ -47,7 +47,7 @@ logCmd.start = @logger.connect;
 logCmd.stop  = @logger.disconnect;
 
 % create motion sequencer with defined sequences
-sequencer = MotionSequencer(task,robotName,sequences,logCmd);
+sequencer = MotionSequencer(task,robotModel,sequences,logCmd);
 
 % run sequencer until all data is acquired
 acqSensorDataAccessor = sequencer.run();
