@@ -16,9 +16,17 @@ switch task
         run(taskSpecificParams.motionSeqProfile);
     case LowlevTauCtrlCalibrator.task
         % init joint/motors group label variable for the profile script
-        jtmotGrp = taskSpecificParams.jointMotorGroupLabel;
-        % run the profile script
-        run lowLevTauCtrlCalibratorSequenceProfile;
+        jtmotgrp = taskSpecificParams.jointMotorGroupLabel;
+        switch taskSpecificParams.frictionOrKtau
+            case 'friction'
+                % run the profile script for friction identification
+                run lowLevTauCtrlCalibratorSequenceProfile1;
+            case 'ktau'
+                % run the profile script for friction identification
+                run lowLevTauCtrlCalibratorSequenceProfile2;
+            otherwise
+                error('Unknown low level control calibration phase!');
+        end
     otherwise
         error('Unknown task (sequence profile) !!');
 end

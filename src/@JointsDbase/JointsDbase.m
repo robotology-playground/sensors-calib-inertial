@@ -51,6 +51,12 @@ classdef JointsDbase < DataBase
         % Get joints names from a given part
         jointNameList = getJointNames(obj,part);
         
+        % Get part name from joint/motor group label
+        part = getPartFromJMgrp(obj,jmGrpLabel); % TO BE IMPLEMENTED
+        
+        % Get joint/motor group info (struct) from a joint/motor group
+        jmGroup = getJmGrpInfo(obj,jmGrpLabel); % TO BE IMPLEMENTED
+        
         % Get the calibration init point Dq0 vector for a given list of joints
         MaxDq0col = getJointsMaxCalibDq0(obj,jointList);
         

@@ -53,9 +53,9 @@ else
 end
 
 if ismember('calib',fieldnames(runSeq))
-    % list of sensors for measurements
+    % list of calibrated sensor modalities
     runSeq.calib.sensor = fieldnames(runSeq.calib)';
-    % list of parts for calibration tag
+    % list of calibrated parts
     runSeq.calib.part = cellfun(...
         @(sensor) fieldnames(runSeq.calib.(sensor))',...
         runSeq.calib.sensor,...
@@ -73,6 +73,20 @@ else
     runSeq.logCmd = obj.dummyCmd;
 end
 
+if ismember('pwmctrl',fieldnames(runSeq))
+    % list of join/motor groups
+    runSeq.pwmctrl.jtMotGrp = cell2mat(fieldnames(runSeq.pwmctrl));
+    % reshape 'pwm'
+    runSeq.pwmctrl.pwm = struct2cellConcat(runSeq.pwmctrl.pwm);
+end
+
+if ismember('mode',fieldnames(runSeq))
+    runSeq.mode = runSeq.mode.NA.NA;
+else
+    runSeq.mode = cell(size(runSeq.ctrl.pos,1),1);
+    runSeq.mode(:) = {'ctrl'};
+end
+
 end
 
 function rowVecConcat = struct2cellConcat(aStruct)
@@ -83,7 +97,7 @@ rowVecConcat = [cellArray{:}];
 end
 
 
-% % EXAMPLE
+% % EXAMPLE 1
 % 
 % runSeq.calib.sensor = {'joint'};
 % 
@@ -146,3 +160,44 @@ end
 %     [false      ];...
 %     [false      ];...
 %     [false      ]}};
+
+% % EXAMPLE 2
+% 
+% runSeq.calib.sensor = {'LLTctrl'};
+% 
+% runSeq.calib.part = {{'right_arm'}};
+% 
+% runSeq.ctrl.part = {'right_arm'};
+% 
+% runSeq.ctrl.pos = {...
+%     [  0 45 -23 50 0 0 0];...
+%     [  0 45  49 50 0 0 0]};
+% 
+% runSeq.ctrl.vel = {
+%     [10 10 10 10 10 10 10];...
+%     [10 10 10 10 10 10 10]};
+% 
+% runSeq.pwmctrl.jtMotGrp = 'r_shoulder_grp';
+% 
+% runSeq.pwmctrl.pwm = {
+%     0;...
+%     0};
+% 
+% runSeq.mode = {
+%     ctrl;...
+%     pwmctrl};
+% 
+% runSeq.meas.sensor = {'joint','jtorq'};
+% 
+% runSeq.meas.part = {...
+%     {'right_arm'},...
+%     {'right_arm'}};
+% 
+% runSeq.meas.acquire = {...
+%     {...
+%     [false      ];...
+%     [true       ]},...
+%     {...
+%     [false      ];...
+%     [true       ]}};
+

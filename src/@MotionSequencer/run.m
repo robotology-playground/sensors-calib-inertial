@@ -37,21 +37,52 @@ for seqIdx = 1:numel(obj.sequences)
     end
     
     for posIdx = 1:size(sequence.ctrl.pos,1)
-        % get next position, velocity and acquire flag from the
-        % sequence. Get concatenated matrices for all parts
-        pos = sequence.ctrl.pos(posIdx,:);
-        vel = sequence.ctrl.vel(posIdx,:);
-        
+        % Get acquire flag from the sequence.
         % Stop logging of parts for which 'acquire' flag is off
         % Start logging of parts for which 'acquire' flag is on
         [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx);
         sequence.logCmd.stop(sensors,partsToStop);
         sequence.logCmd.start(sensors,partsToStart);
         
-        % run the sequencer step
-        waitMotionDone = true; timeout = 120; % in seconds
-        if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
-            error('Waiting for motion done timeout!');
+        % The following processing depends on the control mode
+        switch mode(posIdx)
+            case 'ctrl'    % position control
+                % get next position, velocity and acquire flag from the
+                % sequence. Get concatenated matrices for all parts
+                pos = sequence.ctrl.pos(posIdx,:);
+                vel = sequence.ctrl.vel(posIdx,:);
+                
+                % run the sequencer step
+                waitMotionDone = true; timeout = 120; % in seconds
+                if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
+                    error('Waiting for motion done timeout!');
+                end
+                
+            case 'pwmctrl' % PWM control
+                % Only 1 joint/motor group in PWM control mode is
+                % supported.
+                % Get list of coupled motors and respective indexes as
+                % per the mapping by the control board remapper
+                jtMotGrpInfo = obj.robotModel.jointsDbase.getJmGrpInfo(sequence.pwmctrl.jtMotGrp);
+                jointsIdxes = obj.ctrlBoardRemap.getJointsMappedIdxes(jtMotGrpInfo.coupledJoints);
+                
+                % Set each motor in PWM control mode
+                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxes,'pwmctrl');
+                
+                % Set the desired PWM level (0-100%) for each motor. There
+                % is no concept of coupled motors in the control board
+                % remapper: the motor indexes are the same as for the
+                % respective joint indexes.
+                pwm = repmat(Sequence.pwmctrl.pwm(posIdx),size(jointsIdxes));
+                obj.ctrlBoardRemap.setMotorsPWM(jointsIdxes,pwm);
+                
+                % Prompt the user to proceed
+                input('Move joint back and forth and press any key when done..','s');
+                
+                % Set each motor back to position control mode
+                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxes,'ctrl');
+            otherwise
+                error('Unknown control mode!');
         end
     end
     

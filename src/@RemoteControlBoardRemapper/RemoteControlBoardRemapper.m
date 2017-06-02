@@ -75,10 +75,23 @@ classdef RemoteControlBoardRemapper < handle
         [readedEncoders,readEncsMat] = getEncoders(obj)
         
         % Write joint encoders
-        success = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
+        ok = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
         
         % Wait for motion to be completed
-        success = waitMotionDone(obj,timeout)
+        ok = waitMotionDone(obj,timeout)
+        
+        % Get joints indexes as per the control board remapper mapping
+        jointsIdxList = getJointsMappedIdxes(obj,jointNameList); % TO BE IMPLEMENTED
+        
+        % Set control mode for a set of joint indexes. Supported modes are:
+        % Position, Open loop (applicable for PWM, torque, current).
+        ok = setJointsControlMode(obj,jointsIdxList,mode); % TO BE IMPLEMENTED
+        
+        % Set PWM values set for a set of motor indexes (for calibration
+        % purpose). The motor indexes are the same as for the joints.
+        % There is no concept of coupled motors in the control board
+        % remapper.
+        ok = setMotorsPWM(obj,jointsIdxList,pwmVec); % TO BE IMPLEMENTED
     end
     
     methods(Static = true)
