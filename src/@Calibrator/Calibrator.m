@@ -35,7 +35,7 @@ classdef Calibrator < SingletonP
     methods(Access=protected)
         getOrAcquireData(obj,init,lastAcqSensorDataAccessorMap);
         
-        runCalibratorOrDiagnosis(obj,init,model,calibedSensor);
+        runCalibratorOrDiagnosis(obj,init,model,calibOrDiagFuncH,calibedSensorType);
         
         jointNameList = getJointNamesFromUIidxes(obj,init,model);
     end

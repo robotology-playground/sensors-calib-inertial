@@ -40,7 +40,20 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 %===========================
 % Implement the fitting process in this section. joint encoder velocities
 % and torques, motor PWM measurements can be retrieved from tha 'data'
-% structure.
+% structure:
+% 
+% For N samples of dimension D (group of D coupled joints), we get:
+% 
+% joint velocities table [DxN] : data.parsedParams.dqs_<label>
+% joint PWM table [DxN]        : data.parsedParams.pwms_<label>
+% joint torques table [DxN]    : data.parsedParams.taus_<label>
+% 
+% Paramter names finishing by 's' are the ones recomputed after resampling
+% (refer to 'subSamplingSize' in lowLevTauCtrlCalibratorDevConfig.m config
+% file).
+% 
+
+
 
 
 %===========================
