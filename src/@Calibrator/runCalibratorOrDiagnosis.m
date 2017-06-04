@@ -1,4 +1,4 @@
-function runCalibratorOrDiagnosis(obj,init,model,calibOrDiagFuncH,calibedSensor)
+function runCalibratorOrDiagnosis(obj,init,model,calibOrDiagFuncH,calibedSensorType)
 
 % Harvest the parameters and runs the calibration task
 % 
@@ -15,7 +15,7 @@ acqSensorDataAccessor = obj.acqSensorDataAccessorMap(obj.task);
 % (it is the case for calibrating the torso which needs a dedicated
 % sequence), we get a folder path per sequence, so N paths.
 [dataFolderPathList,calibedPartsList] = ...
-    acqSensorDataAccessor.getFolderPaths4calibedSensor(calibedSensor,init.dataPath);
+    acqSensorDataAccessor.getFolderPaths4calibedSensor(calibedSensorType,init.dataPath);
 
 % For each sequence, get the logged sensors list and respective
 % supporting parts
