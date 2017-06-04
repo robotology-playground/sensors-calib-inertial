@@ -51,7 +51,7 @@ end
 % end
 
 % init buffers
-qBuff = []; dqBuff = []; d2qBuff = []; tauBuff = []; pwmBuff = []; tStateBuff = [];
+qBuff = []; dqBuff = []; d2qBuff = []; dqMBuff = []; tauBuff = []; pwmBuff = []; tStateBuff = [];
 for i = 1 : length(obj.parts)
     bufferId = ['buffer_' obj.parts{i} '_' obj.type{i}(1:end-2)];
     eval(['readFile_' bufferId ' = []']);
@@ -80,6 +80,7 @@ for i = 1 : length(obj.parts)
             q    = ['q_' obj.labels{i}];
             dq   = ['dq_' obj.labels{i}];
             d2q  = ['d2q_' obj.labels{i}];
+            dqM  = ['dqM_' obj.labels{i}];
             tau  = ['tau_' obj.labels{i}];
             pwm  = ['pwm_' obj.labels{i}];
             t    = ['time_' obj.labels{i}];
@@ -88,7 +89,7 @@ for i = 1 : length(obj.parts)
             eval(['readFile = readFile_' bufferId]);
             % Read file.
             if readFile
-                [qBuff,dqBuff,d2qBuff,tauBuff,pwmBuff,tStateBuff] = readStateExt(obj.ndof{i},file);
+                [qBuff,dqBuff,d2qBuff,dqMBuff,tauBuff,pwmBuff,tStateBuff] = readStateExt(obj.ndof{i},file);
                 qBuff = qBuff + obj.calib{i};
             end
             % Parse file content.
@@ -97,6 +98,7 @@ for i = 1 : length(obj.parts)
             eval(['obj.parsedParams.'  q  '= qBuff(' mat2str(obj.index{i}) ',:);']);
             eval(['obj.parsedParams.' dq  '= dqBuff(' mat2str(obj.index{i}) ',:);']);
             eval(['obj.parsedParams.' d2q '= d2qBuff(' mat2str(obj.index{i}) ',:);']);
+            eval(['obj.parsedParams.' dqM '= dqMBuff(' mat2str(obj.index{i}) ',:);']);
             eval(['obj.parsedParams.' tau '= tauBuff(' mat2str(obj.index{i}) ',:);']);
             eval(['obj.parsedParams.' pwm '= pwmBuff(' mat2str(obj.index{i}) ',:);']);
             
@@ -182,6 +184,7 @@ for i = 1 : length(obj.parts)
       q    = ['obj.parsedParams.q_' obj.labels{i}];
       dq   = ['obj.parsedParams.dq_' obj.labels{i}];
       d2q  = ['obj.parsedParams.d2q_' obj.labels{i}];
+      dqM  = ['obj.parsedParams.dqM_' obj.labels{i}];
       tau  = ['obj.parsedParams.tau_' obj.labels{i}];
       pwm  = ['obj.parsedParams.pwm_' obj.labels{i}];
       t    = ['obj.parsedParams.time_' obj.labels{i}];
@@ -189,11 +192,12 @@ for i = 1 : length(obj.parts)
       qs   = ['qs_' obj.labels{i}];
       dqs  = ['dqs_' obj.labels{i}];
       d2qs = ['d2qs_' obj.labels{i}];
+      dqMs = ['dqMs_' obj.labels{i}];
       taus = ['taus_' obj.labels{i}];
       pwms = ['pwms_' obj.labels{i}];
       
       % [qs_la, dqs_la, d2qs_la] = resampleState(time, time_la, q_la, dq_la, d2q_la);
-      eval(['[obj.parsedParams.' qs ', obj.parsedParams.' dqs ', obj.parsedParams.' d2qs ', obj.parsedParams.' taus ', obj.parsedParams.' pwms '] = resampleState(time,' t ',' q ',' dq ',' d2q ',' tau ',' pwm ');']);
+      eval(['[obj.parsedParams.' qs ', obj.parsedParams.' dqs ', obj.parsedParams.' d2qs ', obj.parsedParams.' dqMs ', obj.parsedParams.' taus ', obj.parsedParams.' pwms '] = resampleState(time,' t ',' q ',' dq ',' d2q ',' dqM ',' tau ',' pwm ');']);
    else
       y    = ['obj.parsedParams.y_'  obj.labels{i}];
       t    = ['obj.parsedParams.time_' obj.labels{i}];

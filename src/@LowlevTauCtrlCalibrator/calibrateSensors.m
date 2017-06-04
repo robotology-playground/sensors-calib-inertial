@@ -44,7 +44,7 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 % 
 % For N samples of dimension D (group of D coupled joints), we get:
 % 
-% joint velocities table [DxN] : data.parsedParams.dqs_<label>
+% joint velocities table [DxN] : data.parsedParams.dqMs_<label>
 % joint PWM table [DxN]        : data.parsedParams.pwms_<label>
 % joint torques table [DxN]    : data.parsedParams.taus_<label>
 % 
@@ -58,26 +58,19 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
 %===========================
 
-% Merge new calibrated joint offsets with old 'calibrationMap'.
-% The result matrix optimalDq has the same format as Dq and Dq0.
-% Dq0 results from the concatenation of the modelParams.jointsToCalibrate.calibedJointsDq0
-% matrices.
-[~,calibedPartsIdxes] = ismember(dataLoadingParams.calibedParts,dataLoadingParams.jointMeasedParts);
-
-% Split computed offsets matrix into part wise cells
-calib = mat2cell(averageOptimalDq,lengths(dataLoadingParams.jointsToCalibrate.calibedJointsDq0{calibedPartsIdxes}));
-
-for iter = calibedPartsIdxes
-    mapKey = strcat('jointsOffsets_',dataLoadingParams.jointMeasedParts{iter}); % set map key
-    % get current value or set a default one (zeros)
-    if isKey(calibrationMap,mapKey)
-        mapValue = calibrationMap(mapKey); % get current value
-    else
-        mapValue = zeros(dataLoadingParams.jointsToCalibrate.jointsDofs{iter},1); % init default value
-    end
-    mapValue(dataLoadingParams.jointsToCalibrate.calibedJointsIdxes{iter}) = ...
-        mapValue(dataLoadingParams.jointsToCalibrate.calibedJointsIdxes{iter}) + calib{iter}; % add calibrated values
-    calibrationMap(mapKey) = mapValue; % add or overwrite element in the map
+% Save calibrated parameters into 'calibrationMap'.
+% We suppose that for each motor we computed a set of calibration parameters,
+% wrapped in a list of sets 'calibList' aligned we the list of coupled motors.
+% So 'calibList{i}' is the calibration set for the motor i.
+% 
+for cMotorLabelCalib = [jtMotGrpInfo.coupledMotors;calibList]
+    % extract motor label and calibration
+    motorLabel = cMotorLabelCalib{1};
+    calib = cMotorLabelCalib{2};
+    
+    % Save parameters to the mapper
+    % (add or overwrite element in the map)
+    calibrationMap(motorLabel) = calib;
 end
 
 end

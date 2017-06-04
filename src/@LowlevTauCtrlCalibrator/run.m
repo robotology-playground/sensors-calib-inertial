@@ -55,6 +55,7 @@ obj.state.current = obj.stateStart;
 % 1 - reset calibrated joints/motors to position control
 %
 % 2 - move selected joints and acquire data:
+% 	  => selected motors velocity
 % 	  => selected motors PWM
 % 	  => selected joints measured torques
 %
