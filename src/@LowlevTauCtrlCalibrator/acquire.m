@@ -22,7 +22,7 @@ function acquire( obj,frictionOrKtau )
 % 3 - Run diagnosis on acquired data
 % 
 
-% 1 - select group of joints and respective part
+% select group of joints and respective part
 jointMotorGroupLabel = obj.jointMotorGroupLabels{obj.state.currentJmGrpIdx};
 part = obj.model.jointsDbase.getPartFromJMgrp(jointMotorGroupLabel);
 
@@ -41,9 +41,8 @@ save('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
 % 3 - Run diagnosis on acquired data.
 % Diagnosis function: doesn't require 'calibedParts' & 'calibedJointsIdxes'.
 diagFuncH = @(path,~,sensors,parts,model,taskSpec) ...
-    SensorDiagnosis.runDiagnosis(...
-    path,sensors,parts,model,taskSpec,... % actual params passed through the func handle
-    obj.figuresHandlerMap,obj.task);              % params specific to this calibrator
+    obj.plotTrainingData(...
+    path,sensors,parts,model,taskSpec);              % params specific to this calibrator
 % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
 runCalibratorOrDiagnosis(init,model,diagFuncH,obj.calibedSensorType);
 

@@ -6,6 +6,13 @@ obj.init = init;
 obj.model = model;
 obj.lastAcqSensorDataAccessorMap = lastAcqSensorDataAccessorMap;
 
+% Advanced interface parameters:
+% - timeStart, timeStop, subSamplingSize
+run lowLevTauCtrlCalibratorDevConfig;
+obj.timeStart = timeStart;
+obj.timeStop = timeStop;
+obj.subSamplingSize = subSamplingSize;
+
 % state machine starting state
 obj.state.current = obj.stateStart;
 

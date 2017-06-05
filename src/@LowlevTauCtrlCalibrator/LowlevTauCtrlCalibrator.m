@@ -65,6 +65,10 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         function fitFriction(obj) obj.fit('friction'); end
         
         function fitKtau(obj) obj.fit('ktau'); end
+        
+        plotTrainingData(obj,path,sensors,parts,model,taskSpec);
+        
+        plotModel(obj,frictionOrKtau,data,calibList);
     end
     
     methods(Static=true, Access=public)
@@ -81,7 +85,7 @@ classdef LowlevTauCtrlCalibrator < Calibrator
     
     methods(Static=true, Access=protected)
         calibrateSensors(...
-            dataPath,calibedParts,measedSensorList,measedPartsList,...
+            dataPath,~,measedSensorList,measedPartsList,...
             model,taskSpecificParams);
         
         % Each line of 'statesDesc' is converted to a struct which fields

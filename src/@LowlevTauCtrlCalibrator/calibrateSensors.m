@@ -1,5 +1,5 @@
 function calibrateSensors(...
-    dataPath,calibedParts,measedSensorList,measedPartsList,...
+    dataPath,~,measedSensorList,measedPartsList,...
     model,taskSpecificParams)
 
 % Get calibration map
@@ -19,10 +19,6 @@ calibrationMap = model.calibrationMap;
 % 
 Init.unWrap(taskSpecificParams);
 
-% Advanced interface parameters:
-% - timeStart, timeStop, subSamplingSize
-run lowLevTauCtrlCalibratorDevConfig;
-
 %% build input data for calibration
 %
 % build sensor data parser
@@ -33,8 +29,8 @@ dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(...
     jtMotGrpInfo.coupledJoints);
 
 plot = false; loadJointPos = true;
-data = SensorsData(dataPath,'',subSamplingSize,...
-    timeStart,timeStop,plot,calibrationMap);
+data = SensorsData(dataPath,'',obj.subSamplingSize,...
+    obj.timeStart,obj.timeStop,plot,calibrationMap);
 data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
 %===========================
@@ -55,13 +51,16 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
 
 
+% We suppose that for each motor we computed a set of calibration parameters,
+% wrapped in a list of sets 'calibList' aligned we the list of coupled motors.
+% So 'calibList{i}' is the calibration set for the motor i.
+% 
+% Plot fitted model over acquired data.
+obj.plotModel(frictionOrKtau,data,calibList);
 
 %===========================
 
 % Save calibrated parameters into 'calibrationMap'.
-% We suppose that for each motor we computed a set of calibration parameters,
-% wrapped in a list of sets 'calibList' aligned we the list of coupled motors.
-% So 'calibList{i}' is the calibration set for the motor i.
 % 
 for cMotorLabelCalib = [jtMotGrpInfo.coupledMotors;calibList]
     % extract motor label and calibration
