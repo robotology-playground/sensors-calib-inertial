@@ -81,7 +81,7 @@ while (obj.state.current ~= obj.stateEnd)
     % following: restart, proceed, skip, end, abort
     transition = obj.stateArray(obj.state.current).transition();
     
-    % Compute next state
+    % Move to next state
     switch transition
         case 'abort'
             return;

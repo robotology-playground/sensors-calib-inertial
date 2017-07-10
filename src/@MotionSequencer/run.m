@@ -36,21 +36,21 @@ for seqIdx = 1:numel(obj.sequences)
         loggedSeqs = [loggedSeqs sequence];
     end
     
-    for posIdx = 1:size(sequence.ctrl.pos,1)
+    for stepIdx = 1:size(sequence.ctrl.pos,1)
         % Get acquire flag from the sequence.
         % Stop logging of parts for which 'acquire' flag is off
         % Start logging of parts for which 'acquire' flag is on
-        [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx);
+        [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,stepIdx);
         sequence.logCmd.stop(sensors,partsToStop);
         sequence.logCmd.start(sensors,partsToStart);
         
         % The following processing depends on the control mode
-        switch mode(posIdx)
+        switch mode(stepIdx)
             case 'ctrl'    % position control
                 % get next position, velocity and acquire flag from the
                 % sequence. Get concatenated matrices for all parts
-                pos = sequence.ctrl.pos(posIdx,:);
-                vel = sequence.ctrl.vel(posIdx,:);
+                pos = sequence.ctrl.pos(stepIdx,:);
+                vel = sequence.ctrl.vel(stepIdx,:);
                 
                 % run the sequencer step
                 waitMotionDone = true; timeout = 120; % in seconds
@@ -73,7 +73,7 @@ for seqIdx = 1:numel(obj.sequences)
                 % is no concept of coupled motors in the control board
                 % remapper: the motor indexes are the same as for the
                 % respective joint indexes.
-                pwm = repmat(Sequence.pwmctrl.pwm(posIdx),size(jointsIdxes));
+                pwm = repmat(Sequence.pwmctrl.pwm(stepIdx),size(jointsIdxes));
                 obj.ctrlBoardRemap.setMotorsPWM(jointsIdxes,pwm);
                 
                 % Prompt the user to proceed

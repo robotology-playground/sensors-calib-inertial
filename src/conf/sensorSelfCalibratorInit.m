@@ -264,7 +264,6 @@ calibedJointsIdxes.head = 0:2;
 % a file explorer.
 savePlot = defaultSavePlot;
 exportPlot = defaultExportPlot;
-loadJointPos = true;
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...

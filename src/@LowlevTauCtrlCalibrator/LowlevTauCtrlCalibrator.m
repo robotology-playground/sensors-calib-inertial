@@ -40,7 +40,7 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         model@RobotModel;
         lastAcqSensorDataAccessorMap@containers.Map;
         jointMotorGroupLabels = {};
-        state@struct          = struct('current',obj.stateStart,'transition',[],currentJmGrpIdx,0);
+        state@struct          = struct('current',obj.stateStart,'transition',[],'currentJmGrpIdx',0);
     end
     
     methods(Access=protected)
@@ -62,9 +62,9 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         
         function acqKtau(obj), obj.acquire('ktau'); end
         
-        function fitFriction(obj) obj.fit('friction'); end
+        function fitFriction(obj), obj.fit('friction'); end
         
-        function fitKtau(obj) obj.fit('ktau'); end
+        function fitKtau(obj), obj.fit('ktau'); end
         
         plotTrainingData(obj,path,sensors,parts,model,taskSpec);
         

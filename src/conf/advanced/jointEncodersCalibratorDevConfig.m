@@ -37,4 +37,4 @@ subSamplingSize = 400; % number of samples after sub-sampling the raw data
 %
 
 % Optimization starting point
-calibedJointsMaxDq0 = 5;
+calibedJointsMaxDq0 = 0;
