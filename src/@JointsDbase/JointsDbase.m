@@ -10,7 +10,8 @@ classdef JointsDbase < DataBase
         iDynTreeModel;
     end
     
-    methods(Access = public)        % Constructor
+    methods(Access = public)
+        % Constructor
         function obj = JointsDbase(iDynTreeModelFromURDF)
             % create property names and keys
             propKeyList = {'jointName'};

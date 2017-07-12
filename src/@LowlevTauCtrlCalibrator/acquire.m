@@ -32,7 +32,7 @@ obj.init.(obj.initSection).taskSpecificParams.frictionOrKtau = frictionOrKtau;
 obj.init.(obj.initSection).calibedParts = {part};
 
 % 2 - Get or acquire sensor data
-obj.getOrAcquireData(obj.init,obj.lastAcqSensorDataAccessorMap);
+obj.getOrAcquireData(obj.init,obj.model,obj.lastAcqSensorDataAccessorMap);
 
 % Save eventual changes of last acquired data accessors to file
 lastAcqSensorDataAccessorMap = obj.lastAcqSensorDataAccessorMap;

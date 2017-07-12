@@ -8,7 +8,7 @@ seqEndParams = struct();
 selector = struct();
 
 switch task
-    case jointEncodersCalibrator.task
+    case JointEncodersCalibrator.task
         run jointsCalibratorSequenceProfileWOsuspend;
     case accelerometersCalibrator.task
         run accelerometersCalibratorSequenceProfileWOsuspend;

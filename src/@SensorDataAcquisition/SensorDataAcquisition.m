@@ -10,7 +10,7 @@ classdef SensorDataAcquisition
     
     methods(Static = true, Access = public)
         acqSensorDataAccessor = ...
-            acquireSensorData(task,taskSpecificParams,robotName,dataPath,calibedParts);
+            acquireSensorData(task,taskSpecificParams,robotModel,dataPath,calibedParts);
         
         seqParams = setValFromGrid(gridBuilder,gridParams,acqVel,transVel,labels);
     end

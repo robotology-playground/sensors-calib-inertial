@@ -1,4 +1,4 @@
-function getOrAcquireData(obj,init,lastAcqSensorDataAccessorMap)
+function getOrAcquireData(obj,init,model,lastAcqSensorDataAccessorMap)
 % Gets stored sensor data or triggers a sensor data acquisition
 % 
 % Gets stored sensor data or triggers a sensor data acquisition for the
@@ -16,7 +16,7 @@ switch sensorDataAcq{1}
         % Acquire sensor measurements while moving the joints following
         % a profile defined by the task
         obj.acqSensorDataAccessorMap(obj.task) = SensorDataAcquisition.acquireSensorData(...
-            obj.task,taskSpecificParams,init.robotName,init.dataPath,calibedParts);
+            obj.task,taskSpecificParams,model,init.dataPath,calibedParts);
         % save the acquired data info
         lastAcqSensorDataAccessorMap(obj.task) = obj.acqSensorDataAccessorMap(obj.task);
         

@@ -2,7 +2,7 @@ function run(obj,init,model,lastAcqSensorDataAccessorMap)
 % Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'
 
 % Get or acquire sensor data
-obj.getOrAcquireData(init,lastAcqSensorDataAccessorMap);
+obj.getOrAcquireData(init,model,lastAcqSensorDataAccessorMap);
 
 % Save eventual changes of last acquired data accessors to file
 save('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
@@ -22,4 +22,3 @@ if init.runDiagnosis
 end
 
 end
-

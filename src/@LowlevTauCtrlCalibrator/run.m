@@ -74,19 +74,22 @@ obj.state.current = obj.stateStart;
 
 % Run state machine until reaching "end" state
 while (obj.state.current ~= obj.stateEnd)
+    % select current state structure with all respective functions
+    currentState = obj.stateArray(obj.state.current);
+    
     % Select and run function for processing current state actions
-    obj.stateArray(obj.state.current).currentProc();
+    currentState.currentProc();
     
     % Compute state dependant transition. Result will be among the
     % following: restart, proceed, skip, end, abort
-    transition = obj.stateArray(obj.state.current).transition();
+    transition = currentState.transition();
     
     % Move to next state
     switch transition
-        case 'abort'
+        case 'ABORT'
             return;
         otherwise
-            obj.state.current = obj.stateArray(obj.state.current).(transition);
+            obj.state.current = currentState.(transition);
     end
 end
 

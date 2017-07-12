@@ -2,7 +2,7 @@ classdef LowlevTauCtrlCalibrator < Calibrator
     %LowlevTauCtrlCalibrator Holds all methods for low level joint torque control calibration
     %   'calibrateSensors()' is the main procedure for calibrating the
     %   low level parameters. These parameters include the PWM voltage to
-    %   torque rate, the vicuous and Coulomb friction parameters.
+    %   torque rate, the viscuous and Coulomb friction parameters.
     
     properties(Constant=true, Access=protected)
         singletonObj = LowlevTauCtrlCalibrator();
@@ -40,7 +40,13 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         model@RobotModel;
         lastAcqSensorDataAccessorMap@containers.Map;
         jointMotorGroupLabels = {};
-        state@struct          = struct('current',obj.stateStart,'transition',[],'currentJmGrpIdx',0);
+        % Main state of the state machine:
+        % - 'state.current' gives the current state indexing the 'stateArray'
+        % - 'state.transition' hold the transition to the next state
+        %    through the field values 'restart', 'proceed', 'skip', 'end'.
+        % - 'currentJmGrpIdx' indexes the current joint/motor group to
+        %    process.
+        state@struct = struct('current',obj.stateStart,'transition',[],'currentJmGrpIdx',0);
     end
     
     methods(Access=protected)

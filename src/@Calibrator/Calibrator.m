@@ -33,7 +33,7 @@ classdef Calibrator < SingletonP
     end
     
     methods(Access=protected)
-        getOrAcquireData(obj,init,lastAcqSensorDataAccessorMap);
+        getOrAcquireData(obj,init,model,lastAcqSensorDataAccessorMap);
         
         runCalibratorOrDiagnosis(obj,init,model,calibOrDiagFuncH,calibedSensorType);
         
