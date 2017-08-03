@@ -22,7 +22,7 @@ function start( obj )
 %
 
 % Get the joint list to calibrate from UI
-jointNameList = obj.getJoitnNamesFromUIidxes(obj.init,obj.model);
+jointNameList = obj.getJointNamesFromUIidxes(obj.init,obj.model);
 
 % Create joint groups and return list of respective labels
 obj.jointMotorGroupLabels = obj.model.createJointMotorGroups(jointNameList); % TO BE IMPLEMENTED

@@ -10,6 +10,23 @@ classdef RemoteControlBoardRemapper < handle
     properties(Constant)
         defaultSpeed = 10; % m/s
         defaultAcc   = 2;  % m/s^2
+        
+        ctrlModeVocabDef ={...
+            'idlectrl'  , y.VOCAB_CM_IDLE     ;
+            'torqctrl'  , y.VOCAB_CM_TORQUE   ;
+            'ctrl'      , y.VOCAB_CM_POSITION ;
+            'velctrl'   , y.VOCAB_CM_VELOCITY ;
+            'curctrl'   , y.VOCAB_CM_CURRENT  ;
+            'pwmctrl'   , y.VOCAB_CM_PWM
+            };
+        
+        ctrlMode2vocab = containers.Map(...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,1),...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,2));
+        
+        vocab2ctrlMode = containers.Map(...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,2),...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,1));
     end
     
     properties(SetAccess = protected, GetAccess = public)
@@ -21,7 +38,6 @@ classdef RemoteControlBoardRemapper < handle
         axesNames; axesList; remoteControlBoards; remoteControlBoardsList;
         options;
         driver;
-        uninitYarpAtDelete = false;
     end
     
     methods
@@ -30,7 +46,6 @@ classdef RemoteControlBoardRemapper < handle
             % Create YARP Network device, to initialize YARP classes for communication
             if ~yarp.Network.initialized
                 yarp.Network.init();
-                obj.uninitYarpAtDelete = true;
             end
             
             % Save robot model
@@ -58,9 +73,6 @@ classdef RemoteControlBoardRemapper < handle
         % Destructor
         function delete(obj)
             obj.close();
-            if obj.uninitYarpAtDelete
-                yarp.Network.fini();
-            end
         end
         
         % Open ports
@@ -81,17 +93,17 @@ classdef RemoteControlBoardRemapper < handle
         ok = waitMotionDone(obj,timeout)
         
         % Get joints indexes as per the control board remapper mapping
-        jointsIdxList = getJointsMappedIdxes(obj,jointNameList); % TO BE IMPLEMENTED
+        [jointsIdxList,matchingBitmap] = getJointsMappedIdxes(obj,jointNameList);
         
         % Set control mode for a set of joint indexes. Supported modes are:
         % Position, Open loop (applicable for PWM, torque, current).
-        ok = setJointsControlMode(obj,jointsIdxList,mode); % TO BE IMPLEMENTED
+        ok = setJointsControlMode(obj,jointsIdxList,mode);
         
         % Set PWM values set for a set of motor indexes (for calibration
         % purpose). The motor indexes are the same as for the joints.
         % There is no concept of coupled motors in the control board
         % remapper.
-        ok = setMotorsPWM(obj,jointsIdxList,pwmVec); % TO BE IMPLEMENTED
+        ok = setMotorsPWM(obj,jointsIdxList,pwmVec);
     end
     
     methods(Static = true)
