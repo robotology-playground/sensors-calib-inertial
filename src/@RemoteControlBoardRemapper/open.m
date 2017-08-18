@@ -23,7 +23,7 @@ obj.options.put('remoteControlBoards',obj.remoteControlBoards.get(0));
 % Open the driver
 obj.driver = yarp.PolyDriver();
 if (~obj.driver.open(obj.options))
-    error('Couldn''t open the driver');
+    error('RemoteControlBoardRemapper: couldn''t open the driver');
 end
-
+    
 end

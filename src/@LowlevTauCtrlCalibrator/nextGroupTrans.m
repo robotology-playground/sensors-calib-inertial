@@ -6,9 +6,9 @@ function transition = nextGroupTrans(obj)
 %   the state machine ends.
 %   
 
-obj.state.currentJmGrpIdx = obj.state.currentJmGrpIdx + 1;
+obj.state.currentJMcplgIdx = obj.state.currentJMcplgIdx + 1;
 
-if obj.state.currentJmGrpIdx>numel(obj.jointMotorGroupLabels)
+if obj.state.currentJMcplgIdx>numel(obj.jointMotorCouplingLabels)
     transition = 'end';
 else
     transition = 'proceed';

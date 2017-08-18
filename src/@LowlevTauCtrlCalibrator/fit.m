@@ -3,11 +3,11 @@ function fit( obj,frictionOrKtau )
 %
 
 % select group of joints and respective part
-jointMotorGroupLabel = obj.jointMotorGroupLabels{obj.state.currentJmGrpIdx};
-part = obj.model.jointsDbase.getPartFromJMgrp(jointMotorGroupLabel);
+jointMotorCouplingLabel = obj.jointMotorCouplingLabels{obj.state.currentJMcplgIdx};
+part = obj.model.jointsDbase.getPartFromJMcplgLabel(jointMotorCouplingLabel);
 
 % set init for the selected group of joints and respective part
-obj.init.(obj.initSection).taskSpecificParams.jointMotorGroup = jointMotorGroupLabel;
+obj.init.(obj.initSection).taskSpecificParams.jointMotorGroup = jointMotorCouplingLabel;
 obj.init.(obj.initSection).taskSpecificParams.frictionOrKtau = frictionOrKtau;
 obj.init.(obj.initSection).calibedParts = {part};
 

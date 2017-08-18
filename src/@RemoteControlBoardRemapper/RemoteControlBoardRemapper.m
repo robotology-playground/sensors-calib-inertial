@@ -30,7 +30,6 @@ classdef RemoteControlBoardRemapper < handle
     end
     
     properties(SetAccess = protected, GetAccess = public)
-        net;
         robotName;
         robotModel;
         jointsList={};
