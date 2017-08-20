@@ -8,7 +8,7 @@ calibrationMap = model.calibrationMap;
 % Unwrap task specific parameters, defines:
 % - frictionOrKtau       -> = 'friction' for friction calibration
 %                           = 'ktau' for ktau calibration
-% - jointMotorGroupLabel -> label for retrieving the currently calibrated
+% - jointMotorCoupling   -> label for retrieving the currently calibrated
 %                           joint/motor group info. Refer to jointsDbase
 %                           class interface.
 % 
@@ -22,11 +22,9 @@ Init.unWrap(taskSpecificParams);
 %% build input data for calibration
 %
 % build sensor data parser
-jtMotGrpInfo = model.jointsDbase.getJmGrpInfo(jointMotorGroupLabel);
-
 dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(...
     model,measedSensorList,measedPartsList,...
-    jtMotGrpInfo.coupledJoints);
+    jointMotorCoupling.coupledJoints);
 
 plot = false; loadJointPos = true;
 data = SensorsData(dataPath,'',obj.subSamplingSize,...
@@ -62,7 +60,7 @@ obj.plotModel(frictionOrKtau,data,calibList);
 
 % Save calibrated parameters into 'calibrationMap'.
 % 
-for cMotorLabelCalib = [jtMotGrpInfo.coupledMotors;calibList]
+for cMotorLabelCalib = [jointMotorCoupling.coupledMotors;calibList]
     % extract motor label and calibration
     motorLabel = cMotorLabelCalib{1};
     calib = cMotorLabelCalib{2};

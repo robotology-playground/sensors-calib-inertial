@@ -8,7 +8,7 @@ function transition = nextGroupTrans(obj)
 
 obj.state.currentJMcplgIdx = obj.state.currentJMcplgIdx + 1;
 
-if obj.state.currentJMcplgIdx>numel(obj.jointMotorCouplingLabels)
+if obj.state.currentJMcplgIdx>numel(obj.jointMotorCouplings)
     transition = 'end';
 else
     transition = 'proceed';

@@ -47,8 +47,8 @@ obj.state.current = obj.stateStart;
 % 	  => selected motors velocity
 % 	  => selected joints measured torques
 % 	  The data is expected to have as many ROWS as the number of joints.
-%     The order MUST be the same as in jointMotorGroup.coupledJoints (dim 1)
-%     and jointMotorGroup.coupledMotors (dim 2).
+%     The order MUST be the same as in jointMotorCoupling.coupledJoints (dim 1)
+%     and jointMotorCoupling.coupledMotors (dim 2).
 %
 % 3 - Plot acquired data
 %

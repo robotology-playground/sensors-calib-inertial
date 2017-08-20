@@ -63,8 +63,8 @@ for seqIdx = 1:numel(obj.sequences)
                 % supported.
                 % Get list of coupled motors and respective indexes as
                 % per the mapping by the control board remapper
-                jtMotGrpInfo = obj.robotModel.jointsDbase.getJmGrpInfo(sequence.pwmctrl.jtMotGrp);
-                jointsIdxes = obj.ctrlBoardRemap.getJointsMappedIdxes(jtMotGrpInfo.coupledJoints);
+                jmCoupling = sequence.pwmctrl.jtMotGrp;
+                jointsIdxes = obj.ctrlBoardRemap.getJointsMappedIdxes(jmCoupling.coupledJoints);
                 
                 % Set each motor in PWM control mode
                 obj.ctrlBoardRemap.setJointsControlMode(jointsIdxes,'pwmctrl');

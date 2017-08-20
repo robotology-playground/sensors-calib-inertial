@@ -6,7 +6,7 @@ classdef MotorTransFunc < handle
     %   - KvP, KvN
     %   - stictionP, stictionN
     
-    properties(Access=protected)
+    properties(GetAccess=public, SetAccess=protected)
         name@char;
         Kpwm = 0;
         gearboxRatio = 1;

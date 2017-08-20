@@ -39,7 +39,7 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         init@struct;
         model@RobotModel;
         lastAcqSensorDataAccessorMap@containers.Map;
-        jointMotorCouplingLabels = {};
+        jointMotorCouplings = {};
         % Main state of the state machine:
         % - 'state.current' gives the current state indexing the 'stateArray'
         % - 'state.transition' hold the transition to the next state

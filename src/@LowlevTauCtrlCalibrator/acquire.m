@@ -6,7 +6,7 @@ function acquire( obj,frictionOrKtau )
 %     
 %     In both cases, this behaviour is selected through the 'frictionOrKtau'
 %     parameter sent to the acquisition procedure.
-%     Calibrated joints/motors coupling label to use = pointed jointMotorCouplingLabel
+%     Calibrated joints/motors coupling label to use = pointed jointMotorCoupling
 %
 % 2 - move selected joints and acquire data:
 %     Friction (phase 1a), acquired data are:
@@ -23,11 +23,11 @@ function acquire( obj,frictionOrKtau )
 % 
 
 % select group of joints and respective part
-jointMotorCouplingLabel = obj.jointMotorCouplingLabels{obj.state.currentJMcplgIdx};
-part = obj.model.jointsDbase.getPartFromJMcplgLabel(jointMotorCouplingLabel);
+jointMotorCoupling = obj.jointMotorCouplings{obj.state.currentJMcplgIdx};
+part = obj.model.jointsDbase.getPartFromJMcoupling(jointMotorCoupling);
 
 % 1 - set init for the selected group of joints and respective part
-obj.init.(obj.initSection).taskSpecificParams.jointMotorGroup = jointMotorCouplingLabel;
+obj.init.(obj.initSection).taskSpecificParams.jointMotorCoupling = jointMotorCoupling;
 obj.init.(obj.initSection).taskSpecificParams.frictionOrKtau = frictionOrKtau;
 obj.init.(obj.initSection).calibedParts = {part};
 

@@ -16,7 +16,7 @@ classdef JointsDbase < DataBase
         function obj = JointsDbase(iDynTreeModelFromURDF)
             % create property names and keys
             propKeyList = {'jointName'};
-            propNameList = {'jointName','iDynObject','firstAttachedLink','secondAttachedLink','part','DoF','maxDq0','jmCplgLabel'};
+            propNameList = {'jointName','iDynObject','firstAttachedLink','secondAttachedLink','part','DoF','maxDq0','jmCoupling'};
             propValueList = cell(iDynTreeModelFromURDF.getNrOfJoints(),length(propNameList));
             
             % Set 'propValueList' with the properties from the iDynTree model
@@ -63,14 +63,11 @@ classdef JointsDbase < DataBase
         % Get joints names from a given part
         jointNameList = getJointNames(obj,part);
         
-        % Get the list of joint/motor couplings (labels)
-        jmCouplingLabels = getJMcouplingLabels(obj,jointNameList); % TO BE IMPLEMENTED
+        % Get the list of joint/motor couplings
+        jmCouplings = getJMcouplings(obj,jointNameList); % TO BE IMPLEMENTED
         
         % Get part name from joint/motor group label
-        part = getPartFromJMcplgLabel(obj,jmCplgLabel); % TO BE IMPLEMENTED
-        
-        % Get joint/motor group info (struct) from a joint/motor group
-        jmCoupling = getJMcoupling(obj,jmCplgLabel); % TO BE IMPLEMENTED
+        part = getPartFromJMcoupling(obj,jmCoupling); % TO BE IMPLEMENTED
         
         % Get the calibration init point Dq0 vector for a given list of joints
         MaxDq0col = getJointsMaxCalibDq0(obj,jointList);
