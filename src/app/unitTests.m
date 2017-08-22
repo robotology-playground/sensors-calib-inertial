@@ -80,3 +80,9 @@ axisNames = cell(1,nbAxes);
 for axisIdx = 1:nbAxes
     axisNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
 end
+
+%% test the class RemoteControlBoard
+clear obj;
+remoteCtrlBoard = RemoteControlBoard('icubSim','left_arm');
+rawCouplingInfo = remoteCtrlBoard.getRawCoupling();
+couplingList = remoteCtrlBoard.getCouplings();

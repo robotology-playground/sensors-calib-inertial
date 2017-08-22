@@ -8,12 +8,13 @@ classdef JointsDbase < DataBase
     
     properties(Access = protected)
         iDynTreeModel;
+        robotName
         jointMotorCouplings;
     end
     
     methods(Access = public)
         % Constructor
-        function obj = JointsDbase(iDynTreeModelFromURDF)
+        function obj = JointsDbase(iDynTreeModelFromURDF,robotName)
             % create property names and keys
             propKeyList = {'jointName'};
             propNameList = {'jointName','iDynObject','firstAttachedLink','secondAttachedLink','part','DoF','maxDq0','jmCoupling'};
@@ -22,7 +23,7 @@ classdef JointsDbase < DataBase
             % Set 'propValueList' with the properties from the iDynTree model
             jointIdxList = 0:iDynTreeModelFromURDF.getNrOfJoints()-1;
             couplingList = containers.Map('KeyType','char','ValueType','any');
-            part2coupling = containers.Map('KeyType','char','ValueType','any');
+            joint2coupling = containers.Map('KeyType','char','ValueType','any');
             propValueLineIdx = 1;
             
             for jointIdx = jointIdxList
@@ -38,14 +39,13 @@ classdef JointsDbase < DataBase
                 
                 % This joint might be coupled with other joints to a set of motors.
                 % Retrieve the respective joints/motors coupling information
-                parentCouplingLabel = JointsDbase.getJMcouplingFromCtrlBoard(...
-                    couplingList,part2coupling,...
-                    part,jointName);
+                parentCoupling = JointsDbase.getJMcouplingFromCtrlBoard(...
+                    joint2coupling,robotName,part,jointName);
                 
                 % fill the properties list
                 propValueList(propValueLineIdx,:) = {...
                     jointName,iDynObject,firstAttachedLink,...
-                    secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,parentCouplingLabel};
+                    secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,parentCoupling};
                 
                 % increment pointer
                 propValueLineIdx = propValueLineIdx+1;
@@ -64,10 +64,10 @@ classdef JointsDbase < DataBase
         jointNameList = getJointNames(obj,part);
         
         % Get the list of joint/motor couplings
-        jmCouplings = getJMcouplings(obj,jointNameList); % TO BE IMPLEMENTED
+        jmCouplings = getJMcouplings(obj,jointNameList);
         
         % Get part name from joint/motor group label
-        part = getPartFromJMcoupling(obj,jmCoupling); % TO BE IMPLEMENTED
+        part = getPartFromJMcoupling(obj,jmCoupling);
         
         % Get the calibration init point Dq0 vector for a given list of joints
         MaxDq0col = getJointsMaxCalibDq0(obj,jointList);
@@ -84,9 +84,8 @@ classdef JointsDbase < DataBase
         % The method stores the respective retrieved objects in the running
         % 'couplingList', for future queries. It returns the handle of the
         % coupling to which the joint belongs.
-        parentCouplingLabel = getJMcouplingFromCtrlBoard(...
-            couplingList,part2coupling,...
-            part,jointName); % TO BE IMPLEMENTED
+        parentCoupling = getJMcouplingFromCtrlBoard(...
+            joint2coupling,robotName,part,jointName);
     end
 end
 
