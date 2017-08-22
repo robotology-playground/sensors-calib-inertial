@@ -23,16 +23,34 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         stateNextGroup@int   = 6;
         stateEnd@int         = 7;
         
-        states = {...
-            'currentProc'   ,'restart'           ,'proceed'           ,'skip'            ,'end'       ,'transition';...
-            @obj.start      ,[]                  ,obj.stateAcqFriction,[]                ,[]          ,@(varargin) 'proceed';... % stateStart
-            @obj.acqFriction,obj.stateAcqFriction,obj.stateFitFriction,obj.stateNextGroup,obj.stateEnd,@promptUser;...   % stateAcqFriction
-            @obj.fitFriction,obj.stateAcqFriction,obj.stateAcqKtau    ,obj.stateNextGroup,obj.stateEnd,@promptUser;...   % stateFitFriction
-            @obj.acqKtau    ,obj.stateAcqKtau    ,obj.stateFitKtau    ,obj.stateNextGroup,obj.stateEnd,@promptUser;...   % stateAcqKtau
-            @obj.fitKtau    ,obj.stateAcqKtau    ,obj.stateNextGroup  ,obj.stateNextGroup,obj.stateEnd,@promptUser;...   % stateFitKtau
-            @(varargin) []  ,[]                  ,obj.stateAcqFriction,[]                ,obj.stateEnd,@nextGroupTrans}; % stateNextGroup
+        statesNextState = {...
+            'restart'           ,'proceed'           ,'skip'            ,'end'       ;...
+            []                  ,obj.stateAcqFriction,[]                ,[]          ;...  % stateStart
+            obj.stateAcqFriction,obj.stateFitFriction,obj.stateNextGroup,obj.stateEnd;...  % stateAcqFriction
+            obj.stateAcqFriction,obj.stateAcqKtau    ,obj.stateNextGroup,obj.stateEnd;...  % stateFitFriction
+            obj.stateAcqKtau    ,obj.stateFitKtau    ,obj.stateNextGroup,obj.stateEnd;...  % stateAcqKtau
+            obj.stateAcqKtau    ,obj.stateNextGroup  ,obj.stateNextGroup,obj.stateEnd;...  % stateFitKtau
+            []                  ,obj.stateAcqFriction,[]                ,obj.stateEnd};    % stateNextGroup
         
-        stateArray = defStatesFromDesc(states);
+        statesCurrentProcessing = {...
+            'currentProc'   ,'transition'         ,;...
+            @obj.start      ,@(varargin) 'proceed',;... % stateStart
+            @obj.acqFriction,@promptUser          ,;... % stateAcqFriction
+            @obj.fitFriction,@promptUser          ,;... % stateFitFriction
+            @obj.acqKtau    ,@promptUser          ,;... % stateAcqKtau
+            @obj.fitKtau    ,@promptUser          ,;... % stateFitKtau
+            @(varargin) []  ,@nextGroupTrans      ,};   % stateNextGroup
+        
+        statesTransitionProcessing = {...
+            'restartProc'          ,'proceedProc'        ,'skipProc'             ,'endProc'              ;...
+            @(varargin) []         ,@obj.stateAcqFriction,@(varargin) []         ,@(varargin) []         ;...  % stateStart
+            @obj.discardAcqFriction,@obj.savePlotCallback,@obj.discardAcqFriction,@obj.discardAcqFriction;...  % stateAcqFriction
+            @obj.discardAcqFriction,@obj.savePlotCallback,@obj.discardAcqFriction,@obj.discardAcqFriction;...  % stateFitFriction
+            @obj.discardAcqKtau    ,@obj.savePlotCallback,@obj.discardAcqKtau    ,@obj.discardAcqKtau    ;...  % stateAcqKtau
+            @obj.discardAcqKtau    ,@obj.savePlotCallback,@obj.discardAcqKtau    ,@obj.discardAcqKtau    ;...  % stateFitKtau
+            @(varargin) []         ,@obj.stateAcqFriction,@(varargin) []         ,@(varargin) []         };    % stateNextGroup
+        
+        stateArray = defStatesFromDesc([statesNextState statesCurrentProcessing statesTransitionProcessing]);
     end
     
     properties(Access=protected)
@@ -40,11 +58,17 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         model@RobotModel;
         lastAcqSensorDataAccessorMap@containers.Map;
         jointMotorCouplings = {};
+        timeStart = 0;
+        timeStop = 0;
+        subSamplingSize = 0;
+        filtParams@struct;
+        savePlotCallback@function_handle;
+        
         % Main state of the state machine:
         % - 'state.current' gives the current state indexing the 'stateArray'
         % - 'state.transition' hold the transition to the next state
         %    through the field values 'restart', 'proceed', 'skip', 'end'.
-        % - 'currentJMcplgIdx' indexes the current joint/motor group to
+        % - 'state.currentJMcplgIdx' indexes the current joint/motor group to
         %    process.
         state@struct = struct('current',obj.stateStart,'transition',[],'currentJMcplgIdx',0);
     end
@@ -71,6 +95,10 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         function fitFriction(obj), obj.fit('friction'); end
         
         function fitKtau(obj), obj.fit('ktau'); end
+        
+        function discardAcqFriction(obj), []; end
+        
+        function discardAcqKtau(obj), []; end
         
         plotTrainingData(obj,path,sensors,parts,model,taskSpec);
         
@@ -102,6 +130,9 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         dataLoadingParams = buildDataLoadingParams(...
             model,measedSensorList,measedPartsList,...
             calibedJointOrderedList);
+        
+        % Save plot with some context parameters
+        savePlot(figuresHandler,savePlot,exportPlot,dataPath);
     end
     
 end

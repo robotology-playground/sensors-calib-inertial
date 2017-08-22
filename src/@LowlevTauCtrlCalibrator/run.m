@@ -12,6 +12,7 @@ run lowLevTauCtrlCalibratorDevConfig;
 obj.timeStart = timeStart;
 obj.timeStop = timeStop;
 obj.subSamplingSize = subSamplingSize;
+obj.filtParams = filtParams;
 
 % state machine starting state
 obj.state.current = obj.stateStart;
@@ -89,6 +90,9 @@ while (obj.state.current ~= obj.stateEnd)
         case 'ABORT'
             return;
         otherwise
+            % Do transition dependent processing
+            currentState.([transition 'Proc'])();
+            % Compute new state
             obj.state.current = currentState.(transition);
     end
 end

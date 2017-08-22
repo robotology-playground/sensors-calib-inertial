@@ -315,14 +315,17 @@ for i = 1 : length(obj.parts)
         qs    = ['qs_' obj.labels{i}];
         dqs   = ['dqs_' obj.labels{i}];
         d2qs  = ['d2qs_' obj.labels{i}];
+        dqMs  = ['dqMs_' obj.labels{i}];
         
         qsRad    = ['qsRad_' obj.labels{i}];
         dqsRad   = ['dqsRad_' obj.labels{i}];
         d2qsRad  = ['d2qsRad_' obj.labels{i}];
+        dqMsRad  = ['dqMsRad_' obj.labels{i}];
         
         eval(['obj.parsedParams.' qsRad ' = obj.parsedParams.' qs '*pi/180;']);
         eval(['obj.parsedParams.' dqsRad ' = obj.parsedParams.' dqs '*pi/180;']);
         eval(['obj.parsedParams.' d2qsRad ' = obj.parsedParams.' d2qs '*pi/180;']);
+        eval(['obj.parsedParams.' dqMsRad ' = obj.parsedParams.' dqMs '*pi/180;']);
     end
 end
 

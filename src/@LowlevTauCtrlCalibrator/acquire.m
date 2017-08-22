@@ -42,9 +42,9 @@ save('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
 % Diagnosis function: doesn't require 'calibedParts' & 'calibedJointsIdxes'.
 diagFuncH = @(path,~,sensors,parts,model,taskSpec) ...
     obj.plotTrainingData(...
-    path,sensors,parts,model,taskSpec);              % params specific to this calibrator
+    path,sensors,parts,model,taskSpec); % actual params passed through the func handle
 % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
-runCalibratorOrDiagnosis(init,model,diagFuncH,obj.calibedSensorType);
+obj.runCalibratorOrDiagnosis(init,model,diagFuncH,obj.calibedSensorType);
 
 end
 
