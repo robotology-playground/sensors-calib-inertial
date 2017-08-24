@@ -5,10 +5,10 @@ function [q, dq, d2q, time] = readStateExt(n, filename)
 format = '%d %f ';
 fid    = fopen(filename);
 
-for j = 1 : 10
+for j = 1 : 11
    format = [format, '('];
    for i = 1 : n
-      if j < 9
+      if j < 10
          format = [format, '%f '];
       else
          format = [format, '%d '];

@@ -207,6 +207,9 @@ classdef SensorDataYarpI < handle
                 if ~obj.doesPIDmatchDatadumper(port.pid)
                     error('Wrong yarpdatadumper PID!');
                 end
+                if ~obj.waitPortOpen(port.to,5)
+                    error(['Couldn''t open port ' port.to ' !!']);
+                end
                 obj.openports(key{:}) = port;
             end
         end
