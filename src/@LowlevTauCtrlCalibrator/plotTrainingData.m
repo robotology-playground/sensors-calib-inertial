@@ -34,7 +34,6 @@ dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(...
 
 plot = false; loadJointPos = true;
 
-
 data = SensorsData(dataPath,'',obj.subSamplingSize,...
     obj.timeStart,obj.timeStop,plot,...
     calibrationMap,obj.filtParams);
@@ -65,11 +64,17 @@ obj.figuresHandlerMap(obj.task) = figuresHandler;
 % file).
 % 
 time = data.time;
-tau  = data.parsedParams.taus_state;
+
+% For now, only 1 joint per coupling is supported (first one).
+% Get the calibrated joint index as mapped in the motors control board server.
+jointIdx = model.jointsDbase.getJointIdxFromCtrlBoard(jointMotorCoupling.coupledJoints{1});
+
+% Get respective torque
+tau  = data.parsedParams.taus_state(jointIdx);
 
 switch frictionOrKtau
     case 'friction'
-        dqMrad = data.parsedParams.dqMsRad_state;
+        dqMrad = data.parsedParams.dqMsRad_state(jointIdx);
         
         % filtered Tau(time) & dqM(time)
         Plotter.plot2funcTimeseriesYY(...
@@ -88,7 +93,7 @@ switch frictionOrKtau
             'Training data','');
         
     case 'ktau'
-        pwm = data.parsedParams.pwms_state;
+        pwm = data.parsedParams.pwms_state(jointIdx);
         
         % filtered Tau(time) & pwm(time)
         Plotter.plot2funcTimeseriesYY(...

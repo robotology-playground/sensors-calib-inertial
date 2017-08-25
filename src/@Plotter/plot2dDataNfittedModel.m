@@ -26,9 +26,9 @@ hold off
 grid ON;
 
 xlabel(xLabel,'Fontsize',12);
+ylabel(yLabel,'Fontsize',12);
 
 if ~isempty(xModel)
-    ylabel(yLabel,'Fontsize',12);
     legend('Location','BestOutside',dataLegend,modelLegend);
 else
     legend('Location','BestOutside',dataLegend);

@@ -75,6 +75,9 @@ classdef JointsDbase < DataBase
         % Get the total DoF from a given list of joints
         DoF = getTotalJointDoF(obj,jointList);
         
+        % Get the joint index as mapped in the motors control board server.
+        jointIdx = getJointIdxFromCtrlBoard(jointName); % TO BE IMPLEMENTED
+        
         % Set maximum Dq0 (required by the optimisation solver) for all joints
         success = setAllJointsMaxCalibDq0(obj,maxDq0);
     end

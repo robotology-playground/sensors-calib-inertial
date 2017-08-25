@@ -9,14 +9,16 @@ classdef JointMotorCoupling < handle
         T = 0;           % coupling matrix
         coupledJoints = {}; % cell array of strings
         coupledMotors = {}; % cell array of motor names
+        gearboxRatios = [];
         part = '';       % parent part of the coupled joints/motors
     end
     
     methods
-        function obj = JointMotorCoupling(T, cpldJoints, cpldMotors, part)
+        function obj = JointMotorCoupling(T, cpldJoints, cpldMotors, ratios, part)
             obj.T = T;
             obj.coupledJoints = cpldJoints;
             obj.coupledMotors = cpldMotors;
+            obj.gearboxRatios = ratios;
             obj.part = part;
             obj.label = [cpldJoints{:}];
         end

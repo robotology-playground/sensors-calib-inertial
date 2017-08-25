@@ -58,6 +58,9 @@ classdef RemoteControlBoard < handle
         
         % Get the digested coupling information
         couplingList = getCouplings(obj);
+        
+        % Get joints indexes as per the control board server mapping
+        [jointsIdxList,matchingBitmap] = getJointsMappedIdxes(obj,jointNameList);
     end
     
     methods(Access=protected)
