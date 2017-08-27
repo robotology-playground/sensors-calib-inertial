@@ -1,4 +1,4 @@
-function [ jointsIdxList,matchingBitmap ] = getJointsMappedIdxes( obj,jointNameList );
+function [ jointsIdxList,matchingBitmap ] = getJointsMappedIdxes( obj,jointNameList )
 %UNTITLED7 Summary of this function goes here
 %   Detailed explanation goes here
 

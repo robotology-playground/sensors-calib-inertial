@@ -49,7 +49,7 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
 % For now, only 1 joint per coupling is supported (first one).
 % Get the calibrated joint index as mapped in the motors control board server.
-jointIdx = model.jointsDbase.getJointIdxFromCtrlBoard(jointMotorCoupling.coupledJoints{1});
+jointIdx = model.jointsDbase.getJointIdxFromCtrlBoard(jointMotorCoupling.coupledJoints(1));
 
 % Get respective torque
 tau  = data.parsedParams.taus_state(jointIdx);

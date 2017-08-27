@@ -6,7 +6,7 @@ classdef JointMotorCoupling < handle
     
     properties(GetAccess=public, SetAccess=protected)
         label@char = ''; % unique id of the coupling
-        T = 0;           % coupling matrix
+        invT = 0;           % coupling matrix
         coupledJoints = {}; % cell array of strings
         coupledMotors = {}; % cell array of motor names
         gearboxRatios = [];
@@ -14,8 +14,8 @@ classdef JointMotorCoupling < handle
     end
     
     methods
-        function obj = JointMotorCoupling(T, cpldJoints, cpldMotors, ratios, part)
-            obj.T = T;
+        function obj = JointMotorCoupling(invT, cpldJoints, cpldMotors, ratios, part)
+            obj.invT = invT;
             obj.coupledJoints = cpldJoints;
             obj.coupledMotors = cpldMotors;
             obj.gearboxRatios = ratios;

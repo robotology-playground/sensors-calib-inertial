@@ -17,7 +17,7 @@ classdef JointsDbase < DataBase
         function obj = JointsDbase(iDynTreeModelFromURDF,robotName)
             % create property names and keys
             propKeyList = {'jointName'};
-            propNameList = {'jointName','iDynObject','firstAttachedLink','secondAttachedLink','part','DoF','maxDq0','jmCoupling'};
+            propNameList = {'jointName','iDynObject','firstAttachedLink','secondAttachedLink','part','DoF','maxDq0','idxInCtrlBoardServer','jmCoupling'};
             propValueList = cell(iDynTreeModelFromURDF.getNrOfJoints(),length(propNameList));
             
             % Set 'propValueList' with the properties from the iDynTree model
@@ -39,13 +39,14 @@ classdef JointsDbase < DataBase
                 
                 % This joint might be coupled with other joints to a set of motors.
                 % Retrieve the respective joints/motors coupling information
-                parentCoupling = JointsDbase.getJMcouplingFromCtrlBoard(...
+                [parentCoupling,idxInCtrlBoardServer] = JointsDbase.getJMcouplingFromCtrlBoard(...
                     joint2coupling,robotName,part,jointName);
                 
                 % fill the properties list
                 propValueList(propValueLineIdx,:) = {...
                     jointName,iDynObject,firstAttachedLink,...
-                    secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,parentCoupling};
+                    secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,...
+                    idxInCtrlBoardServer,parentCoupling};
                 
                 % increment pointer
                 propValueLineIdx = propValueLineIdx+1;
@@ -76,7 +77,7 @@ classdef JointsDbase < DataBase
         DoF = getTotalJointDoF(obj,jointList);
         
         % Get the joint index as mapped in the motors control board server.
-        jointIdx = getJointIdxFromCtrlBoard(jointName); % TO BE IMPLEMENTED
+        [jointIdxes] = getJointIdxFromCtrlBoard(obj,jointNameList);
         
         % Set maximum Dq0 (required by the optimisation solver) for all joints
         success = setAllJointsMaxCalibDq0(obj,maxDq0);
@@ -87,7 +88,7 @@ classdef JointsDbase < DataBase
         % The method stores the respective retrieved objects in the running
         % 'couplingList', for future queries. It returns the handle of the
         % coupling to which the joint belongs.
-        parentCoupling = getJMcouplingFromCtrlBoard(...
+        [parentCoupling,idxInCtrlBoardServer] = getJMcouplingFromCtrlBoard(...
             joint2coupling,robotName,part,jointName);
     end
 end
