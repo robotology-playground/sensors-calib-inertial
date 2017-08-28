@@ -9,7 +9,7 @@ classdef JointMotorCoupling < handle
         invT = 0;           % coupling matrix
         coupledJoints = {}; % cell array of strings
         coupledMotors = {}; % cell array of motor names
-        gearboxRatios = [];
+        gearboxRatios = []; % NOT REQUIRED FOR NOW
         part = '';       % parent part of the coupled joints/motors
     end
     

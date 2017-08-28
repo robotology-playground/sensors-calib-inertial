@@ -1,4 +1,4 @@
-function concatMap( aMap,addedMap )
+function aMap = concatMap( aMap,addedMap )
 %Stores in 'aMap' the elements of 'addedMap'
 %   Detailed explanation goes here
 

@@ -9,7 +9,6 @@ classdef JointsDbase < DataBase
     properties(Access = protected)
         iDynTreeModel;
         robotName
-        jointMotorCouplings;
     end
     
     methods(Access = public)
@@ -22,7 +21,6 @@ classdef JointsDbase < DataBase
             
             % Set 'propValueList' with the properties from the iDynTree model
             jointIdxList = 0:iDynTreeModelFromURDF.getNrOfJoints()-1;
-            couplingList = containers.Map('KeyType','char','ValueType','any');
             joint2coupling = containers.Map('KeyType','char','ValueType','any');
             propValueLineIdx = 1;
             
@@ -39,8 +37,14 @@ classdef JointsDbase < DataBase
                 
                 % This joint might be coupled with other joints to a set of motors.
                 % Retrieve the respective joints/motors coupling information
-                [parentCoupling,idxInCtrlBoardServer] = JointsDbase.getJMcouplingFromCtrlBoard(...
-                    joint2coupling,robotName,part,jointName);
+                if DoF>0
+                    [parentCoupling,idxInCtrlBoardServer] = JointsDbase.getJMcouplingFromCtrlBoard(...
+                        joint2coupling,robotName,part,jointName);
+                else
+                    warning('JointsDbase: %s is a fixed joint.',jointName);
+                    parentCoupling = [];
+                    idxInCtrlBoardServer = [];
+                end
                 
                 % fill the properties list
                 propValueList(propValueLineIdx,:) = {...
@@ -58,7 +62,6 @@ classdef JointsDbase < DataBase
             
             % save iDynTree sensors object and coupling list
             obj.iDynTreeModel = iDynTreeModelFromURDF;
-            obj.jointMotorCouplings = couplingList;
         end
         
         % Get joints names from a given part
@@ -67,8 +70,8 @@ classdef JointsDbase < DataBase
         % Get the list of joint/motor couplings
         jmCouplings = getJMcouplings(obj,jointNameList);
         
-        % Get part name from joint/motor group label
-        part = getPartFromJMcoupling(obj,jmCoupling);
+        % Get part name from each joint/motor group label
+        parts = getPartFromJMcouplings(obj,jmCouplings);
         
         % Get the calibration init point Dq0 vector for a given list of joints
         MaxDq0col = getJointsMaxCalibDq0(obj,jointList);
@@ -86,7 +89,7 @@ classdef JointsDbase < DataBase
     methods(Static=true, Access=protected)
         % Get the joint/motor coupling info from the control board server.
         % The method stores the respective retrieved objects in the running
-        % 'couplingList', for future queries. It returns the handle of the
+        % 'joint2coupling', for future queries. It returns the handle of the
         % coupling to which the joint belongs.
         [parentCoupling,idxInCtrlBoardServer] = getJMcouplingFromCtrlBoard(...
             joint2coupling,robotName,part,jointName);

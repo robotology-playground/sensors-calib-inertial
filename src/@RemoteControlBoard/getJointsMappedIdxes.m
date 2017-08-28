@@ -9,9 +9,11 @@ function [ jointsIdxList,matchingBitmap ] = getJointsMappedIdxes( obj,jointNameL
 
 % warning
 if ~all(matchingBitmap)
-    warning([...
-        'joint(s) ' jointNameList(~matchingBitmap) ...
-        ' is(are) not mapped in the control board server!!']);
+    missingJoints = jointNameList(~matchingBitmap);
+    warningMess = [...
+        'joint(s) ' repmat('%s ',[1:numel(missingJoints)]) ...
+        ' is(are) not mapped in the control board server!!'];
+    warning(warningMess,missingJoints{:});
 end
 
 % filter out unmatched joint names

@@ -17,10 +17,11 @@ if ~joint2coupling.isKey(jointName)
     for idx = 1:numel(couplingList)
         coupling = couplingList{idx};
         keys = coupling.coupledJoints;
-        jointIdxes = remoteCtrlBoard.getJointsMappedIdxes(keys);
-        [values(1:length(keys)).coupling] = deal(coupling);
-        [values.idxInCtrlBoardServer] = deal(jointIdxes);
-        addedJoints = containers.Map(coupling.coupledJoints,values);
+        jointIdxes = num2cell(remoteCtrlBoard.getJointsMappedIdxes(keys));
+        values = struct('idxInCtrlBoardServer',jointIdxes);
+        [values.coupling] = deal(coupling);
+        [valueCells] = arrayfun(@(elem) elem,values,'UniformOutput',false);
+        addedJoints = containers.Map(coupling.coupledJoints,valueCells);
         joint2coupling = concatMap(joint2coupling,addedJoints);
     end
     
@@ -30,8 +31,16 @@ end
 
 % Get the coupling to which the joint 'jointName' belongs, and the joint
 % index as mapped in the motors control board server.
-jointInfo = joint2coupling(jointName);
-parentCoupling = jointInfo.coupling;
-idxInCtrlBoardServer = jointInfo.idxInCtrlBoardServer;
+if joint2coupling.isKey(jointName)
+    jointInfo = joint2coupling(jointName);
+    parentCoupling = jointInfo.coupling;
+    idxInCtrlBoardServer = jointInfo.idxInCtrlBoardServer;
+else
+    warning(...
+        'getJMcouplingFromCtrlBoard: %s doesn''t match any coupling data extracted from the control board server.',...
+        jointName);
+    parentCoupling = [];
+    idxInCtrlBoardServer = [];
+end
 
 end
