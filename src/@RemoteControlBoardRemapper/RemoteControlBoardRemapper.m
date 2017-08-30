@@ -98,10 +98,20 @@ classdef RemoteControlBoardRemapper < handle
         % Position, Open loop (applicable for PWM, torque, current).
         ok = setJointsControlMode(obj,jointsIdxList,mode);
         
+        % Set the motor in PWM control mode and handle the coupled
+        % motors keeping their control mode and state unchanged. If
+        % this is not supported by the YARP remoteControlBoardRemapper,
+        % emulate it. We can only emulate position control.
+        ok = setMotorPWMcontrolMode(obj,motorName); % TO BE IMPLEMENTED
+        
+        % Set the desired PWM level (0-100%) for the motor
+        ok = setMotorPWM(obj,motorName,pwm); % TO BE IMPLEMENTED
+        
         % Set PWM values set for a set of motor indexes (for calibration
         % purpose). The motor indexes are the same as for the joints.
         % There is no concept of coupled motors in the control board
-        % remapper.
+        % remapper. But if a coupled motor is set to a given control mode,
+        % then all the motors in the coupling are set to the same mode.
         ok = setMotorsPWM(obj,jointsIdxList,pwmVec);
     end
     

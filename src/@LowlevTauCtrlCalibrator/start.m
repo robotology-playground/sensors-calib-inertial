@@ -24,10 +24,12 @@ function start( obj )
 % Get the joint list to calibrate from UI
 jointNameList = obj.getJointNamesFromUIidxes(obj.init,obj.model);
 
-% Get the list of joint/motor couplings
-obj.jointMotorCouplings = obj.model.jointsDbase.getJMcouplings(jointNameList);
+% Get the list of joint/motor couplings and from there, set the expanded
+% list of motors that will be calibrated.
+jmCouplings = obj.model.jointsDbase.getJMcouplings('joints',jointNameList);
+obj.expddMotorList = obj.model.jointsDbase.getMotors(jmCouplings);
 
 % Select first group to calibrate
-obj.state.currentJMcplgIdx = 1;
+obj.state.currentMotorIdx = 1;
 
 end

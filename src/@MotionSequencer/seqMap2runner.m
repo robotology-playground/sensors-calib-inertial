@@ -75,7 +75,7 @@ end
 
 if ismember('pwmctrl',fieldnames(runSeq))
     % list of join/motor groups
-    runSeq.pwmctrl.jtMotGrp = cell2mat(fieldnames(runSeq.pwmctrl));
+    runSeq.pwmctrl.motor = cell2mat(fieldnames(runSeq.pwmctrl));
     % reshape 'pwm'
     runSeq.pwmctrl.pwm = struct2cellConcat(runSeq.pwmctrl.pwm);
 end
@@ -177,7 +177,7 @@ end
 %     [10 10 10 10 10 10 10];...
 %     [10 10 10 10 10 10 10]};
 % 
-% runSeq.pwmctrl.jtMotGrp = 'r_shoulder_grp';
+% runSeq.pwmctrl.motor = 'r_shoulder_grp';
 % 
 % runSeq.pwmctrl.pwm = {
 %     0;...

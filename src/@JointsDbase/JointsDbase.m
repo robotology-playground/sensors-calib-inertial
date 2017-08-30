@@ -8,15 +8,18 @@ classdef JointsDbase < DataBase
     
     properties(Access = protected)
         iDynTreeModel;
-        robotName
+        robotName;
     end
     
     methods(Access = public)
         % Constructor
         function obj = JointsDbase(iDynTreeModelFromURDF,robotName)
             % create property names and keys
-            propKeyList = {'jointName'};
-            propNameList = {'jointName','iDynObject','firstAttachedLink','secondAttachedLink','part','DoF','maxDq0','idxInCtrlBoardServer','jmCoupling'};
+            propKeyList = {'jointName','cpldMotorSharingIdx'};
+            propNameList = {...
+                'jointName','iDynObject',...
+                'firstAttachedLink','secondAttachedLink','part','DoF','maxDq0',...
+                'jmCoupling','idxInCtrlBoardServer','cpldMotorSharingIdx'};
             propValueList = cell(iDynTreeModelFromURDF.getNrOfJoints(),length(propNameList));
             
             % Set 'propValueList' with the properties from the iDynTree model
@@ -38,7 +41,8 @@ classdef JointsDbase < DataBase
                 % This joint might be coupled with other joints to a set of motors.
                 % Retrieve the respective joints/motors coupling information
                 if DoF>0
-                    [parentCoupling,idxInCtrlBoardServer] = JointsDbase.getJMcouplingFromCtrlBoard(...
+                    [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx] = ...
+                        JointsDbase.getJMcouplingFromCtrlBoard(...
                         joint2coupling,robotName,part,jointName);
                 else
                     warning('JointsDbase: %s is a fixed joint.',jointName);
@@ -48,9 +52,9 @@ classdef JointsDbase < DataBase
                 
                 % fill the properties list
                 propValueList(propValueLineIdx,:) = {...
-                    jointName,iDynObject,firstAttachedLink,...
-                    secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,...
-                    idxInCtrlBoardServer,parentCoupling};
+                    jointName,iDynObject,...
+                    firstAttachedLink,secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,...
+                    parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx};
                 
                 % increment pointer
                 propValueLineIdx = propValueLineIdx+1;
@@ -67,11 +71,18 @@ classdef JointsDbase < DataBase
         % Get joints names from a given part
         jointNameList = getJointNames(obj,part);
         
-        % Get the list of joint/motor couplings
-        jmCouplings = getJMcouplings(obj,jointNameList);
+        % Get the list of joint/motor couplings. Input type is 'joints'
+        % or 'motors'.
+        jmCouplings = getJMcouplings(obj,inputType,jointOrMotorNameList);
         
         % Get part name from each joint/motor group label
         parts = getPartFromJMcouplings(obj,jmCouplings);
+        
+        % Get part name holding the motor
+        parts = getPartFromMotors(obj,motorNameList); % TO BE IMPLEMENTED
+        
+        % Get all motor names from the couplings list
+        motorNameList = getMotors(jmCouplings); % TO BE IMPLEMENTED
         
         % Get the calibration init point Dq0 vector for a given list of joints
         MaxDq0col = getJointsMaxCalibDq0(obj,jointList);
@@ -80,7 +91,10 @@ classdef JointsDbase < DataBase
         DoF = getTotalJointDoF(obj,jointList);
         
         % Get the joint index as mapped in the motors control board server.
-        [jointIdxes] = getJointIdxFromCtrlBoard(obj,jointNameList);
+        [jointIdxes] = getJointIdxesFromCtrlBoard(obj,jointNameList);
+        
+        % Get the motor index as mapped in the motors control board server.
+        [motorIdxes] = getMotorIdxesFromCtrlBoard(obj,motorNameList); % TO BE IMPLEMENTED
         
         % Set maximum Dq0 (required by the optimisation solver) for all joints
         success = setAllJointsMaxCalibDq0(obj,maxDq0);

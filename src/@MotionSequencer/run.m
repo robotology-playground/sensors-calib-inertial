@@ -59,28 +59,29 @@ for seqIdx = 1:numel(obj.sequences)
                 end
                 
             case 'pwmctrl' % PWM control
-                % Only 1 joint/motor group in PWM control mode is
-                % supported.
-                % Get list of coupled motors and respective indexes as
-                % per the mapping by the control board remapper
-                jmCoupling = sequence.pwmctrl.jtMotGrp;
-                jointsIdxes = obj.ctrlBoardRemap.getJointsMappedIdxes(jmCoupling.coupledJoints);
+                % Only setting 1 motor or 1 set of coupled motors in PWM
+                % control mode is supported.
+                % Get name of motor to st in PWM control mode
+                motorName = sequence.pwmctrl.motor;
                 
-                % Set each motor in PWM control mode
-                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxes,'pwmctrl');
+                % Set the motor in PWM control mode and handle the coupled
+                % motors keeping their control mode and state unchanged. If
+                % this is not supported by the YARP remoteControlBoardRemapper,
+                % emulate it.
+                obj.ctrlBoardRemap.setMotorPWMcontrolMode(motorName);
                 
-                % Set the desired PWM level (0-100%) for each motor. There
-                % is no concept of coupled motors in the control board
-                % remapper: the motor indexes are the same as for the
-                % respective joint indexes.
-                pwm = repmat(Sequence.pwmctrl.pwm(stepIdx),size(jointsIdxes));
-                obj.ctrlBoardRemap.setMotorsPWM(jointsIdxes,pwm);
+                % Set the desired PWM level (0-100%) for the motor
+                obj.ctrlBoardRemap.setMotorPWM(pwm);
                 
                 % Prompt the user to proceed
                 input('Move joint back and forth and press any key when done..','s');
                 
-                % Set each motor back to position control mode
-                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxes,'ctrl');
+                % Set the motor back to position control mode and handle
+                % the coupled motors.
+                coupling = cell2mat(obj.robotModel.jointsDbase.getJMcouplings('motors',{motorName}));
+                [jointsIdxList,~] = obj.ctrlBoardRemap.getJointsMappedIdxes(coupling.coupledJoints);
+                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxList,'ctrl');
+                
             otherwise
                 error('Unknown control mode!');
         end

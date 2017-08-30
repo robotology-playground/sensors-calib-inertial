@@ -1,5 +1,5 @@
 % We support two control modes: position and pwm.
-% Before this script is run, 'jtmotgrp' is set to the joints/motors group
+% Before this script is run, 'motor' is set to the joints/motors group
 % being calibrated. Here we are running the Ktau parameter (2nd phase).
 % The targeted joint is kept in position control.
 

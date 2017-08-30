@@ -65,23 +65,4 @@ for idx = 1:numel(couplings)
     couplingList{idx} = JointMotorCoupling(invT,cpldJoints,cpldMotors,[],obj.part);
 end
 
-% boolRawCoupling = (rawCoupling ~= 0);
-% 
-% % split coupled joints and motors from standalone ones
-% couplingIdx = 1;
-% jointsIdxes = 1:size(boolRawCoupling,2);
-% motorsIdxes = 1:size(boolRawCoupling,1);
-% coupledJointsIdxes = [];
-% coupledMotorsIdxes = [];
-% 
-% while size(boolRawCoupling,2)>0
-%     % add joint from first column to the indexed coupling
-%     coupledJointsIdxes = [coupledJointsIdxes jointsIdxes(1)];
-%     % add motors coupled with that same joint
-%     coupledMotorsIdxes = [coupledMotorsIdxes motorsIdxes(boolRawCoupling(:,1))];
-%     ...
-% end
-% 
-% couplingList = JointMotorCoupling();
-
 end

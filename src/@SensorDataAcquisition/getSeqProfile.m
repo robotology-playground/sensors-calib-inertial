@@ -16,7 +16,7 @@ switch task
         run(taskSpecificParams.motionSeqProfile);
     case LowlevTauCtrlCalibrator.task
         % init joint/motors group label variable for the profile script
-        jtmotgrp = taskSpecificParams.jointMotorCoupling;
+        motor = taskSpecificParams.motorName;
         switch taskSpecificParams.frictionOrKtau
             case 'friction'
                 % run the profile script for friction identification
