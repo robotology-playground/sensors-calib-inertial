@@ -77,10 +77,10 @@ jointNameList = {...
 jmCouplings = model.jointsDbase.getJMcouplings('joints',jointNameList)
 
 % Get part name from joint/motor group label
-parts = model.jointsDbase.getPartFromJMcouplings(jmCouplings)
+parts = JointMotorCoupling.getPartsFromList(jmCouplings)
 
 % Get the joint index as mapped in the motors control board server.
-[jointIdxes] = model.jointsDbase.getJointIdxesFromCtrlBoard(jointNameList)
+[jointIdxes] = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointNameList)
 
 
 %% Test the IControlMode2 class methods and the yarp bindings

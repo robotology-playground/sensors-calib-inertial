@@ -75,14 +75,8 @@ classdef JointsDbase < DataBase
         % or 'motors'.
         jmCouplings = getJMcouplings(obj,inputType,jointOrMotorNameList);
         
-        % Get part name from each joint/motor group label
-        parts = getPartFromJMcouplings(obj,jmCouplings);
-        
-        % Get part name holding the motor
-        parts = getPartFromMotors(obj,motorNameList); % TO BE IMPLEMENTED
-        
-        % Get all motor names from the couplings list
-        motorNameList = getMotors(jmCouplings); % TO BE IMPLEMENTED
+        % Get part names holding the motors
+        parts = getPartFromMotors(obj,motorNameList);
         
         % Get the calibration init point Dq0 vector for a given list of joints
         MaxDq0col = getJointsMaxCalibDq0(obj,jointList);
@@ -91,10 +85,8 @@ classdef JointsDbase < DataBase
         DoF = getTotalJointDoF(obj,jointList);
         
         % Get the joint index as mapped in the motors control board server.
-        [jointIdxes] = getJointIdxesFromCtrlBoard(obj,jointNameList);
-        
-        % Get the motor index as mapped in the motors control board server.
-        [motorIdxes] = getMotorIdxesFromCtrlBoard(obj,motorNameList); % TO BE IMPLEMENTED
+        % Axes type is 'joints' or 'motors'.
+        [AxesIdxes] = getAxesIdxesFromCtrlBoard(obj,axesType,jointOrMotorNameList);
         
         % Set maximum Dq0 (required by the optimisation solver) for all joints
         success = setAllJointsMaxCalibDq0(obj,maxDq0);

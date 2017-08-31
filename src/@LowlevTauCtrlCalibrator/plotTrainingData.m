@@ -68,8 +68,8 @@ obj.figuresHandlerMap(obj.task) = figuresHandler;
 time = data.time;
 
 % Get the calibrated joint index as mapped in the motors control board server.
-jointIdxes = model.jointsDbase.getJointIdxesFromCtrlBoard(jointMotorCoupling.coupledJoints);
-motorIdx   = model.jointsDbase.getMotorIdxesFromCtrlBoard({motorName});
+jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointMotorCoupling.coupledJoints);
+motorIdx   = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',{motorName});
 
 % Get respective torques (matrix 6xNsamples)
 tauJoints  = data.parsedParams.taus_state(jointIdxes);

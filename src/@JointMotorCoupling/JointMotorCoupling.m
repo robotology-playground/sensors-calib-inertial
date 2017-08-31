@@ -16,12 +16,20 @@ classdef JointMotorCoupling < handle
     methods
         function obj = JointMotorCoupling(invT, cpldJoints, cpldMotors, ratios, part)
             obj.invT = invT;
-            obj.coupledJoints = cpldJoints;
-            obj.coupledMotors = cpldMotors;
-            obj.gearboxRatios = ratios;
+            obj.coupledJoints = cpldJoints(:)';
+            obj.coupledMotors = cpldMotors(:)';
+            obj.gearboxRatios = ratios(:)';
             obj.part = part;
-            obj.label = [cpldJoints{:}];
+            obj.label = [obj.coupledJoints{:}];
         end
+    end
+    
+    methods(Static)
+        % Get all motor names from the couplings list
+        motorNameList = getMotorsFromList(jmCouplings);
+        
+        % Get part name from each joint/motor coupling
+        parts = getPartsFromList(jmCouplings);
     end
     
 end
