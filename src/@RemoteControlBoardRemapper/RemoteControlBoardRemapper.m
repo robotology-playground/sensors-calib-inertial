@@ -94,18 +94,19 @@ classdef RemoteControlBoardRemapper < handle
         % Get joints indexes as per the control board remapper mapping
         [jointsIdxList,matchingBitmap] = getJointsMappedIdxes(obj,jointNameList);
         
-        % Set control mode for a set of joint indexes. Supported modes are:
+        % Set/Get control mode for a set of joint indexes. Supported modes are:
         % Position, Open loop (applicable for PWM, torque, current).
         ok = setJointsControlMode(obj,jointsIdxList,mode);
+        [ok, modes] = getJointsControlMode(obj,jointsIdxList);
         
         % Set the motor in PWM control mode and handle the coupled
         % motors keeping their control mode and state unchanged. If
         % this is not supported by the YARP remoteControlBoardRemapper,
         % emulate it. We can only emulate position control.
-        ok = setMotorPWMcontrolMode(obj,motorName); % TO BE IMPLEMENTED
+        [ok, coupling, couplingPrevMode] = setMotorPWMcontrolMode(obj,motorName);
         
-        % Set the desired PWM level (0-100%) for the motor
-        ok = setMotorPWM(obj,motorName,pwm); % TO BE IMPLEMENTED
+        % Set the desired PWM level (0-100%) for the named motor
+        ok = setMotorPWM(obj,motorName,pwm);
         
         % Set PWM values set for a set of motor indexes (for calibration
         % purpose). The motor indexes are the same as for the joints.

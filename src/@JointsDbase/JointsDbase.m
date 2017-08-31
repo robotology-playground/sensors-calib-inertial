@@ -71,6 +71,9 @@ classdef JointsDbase < DataBase
         % Get joints names from a given part
         jointNameList = getJointNames(obj,part);
         
+        % Get joints sharing the same indexes as the given motors
+        jointNameList = getCpldJointSharingIdx(obj,motorNameList);
+        
         % Get the list of joint/motor couplings. Input type is 'joints'
         % or 'motors'.
         jmCouplings = getJMcouplings(obj,inputType,jointOrMotorNameList);
