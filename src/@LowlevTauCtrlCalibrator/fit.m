@@ -4,7 +4,7 @@ function fit( obj,frictionOrKtau )
 
 % select group of joints and respective part
 motorName = obj.expddMotorList{obj.state.currentMotorIdx};
-part = obj.model.jointsDbase.getPartFromJMcoupling({motorName});
+part = obj.model.jointsDbase.getPartFromJMcoupling(motorName);
 
 % set init for the selected group of joints and respective part
 obj.init.(obj.initSection).taskSpecificParams.motorName = motorName;

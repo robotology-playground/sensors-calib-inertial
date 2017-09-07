@@ -5,6 +5,10 @@ classdef LowlevTauCtrlCalibrator < Calibrator
     %   torque rate, the viscuous and Coulomb friction parameters.
     
     properties(Constant=true, Access=protected)
+        % 'singletonObj' has to be a unique name among all constant
+        % properties of this class, parent classes and derived classes. So
+        % for each of these classes we need to redefine (override) a static
+        % method 'instance()' that returns this specific constant handle.
         singletonObj = LowlevTauCtrlCalibrator();
     end
     
@@ -15,42 +19,37 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         
         calibedSensorType@char = 'LLTctrl';
         
-        stateStart@int       = 1
-        stateAcqFriction@int = 2;
-        stateFitFriction@int = 3;
-        stateAcqKtau@int     = 4;
-        stateFitKtau@int     = 5;
-        stateNextGroup@int   = 6;
-        stateEnd@int         = 7;
-        
         statesNextState = {...
-            'restart'           ,'proceed'           ,'skip'            ,'end'       ;...
-            []                  ,obj.stateAcqFriction,[]                ,[]          ;...  % stateStart
-            obj.stateAcqFriction,obj.stateFitFriction,obj.stateNextGroup,obj.stateEnd;...  % stateAcqFriction
-            obj.stateAcqFriction,obj.stateAcqKtau    ,obj.stateNextGroup,obj.stateEnd;...  % stateFitFriction
-            obj.stateAcqKtau    ,obj.stateFitKtau    ,obj.stateNextGroup,obj.stateEnd;...  % stateAcqKtau
-            obj.stateAcqKtau    ,obj.stateNextGroup  ,obj.stateNextGroup,obj.stateEnd;...  % stateFitKtau
-            []                  ,obj.stateAcqFriction,[]                ,obj.stateEnd};    % stateNextGroup
+            'restart'         ,'proceed'         ,'skip'          ,'end'     ;...
+            []                ,S.stateAcqFriction,[]              ,[]        ;...  % stateStart
+            S.stateAcqFriction,S.stateFitFriction,S.stateAcqKtau  ,S.stateEnd;...  % stateAcqFriction
+            S.stateAcqFriction,S.stateAcqKtau    ,S.stateAcqKtau  ,S.stateEnd;...  % stateFitFriction
+            S.stateAcqKtau    ,S.stateFitKtau    ,S.stateNextGroup,S.stateEnd;...  % stateAcqKtau
+            S.stateAcqKtau    ,S.stateNextGroup  ,S.stateNextGroup,S.stateEnd;...  % stateFitKtau
+            []                ,S.stateAcqFriction,[]              ,S.stateEnd};    % stateNextGroup
         
         statesCurrentProcessing = {...
-            'currentProc'   ,'transition'         ,;...
-            @obj.start      ,@(varargin) 'proceed',;... % stateStart
-            @obj.acqFriction,@promptUser          ,;... % stateAcqFriction
-            @obj.fitFriction,@promptUser          ,;... % stateFitFriction
-            @obj.acqKtau    ,@promptUser          ,;... % stateAcqKtau
-            @obj.fitKtau    ,@promptUser          ,;... % stateFitKtau
-            @(varargin) []  ,@nextGroupTrans      ,};   % stateNextGroup
+            'currentProc'      ,'transition'          ,;...
+            @(o) @o.start      ,@(varargin) 'proceed' ,;... % stateStart
+            @(o) @o.acqFriction,@(o) @o.promptUser    ,;... % stateAcqFriction
+            @(o) @o.fitFriction,@(o) @o.promptUser    ,;... % stateFitFriction
+            @(o) @o.acqKtau    ,@(o) @o.promptUser    ,;... % stateAcqKtau
+            @(o) @o.fitKtau    ,@(o) @o.promptUser    ,;... % stateFitKtau
+            @(varargin) []     ,@(o) @o.nextGroupTrans,};   % stateNextGroup
         
         statesTransitionProcessing = {...
-            'restartProc'          ,'proceedProc'        ,'skipProc'             ,'endProc'              ;...
-            @(varargin) []         ,@obj.stateAcqFriction,@(varargin) []         ,@(varargin) []         ;...  % stateStart
-            @obj.discardAcqFriction,@obj.savePlotCallback,@obj.discardAcqFriction,@obj.discardAcqFriction;...  % stateAcqFriction
-            @obj.discardAcqFriction,@obj.savePlotCallback,@obj.discardAcqFriction,@obj.discardAcqFriction;...  % stateFitFriction
-            @obj.discardAcqKtau    ,@obj.savePlotCallback,@obj.discardAcqKtau    ,@obj.discardAcqKtau    ;...  % stateAcqKtau
-            @obj.discardAcqKtau    ,@obj.savePlotCallback,@obj.discardAcqKtau    ,@obj.discardAcqKtau    ;...  % stateFitKtau
-            @(varargin) []         ,@obj.stateAcqFriction,@(varargin) []         ,@(varargin) []         };    % stateNextGroup
+            'restartProc'             ,'proceedProc'           ,'skipProc'                ,'endProc'                 ;...
+            @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            ;...  % stateStart
+            @(o) @o.discardAcqFriction,@(o) @o.savePlotCallback,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateAcqFriction
+            @(o) @o.discardAcqFriction,@(o) @o.savePlotCallback,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateFitFriction
+            @(o) @o.discardAcqKtau    ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateAcqKtau
+            @(o) @o.discardAcqKtau    ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateFitKtau
+            @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            };    % stateNextGroup
         
-        stateArray = defStatesFromDesc([statesNextState statesCurrentProcessing statesTransitionProcessing]);
+        stateArray = LowlevTauCtrlCalibrator.defStatesFromDesc([...
+            LowlevTauCtrlCalibrator.statesNextState ...
+            LowlevTauCtrlCalibrator.statesCurrentProcessing ...
+            LowlevTauCtrlCalibrator.statesTransitionProcessing]);
     end
     
     properties(Access=protected)
@@ -62,7 +61,7 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         timeStop = 0;
         subSamplingSize = 0;
         filtParams@struct;
-        savePlotCallback@function_handle;
+        savePlotCallback = @() [];
         
         % Main state of the state machine:
         % - 'state.current' gives the current state indexing the 'stateArray'
@@ -70,7 +69,10 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         %    through the field values 'restart', 'proceed', 'skip', 'end'.
         % - 'state.currentMotorIdx' indexes the current joint/motor group to
         %    process.
-        state@struct = struct('current',obj.stateStart,'transition',[],'currentMotorIdx',0);
+        state@struct = struct(...
+            'current',S.stateStart,...
+            'transition',[],...
+            'currentMotorIdx',0);
     end
     
     methods(Access=protected)
@@ -107,7 +109,7 @@ classdef LowlevTauCtrlCalibrator < Calibrator
     
     methods(Static=true, Access=public)
         % this function should initialize properly the shared attribute
-        % 'singletonObj' and returns the handler to the caller
+        % 'singletonObj' and returns the handle to the caller
         function theInstance = instance()
             theInstance = LowlevTauCtrlCalibrator.singletonObj;
         end

@@ -62,6 +62,8 @@ end
 
 %% Below tests require a full RobotModel class object.
 % 
+run unitTestsInit;
+
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the
 % joint/motor parameters (PWM to torque rate, friction parameters, ...).
@@ -74,19 +76,36 @@ jointNameList = {...
     'neck_roll',...
     'l_ankle_roll'};
 
+motorNameList = {...
+    'm_left_arm_1','m_left_arm_4','m_left_arm_7',...
+    'm_torso_3','m_torso_2','m_torso_1',...
+    'm_head_2',...
+    'm_left_leg_6'};
+
+% Get the list of joint/motor couplings.
 jmCouplings = model.jointsDbase.getJMcouplings('joints',jointNameList)
 
-% Get part name from joint/motor group label
+% Get part name from joint/motor coupling
 parts = JointMotorCoupling.getPartsFromList(jmCouplings)
 
-% Get the joint index as mapped in the motors control board server.
-[jointIdxes] = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointNameList)
+% Get part names holding the motors
+parts = model.jointsDbase.getPartFromMotors(motorNameList)
+
+% Get the joints indexes as mapped in the motors control board server.
+jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointNameList)
+
+% Get the motors indexes as mapped in the motors control board server.
+motorIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',motorNameList)
+
+% Get joints sharing the same indexes as the given motors
+jointNameListSharingIdx = model.jointsDbase.getCpldJointSharingIdx(motorNameList)
 
 
 %% Test the IControlMode2 class methods and the yarp bindings
 obj=RemoteControlBoardRemapper(model,'test')
 obj.open({'left_leg'})
 iCtrlMode = obj.driver.viewIControlMode2()
+
 iCtrlMode.getControlMode(2)
 vecModes=yarp.IVector(3)
 vecJoints=yarp.IVector(3)
@@ -94,9 +113,13 @@ vecModes.zero()
 vecJoints.fromMatlab([1 2 3])
 iCtrlMode.setControlMode(2,y.VOCAB_CM_PWM)
 iCtrlMode.getControlModes(3,vecJoints,vecModes)
+% check modes
+RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
+% set modes and check
 vecModes.fromMatlab([y.VOCAB_CM_IDLE y.VOCAB_CM_PWM y.VOCAB_CM_TORQUE])
 iCtrlMode.setControlModes(3,vecJoints,vecModes)
 iCtrlMode.getControlModes(3,vecJoints,vecModes)
+RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
 
 %% Test getJointsMappedIdxes(), setJointsControlMode() and setMotorsPWM()
 jointsIdxes = obj.getJointsMappedIdxes({'l_knee'})
@@ -105,4 +128,34 @@ obj.setMotorsPWM(jointsIdxes,[0])
 
 % Set each motor back to position control mode
 obj.setJointsControlMode(jointsIdxes,'ctrl')
+
+%% Test 'LowlevTauCtrlCalibrator'
+
+run unitTestsInit;
+
+% Create robot model. The model holds the robot name, the parameters
+% extracted from the URDF model, the sensor calibration parameters and the
+% joint/motor parameters (PWM to torque rate, friction parameters, ...).
+model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
+
+% Load last acquired data accessors from file
+if exist('lastAcqSensorDataAccessorMap.mat','file') == 2
+    load('lastAcqSensorDataAccessorMap.mat','lastAcqSensorDataAccessorMap');
+end
+if ~exist('lastAcqSensorDataAccessorMap','var')
+    lastAcqSensorDataAccessorMap = containers.Map('KeyType','char','ValueType','any');
+end
+
+% Just test the state transitions
+task = UT.LowlevTauCtrlCalibrator_SM.instance();
+task.run(init,model,lastAcqSensorDataAccessorMap);
+
+% Test the state processings
+task = UT.LowlevTauCtrlCalibrator_Proc.instance();
+task.run(init,model,lastAcqSensorDataAccessorMap);
+
+% Test the 
+
+%% Uninitialize yarp
+yarp.Network.fini();
 

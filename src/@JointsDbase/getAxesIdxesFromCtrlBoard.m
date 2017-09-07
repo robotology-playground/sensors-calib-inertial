@@ -16,6 +16,6 @@ inputProp.format = 2;
 inputProp.data = inputData;
 
 % query data
-AxesIdxes = obj.getPropList(inputProp,'idxInCtrlBoardServer');
+AxesIdxes = cell2mat(obj.getPropList(inputProp,'idxInCtrlBoardServer'));
 
 end

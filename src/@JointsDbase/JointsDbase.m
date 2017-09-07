@@ -48,6 +48,7 @@ classdef JointsDbase < DataBase
                     warning('JointsDbase: %s is a fixed joint.',jointName);
                     parentCoupling = [];
                     idxInCtrlBoardServer = [];
+                    cpldMotorSharingIdx = '';
                 end
                 
                 % fill the properties list
@@ -100,7 +101,7 @@ classdef JointsDbase < DataBase
         % The method stores the respective retrieved objects in the running
         % 'joint2coupling', for future queries. It returns the handle of the
         % coupling to which the joint belongs.
-        [parentCoupling,idxInCtrlBoardServer] = getJMcouplingFromCtrlBoard(...
+        [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx] = getJMcouplingFromCtrlBoard(...
             joint2coupling,robotName,part,jointName);
     end
 end

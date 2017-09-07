@@ -75,7 +75,7 @@ end
 
 if ismember('pwmctrl',fieldnames(runSeq))
     % list of join/motor groups
-    runSeq.pwmctrl.motor = cell2mat(fieldnames(runSeq.pwmctrl));
+    runSeq.pwmctrl.motor = cell2mat(fieldnames(runSeq.pwmctrl.pwm));
     % reshape 'pwm'
     runSeq.pwmctrl.pwm = struct2cellConcat(runSeq.pwmctrl.pwm);
 end

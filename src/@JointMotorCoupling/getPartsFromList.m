@@ -5,6 +5,6 @@ function parts = getPartsFromList( jmCouplings )
 % Array of couplings. We can directly concatenate the couplings using
 % horzcat command since they are line cell arrays.
 couplingsArray = [jmCouplings{:}];
-parts = [couplingsArray.part];
+parts = {couplingsArray.part};
 
 end

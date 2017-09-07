@@ -24,7 +24,7 @@ function acquire( obj,frictionOrKtau )
 
 % select motor and respective part
 motorName = obj.expddMotorList{obj.state.currentMotorIdx};
-part = obj.model.jointsDbase.getPartFromMotors({motorName});
+part = obj.model.jointsDbase.getPartFromMotors(motorName);
 
 % 1 - set init for the selected motor and respective part
 obj.init.(obj.initSection).taskSpecificParams.motorName = motorName;

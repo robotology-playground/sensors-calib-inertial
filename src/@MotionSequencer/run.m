@@ -45,7 +45,7 @@ for seqIdx = 1:numel(obj.sequences)
         sequence.logCmd.start(sensors,partsToStart);
         
         % The following processing depends on the control mode
-        switch mode(stepIdx)
+        switch sequence.mode{stepIdx}
             case 'ctrl'    % position control
                 % get next position, velocity and acquire flag from the
                 % sequence. Get concatenated matrices for all parts

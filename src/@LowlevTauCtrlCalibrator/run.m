@@ -15,7 +15,7 @@ obj.subSamplingSize = subSamplingSize;
 obj.filtParams = filtParams;
 
 % state machine starting state
-obj.state.current = obj.stateStart;
+obj.state.current = S.stateStart;
 
 % The calibration requires a mapping between the joint names and a
 % structure containing:
@@ -74,16 +74,18 @@ obj.state.current = obj.stateStart;
 % 5 - Plot fitted model over acquired data.
 
 % Run state machine until reaching "end" state
-while (obj.state.current ~= obj.stateEnd)
+while (obj.state.current ~= S.stateEnd)
     % select current state structure with all respective functions
     currentState = obj.stateArray(obj.state.current);
     
     % Select and run function for processing current state actions
-    currentState.currentProc();
+    currentProcH = currentState.currentProc(obj);
+    currentProcH();
     
     % Compute state dependant transition. Result will be among the
     % following: restart, proceed, skip, end, abort
-    transition = currentState.transition();
+    transitionH = currentState.transition(obj);
+    transition = transitionH();
     
     % Move to next state
     switch transition
@@ -91,7 +93,8 @@ while (obj.state.current ~= obj.stateEnd)
             return;
         otherwise
             % Do transition dependent processing
-            currentState.([transition 'Proc'])();
+            transitionProcH = currentState.([transition 'Proc'])(obj);
+            transitionProcH();
             % Compute new state
             obj.state.current = currentState.(transition);
     end

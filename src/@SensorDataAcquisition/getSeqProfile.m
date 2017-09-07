@@ -10,7 +10,7 @@ selector = struct();
 switch task
     case JointEncodersCalibrator.task
         run jointsCalibratorSequenceProfileWOsuspend;
-    case accelerometersCalibrator.task
+    case AccelerometersCalibrator.task
         run accelerometersCalibratorSequenceProfileWOsuspend;
     case SensorDataAcquisition.task
         run(taskSpecificParams.motionSeqProfile);

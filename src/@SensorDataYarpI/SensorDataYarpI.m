@@ -96,7 +96,7 @@ classdef SensorDataYarpI < handle
         end
         
         function print(obj)
-            %% Print the sensor data log file located in the logged data folder
+            % Print the sensor data log file located in the logged data folder
             fileID = fopen('dataLogInfoMap.txt','w');
             fprintf(fileID,'%s',obj.dataLogInfoMap.toString());
             fclose(fileID);
@@ -112,7 +112,7 @@ classdef SensorDataYarpI < handle
             % init parameters from config file
             run yarpPortNameRules;
             sensorType = {...
-                'joint_from','acc_from','imu_from','fts_from','jtorq_from,'...
+                'joint_from','acc_from','imu_from','fts_from','jtorq_from'...
                 'joint_to','acc_to','imu_to','fts_to','jtorq_to',...
                 'joint_path','acc_path','imu_path','fts_path','jtorq_path'};
             portNamingRule = {...
@@ -161,12 +161,12 @@ classdef SensorDataYarpI < handle
             % for each part in the parts list, create a port entry
             [newKeyList,newPortList] = cellfun(...
                 @(part) deal([sensor part],...          % 2-create a key
-                struct(...                              % 3-port naming rules for...
-                'from',portNamingRuleFrom(obj.robotName,convert(part)),...         % source port
-                'to',portNamingRuleTo(obj.robotName,part),...             % sink port
-                'path',portNamingRulePath(obj.seqDataFolderPath,part),... % path to the stored sensor data
-                'conn',false,...                        % Yarp link connection state
-                'pid',[])),...                          % process PID that open the port
+                Connection(...                          % 3-port naming rules for...
+                portNamingRuleFrom(obj.robotName,convert(part)),... % 'from': source port
+                portNamingRuleTo(obj.robotName,part),...            % 'to'  : sink port
+                portNamingRulePath(obj.seqDataFolderPath,part),...  % 'path': to the stored sensor data
+                false,...                        % 'conn': Yarp link connection state
+                [])),...                          % 'pid' : process PID that open the port
                 parts,...                               % 1-for each part...
                 'UniformOutput',false);                 % 5-don't concatenate lists from iterations
         end
@@ -277,7 +277,7 @@ classdef SensorDataYarpI < handle
         end
     end
     
-    %%===============  STATIC PROTECTED METHODS  ======================
+    %% ===============  STATIC PROTECTED METHODS  ======================
     
     methods(Static = true,Access = protected)
         function portKeys = sensorsPartsLists2keys(sensorList,partsList)
@@ -295,7 +295,7 @@ classdef SensorDataYarpI < handle
         end
     end
     
-    %%===============  STATIC METHODS  ================================
+    %% ===============  STATIC METHODS  ================================
 
     methods(Static = true,Access = public)
         function clean()
