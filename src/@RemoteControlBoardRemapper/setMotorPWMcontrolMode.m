@@ -8,12 +8,13 @@ function [ ok, coupling, couplingPrevMode ] = setMotorPWMcontrolMode( obj,motorN
 ok = true;
 
 % Get coupled motors/joints
-coupling = cell2mat(obj.robotModel.jointsDbase.getJMcouplings('motors',{motorName}));
+couplings = obj.robotModel.jointsDbase.getJMcouplings('motors',{motorName});
+coupling = couplings{1};
 
 % Get current mode of coupled joints
 [jointsIdxList,~] = obj.getJointsMappedIdxes(coupling.coupledJoints);
 [ok,modes] = obj.getJointsControlMode(jointsIdxList);
-couplingPrevMode = modes(1); % All modes from a coupling are identical
+couplingPrevMode = modes{1}; % All modes from a coupling are identical
 
 % Set all coupled motors to PWM control mode.
 ok = obj.setJointsControlMode(jointsIdxList,'pwmctrl');
@@ -29,7 +30,8 @@ switch couplingPrevMode
     otherwise
         warningMessage = [...
             'setMotorPWMcontrolMode: previous mode was %s. For that mode we ' ...
-            'don''t  support setting one single motor to PWM control!'];
+            'don''t  support setting one single motor to PWM control while ' ...
+            'emulating the previous mode for the others!'];
         warning(warningMessage,couplingPrevMode);
 end
 

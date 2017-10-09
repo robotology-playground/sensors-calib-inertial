@@ -44,7 +44,7 @@ diagFuncH = @(path,~,sensors,parts,model,taskSpec) ...
     obj.plotTrainingData(...
     path,sensors,parts,model,taskSpec); % actual params passed through the func handle
 % Run diagnosis plotters for all acquired data, so for each acquired data accessor.
-obj.runCalibratorOrDiagnosis(init,model,diagFuncH,obj.calibedSensorType);
+obj.runCalibratorOrDiagnosis(obj.init,obj.model,diagFuncH,obj.calibedSensorType);
 
 end
 

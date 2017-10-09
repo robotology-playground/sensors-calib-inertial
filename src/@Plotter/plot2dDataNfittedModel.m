@@ -18,7 +18,7 @@ title(aTitle,'Fontsize',16,'FontWeight','bold');
 hold on
 
 scatter(xData,yData,10,'blue','filled');
-if ~sisempty(xModel)
+if ~isempty(xModel)
     plot(xModel,yModel,'r','lineWidth',4.0);
 end
 

@@ -13,6 +13,8 @@ classdef Regressors < handle
         [xs,ys] = resampleDataAsym(thetaPos,thetaNeg,x,nSamples);
         
         [xs,ys] = resampleDataSym(theta,x,nSamples);
+        
+        resVec = residuals(thetaPos,thetaNeg,x,y);
     end
     
 end

@@ -41,7 +41,7 @@ end
 run unitTestsInit;
 
 remoteCtrlBoard = RemoteControlBoard('icubSim','left_arm');
-rawCouplingInfo = remoteCtrlBoard.getRawCoupling();
+%rawCouplingInfo = remoteCtrlBoard.getRawCoupling();
 nbAxes = remoteCtrlBoard.getAxes();
 axesNames = remoteCtrlBoard.getAxesNames();
 jointIdx = remoteCtrlBoard.getJointsMappedIdxes({'l_shoulder_pitch','l_shoulder_yaw','l_elbow','l_wrist_yaw'});
@@ -85,8 +85,9 @@ motorNameList = {...
 % Get the list of joint/motor couplings.
 jmCouplings = model.jointsDbase.getJMcouplings('joints',jointNameList)
 
-% Get part name from joint/motor coupling
+% Get part name and motor names list from joint/motor coupling
 parts = JointMotorCoupling.getPartsFromList(jmCouplings)
+motorNameListExpdd = JointMotorCoupling.getMotorsFromList(jmCouplings)
 
 % Get part names holding the motors
 parts = model.jointsDbase.getPartFromMotors(motorNameList)
@@ -100,6 +101,15 @@ motorIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',motorNameList)
 % Get joints sharing the same indexes as the given motors
 jointNameListSharingIdx = model.jointsDbase.getCpldJointSharingIdx(motorNameList)
 
+
+%% Below tests require a full RobotModel class object.
+% 
+run unitTestsInit;
+
+% Create robot model. The model holds the robot name, the parameters
+% extracted from the URDF model, the sensor calibration parameters and the
+% joint/motor parameters (PWM to torque rate, friction parameters, ...).
+model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
 
 %% Test the IControlMode2 class methods and the yarp bindings
 obj=RemoteControlBoardRemapper(model,'test')
@@ -120,14 +130,39 @@ vecModes.fromMatlab([y.VOCAB_CM_IDLE y.VOCAB_CM_PWM y.VOCAB_CM_TORQUE])
 iCtrlMode.setControlModes(3,vecJoints,vecModes)
 iCtrlMode.getControlModes(3,vecJoints,vecModes)
 RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
+obj.close();
 
-%% Test getJointsMappedIdxes(), setJointsControlMode() and setMotorsPWM()
+%% Test RemoteControlBoardRemapper public methods
+% getJointsMappedIdxes(),
+% setJointsControlMode(),
+% getJointsControlMode(),
+% setMotorPWMcontrolMode(),
+% setMotorsPWM(),
+% setMotorPWM(),
+obj.open({'left_leg'})
 jointsIdxes = obj.getJointsMappedIdxes({'l_knee'})
-obj.setJointsControlMode(jointsIdxes,'pwmctrl')
-obj.setMotorsPWM(jointsIdxes,[0])
+ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')
+[ok,modes] = obj.getJointsControlMode(jointsIdxes)
+ok = obj.setMotorsPWM(jointsIdxes,[0])
 
 % Set each motor back to position control mode
-obj.setJointsControlMode(jointsIdxes,'ctrl')
+ok = obj.setJointsControlMode(jointsIdxes,'ctrl')
+[ok,modes] = obj.getJointsControlMode(jointsIdxes)
+obj.close();
+
+% Set a non-coupled motor to PWM control mode and PWM value using motor name
+obj.open({'left_leg'})
+[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('m_left_leg_4')
+ok = obj.setMotorPWM('m_left_leg_4',0)
+obj.close();
+
+%% Set a coupled motor to PWM control mode and PWM value using motor name
+obj.open({'torso'})
+[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('m_torso_1')
+ok = obj.setMotorPWM('m_torso_1',10)
+ok = obj.setMotorPWM('m_torso_1',0)
+obj.close();
+
 
 %% Test 'LowlevTauCtrlCalibrator'
 

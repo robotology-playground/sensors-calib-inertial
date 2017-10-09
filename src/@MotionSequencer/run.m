@@ -47,6 +47,10 @@ for seqIdx = 1:numel(obj.sequences)
         % The following processing depends on the control mode
         switch sequence.mode{stepIdx}
             case 'ctrl'    % position control
+                % Set joints in position control mode
+                [jointsIdxList,~] = obj.ctrlBoardRemap.getJointsMappedIdxes(obj.ctrlBoardRemap.jointsList);
+                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxList,'ctrl');
+                
                 % get next position, velocity and acquire flag from the
                 % sequence. Get concatenated matrices for all parts
                 pos = sequence.ctrl.pos(stepIdx,:);
@@ -61,8 +65,10 @@ for seqIdx = 1:numel(obj.sequences)
             case 'pwmctrl' % PWM control
                 % Only setting 1 motor or 1 set of coupled motors in PWM
                 % control mode is supported.
-                % Get name of motor to st in PWM control mode
+                % Get name of motor to set in PWM control mode, as well as
+                % the PWM value.
                 motorName = sequence.pwmctrl.motor;
+                pwm = sequence.pwmctrl.pwm{stepIdx};
                 
                 % Set the motor in PWM control mode and handle the coupled
                 % motors keeping their control mode and state unchanged. If

@@ -196,27 +196,32 @@ classdef SensorDataYarpI < handle
             for key = obj.openports.keys
                 % get port to open
                 port = obj.openports(key{:});
-                % run datadumper and get process PID
-                [status,pid]=system(...
-                    ['yarpdatadumper ' ...    % run data dumper
-                    '--dir ' port.path ...    % set output folder
-                    ' --name ' port.to ' --type bottle ' ... % yarp port, data type
-                    '&> /dev/null & ' ...     % redirect all output to garbage and run process on backgroung
-                    'echo $!']);              % get process PID
-                if status
-                    error('Couldn''t run yarpdatadumper!');
-                else
-                    disp(['Opened port ' port.to '.']);
+                % run datadumper and get process PID if there isn't none
+                % already running (triggered by other sensor measurements)
+                if isempty(port.pid)
+                    [status,pid]=system(...
+                        ['yarpdatadumper ' ...    % run data dumper
+                        '--dir ' port.path ...    % set output folder
+                        ' --name ' port.to ' --type bottle ' ... % yarp port, data type
+                        '&> /dev/null & ' ...     % redirect all output to garbage and run process on backgroung
+                        'echo $!']);              % get process PID
+                    if status
+                        error('Couldn''t run yarpdatadumper!');
+                    else
+                        disp(['Opened port ' port.to '.']);
+                    end
+                    port.pid = str2double(pid); % convert and store PID (removes trail spaces)
+                    % double check that PID is attached to a yarpdatadumper process
+                    if ~obj.doesPIDmatchDatadumper(port.pid)
+                        error('Wrong yarpdatadumper PID!');
+                    end
+                    % update ports list
+                    obj.openports(key{:}) = port;
                 end
-                port.pid = str2double(pid); % convert and store PID (removes trail spaces)
-                % double check that PID is attached to a yarpdatadumper process
-                if ~obj.doesPIDmatchDatadumper(port.pid)
-                    error('Wrong yarpdatadumper PID!');
-                end
+                % check that required port is now open
                 if ~obj.waitPortOpen(port.to,5)
                     error(['Couldn''t open port ' port.to ' !!']);
                 end
-                obj.openports(key{:}) = port;
             end
         end
         

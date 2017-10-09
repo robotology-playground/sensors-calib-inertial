@@ -9,7 +9,6 @@
 run generatePaths.m;
 
 %% clear all variables and close all previous figures
-iDynTree.Vector3(); % WORKAROUND for being able to load yarp later.
 clear
 close all
 clc

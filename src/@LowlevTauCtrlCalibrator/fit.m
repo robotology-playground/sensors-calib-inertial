@@ -4,7 +4,7 @@ function fit( obj,frictionOrKtau )
 
 % select group of joints and respective part
 motorName = obj.expddMotorList{obj.state.currentMotorIdx};
-part = obj.model.jointsDbase.getPartFromJMcoupling(motorName);
+part = obj.model.jointsDbase.getPartFromMotors(motorName);
 
 % set init for the selected group of joints and respective part
 obj.init.(obj.initSection).taskSpecificParams.motorName = motorName;
@@ -15,6 +15,6 @@ obj.init.(obj.initSection).calibedParts = part;
 % parameter). The selection of the calibrated part - joint/motor group -
 % friction vs ktau parameters is already set in the task specific
 % parameters.
-obj.runCalibratorOrDiagnosis(init,model,@obj.calibrateSensors,obj.calibedSensorType);
+obj.runCalibratorOrDiagnosis(obj.init,obj.model,@obj.calibrateSensors,obj.calibedSensorType);
 
 end

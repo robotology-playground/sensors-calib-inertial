@@ -3,7 +3,10 @@ classdef Plotter < handle
     %   Detailed explanation goes here
     
     properties(Constant)
+        rad2deg = @(x) x*180/pi;
         colorPanel = {'b','g','r','c','m','y'};
+        % the figures handles and properties
+        figuresHandlerMap = containers.Map('KeyType','char','ValueType','any');
     end
     
     methods (Static=true)
