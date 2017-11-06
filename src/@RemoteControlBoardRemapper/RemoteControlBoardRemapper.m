@@ -15,6 +15,7 @@ classdef RemoteControlBoardRemapper < handle
             'idlectrl'  , y.VOCAB_CM_IDLE     ;
             'torqctrl'  , y.VOCAB_CM_TORQUE   ;
             'ctrl'      , y.VOCAB_CM_POSITION ;
+            'ctrldir'   , y.VOCAB_CM_POSITION_DIRECT ;
             'velctrl'   , y.VOCAB_CM_VELOCITY ;
             'curctrl'   , y.VOCAB_CM_CURRENT  ;
             'pwmctrl'   , y.VOCAB_CM_PWM

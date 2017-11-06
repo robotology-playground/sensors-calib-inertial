@@ -1,9 +1,13 @@
-function open(obj,partList)
+function open(obj,partList,jointsList)
 
-obj.jointsList = {};
-for part = partList
-    obj.jointsList = [obj.jointsList obj.robotModel.jointsDbase.getJointNames(part{:})];
-    % {:} converts from cell to string
+if nargin<=2 % jointsList is missing
+    obj.jointsList = {};
+    for part = partList
+        obj.jointsList = [obj.jointsList obj.robotModel.jointsDbase.getJointNames(part{:})];
+        % {:} converts from cell to string
+    end
+else
+    obj.jointsList = jointsList;
 end
 
 % Fill the list of the axis names and add it to the options

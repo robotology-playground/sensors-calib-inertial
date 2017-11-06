@@ -1,10 +1,10 @@
 % Add main folders in Matlab path
 run generatePaths.m;
 
-%% clear all variables and close all previous figures
-run unitTestsInit;
 
-%% test retrieval of kinematic_mj and axis list directly using YARP bindings
+%% 1 - test retrieval of kinematic_mj and axis list directly using YARP bindings
+
+run unitTestsInit; % clear all variables and close all previous figures
 
 % open remote control board and get list of remote debug variables
 obj.options = yarp.Property('(device remote_controlboard)');
@@ -36,7 +36,7 @@ for axisIdx = 1:nbAxes
     axisNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
 end
 
-%% Test same features using the class RemoteControlBoard
+%% 2 - Test same features using the class RemoteControlBoard
 
 run unitTestsInit;
 
@@ -60,7 +60,7 @@ for part = {'left_arm','right_arm','left_leg','right_leg','torso','head'}
 end
 
 
-%% Below tests require a full RobotModel class object.
+%% 3 - Below tests require a full RobotModel class object.
 % 
 run unitTestsInit;
 
@@ -102,7 +102,7 @@ motorIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',motorNameList)
 jointNameListSharingIdx = model.jointsDbase.getCpldJointSharingIdx(motorNameList)
 
 
-%% Below tests require a full RobotModel class object.
+%% 4 - Below tests require a full RobotModel class object.
 % 
 run unitTestsInit;
 
@@ -164,7 +164,7 @@ ok = obj.setMotorPWM('m_torso_1',0)
 obj.close();
 
 
-%% Test 'LowlevTauCtrlCalibrator'
+%% 5 - Test 'LowlevTauCtrlCalibrator'
 
 run unitTestsInit;
 

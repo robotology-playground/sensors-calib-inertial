@@ -3,7 +3,7 @@
 %====================================================================
 
 %% Common model and calibration input parameters
-robotName = 'icub'; % 'icub' or 'icubSim'
+robotName = 'icubSim'; % 'icub' or 'icubSim'
 dataPath  = '../../data/dumper';
 %modelPath = '../models/icubSim/icub.urdf';
 modelPath = '../models/iCubGenova04/icub.urdf';
@@ -17,10 +17,10 @@ calibrationType = 'standard';
 %% standard calibration tasks checklist
 acquireSensorsTestData  = false;
 calibrateAccelerometers = false;
-calibrateJointEncoders  = true;
+calibrateJointEncoders  = false;
 calibrateFTsensors      = false;
 calibrateGyroscopes     = false;
-calibrateLowLevTauCtrl  = false;
+calibrateLowLevTauCtrl  = true;
 
 %% Diagnosis and visualization
 runDiagnosis = true;
@@ -253,7 +253,7 @@ calibedParts = {'left_leg'};
 %=================================================================
 calibedJointsIdxes.left_arm = 0:3;
 calibedJointsIdxes.right_arm = 0:3;
-calibedJointsIdxes.left_leg = 0:5;
+calibedJointsIdxes.left_leg = [1 3];
 calibedJointsIdxes.right_leg = 0:5;
 calibedJointsIdxes.torso = 0:2;
 calibedJointsIdxes.head = 0:2;

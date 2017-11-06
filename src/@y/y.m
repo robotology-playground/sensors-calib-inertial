@@ -9,6 +9,7 @@ classdef y
         VOCAB_CM_IDLE            = y.vocabEnc('idl');
         VOCAB_CM_TORQUE          = y.vocabEnc('torq');
         VOCAB_CM_POSITION        = y.vocabEnc('pos');
+        VOCAB_CM_POSITION_DIRECT = y.vocabEnc('posd');
         VOCAB_CM_VELOCITY        = y.vocabEnc('vel');
         VOCAB_CM_CURRENT         = y.vocabEnc('icur');
         VOCAB_CM_PWM             = y.vocabEnc('ipwm');
