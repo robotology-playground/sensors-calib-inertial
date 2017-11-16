@@ -1,4 +1,4 @@
-function [ ok ] = waitPortOpen( obj,port,timeout )
+function [ ok ] = waitPortOpen( port,timeout )
 %Waits for specified port to open.
 %   Every 100 ms, we check specified port is open.
 

@@ -15,7 +15,7 @@ classdef SensorDataYarpI < handle
         seqDataFolderPath = '';
         dataLogInfoMap = [];
         sensorType2portNameGetter = {}; % funcs mapping sensor type to port name
-        openports = {};      % current open ports with info to,from,connected
+        openports = containers.Map();      % current open ports with info to,from,connected
         uninitYarpAtDelete = false;
     end
     
@@ -68,16 +68,22 @@ classdef SensorDataYarpI < handle
                 sensorList,partsList,...                         % applied to each sensor|parts
                 'UniformOutput',false);                          % return encapsulated output
             obj.openports = containers.Map([newKeyList{:}],[newPortList{:}]);
-            
-            % open ports
-            obj.openPorts();
         end
         
         function closeLog(obj)
-            % if there are any open ports
             if ~isempty(obj.openports)
-                obj.discPorts(obj.openports.keys); % disconnect them
-                obj.closePorts();                  % close them
+                % Disconnect and close all previously open ports
+                for key = obj.openports.keys
+                    % Erase respective connection configuration:
+                    % - disconnects the ports
+                    % - stops the yarpdatadumper instance
+                    % - closes the dumper port
+                    % The method handles redundant pointers.
+                    connectionSetup = obj.openports(key{1});
+                    connectionSetup.remove();
+                    % Remove the connection object from the map
+                    obj.openports.remove(key{1});
+                end
             end
         end
         
@@ -164,9 +170,7 @@ classdef SensorDataYarpI < handle
                 Connection(...                          % 3-port naming rules for...
                 portNamingRuleFrom(obj.robotName,convert(part)),... % 'from': source port
                 portNamingRuleTo(obj.robotName,part),...            % 'to'  : sink port
-                portNamingRulePath(obj.seqDataFolderPath,part),...  % 'path': to the stored sensor data
-                false,...                        % 'conn': Yarp link connection state
-                [])),...                          % 'pid' : process PID that open the port
+                portNamingRulePath(obj.seqDataFolderPath,part))),...  % 'path': to the stored sensor data
                 parts,...                               % 1-for each part...
                 'UniformOutput',false);                 % 5-don't concatenate lists from iterations
         end
@@ -187,79 +191,17 @@ classdef SensorDataYarpI < handle
             end
         end
         
-        % we want to avoid several logs in the same part folder (for
-        % instance "/icub/left_leg/inertialMTB","/icub/left_leg/inertialMTB_00001" etc..
-        % so these methods are internally called by newLog() and closeLog()
-        % which handles the switching to a new folder when required.
-        function openPorts(obj)
-            % open list of ports through yarpdatadumper
-            for key = obj.openports.keys
-                % get port to open
-                port = obj.openports(key{:});
-                % run datadumper and get process PID if there isn't none
-                % already running (triggered by other sensor measurements)
-                if isempty(port.pid)
-                    [status,pid]=system(...
-                        ['yarpdatadumper ' ...    % run data dumper
-                        '--dir ' port.path ...    % set output folder
-                        ' --name ' port.to ' --type bottle ' ... % yarp port, data type
-                        '&> /dev/null & ' ...     % redirect all output to garbage and run process on backgroung
-                        'echo $!']);              % get process PID
-                    if status
-                        error('Couldn''t run yarpdatadumper!');
-                    else
-                        disp(['Opened port ' port.to '.']);
-                    end
-                    port.pid = str2double(pid); % convert and store PID (removes trail spaces)
-                    % double check that PID is attached to a yarpdatadumper process
-                    if ~obj.doesPIDmatchDatadumper(port.pid)
-                        error('Wrong yarpdatadumper PID!');
-                    end
-                    % update ports list
-                    obj.openports(key{:}) = port;
-                end
-                % check that required port is now open
-                if ~obj.waitPortOpen(port.to,5)
-                    error(['Couldn''t open port ' port.to ' !!']);
-                end
-            end
-        end
-        
-        function closePorts(obj)
-            % close all previously open ports through yarpdatadumper
-            for key = obj.openports.keys
-                % get yarpdatadumper process PID and close port
-                port = obj.openports(key{:});
-                if system(['kill ' num2str(port.pid)])
-                    error(['Couldn''t stop yarpdatadumper!' num2str(port.pid)]);
-                end
-                disp(['Closed port ' port.to '.']);
-            end
-            % empty list of open ports
-            obj.openports = {};            
-        end
-        
         function connPorts(obj,portKeys)
-            % return error if some ports to connect are still closed
+            % return error if some ports to connect are still closed or no
+            % connection preconfiguration exists
             stillClosedPorts = ~isKey(obj.openports,portKeys);
             if sum(stillClosedPorts)>0
-                error(['Trying to connect closed ports: ' portsKeys(stillClosedPorts)]);
+                error(['Trying to activate unconfigured connections to ports: ' portsKeys(stillClosedPorts)]);
             end
             
             % connect ports
-            for key = portKeys
-                % get 'from', 'to', and update 'conn' attribut
-                port = obj.openports(key{:});
-                if ~port.conn   % if port is not connected
-                    % 'yarp connect <output port> <input port>
-                    if ~yarp.Network.connect(port.from,port.to)
-                        error(['couldn''t connect port ' port.to '!']);
-                    end
-                    disp(['Added connection from port ' port.from ' to port ' port.to '.']);
-                    % update 'conn' flag
-                    port.conn = true;
-                    obj.openports(key{:}) = port;
-                end
+            for connectionSetup = obj.openports.values(portKeys)
+                connectionSetup{1}.connect();
             end
         end
         
@@ -268,19 +210,8 @@ classdef SensorDataYarpI < handle
             stillOpenPorts = isKey(obj.openports,portKeys);
             
             % disconnect ports
-            for key = portKeys(stillOpenPorts)
-                % get 'from', 'to', and update 'conn' attribut
-                port = obj.openports(key{:});
-                % 'yarp disconnect <output port> <input port>
-                if port.conn      % if port is connected
-                    if ~yarp.Network.disconnect(port.from,port.to)
-                        error(['couldn''t disconnect port ' port.to '!']);
-                    end
-                    disp(['Removed connection from port ' port.from ' to port ' port.to '.']);
-                    % update 'conn' flag
-                    port.conn = false;
-                    obj.openports(key{:}) = port;
-                end
+            for connectionSetup = obj.openports.values(portKeys(stillOpenPorts))
+                connectionSetup{1}.disconnect();
             end
         end
     end
@@ -306,30 +237,11 @@ classdef SensorDataYarpI < handle
     %% ===============  STATIC METHODS  ================================
 
     methods(Static = true,Access = public)
+        [ok] = waitPortOpen(port,timeout);
+        
         function clean()
             % clean yarp ports
             system('yarp clean');
-        end
-        
-        function status = doesPIDmatchDatadumper(pid)
-            % get the matching process (only the command wo the parameters)
-            [status,pidCmdRef] = system(['ps -cp ' num2str(pid)]);
-            if status
-                warning('Couldn''t verify the PID');
-            end
-            % parse the first 4 columns into a 1x4 cell
-            pidCmdRef_cols     = textscan(pidCmdRef,'%s %s %s %s');
-            % expand cell contents and filter to get the array of cells as follows:
-            % PID CMD
-            % XXX XXXXX
-            pidCmdRef_array    = [pidCmdRef_cols{[1 4]}];
-            % expected PID/CMD to compare to
-            generatedPidCmd_array = {'PID','CMD';num2str(pid),'yarpdatadumper'};
-            similar = cellfun(...
-                @(elem1,elem2) strcmp(elem1,elem2),...
-                pidCmdRef_array(:),generatedPidCmd_array(:),...
-                'UniformOutput',false);
-            status = (sum(~[similar{:}]) == 0);
         end
     end
 end
