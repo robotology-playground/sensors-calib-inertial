@@ -1,14 +1,20 @@
 function plot2funcTimeseriesYY(...
     figuresHandler,aTitle,aLabel,...
     time1,y1,time2,y2,...
-    yLabel1,yLabel2)
+    yLabel1,yLabel2,y1Legend,y2Legend)
 %UNTITLED9 Summary of this function goes here
 %   Detailed explanation goes here
 
-%% Plot joint trajectories
+% default legends
+if ~exist('y1Legend'), y1Legend = ''; end
+if ~exist('y2Legend'), y2Legend = ''; end
+
+% create figure
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
 
-figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
+if ~isempty(figuresHandler)
+    figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
+end
 
 % If the figure is not docked, use the below command to display it full
 % screen.
@@ -23,6 +29,7 @@ grid ON;
 xlabel('Time (sec)','Fontsize',12);
 ylabel(hAx(1),yLabel1,'Fontsize',12);
 ylabel(hAx(2),yLabel2,'Fontsize',12);
+legend('Location','BestOutside',y1Legend,y2Legend);
 set(gca,'FontSize',12);
 
 end

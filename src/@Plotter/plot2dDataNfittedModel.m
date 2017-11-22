@@ -6,10 +6,12 @@ function plot2dDataNfittedModel(...
 %UNTITLED9 Summary of this function goes here
 %   Detailed explanation goes here
 
-%% Plot joint trajectories
+% create figure
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
 
-figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
+if ~isempty(figuresHandler)
+    figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
+end
 
 % If the figure is not docked, use the below command to display it full
 % screen.

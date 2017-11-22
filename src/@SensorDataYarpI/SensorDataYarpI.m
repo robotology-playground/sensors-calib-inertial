@@ -73,15 +73,21 @@ classdef SensorDataYarpI < handle
         function closeLog(obj)
             if ~isempty(obj.openports)
                 % Disconnect and close all previously open ports
+                % For each key entry, erase respective connection
+                % configuration. The method handles redundant handlers.
                 for key = obj.openports.keys
-                    % Erase respective connection configuration:
-                    % - disconnects the ports
-                    % - stops the yarpdatadumper instance
-                    % - closes the dumper port
-                    % The method handles redundant pointers.
                     connectionSetup = obj.openports(key{1});
+                    % Erase pointed connection configuration
+                    % - disconnects any connected port
+                    % - stops the yarpdatadumper instance if it exists and
+                    % closes the respective dumper port
+                    % - removes the tracking of the connection from the
+                    % common connection list
                     connectionSetup.remove();
-                    % Remove the connection object from the map
+                    % Remove the connection handler (pointer) from the map
+                    % (pair {key/handler}. A given connection will actually
+                    % be deleted if all pointing handlers have been
+                    % deleted.
                     obj.openports.remove(key{1});
                 end
             end

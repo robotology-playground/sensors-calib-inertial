@@ -10,10 +10,12 @@ dt = 0.2*dtFrac*mean(diff(time));
 Dt = repmat(dt,size(dy));
 Dy = dy*dt;
 
-%% Plot joint trajectories
+% create figure
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
 
-figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
+if ~isempty(figuresHandler)
+    figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
+end
 
 % If the figure is not docked, use the below command to display it full
 % screen.
