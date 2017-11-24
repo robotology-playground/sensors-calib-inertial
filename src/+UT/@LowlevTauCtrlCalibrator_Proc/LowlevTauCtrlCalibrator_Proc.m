@@ -9,6 +9,8 @@ classdef LowlevTauCtrlCalibrator_Proc < LowlevTauCtrlCalibrator
     methods(Access=protected)
         function obj = LowlevTauCtrlCalibrator_Proc()
             obj.savePlotCallback = @() disp('savePlot');
+            % Debug mode
+            obj.isDebugMode = true;
         end
         
         % state machine methods
@@ -30,24 +32,6 @@ classdef LowlevTauCtrlCalibrator_Proc < LowlevTauCtrlCalibrator
         function plotModel(obj,frictionOrKtau,data,calibList)
             disp('plotModel() with parameters:');
             celldisp({obj,frictionOrKtau,data,calibList});
-        end
-    end
-    
-    methods(Access=public)
-        function run(obj,init,model,lastAcqSensorDataAccessorMap)
-            disp('========== state before run ==========');
-%             disp(init.(obj.initSection).taskSpecificParams.motorName);
-%             disp(init.(obj.initSection).taskSpecificParams.frictionOrKtau);
-%             disp(init.(obj.initSection).calibedParts);
-            disp(obj.state);
-
-            run@LowlevTauCtrlCalibrator(obj,init,model,lastAcqSensorDataAccessorMap);
-            
-            disp('========== state after run ==========');
-%             disp(init.(obj.initSection).taskSpecificParams.motorName);
-%             disp(init.(obj.initSection).taskSpecificParams.frictionOrKtau);
-%             disp(init.(obj.initSection).calibedParts);
-            disp(obj.state);
         end
     end
     

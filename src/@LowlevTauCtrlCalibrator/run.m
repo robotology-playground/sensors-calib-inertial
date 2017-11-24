@@ -1,6 +1,13 @@
 function run(obj,init,model,lastAcqSensorDataAccessorMap)
 % Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'
 
+% Debug mode
+if obj.isDebugMode
+    dispParamsNstate = @(calibrator,messageCompl) debugDisp(calibrator,messageCompl);
+else
+    dispParamsNstate = @(calibrator,messageCompl) [];
+end
+
 % Init the state machine context
 obj.init = init;
 obj.model = model;
@@ -86,6 +93,10 @@ while (obj.state.current ~= S.stateEnd)
     % following: restart, proceed, skip, end, abort
     transitionH = currentState.transition(obj);
     transition = transitionH();
+    obj.state.transition = transition;
+    
+    % In debug mode, display init params and state before the transition
+    dispParamsNstate(obj,'before transition');
     
     % Move to next state
     switch transition
@@ -98,7 +109,34 @@ while (obj.state.current ~= S.stateEnd)
             % Compute new state
             obj.state.current = currentState.(transition);
     end
+    
+    % In debug mode, display init params and state after the processing
+    dispParamsNstate(obj,'after transition');
 end
 
 end
 
+%============================================================
+
+function debugDisp(calibrator,messageCompl)
+
+initSection = calibrator.init.(calibrator.initSection);
+
+if [...
+        isfield(initSection.taskSpecificParams,{'motorName','frictionOrKtau'}), ...
+        isfield(initSection,'calibedParts')]
+    fprintf([...
+        '========== input params ==========\n'...
+        '%s\n%s\n'],...
+        initSection.taskSpecificParams.motorName,...
+        initSection.taskSpecificParams.frictionOrKtau);
+    disp(initSection.calibedParts);
+end
+
+fprintf('========== state %s ==========\n',messageCompl);
+
+disp(calibrator.state);
+
+pause;
+
+end

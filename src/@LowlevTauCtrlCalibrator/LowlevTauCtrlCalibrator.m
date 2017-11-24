@@ -67,12 +67,17 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         % - 'state.current' gives the current state indexing the 'stateArray'
         % - 'state.transition' hold the transition to the next state
         %    through the field values 'restart', 'proceed', 'skip', 'end'.
+        %    Actually, storing the transition label to 'state.transition'
+        %    is only for debug purpose.
         % - 'state.currentMotorIdx' indexes the current joint/motor group to
         %    process.
         state@struct = struct(...
             'current',S.stateStart,...
             'transition',[],...
             'currentMotorIdx',0);
+        
+        % Debug mode
+        isDebugMode = false;
     end
     
     methods(Access=protected)
