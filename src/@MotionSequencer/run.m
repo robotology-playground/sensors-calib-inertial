@@ -56,10 +56,25 @@ for seqIdx = 1:numel(obj.sequences)
                 pos = sequence.ctrl.pos(stepIdx,:);
                 vel = sequence.ctrl.vel(stepIdx,:);
                 
-                % run the sequencer step
-                waitMotionDone = true; timeout = 120; % in seconds
-                if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
-                    error('Waiting for motion done timeout!');
+                % run the sequencer step, while waiting for user
+                % confirmation to proceed, or for motion to complete.
+                promptString = sequence.prpt{stepIdx}();
+                if isempty(promptString)
+                    % run the sequencer step
+                    waitMotionDone = true; timeout = 120; % in seconds
+                    if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
+                        error('Waiting for motion done timeout!');
+                    end
+                else
+                    % run the sequencer step
+                    waitMotionDone = false; timeout = 0; % in seconds
+                    if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
+                        error('Error while setting position!');
+                    end
+                    % Notify the user about ongoing step and prompt for
+                    % completion confirmation before proceeding to next step
+                    fprintf(promptString);
+                    pause;
                 end
                 
             case 'pwmctrl' % PWM control
@@ -80,7 +95,11 @@ for seqIdx = 1:numel(obj.sequences)
                 ok = obj.ctrlBoardRemap.setMotorPWM(motorName,pwm);
                 
                 % Prompt the user to proceed
-                input('Move joint back and forth and press any key when done..','s');
+                promptString = sequence.prpt{stepIdx}();
+                if ~isempty(promptString)
+                    fprintf(promptString);
+                    pause;
+                end
                 
                 % Set all joints from the impacted coupling back to the
                 % previous control mode.

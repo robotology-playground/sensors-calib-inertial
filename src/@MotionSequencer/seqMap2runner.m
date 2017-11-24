@@ -80,11 +80,24 @@ if ismember('pwmctrl',fieldnames(runSeq))
     runSeq.pwmctrl.pwm = struct2cellConcat(runSeq.pwmctrl.pwm);
 end
 
+% Mode handling
 if ismember('mode',fieldnames(runSeq))
+    % copy respective content
     runSeq.mode = runSeq.mode.NA.NA;
 else
+    % default value
     runSeq.mode = cell(size(runSeq.ctrl.pos,1),1);
     runSeq.mode(:) = {'ctrl'};
+end
+
+% Prompt handling
+if ismember('prpt',fieldnames(runSeq))
+    % copy respective content
+    runSeq.prpt = runSeq.prpt.NA.NA;
+else
+    % default value
+    runSeq.prpt = cell(size(runSeq.ctrl.pos,1),1);
+    runSeq.prpt(:) = {@() []};
 end
 
 end
@@ -184,8 +197,12 @@ end
 %     0};
 % 
 % runSeq.mode = {
-%     ctrl;...
-%     pwmctrl};
+%     'ctrl';...
+%     'pwmctrl'};
+% 
+% runSeq.prpt = {
+%     @() [];...
+%     @() 'some text'};
 % 
 % runSeq.meas.sensor = {'joint','jtorq'};
 % 
