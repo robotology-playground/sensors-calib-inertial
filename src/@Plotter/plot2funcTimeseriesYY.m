@@ -5,10 +5,6 @@ function plot2funcTimeseriesYY(...
 %UNTITLED9 Summary of this function goes here
 %   Detailed explanation goes here
 
-% default legends
-if ~exist('y1Legend'), y1Legend = ''; end
-if ~exist('y2Legend'), y2Legend = ''; end
-
 % create figure
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
 
@@ -29,7 +25,9 @@ grid ON;
 xlabel('Time (sec)','Fontsize',12);
 ylabel(hAx(1),yLabel1,'Fontsize',12);
 ylabel(hAx(2),yLabel2,'Fontsize',12);
-legend('Location','BestOutside',y1Legend,y2Legend);
+if exist('y1Legend') && exist('y2Legend')
+    legend('Location','BestOutside',y1Legend,y2Legend);
+end
 set(gca,'FontSize',12);
 
 end

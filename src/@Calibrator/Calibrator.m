@@ -26,8 +26,8 @@ classdef Calibrator < SingletonP
         run(obj,init,model,lastAcqSensorDataAccessorMap);
     end
     
-    methods(Abstract=true, Static=true, Access=protected)
-        calibrateSensors(...
+    methods(Abstract=true, Access=protected)
+        calibrateSensors(obj,...
             dataPath,calibedParts,measedSensorList,measedPartsList,...
             model,taskSpecificParams);
     end

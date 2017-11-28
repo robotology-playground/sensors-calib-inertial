@@ -230,7 +230,16 @@ task.run(init,model,lastAcqSensorDataAccessorMap);
 task = UT.LowlevTauCtrlCalibrator_Proc.instance();
 task.run(init,model,lastAcqSensorDataAccessorMap);
 
-% Test the 
+% Test the plotting and fitting functions
+% - src/@LowlevTauCtrlCalibrator/plotTrainingData.m
+% - src/@LowlevTauCtrlCalibrator/savePlot.m
+% - src/@LowlevTauCtrlCalibrator/calibrateSensors.m
+% - src/@LowlevTauCtrlCalibrator/plotModel.m
+% - src/@MotorTransFunc/MotorTransFunc.m
+% - src/@DiagPlotFiguresHandler/DiagPlotFiguresHandler.m (getFigure)
+task = LowlevTauCtrlCalibrator.instance();
+task.run(init,model,lastAcqSensorDataAccessorMap);
+
 
 %% Uninitialize yarp
 yarp.Network.fini();

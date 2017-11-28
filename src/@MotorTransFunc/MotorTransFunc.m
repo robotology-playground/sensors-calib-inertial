@@ -16,12 +16,23 @@ classdef MotorTransFunc < handle
         stictionN = 0;
     end
     
-    methods(Access=public)
+    methods(Access=protected)
         % Constructor
         function obj = MotorTransFunc(motorName)
             obj.name = motorName;
         end
-        
+    end
+    
+    methods(Static=true, Access=public)
+        function transFunc = GetMotorTransFunc(motorName,calibrationMap)
+            if ~isKey(calibrationMap,motorName)
+                calibrationMap(motorName) = MotorTransFunc(motorName);
+            end
+            transFunc = calibrationMap(motorName);
+        end
+    end
+    
+    methods(Access=public)
         function setKpwm(obj,Kpwm), obj.Kpwm = Kpwm; end
         
         function setFriction(obj, Kc, Kv)

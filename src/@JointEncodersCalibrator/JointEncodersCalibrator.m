@@ -20,6 +20,10 @@ classdef JointEncodersCalibrator < Calibrator
     methods(Access=protected)
         function obj = JointEncodersCalibrator()
         end
+        
+        calibrateSensors(obj,...
+            dataPath,calibedParts,measedSensorList,measedPartsList,...
+            model,taskSpecificParams);
     end
     
     methods(Static=true, Access=public)
@@ -31,10 +35,6 @@ classdef JointEncodersCalibrator < Calibrator
     end
     
     methods(Static=true, Access=protected)
-        calibrateSensors(...
-            dataPath,calibedParts,measedSensorList,measedPartsList,...
-            model,taskSpecificParams);
-        
         [optimFunction,options] = getOptimConfig();
         
         plotJointsOffsets(mean_optDq,std_optDq);

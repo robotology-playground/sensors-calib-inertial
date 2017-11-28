@@ -13,7 +13,6 @@ classdef SensorsData < handle
     properties (SetAccess = public, GetAccess = public)
         %% main input parameters
         path         ;
-        dataSetNb    ;
         nSamples  = 0; %number of samples
         plot      = 0;
         tInit     = 0;    %seconds to be skipped at the start
@@ -46,7 +45,7 @@ classdef SensorsData < handle
     end
     
     methods
-        function obj = SensorsData(dataPath, dataSetNb, nSamples, tInit, tEnd, plot, varargin)
+        function obj = SensorsData(dataPath, nSamples, tInit, tEnd, plot, varargin)
             % conditional parameter varargin:
             % calibrationMap, filtParams
             %
@@ -65,7 +64,6 @@ classdef SensorsData < handle
             end
             % main input parameters
             obj.path = dataPath;
-            obj.dataSetNb = dataSetNb;
             obj.nSamples = nSamples;
             obj.tInit = tInit;
             obj.tEnd = tEnd;
@@ -136,7 +134,7 @@ classdef SensorsData < handle
                               strcat(part,'_state'), ...
                               jointsNdofs, ...
                               ctrledJointsIdxes, ...
-                              'stateExt:i', ...
+                              'stateExt:o', ...
                               calibMap, ...
                               visualize && obj.plot);
         end

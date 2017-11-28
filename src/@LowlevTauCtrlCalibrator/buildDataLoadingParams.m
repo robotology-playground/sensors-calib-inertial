@@ -7,7 +7,7 @@ function dataLoadingParams = buildDataLoadingParams(...
 parts = [measedPartsList{ismember(measedSensorList,'joint')}];
 
 for i = 1:length(parts)
-    jointList = obj.jointsDbase.getJointNames(parts{i}); % this joints list is ordered as the data logged by the YARP data dumper
+    jointList = model.jointsDbase.getJointNames(parts{i}); % this joints list is ordered as the data logged by the YARP data dumper
     jointsToCalibrate.jointsDofs{i} = model.jointsDbase.getTotalJointDoF(jointList);
     [~,jointsToCalibrate.ctrledJointsIdxes{i}] = ismember(calibedJointOrderedList,jointList);
 end

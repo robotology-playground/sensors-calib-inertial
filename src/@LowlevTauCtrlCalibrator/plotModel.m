@@ -1,10 +1,10 @@
-function plotModel( obj,frictionOrKtau,thetaPosXvar,thetaNegXvar,xVar,nbSamples )
+function plotModel( obj,frictionOrKtau,theta,xVar,nbSamples )
 %UNTITLED8 Summary of this function goes here
 %   Detailed explanation goes here
 
 % Resample the data for later plotting
-[xs,ys] = Regressors.resampleData(...
-    thetaPosXvar,thetaNegXvar,xVar,nbSamples);
+[xs,ys] = Regressors.resampleDataSym(...
+    theta,xVar,nbSamples);
 
 % Get and select the figure where we plotted the scattered training data
 % (figuresHandlerMap) is a Constant property that can be accessed through
@@ -14,7 +14,7 @@ switch frictionOrKtau
     case 'friction'
         figLabel = 'motorVel2torq';
     case 'ktau'
-        figLabel = 'motorPWM_N_torqFilt';
+        figLabel = 'motorPWM2torq';
     otherwise
         error('calibrateSensors: unknown calibration type !!');
 end

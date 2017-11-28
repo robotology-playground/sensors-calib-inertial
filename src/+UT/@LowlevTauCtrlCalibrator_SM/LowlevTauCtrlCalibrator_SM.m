@@ -47,9 +47,11 @@ classdef LowlevTauCtrlCalibrator_SM < LowlevTauCtrlCalibrator
             celldisp({obj,path,sensors,parts,model,taskSpec});
         end
         
-        function plotModel(obj,frictionOrKtau,data,calibList)
-            disp('plotModel() with parameters:');
-            celldisp({obj,frictionOrKtau,data,calibList});
+        function calibrateSensors(~,...
+            dataPath,~,measedSensorList,measedPartsList,...
+            model,taskSpecificParams)
+            disp('calibrateSensors() with parameters:');
+            celldisp({dataPath,measedSensorList,measedPartsList,model,taskSpecificParams});
         end
     end
     
@@ -58,20 +60,6 @@ classdef LowlevTauCtrlCalibrator_SM < LowlevTauCtrlCalibrator
         % 'singletonObj' and returns the handle to the caller
         function theInstance = instance()
             theInstance = UT.LowlevTauCtrlCalibrator_SM.UT_singletonObj;
-        end
-    end
-    
-    methods(Static=true, Access=protected)
-        function calibrateSensors(...
-            dataPath,~,measedSensorList,measedPartsList,...
-            model,taskSpecificParams)
-            disp('calibrateSensors() with parameters:');
-            celldisp({dataPath,measedSensorList,measedPartsList,model,taskSpecificParams});
-        end
-        
-        function savePlot(figuresHandler,savePlot,exportPlot,dataPath)
-            disp('savePlot() with parameters:');
-            celldisp({figuresHandler,savePlot,exportPlot,dataPath});
         end
     end
 end

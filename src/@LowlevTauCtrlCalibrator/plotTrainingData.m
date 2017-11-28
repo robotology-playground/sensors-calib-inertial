@@ -25,7 +25,8 @@ calibrationMap = model.calibrationMap;
 % 
 Init.unWrap(taskSpecificParams);
 
-jointMotorCoupling = cell2mat(model.jointsDbase.getJMcouplings('motors',{motorName}));
+% Get the coupling info from the motor name. Each motor belongs to a single coupling set.
+jointMotorCoupling = cell(model.jointsDbase.getJMcouplings('motors',{motorName})){1};
 
 %% build input data for calibration
 %
@@ -36,7 +37,7 @@ dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(...
 
 plot = false; loadJointPos = true;
 
-data = SensorsData(dataPath,'',obj.subSamplingSize,...
+data = SensorsData(dataPath,obj.subSamplingSize,...
     obj.timeStart,obj.timeStop,plot,...
     calibrationMap,obj.filtParams);
 data.buildInputDataSet(loadJointPos,dataLoadingParams);
@@ -65,19 +66,19 @@ obj.figuresHandlerMap(obj.task) = figuresHandler;
 % (refer to 'subSamplingSize' in lowLevTauCtrlCalibratorDevConfig.m config
 % file).
 % 
-time = data.time;
+time = data.parsedParams.time;
 
 % Get the calibrated joint index as mapped in the motors control board server.
-jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointMotorCoupling.coupledJoints);
-motorIdx   = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',{motorName});
+% jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointMotorCoupling.coupledJoints);
+[~,motorIdx] = ismember(motorName,jointMotorCoupling.coupledMotors);
 
 % Get respective torques (matrix 6xNsamples)
-tauJoints  = data.parsedParams.taus_state(jointIdxes);
-tauMotor   = jointMotorCoupling.invT(motorIdx,:) * tauJoints(:);
+tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
+tauMotor   = jointMotorCoupling.invT(motorIdx,:) * tauJoints;
 
 switch frictionOrKtau
     case 'friction'
-        dqMrad = data.parsedParams.dqMsRad_state(motorIdx);
+        dqMrad = data.parsedParams.(['dqMsRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
         % filtered Tau(time) & dqM(time)
         Plotter.plot2funcTimeseriesYY(...
@@ -96,7 +97,7 @@ switch frictionOrKtau
             'Training data','');
         
     case 'ktau'
-        pwm = data.parsedParams.pwms_state(motorIdx);
+        pwm = data.parsedParams.(['pwms_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
         % filtered Tau(time) & pwm(time)
         Plotter.plot2funcTimeseriesYY(...

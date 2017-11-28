@@ -40,9 +40,9 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         statesTransitionProcessing = {...
             'restartProc'             ,'proceedProc'           ,'skipProc'                ,'endProc'                 ;...
             @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            ;...  % stateStart
-            @(o) @o.discardAcqFriction,@(o) @o.savePlotCallback,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateAcqFriction
+            @(o) @o.discardAcqFriction,@(varargin) []          ,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateAcqFriction
             @(o) @o.discardAcqFriction,@(o) @o.savePlotCallback,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateFitFriction
-            @(o) @o.discardAcqKtau    ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateAcqKtau
+            @(o) @o.discardAcqKtau    ,@(varargin) []          ,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateAcqKtau
             @(o) @o.discardAcqKtau    ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateFitKtau
             @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            };    % stateNextGroup
         
@@ -109,7 +109,11 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         
         plotTrainingData(obj,path,sensors,parts,model,taskSpec);
         
-        plotModel(obj,frictionOrKtau,data,calibList);
+        plotModel(obj,frictionOrKtau,theta,xVar,nbSamples);
+        
+        calibrateSensors(obj,...
+            dataPath,~,measedSensorList,measedPartsList,...
+            model,taskSpecificParams);
     end
     
     methods(Static=true, Access=public)
@@ -125,10 +129,6 @@ classdef LowlevTauCtrlCalibrator < Calibrator
     end
     
     methods(Static=true, Access=protected)
-        calibrateSensors(...
-            dataPath,~,measedSensorList,measedPartsList,...
-            model,taskSpecificParams);
-        
         % Each line of 'statesDesc' is converted to a struct which fields
         % are listed in the first line of 'statesDesc'.
         stateStructList = defStatesFromDesc(statesDesc);

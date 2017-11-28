@@ -10,7 +10,7 @@ classdef SensorLogDatabase < handle
     %   sequence), sequence (a sequence info object constructed by
     %   MotionSequencer.seqMap2runner holding information required by the
     %   calibrator for generating the new calibration parameters (ex:
-    %   JointEncodersCalibrator.calibrateSensors ), calibrationMap (current
+    %   obj@JointEncodersCalibrator.calibrateSensors ), calibrationMap (current
     %   sensor calibration directly retrieved from the robot as sensor data
     %   was acquired).
     %   

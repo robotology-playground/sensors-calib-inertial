@@ -1,4 +1,4 @@
-function calibrateSensors(...
+function calibrateSensors(obj,...
     dataPath,~,measedSensorList,measedPartsList,...
     model,taskSpecificParams)
 
@@ -19,7 +19,8 @@ calibrationMap = model.calibrationMap;
 % 
 Init.unWrap(taskSpecificParams);
 
-jointMotorCoupling = cell2mat(model.jointsDbase.getJMcouplings('motors',{motorName}));
+% Get the coupling info from the motor name. Each motor belongs to a single coupling set
+jointMotorCoupling = cell(model.jointsDbase.getJMcouplings('motors',{motorName})){1};
 
 %% build input data for calibration
 %
@@ -29,14 +30,13 @@ dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(...
     jointMotorCoupling.coupledJoints);
 
 plot = false; loadJointPos = true;
-data = SensorsData(dataPath,'',obj.subSamplingSize,...
+data = SensorsData(dataPath,obj.subSamplingSize,...
     obj.timeStart,obj.timeStop,plot,calibrationMap);
 data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
-%===========================
-% Implement the fitting process in this section. joint encoder velocities
-% and torques, motor PWM measurements can be retrieved from tha 'data'
-% structure:
+%% Fitting process implementation.
+% Joint encoder velocities and torques, motor PWM measurements can be
+% retrieved from tha 'data' structure:
 % 
 % For N samples of dimension D (group of D coupled joints), we get:
 % 
@@ -50,21 +50,21 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 % 
 
 % Get the calibrated joint index as mapped in the motors control board server.
-jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointMotorCoupling.coupledJoints);
-motorIdx   = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',{motorName});
+%jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointMotorCoupling.coupledJoints);
+[~,motorIdx] = ismember(motorName,jointMotorCoupling.coupledMotors);
 
 % Get respective torques (matrix 6xNsamples)
-tauJoints  = data.parsedParams.taus_state(jointIdxes);
-tauMotor   = jointMotorCoupling.invT(motorIdx,:) * tauJoints(:);
+tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
+tauMotor   = jointMotorCoupling.invT(motorIdx,:) * tauJoints;
 
 switch frictionOrKtau
     case 'friction'
         % get motor velocity to be the x axis variable
-        xVar = data.parsedParams.dqMsRad_state(motorIdx);
+        xVar = data.parsedParams.(['dqMsRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
     case 'ktau'
         % get motor PWM to be the x axis variable
-        xVar = data.parsedParams.pwms_state(motorIdx);
+        xVar = data.parsedParams.(['pwms_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
     otherwise
         error('calibrateSensors: unknown calibration type !!');
@@ -80,18 +80,16 @@ end
 % 
 [thetaPosXvar,thetaNegXvar] = Regressors.normalEquationAsym(xVar',tauMotor');
 
-% Convert theta vector to model parameters (motor calibration
-% calibList{i}).
-% COUPLING IS NOT SUPPORTED YET
+%% Convert theta vector to model parameters (motor calibration) and save it to the calibration map
 
-% Create calibration parameters object
-calib = MotorTransFunc(motorName);
+% Get the motor calibration or create a new one
+calib = MotorTransFunc.GetMotorTransFunc(motorName,calibrationMap);
 
 switch frictionOrKtau
     case 'friction'
         % Check that the model is symmetrical
         [KcP, KcN, KvP, KvN] = deal(thetaPosXvar(1),thetaNegXvar(1),thetaPosXvar(2),thetaNegXvar(2));
-        if abs(KcP+KcN)>abs(KcP)/100 || abs(KvP-KvN)>abs(KvP)
+        if abs(KcP+KcN)>abs(KcP)/100 || abs(KvP-KvN)>abs(KvP)/100
             warning('calibrateSensors: The friction model is not symmetrical');
         end
         % Run a fitting again but matching a single Kc and a single Kv
@@ -101,7 +99,10 @@ switch frictionOrKtau
     case 'ktau'
         % Check that the model is symmetrical
         [KoffP, KoffN, KpwmP, KpwmN] = deal(thetaPosXvar(1),thetaNegXvar(1),thetaPosXvar(2),thetaNegXvar(2));
-        if abs(KoffP-KoffN)>1e-3 || abs(KpwmP-KpwmN)>abs(KpwmP)
+        if ...
+                abs(KoffP-KoffN)>1e-3 ...
+                && abs(KoffP+KoffN)>abs(KoffP)/100 ...
+                || abs(KpwmP-KpwmN)>abs(KpwmP)/100
             warning('calibrateSensors: The Ktau model is not symmetrical');
         end
         % Run a fitting again but matching a single Ktau
@@ -109,8 +110,6 @@ switch frictionOrKtau
         if abs(theta(1))>1e-3 % Tau offset
             warning('calibrateSensors: There is a torque offset in the model PWM to torque !!');
         end
-        % Create calibration parameters object
-        calib = MotorTransFunc(jointMotorCoupling.coupledMotors{1});
         calib.setKpwm(theta(2));
         
     otherwise
@@ -118,25 +117,6 @@ switch frictionOrKtau
 end
 
 % Plot fitted model over acquired data.
-obj.plotModel(frictionOrKtau,thetaPosXvar,thetaNegXvar,xVar,1000);
-
-%===========================
-
-% We suppose that for each motor we computed a set of calibration parameters,
-% wrapped in a list of sets 'calibList' aligned we the list of coupled motors.
-% So 'calibList{i}' is the calibration set for the motor i.
-% 
-
-% Save calibrated parameters into 'calibrationMap'.
-% 
-for cMotorLabelCalib = [jointMotorCoupling.coupledMotors;calibList]
-    % extract motor label and calibration
-    motorLabel = cMotorLabelCalib{1};
-    calib = cMotorLabelCalib{2};
-    
-    % Save parameters to the mapper
-    % (add or overwrite element in the map)
-    calibrationMap(motorLabel) = calib;
-end
+obj.plotModel(frictionOrKtau,theta,xVar,1000);
 
 end

@@ -27,8 +27,8 @@ classdef AccelerometersCalibrator < Calibrator
         end
     end
     
-    methods(Static=true, Access=protected)
-        calibrateSensors(...
+    methods(Access=protected)
+        calibrateSensors(obj,...
             dataPath,~,measedSensorList,measedPartsList,...
             model,taskSpecificParams);
     end
