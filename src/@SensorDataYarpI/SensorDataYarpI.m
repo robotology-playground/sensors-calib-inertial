@@ -210,9 +210,9 @@ classdef SensorDataYarpI < handle
                 end
                 port.pid = str2double(pid); % convert and store PID (removes trail spaces)
                 % double check that PID is attached to a yarpdatadumper process
-                if ~obj.doesPIDmatchDatadumper(port.pid)
-                    error('Wrong yarpdatadumper PID!');
-                end
+%                 if ~obj.doesPIDmatchDatadumper(port.pid)
+%                     error('Wrong yarpdatadumper PID!');
+%                 end
                 if ~obj.waitPortOpen(port.to,5)
                     error(['Couldn''t open port ' port.to ' !!']);
                 end

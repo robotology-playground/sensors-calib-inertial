@@ -54,12 +54,12 @@ segments_arm = @(side) {[side '_upper_arm'],[side '_forearm'],[side '_hand']};
 % from class @RobotModel
 
 % joints DoF (TO_BE_IMPROVED)
-jointsDofs_left_arm = 7; % 7 for 'icubSim', 16 for 'icub'
-jointsDofs_right_arm = 7; % 7 for 'icubSim', 16 for 'icub'
+jointsDofs_left_arm = 16; % 7 for 'icubSim', 16 for 'icub'
+jointsDofs_right_arm = 16; % 7 for 'icubSim', 16 for 'icub'
 jointsDofs_left_leg = 6;
 jointsDofs_right_leg = 6;
 jointsDofs_torso = 3;
-jointsDofs_head = 3; % 3 for 'icubSim', 6 for 'icub'
+jointsDofs_head = 6; % 3 for 'icubSim', 6 for 'icub'
 
 % We define a segment i as a link for which parent joint i and joint i+1 axis
 % are not concurrent. For instance 'root_link', 'r_upper_leg', 'r_lower_leg',

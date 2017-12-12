@@ -6,7 +6,7 @@
 robotName = 'icub'; % 'icub' or 'icubSim'
 dataPath  = '../../data/dumper';
 %modelPath = '../models/icubSim/icub.urdf';
-modelPath = '../models/iCubGenova04/icub.urdf';
+modelPath = '../models/iCubGenova04/model.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 %calibrationMapFile = 'calibrationMap.mat';
 calibrationMapFile = ['../../data/calibration/' robotName '_calibrationMap.mat'];
@@ -15,19 +15,19 @@ calibrationMapFile = ['../../data/calibration/' robotName '_calibrationMap.mat']
 calibrationType = 'standard';
 
 %% standard calibration tasks checklist
-acquireSensorsTestData  = false;
+acquireSensorsTestData  = true;
 calibrateAccelerometers = false;
-calibrateJointEncoders  = true;
+calibrateJointEncoders  = false;
 calibrateFTsensors      = false;
 calibrateGyroscopes     = false;
 
 %% Diagnosis and visualization
-runDiagnosis = true;
+runDiagnosis = false;
 
 %% Common output parameters
 saveCalibration = false;
-defaultSavePlot = true;
-defaultExportPlot = true;
+defaultSavePlot = false;
+defaultExportPlot = false;
 
 
 %% Custom calibration sequence
@@ -48,7 +48,8 @@ defaultExportPlot = true;
 %% 'acquireSensorsTestData': Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
-acquiredParts = {'torso','head','left_leg','right_leg'};
+%acquiredParts = {'left_leg','right_leg'};%'left_arm', ,'right_arm'
+acquiredParts = {'right_leg'};%'left_arm', ,'right_arm'
 % Profile = ... TBD!!
 
 % Fine selection of the accelerometers:
@@ -89,7 +90,7 @@ loadJointPos = true;
 
 % Motion sequence profile
 %motionSeqProfile = 'jointsCalibratorSequenceProfile';
-motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
+motionSeqProfile = 'FTSensorsCalibratorSequenceProfileWOsuspend';
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
@@ -100,7 +101,7 @@ taskSpecificParams = struct(...
     'motionSeqProfile',motionSeqProfile);
 
 % Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'last'};
+sensorDataAcq = {'new'};
 
 % wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as
 % a calibrator task)
