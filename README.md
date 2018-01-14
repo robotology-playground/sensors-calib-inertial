@@ -13,6 +13,8 @@ Later on, additional sensors will be added to the list, like gyroscopes and FT s
 ## Tutorials
 
 ## Documentation
+### Overview block diagram
+![sensorscalibinertialfunctionaldiagram](https://user-images.githubusercontent.com/6848872/34912128-32b1cf18-f8d9-11e7-949c-8b6bcd2d7c0f.png)
 
 ## Reference Paper
 The paper describing the algorithms implemented for calibrating the accelerometers and the joint encoders can be downloaded on [researchgate](https://www.researchgate.net/publication/312112086_Self-calibration_of_joint_offsets_for_humanoid_robots_using_accelerometer_measurements). If you use this tool in your work, please quote it within any resulting publication:
