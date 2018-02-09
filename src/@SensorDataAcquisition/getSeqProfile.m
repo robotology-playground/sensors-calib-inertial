@@ -8,12 +8,25 @@ seqEndParams = struct();
 selector = struct();
 
 switch task
-    case 'jointEncodersCalibrator'
+    case JointEncodersCalibrator.task
         run jointsCalibratorSequenceProfileWOsuspend;
-    case 'accelerometersCalibrator'
+    case AccelerometersCalibrator.task
         run accelerometersCalibratorSequenceProfileWOsuspend;
-    case 'sensorsTestDataAcquisition'
+    case SensorDataAcquisition.task
         run(taskSpecificParams.motionSeqProfile);
+    case LowlevTauCtrlCalibrator.task
+        % init joint/motors group label variable for the profile script
+        motor = taskSpecificParams.motorName;
+        switch taskSpecificParams.frictionOrKtau
+            case 'friction'
+                % run the profile script for friction identification
+                run lowLevTauCtrlCalibratorSequenceProfile1;
+            case 'ktau'
+                % run the profile script for friction identification
+                run lowLevTauCtrlCalibratorSequenceProfile2;
+            otherwise
+                error('Unknown low level control calibration phase!');
+        end
     otherwise
         error('Unknown task (sequence profile) !!');
 end

@@ -69,7 +69,7 @@ classdef RobotModel < handle
             % Build a typical database from the URDF model parameters
             % previously loaded in iDynTree, allowing to query elements
             % matching specified properties.
-            obj.jointsDbase = JointsDbase(obj.estimator.model);
+            obj.jointsDbase = JointsDbase(obj.estimator.model,robotName);
             obj.sensorsDbase = SensorsDbase(obj.estimator.sensors);
         end
         

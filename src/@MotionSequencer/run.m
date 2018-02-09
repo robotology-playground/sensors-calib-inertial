@@ -31,27 +31,83 @@ for seqIdx = 1:numel(obj.sequences)
     % information will be returned to the caller function for further use
     % by the calibrators.
     sequence.seqDataFolderPath = sequence.logCmd.new(logInfo,sensors,parts);
-    % Skip this sequence if we are not actuall acquiring data.
+    % Skip this sequence if we are not actually acquiring data.
     if ~isempty(sequence.seqDataFolderPath)
         loggedSeqs = [loggedSeqs sequence];
     end
     
-    for posIdx = 1:size(sequence.ctrl.pos,1)
-        % get next position, velocity and acquire flag from the
-        % sequence. Get concatenated matrices for all parts
-        pos = sequence.ctrl.pos(posIdx,:);
-        vel = sequence.ctrl.vel(posIdx,:);
-        
+    for stepIdx = 1:size(sequence.ctrl.pos,1)
+        % Get acquire flag from the sequence.
         % Stop logging of parts for which 'acquire' flag is off
         % Start logging of parts for which 'acquire' flag is on
-        [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx);
+        [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,stepIdx);
         sequence.logCmd.stop(sensors,partsToStop);
         sequence.logCmd.start(sensors,partsToStart);
         
-        % run the sequencer step
-        waitMotionDone = true; timeout = 120; % in seconds
-        if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
-            error('Waiting for motion done timeout!');
+        % The following processing depends on the control mode
+        switch sequence.mode{stepIdx}
+            case 'ctrl'    % position control
+                % Set joints in position control mode
+                [jointsIdxList,~] = obj.ctrlBoardRemap.getJointsMappedIdxes(obj.ctrlBoardRemap.jointsList);
+                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxList,'ctrl');
+                
+                % get next position, velocity and acquire flag from the
+                % sequence. Get concatenated matrices for all parts
+                pos = sequence.ctrl.pos(stepIdx,:);
+                vel = sequence.ctrl.vel(stepIdx,:);
+                
+                % run the sequencer step, while waiting for user
+                % confirmation to proceed, or for motion to complete.
+                promptString = sequence.prpt{stepIdx}();
+                if isempty(promptString)
+                    % run the sequencer step
+                    waitMotionDone = true; timeout = 120; % in seconds
+                    if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
+                        error('Waiting for motion done timeout!');
+                    end
+                else
+                    % run the sequencer step
+                    waitMotionDone = false; timeout = 0; % in seconds
+                    if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
+                        error('Error while setting position!');
+                    end
+                    % Notify the user about ongoing step and prompt for
+                    % completion confirmation before proceeding to next step
+                    fprintf(promptString);
+                    pause;
+                end
+                
+            case 'pwmctrl' % PWM control
+                % Only setting 1 motor or 1 set of coupled motors in PWM
+                % control mode is supported.
+                % Get name of motor to set in PWM control mode, as well as
+                % the PWM value.
+                motorName = sequence.pwmctrl.motor;
+                pwm = sequence.pwmctrl.pwm{stepIdx};
+                
+                % Set the motor in PWM control mode and handle the coupled
+                % motors keeping their control mode and state unchanged. If
+                % this is not supported by the YARP remoteControlBoardRemapper,
+                % emulate it. We can only emulate position control.
+                [ok,coupling,couplingMode] = obj.ctrlBoardRemap.setMotorPWMcontrolMode(motorName);
+                
+                % Set the desired PWM level (0-100%) for the named motor
+                ok = obj.ctrlBoardRemap.setMotorPWM(motorName,pwm);
+                
+                % Prompt the user to proceed
+                promptString = sequence.prpt{stepIdx}();
+                if ~isempty(promptString)
+                    fprintf(promptString);
+                    pause;
+                end
+                
+                % Set all joints from the impacted coupling back to the
+                % previous control mode.
+                [jointsIdxList,~] = obj.ctrlBoardRemap.getJointsMappedIdxes(coupling.coupledJoints);
+                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxList,couplingMode);
+                
+            otherwise
+                error('Unknown control mode!');
         end
     end
     

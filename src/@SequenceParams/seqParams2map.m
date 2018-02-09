@@ -19,7 +19,7 @@ labels = num2cell(seqParams.labels,1);
 val = num2cell(seqParams.val,1);
 emptyValColumn = cell(size(val{1}));
 
-% Add calib label with 'calibedParts' and 'calibedSensors' information
+% Add calib label with 'calibedPart' and 'calibedSensors' information
 [calibLabels,calibedVal] = cellfun(...
     @(calibedSensor) deal(...
     {'calib'; calibedSensor; calibedPart},...  % 2-create a 'calib' label

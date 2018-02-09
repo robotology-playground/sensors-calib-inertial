@@ -1,7 +1,10 @@
-function [q, dq, d2q] = resampleState(t, ts, qs, dqs, d2qs)
+function [qs, dqs, d2qs, dqMs, taus, pwms] = resampleState(ts, t, q, dq, d2q, dqM, tau, pwm)
 
-q   = interp1(ts, qs'  , t)';
-dq  = interp1(ts, dqs' , t)';
-d2q = interp1(ts, d2qs', t)';
+qs   = interp1(t, q'  , ts);
+dqs  = interp1(t, dq' , ts);
+d2qs = interp1(t, d2q', ts);
+dqMs = interp1(t, dqM', ts);
+taus = interp1(t, tau', ts);
+pwms = interp1(t, pwm', ts);
 
 end

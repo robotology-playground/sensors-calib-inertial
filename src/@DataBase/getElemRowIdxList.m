@@ -22,8 +22,7 @@ function elemRowIdxList = getElemRowIdxList( obj,queryPropsStruct )
 %               All listed properties have to match (AND of all lines)
 %   
 %   (n = 2) --> {'<prop name>',{<list of prop values>}}
-%               A list of matching elements is returned, 1 <outputPropName>
-%               value for each element matching 1 input prop value.
+%               A list of matching elements is returned, as a list of indexes.
 %   
 %   The method always returns a list, whatever the format of the listed
 %   elements type/class (doubles, strings, etc).
@@ -38,7 +37,7 @@ switch queryPropsStruct.format
         
     case 1
         % init bitmap element selection table N x K where N is the number
-        % of elements (rows) of the database, and is K the number of requested
+        % of elements (rows) of the database, and K is the number of requested
         % property names.
         nbQueriedProps = size(queryPropsStruct.data,1);
         inBitmap = zeros(obj.nbElems,nbQueriedProps);

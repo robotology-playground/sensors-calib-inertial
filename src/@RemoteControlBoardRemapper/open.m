@@ -1,9 +1,13 @@
-function open(obj,partList)
+function open(obj,partList,jointsList)
 
-obj.jointsList = {};
-for part = partList
-    obj.jointsList = [obj.jointsList RobotModel.jointsListFromPart(part{:})];
-    % {:} converts from cell to string
+if nargin<=2 % jointsList is missing
+    obj.jointsList = {};
+    for part = partList
+        obj.jointsList = [obj.jointsList obj.robotModel.jointsDbase.getJointNames(part{:})];
+        % {:} converts from cell to string
+    end
+else
+    obj.jointsList = jointsList;
 end
 
 % Fill the list of the axis names and add it to the options
@@ -23,7 +27,7 @@ obj.options.put('remoteControlBoards',obj.remoteControlBoards.get(0));
 % Open the driver
 obj.driver = yarp.PolyDriver();
 if (~obj.driver.open(obj.options))
-    error('Couldn''t open the driver');
+    error('RemoteControlBoardRemapper: couldn''t open the driver');
 end
-
+    
 end

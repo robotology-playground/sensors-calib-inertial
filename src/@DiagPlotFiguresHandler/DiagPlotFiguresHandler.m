@@ -20,6 +20,10 @@ classdef DiagPlotFiguresHandler < handle
             obj.figuresMap(figLabel) = figH;
         end
         
+        function figH = getFigure(obj,figLabel)
+            figH = obj.figuresMap(figLabel);
+        end
+        
         function addDistribLog(obj,ditribLogString,distribLogLabel)
             obj.distribLogMap(distribLogLabel) = ditribLogString;
         end

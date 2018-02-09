@@ -10,30 +10,47 @@ classdef RemoteControlBoardRemapper < handle
     properties(Constant)
         defaultSpeed = 10; % m/s
         defaultAcc   = 2;  % m/s^2
+        
+        ctrlModeVocabDef ={...
+            'idlectrl'  , y.VOCAB_CM_IDLE     ;
+            'torqctrl'  , y.VOCAB_CM_TORQUE   ;
+            'ctrl'      , y.VOCAB_CM_POSITION ;
+            'ctrldir'   , y.VOCAB_CM_POSITION_DIRECT ;
+            'velctrl'   , y.VOCAB_CM_VELOCITY ;
+            'curctrl'   , y.VOCAB_CM_CURRENT  ;
+            'pwmctrl'   , y.VOCAB_CM_PWM
+            };
+        
+        ctrlMode2vocab = containers.Map(...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,1),...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,2));
+        
+        vocab2ctrlMode = containers.Map(...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,2),...
+            RemoteControlBoardRemapper.ctrlModeVocabDef(:,1));
     end
     
     properties(SetAccess = protected, GetAccess = public)
-        net;
         robotName;
+        robotModel;
         jointsList={};
         % YARP objects
         axesNames; axesList; remoteControlBoards; remoteControlBoardsList;
         options;
         driver;
-        uninitYarpAtDelete = false;
     end
     
     methods
         %% Constructor
-        function obj = RemoteControlBoardRemapper(robotName,portsPrefix)
+        function obj = RemoteControlBoardRemapper(robotModel,portsPrefix)
             % Create YARP Network device, to initialize YARP classes for communication
             if ~yarp.Network.initialized
                 yarp.Network.init();
-                obj.uninitYarpAtDelete = true;
             end
             
-            % Save robot name
-            obj.robotName = robotName;
+            % Save robot model
+            obj.robotModel = robotModel;
+            obj.robotName = robotModel.robotName;
             
             % Create a RemoteControlBoardRemapper device
             % for controlling just the torso+head chain
@@ -52,30 +69,52 @@ classdef RemoteControlBoardRemapper < handle
             obj.remoteControlBoardsList = obj.remoteControlBoards.addList();
         end
         
-        %% Destructor
+        %%
+        % Destructor
         function delete(obj)
             obj.close();
-            if obj.uninitYarpAtDelete
-                yarp.Network.fini();
-            end
         end
         
-        %% Open ports
+        % Open ports
         open(obj,partList)
         
-        %% Close ports
+        % Close ports
         function close(obj)
             obj.driver.close();
         end
         
-        %% Read joint encoders
+        % Read joint encoders
         [readedEncoders,readEncsMat] = getEncoders(obj)
         
-        %% Write joint encoders
-        success = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
+        % Write joint encoders
+        ok = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
         
-        %% Wait for motion to be completed
-        success = waitMotionDone(obj,timeout)
+        % Wait for motion to be completed
+        ok = waitMotionDone(obj,timeout)
+        
+        % Get joints indexes as per the control board remapper mapping
+        [jointsIdxList,matchingBitmap] = getJointsMappedIdxes(obj,jointNameList);
+        
+        % Set/Get control mode for a set of joint indexes. Supported modes are:
+        % Position, Open loop (applicable for PWM, torque, current).
+        ok = setJointsControlMode(obj,jointsIdxList,mode);
+        [ok, modes] = getJointsControlMode(obj,jointsIdxList);
+        
+        % Set the motor in PWM control mode and handle the coupled
+        % motors keeping their control mode and state unchanged. If
+        % this is not supported by the YARP remoteControlBoardRemapper,
+        % emulate it. We can only emulate position control.
+        [ok, coupling, couplingPrevMode] = setMotorPWMcontrolMode(obj,motorName);
+        
+        % Set the desired PWM level (0-100%) for the named motor
+        ok = setMotorPWM(obj,motorName,pwm);
+        
+        % Set PWM values set for a set of motor indexes (for calibration
+        % purpose). The motor indexes are the same as for the joints.
+        % There is no concept of coupled motors in the control board
+        % remapper. But if a coupled motor is set to a given control mode,
+        % then all the motors in the coupling are set to the same mode.
+        ok = setMotorsPWM(obj,jointsIdxList,pwmVec);
     end
     
     methods(Static = true)

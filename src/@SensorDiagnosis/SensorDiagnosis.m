@@ -14,7 +14,7 @@ classdef SensorDiagnosis
         checkAccelerometersAnysotropy(...
             data_bc,data_ac,sensorsIdxListFile,...
             sensMeasCell_bc,sensMeasCell_ac,...
-            figsFolder,savePlot,loadJointPos);
+            figuresHandler);
         
         [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(x,y,z,centre,radii,R);
         
@@ -30,7 +30,7 @@ classdef SensorDiagnosis
         
         plotFittingEllipse(centre,radii,R,sensMeasCell);
         
-        plotJointTrajectories(data,ModelParams,figsFolder,savePlot);
+        plotJointTrajectories(data,modelParams,figuresHandler);
         
         [h,ditribLogString] = plotNprintDistrb(dOrient,fitGaussian,color,alpha,prevh,axbc,axac);
     end

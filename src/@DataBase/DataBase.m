@@ -85,13 +85,14 @@ classdef DataBase < handle
         % properties specified in 'inputPropsStruct'.
         propList = getPropList(obj,queryPropsStruct,outputPropName);
         
-        % Set to 'propValueToSet' the 'inputPropName' property of elements matching
+        % Set to 'propValueToSet' the 'propNameToSet' property of elements matching
         % input properties specified in 'inputPropsStruct'.
         success = setProp(obj,queryPropsStruct,propNameToSet,propValueToSet);
         
-        % Set the 'inputPropName' property of the database elements from
-        % 'inputPropKeysToValues'. This table assigns the value to set for
-        % each element identified by a key.
+        % Select the database elements through the set of key values
+        % 'queryKeyValues' of type 'queryKeyName'. For each selected
+        % element, set the property 'propNameToSet' to the respective value
+        % in the table 'propValuesToSet'.
         success = setPropList(obj,...
             queryKeyName,queryKeyValues,...
             propNameToSet,propValuesToSet);

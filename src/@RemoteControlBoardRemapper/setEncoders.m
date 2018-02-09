@@ -1,11 +1,11 @@
-function success = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
+function [ ok ] = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
 
 % refType: 'refVel','refAcc'
 % refParamsMat: reference velocities or accs
 % depending on refType
 % wait: if 'true' wait for the motion to be completed
 % varargin: waitMotionDone() input parameters
-% return value (success): 'true' if joints reach the targetted position
+% return value (ok): 'true' if joints reach the targetted position
 % before timeout.
 % Check desired positions size
 
@@ -25,7 +25,7 @@ if isempty(refParamsMat)
     end
 end
 
-success = true; % default value
+ok = true; % default value
 
 if length(desiredPosMat) ~= length(obj.jointsList)
     error('wrong input vector size!');
@@ -54,7 +54,7 @@ ipos.positionMove(desiredPositions.data());
 
 % Wait for motion completion
 if wait
-    success = obj.waitMotionDone(varargin{:});
+    ok = obj.waitMotionDone(varargin{:});
 end
 
 end

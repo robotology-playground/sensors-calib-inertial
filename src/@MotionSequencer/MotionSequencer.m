@@ -7,6 +7,7 @@ classdef MotionSequencer < handle
     
     properties(SetAccess = protected, GetAccess = public)
         calibApp;
+        robotModel;
         robotName;
         sequences;
         logCmd;
@@ -15,10 +16,11 @@ classdef MotionSequencer < handle
     end
     
     methods(Access = public)
-        function obj = MotionSequencer(calibApp,robotName,sequences,logCmd)
+        function obj = MotionSequencer(calibApp,robotModel,sequences,logCmd)
             % Init class parameters
             obj.calibApp = calibApp;
-            obj.robotName = robotName;
+            obj.robotModel = robotModel;
+            obj.robotName = robotModel.robotName;
             % logger commands
             obj.logCmd = logCmd;
             % dummy commands (used instead of logger commands if logging is
@@ -31,7 +33,7 @@ classdef MotionSequencer < handle
                 'UniformOutput',false);
             
             % create ctrl board remapper
-            obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotName,calibApp);
+            obj.ctrlBoardRemap = RemoteControlBoardRemapper(robotModel,calibApp);
         end
         
         acqSensorDataAccessor = run(obj);

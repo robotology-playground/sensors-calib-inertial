@@ -15,7 +15,7 @@ classdef SensorDataYarpI < handle
         seqDataFolderPath = '';
         dataLogInfoMap = [];
         sensorType2portNameGetter = {}; % funcs mapping sensor type to port name
-        openports = {};      % current open ports with info to,from,connected
+        openports = containers.Map();      % current open ports with info to,from,connected
         uninitYarpAtDelete = false;
     end
     
@@ -68,16 +68,28 @@ classdef SensorDataYarpI < handle
                 sensorList,partsList,...                         % applied to each sensor|parts
                 'UniformOutput',false);                          % return encapsulated output
             obj.openports = containers.Map([newKeyList{:}],[newPortList{:}]);
-            
-            % open ports
-            obj.openPorts();
         end
         
         function closeLog(obj)
-            % if there are any open ports
             if ~isempty(obj.openports)
-                obj.discPorts(obj.openports.keys); % disconnect them
-                obj.closePorts();                  % close them
+                % Disconnect and close all previously open ports
+                % For each key entry, erase respective connection
+                % configuration. The method handles redundant handlers.
+                for key = obj.openports.keys
+                    connectionSetup = obj.openports(key{1});
+                    % Erase pointed connection configuration
+                    % - disconnects any connected port
+                    % - stops the yarpdatadumper instance if it exists and
+                    % closes the respective dumper port
+                    % - removes the tracking of the connection from the
+                    % common connection list
+                    connectionSetup.remove();
+                    % Remove the connection handler (pointer) from the map
+                    % (pair {key/handler}. A given connection will actually
+                    % be deleted if all pointing handlers have been
+                    % deleted.
+                    obj.openports.remove(key{1});
+                end
             end
         end
         
@@ -96,7 +108,7 @@ classdef SensorDataYarpI < handle
         end
         
         function print(obj)
-            %% Print the sensor data log file located in the logged data folder
+            % Print the sensor data log file located in the logged data folder
             fileID = fopen('dataLogInfoMap.txt','w');
             fprintf(fileID,'%s',obj.dataLogInfoMap.toString());
             fclose(fileID);
@@ -112,19 +124,25 @@ classdef SensorDataYarpI < handle
             % init parameters from config file
             run yarpPortNameRules;
             sensorType = {...
-                'joint_from','acc_from','imu_from',...
-                'joint_to','acc_to','imu_to',...
-                'joint_path','acc_path','imu_path'};
+                'joint_from','acc_from','imu_from','fts_from','jtorq_from'...
+                'joint_to','acc_to','imu_to','fts_to','jtorq_to',...
+                'joint_path','acc_path','imu_path','fts_path','jtorq_path'};
             portNamingRule = {...
                 eval(['@(robotname,part)' joints_port_rule_icub]),...
                 eval(['@(robotname,part)' accSensors_port_rule_icub]),...
                 eval(['@(robotname,part)' imuSensors_port_rule_icub]),...
+                eval(['@(robotname,part)' FTSensors_port_rule_icub]),...
+                eval(['@(robotname,part)' joints_port_rule_icub]),...
                 eval(['@(robotname,part)' joints_port_rule_dumper]),...
                 eval(['@(robotname,part)' accSensors_port_rule_dumper]),...
                 eval(['@(robotname,part)' imuSensors_port_rule_dumper]),...
+                eval(['@(robotname,part)' FTSensors_port_rule_dumper]),...
+                eval(['@(robotname,part)' joints_port_rule_dumper]),...
                 eval(['@(datapath,part)' joints_folder_rule_dumper]),...
                 eval(['@(datapath,part)' accSensors_folder_rule_dumper]),...
-                eval(['@(datapath,part)' imuSensors_folder_rule_dumper])};
+                eval(['@(datapath,part)' imuSensors_folder_rule_dumper]),...
+                eval(['@(datapath,part)' FTSensors_folder_rule_dumper]),...
+                eval(['@(datapath,part)' joints_folder_rule_dumper])};
             obj.sensorType2portNameGetter = containers.Map(sensorType,portNamingRule);
         end
         
@@ -155,12 +173,10 @@ classdef SensorDataYarpI < handle
             % for each part in the parts list, create a port entry
             [newKeyList,newPortList] = cellfun(...
                 @(part) deal([sensor part],...          % 2-create a key
-                struct(...                              % 3-port naming rules for...
-                'from',portNamingRuleFrom(obj.robotName,convert(part)),...         % source port
-                'to',portNamingRuleTo(obj.robotName,part),...             % sink port
-                'path',portNamingRulePath(obj.seqDataFolderPath,part),... % path to the stored sensor data
-                'conn',false,...                        % Yarp link connection state
-                'pid',[])),...                          % process PID that open the port
+                Connection(...                          % 3-port naming rules for...
+                portNamingRuleFrom(obj.robotName,convert(part)),... % 'from': source port
+                portNamingRuleTo(obj.robotName,part),...            % 'to'  : sink port
+                portNamingRulePath(obj.seqDataFolderPath,part))),...  % 'path': to the stored sensor data
                 parts,...                               % 1-for each part...
                 'UniformOutput',false);                 % 5-don't concatenate lists from iterations
         end
@@ -181,71 +197,17 @@ classdef SensorDataYarpI < handle
             end
         end
         
-        % we want to avoid several logs in the same part folder (for
-        % instance "/icub/left_leg/inertialMTB","/icub/left_leg/inertialMTB_00001" etc..
-        % so these methods are internally called by newLog() and closeLog()
-        % which handles the switching to a new folder when required.
-        function openPorts(obj)
-            % open list of ports through yarpdatadumper
-            for key = obj.openports.keys
-                % get port to open
-                port = obj.openports(key{:});
-                % run datadumper and get process PID
-                [status,pid]=system(...
-                    ['yarpdatadumper ' ...    % run data dumper
-                    '--dir ' port.path ...    % set output folder
-                    ' --name ' port.to ' --type bottle ' ... % yarp port, data type
-                    '&> /dev/null & ' ...     % redirect all output to garbage and run process on backgroung
-                    'echo $!']);              % get process PID
-                if status
-                    error('Couldn''t run yarpdatadumper!');
-                else
-                    disp(['Opened port ' port.to '.']);
-                end
-                port.pid = str2double(pid); % convert and store PID (removes trail spaces)
-                % double check that PID is attached to a yarpdatadumper process
-                if ~obj.doesPIDmatchDatadumper(port.pid)
-                    error('Wrong yarpdatadumper PID!');
-                end
-                obj.openports(key{:}) = port;
-            end
-        end
-        
-        function closePorts(obj)
-            % close all previously open ports through yarpdatadumper
-            for key = obj.openports.keys
-                % get yarpdatadumper process PID and close port
-                port = obj.openports(key{:});
-                if system(['kill ' num2str(port.pid)])
-                    error(['Couldn''t stop yarpdatadumper!' num2str(port.pid)]);
-                end
-                disp(['Closed port ' port.to '.']);
-            end
-            % empty list of open ports
-            obj.openports = {};            
-        end
-        
         function connPorts(obj,portKeys)
-            % return error if some ports to connect are still closed
+            % return error if some ports to connect are still closed or no
+            % connection preconfiguration exists
             stillClosedPorts = ~isKey(obj.openports,portKeys);
             if sum(stillClosedPorts)>0
-                error(['Trying to connect closed ports: ' portsKeys(stillClosedPorts)]);
+                error(['Trying to activate unconfigured connections to ports: ' portsKeys(stillClosedPorts)]);
             end
             
             % connect ports
-            for key = portKeys
-                % get 'from', 'to', and update 'conn' attribut
-                port = obj.openports(key{:});
-                if ~port.conn   % if port is not connected
-                    % 'yarp connect <output port> <input port>
-                    if ~yarp.Network.connect(port.from,port.to)
-                        error(['couldn''t connect port ' port.to '!']);
-                    end
-                    disp(['Added connection from port ' port.from ' to port ' port.to '.']);
-                    % update 'conn' flag
-                    port.conn = true;
-                    obj.openports(key{:}) = port;
-                end
+            for connectionSetup = obj.openports.values(portKeys)
+                connectionSetup{1}.connect();
             end
         end
         
@@ -254,24 +216,13 @@ classdef SensorDataYarpI < handle
             stillOpenPorts = isKey(obj.openports,portKeys);
             
             % disconnect ports
-            for key = portKeys(stillOpenPorts)
-                % get 'from', 'to', and update 'conn' attribut
-                port = obj.openports(key{:});
-                % 'yarp disconnect <output port> <input port>
-                if port.conn      % if port is connected
-                    if ~yarp.Network.disconnect(port.from,port.to)
-                        error(['couldn''t disconnect port ' port.to '!']);
-                    end
-                    disp(['Removed connection from port ' port.from ' to port ' port.to '.']);
-                    % update 'conn' flag
-                    port.conn = false;
-                    obj.openports(key{:}) = port;
-                end
+            for connectionSetup = obj.openports.values(portKeys(stillOpenPorts))
+                connectionSetup{1}.disconnect();
             end
         end
     end
     
-    %%===============  STATIC PROTECTED METHODS  ======================
+    %% ===============  STATIC PROTECTED METHODS  ======================
     
     methods(Static = true,Access = protected)
         function portKeys = sensorsPartsLists2keys(sensorList,partsList)
@@ -289,33 +240,14 @@ classdef SensorDataYarpI < handle
         end
     end
     
-    %%===============  STATIC METHODS  ================================
+    %% ===============  STATIC METHODS  ================================
 
     methods(Static = true,Access = public)
+        [ok] = waitPortOpen(port,timeout);
+        
         function clean()
             % clean yarp ports
             system('yarp clean');
-        end
-        
-        function status = doesPIDmatchDatadumper(pid)
-            % get the matching process (only the command wo the parameters)
-            [status,pidCmdRef] = system(['ps -cp ' num2str(pid)]);
-            if status
-                warning('Couldn''t verify the PID');
-            end
-            % parse the first 4 columns into a 1x4 cell
-            pidCmdRef_cols     = textscan(pidCmdRef,'%s %s %s %s');
-            % expand cell contents and filter to get the array of cells as follows:
-            % PID CMD
-            % XXX XXXXX
-            pidCmdRef_array    = [pidCmdRef_cols{[1 4]}];
-            % expected PID/CMD to compare to
-            generatedPidCmd_array = {'PID','CMD';num2str(pid),'yarpdatadumper'};
-            similar = cellfun(...
-                @(elem1,elem2) strcmp(elem1,elem2),...
-                pidCmdRef_array(:),generatedPidCmd_array(:),...
-                'UniformOutput',false);
-            status = (sum(~[similar{:}]) == 0);
         end
     end
 end
