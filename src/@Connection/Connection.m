@@ -130,25 +130,17 @@ classdef Connection < handle
     methods(Static=true, Access=protected)
         function status = doesPIDmatchDatadumper(pid)
             % get the matching process (only the command wo the parameters)
-            [status,pidCmdRef] = system(['ps -cp ' num2str(pid)]);
+            [status,pidCmdRef] = system(['ps -cp ' num2str(pid) ' -o command']);
             if status
                 warning('Couldn''t verify the PID');
                 status = false;
                 return;
             end
-            % parse the first 4 columns into a 1x4 cell
-            pidCmdRef_cols     = textscan(pidCmdRef,'%s %s %s %s');
-            % expand cell contents and filter to get the array of cells as follows:
-            % PID CMD
-            % XXX XXXXX
-            pidCmdRef_array    = [pidCmdRef_cols{[1 4]}];
-            % expected PID/CMD to compare to
-            generatedPidCmd_array = {'PID','CMD';num2str(pid),'yarpdatadumper'};
-            similar = cellfun(...
-                @(elem1,elem2) strcmp(elem1,elem2),...
-                pidCmdRef_array(:),generatedPidCmd_array(:),...
-                'UniformOutput',false);
-            status = (sum(~[similar{:}]) == 0);
+            % convert the PID information string into a cell array
+            % {'COMMAND'   }
+            % {'yarpserver'}
+            pidCmdRef_cols = textscan(pidCmdRef,'%s');
+            status = strcmp(pidCmdRef_cols{1}{2},'yarpdatadumper');
         end
     end
 end
