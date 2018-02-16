@@ -88,7 +88,9 @@ loadJointPos = true;
 
 % Motion sequence profile
 %motionSeqProfile = 'jointsCalibratorSequenceProfile';
-motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
+%motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
+motionSeqProfile = 'gyroscopesCalibratorSequenceProfile2checkCalib';
+%motionSeqProfile = 'gyroscopesCalibratorSequenceProfile1checkAlgo';
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
