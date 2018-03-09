@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.87"
+    ComputedModelVersion    "1.107"
     NumModelReferences	    0
     NumTestPointedSignals   0
     NumProvidedFunctions    0
@@ -16,7 +16,19 @@ Model {
     HasTerminateEvent	    0
     IsExportFunctionModel   0
     NumParameterArguments   0
-    NumExternalFileReferences 9
+    NumExternalFileReferences 22
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/Configuration"
+      Path		      "debugGyros/Configuration"
+      SID		      "377"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/wholeBodyStates/Get Limits"
+      Path		      "debugGyros/Get Limits"
+      SID		      "375"
+      Type		      "LIBRARY_BLOCK"
+    }
     ExternalFileReference {
       Reference		      "WBToolboxLibrary/Utilities/Real Time Synchronizer"
       Path		      "debugGyros/Real Time Synchronizer"
@@ -24,27 +36,81 @@ Model {
       Type		      "LIBRARY_BLOCK"
     }
     ExternalFileReference {
+      Reference		      "WBToolboxLibrary/wholeBodyActuators/Set References"
+      Path		      "debugGyros/Set References"
+      SID		      "373"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/DiscreteFilter"
+      Path		      "debugGyros/de-offseted norm 1/DiscreteFilter"
+      SID		      "372"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
       Reference		      "WBToolboxLibrary/Utilities/holder\n"
       Path		      "debugGyros/de-offseted norm 1/holder "
-      SID		      "104"
+      SID		      "345"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/DiscreteFilter"
+      Path		      "debugGyros/de-offseted norm 2/DiscreteFilter"
+      SID		      "381"
       Type		      "LIBRARY_BLOCK"
     }
     ExternalFileReference {
       Reference		      "WBToolboxLibrary/Utilities/holder\n"
       Path		      "debugGyros/de-offseted norm 2/holder "
-      SID		      "208"
+      SID		      "386"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/DiscreteFilter"
+      Path		      "debugGyros/de-offseted norm 3/DiscreteFilter"
+      SID		      "392"
       Type		      "LIBRARY_BLOCK"
     }
     ExternalFileReference {
       Reference		      "WBToolboxLibrary/Utilities/holder\n"
       Path		      "debugGyros/de-offseted norm 3/holder "
-      SID		      "219"
+      SID		      "397"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/DiscreteFilter"
+      Path		      "debugGyros/de-offseted norm 4/DiscreteFilter"
+      SID		      "403"
       Type		      "LIBRARY_BLOCK"
     }
     ExternalFileReference {
       Reference		      "WBToolboxLibrary/Utilities/holder\n"
       Path		      "debugGyros/de-offseted norm 4/holder "
-      SID		      "230"
+      SID		      "408"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/DiscreteFilter"
+      Path		      "debugGyros/de-offseted norm 5/DiscreteFilter"
+      SID		      "414"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/holder\n"
+      Path		      "debugGyros/de-offseted norm 5/holder "
+      SID		      "419"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/DiscreteFilter"
+      Path		      "debugGyros/de-offseted norm 6/DiscreteFilter"
+      SID		      "425"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/holder\n"
+      Path		      "debugGyros/de-offseted norm 6/holder "
+      SID		      "430"
       Type		      "LIBRARY_BLOCK"
     }
     ExternalFileReference {
@@ -67,7 +133,19 @@ Model {
     }
     ExternalFileReference {
       Reference		      "WBToolboxLibrary/Utilities/Yarp Read"
-      Path		      "debugGyros/torso GYRO (ems5) Read"
+      Path		      "debugGyros/torso GYRO (ems1) Read"
+      SID		      "358"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/Yarp Read"
+      Path		      "debugGyros/torso GYRO (ems3) Read"
+      SID		      "336"
+      Type		      "LIBRARY_BLOCK"
+    }
+    ExternalFileReference {
+      Reference		      "WBToolboxLibrary/Utilities/Yarp Read"
+      Path		      "debugGyros/waist GYRO (ems5) Read"
       SID		      "20"
       Type		      "LIBRARY_BLOCK"
     }
@@ -77,7 +155,7 @@ Model {
   LogicAnalyzerPlugin	  "on"
   LogicAnalyzerSignalOrdering ""
   DiagnosticSuppressor	  "on"
-  SuppressorTable	  "22 serialization::archive 11 0 6 0 0 0 11 0"
+  SuppressorTable	  "22 serialization::archive 11 0 6 0 0 0 0 0"
   CustomCodeFunctionData  ""
   SLCCPlugin		  "on"
   ScopeRefreshTime	  0.035000
@@ -90,7 +168,7 @@ Model {
   FPTRunName		  "Run 1"
   MaxMDLFileLineLength	  120
   InitFcn		  "ROBOT_DOF=23;"
-  LastSavedArchitecture	  "glnxa64"
+  LastSavedArchitecture	  "maci64"
   Object {
     $PropName		    "BdWindowsInfo"
     $ObjectID		    1
@@ -100,7 +178,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [0.0, 27.0, 1920.0, 1020.0]
+      Location		      [-536.0, -1417.0, 2560.0, 1417.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -124,9 +202,9 @@ Model {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[1882.0, 834.0]
-	ZoomFactor		[0.98053527980535282]
-	Offset			[-1377.179900744417, -265.27791563275434]
+	Extents			[2522.0, 1241.0]
+	ZoomFactor		[0.80437665782493373]
+	Offset			[-2110.9649629018959, -703.641384995878]
       }
       Object {
 	$PropName		"DockComponentsInfo"
@@ -144,12 +222,12 @@ Model {
       }
       WindowState	      "AAAA/wAAAAD9AAAAAgAAAAAAAAC9AAAB+PwCAAAAA/sAAAAWAEQAbwBjAGsAVwBpAGQAZwBlAHQAMwEAAAAxAAAB+AAAA"
       "AAAAAAA+wAAABYARABvAGMAawBXAGkAZABnAGUAdAA0AAAAAAD/////AAAAAAAAAAD7AAAAUgBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0Ac"
-      "ABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAAP////8AAABiAP///wAAAAEAAAAAAAAAAPwCA"
+      "ABvAG4AZQBuAHQALwBHAEwAVQBFADIAIAB0AHIAZQBlACAAYwBvAG0AcABvAG4AZQBuAHQAAAAAAP////8AAABzAP///wAAAAEAAAAAAAAAAPwCA"
       "AAAAfsAAABUAEcATABVAEUAMgA6AFAAcgBvAHAAZQByAHQAeQBJAG4AcwBwAGUAYwB0AG8AcgAvAFAAcgBvAHAAZQByAHQAeQAgAEkAbgBzAHAAZ"
-      "QBjAHQAbwByAAAAAAD/////AAAALAD///8AAAeAAAADgAAAAAEAAAACAAAAAQAAAAL8AAAAAQAAAAIAAAAP/////wAAAAAA/////wAAAAAAAAAA/"
+      "QBjAHQAbwByAAAAAAD/////AAAALgD///8AAAoAAAAFFAAAAAEAAAACAAAAAQAAAAL8AAAAAQAAAAIAAAAP/////wAAAAAA/////wAAAAAAAAAA/"
       "////wEAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/"
-      "////wEAAACA/////wAAAAAAAAAA/////wEAAADo/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAFo/////wAAAAAAAAAA/"
-      "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAANR/////wAAAAAAAAAA/"
+      "////wEAAACE/////wAAAAAAAAAA/////wEAAAD2/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAF6/////wAAAAAAAAAA/"
+      "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA/////wEAAAOh/////wAAAAAAAAAA/"
       "////wAAAAAA/////wAAAAAAAAAA/////wAAAAAA/////wAAAAAAAAAA"
     }
   }
@@ -158,11 +236,11 @@ Model {
   Creator		  "DanielePucci"
   UpdateHistory		  "UpdateHistoryNever"
   ModifiedByFormat	  "%<Auto>"
-  LastModifiedBy	  "icub"
+  LastModifiedBy	  "nunoguedelha"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Jan 31 22:52:59 2018"
-  RTWModifiedTimeStamp	  439337004
-  ModelVersionFormat	  "1.%<AutoIncrement:87>"
+  LastModifiedDate	  "Thu Mar 08 19:48:28 2018"
+  RTWModifiedTimeStamp	  442439303
+  ModelVersionFormat	  "1.%<AutoIncrement:107>"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "disabled"
@@ -293,7 +371,7 @@ Model {
 	  ZeroCrossControl	  "UseLocalSettings"
 	  ZeroCrossAlgorithm	  "Nonadaptive"
 	  AlgebraicLoopSolver	  "TrustRegion"
-	  SolverInfoToggleStatus  off
+	  SolverInfoToggleStatus  on
 	  IsAutoAppliedInSIP	  off
 	  SolverResetMethod	  "Fast"
 	  PositivePriorityOrder	  off
@@ -932,7 +1010,7 @@ Model {
       Name		      "Configuration"
       ExtraOptions	      ""
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition    [ 100, 58, 1180, 720 ]
+      ConfigPrmDlgPosition    [ 100, 71, 1180, 733 ]
     }
     PropName		    "ConfigurationSets"
   }
@@ -1040,6 +1118,21 @@ Model {
       TagVisibility	      "local"
     }
     Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ParamMin		      "[]"
+      ParamMax		      "[]"
+      ParamDataTypeStr	      "Inherit: Same as input"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
       BlockType		      Goto
       GotoTag		      "A"
       IconDisplay	      "Tag"
@@ -1112,6 +1205,19 @@ Model {
       IndexMode		      "One-based"
       InputPortWidth	      "-1"
       SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Sin
+      SineType		      "Time based"
+      TimeSource	      "Use simulation time"
+      Amplitude		      "1"
+      Bias		      "0"
+      Frequency		      "1"
+      Phase		      "0"
+      Samples		      "10"
+      Offset		      "0"
+      SampleTime	      "-1"
+      VectorParams1D	      on
     }
     Block {
       BlockType		      Sqrt
@@ -1187,7 +1293,7 @@ Model {
   }
   System {
     Name		    "debugGyros"
-    Location		    [0, 27, 1920, 1047]
+    Location		    [-536, -1417, 2024, 0]
     Open		    on
     PortBlocksUseCompactNotation off
     ModelBrowserVisibility  off
@@ -1200,15 +1306,36 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "98"
+    ZoomFactor		    "80"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "314"
+    SIDHighWatermark	    "439"
+    Block {
+      BlockType		      Reference
+      Name		      "Configuration"
+      SID		      "377"
+      Ports		      []
+      Position		      [-1085, -495, -1010, -465]
+      ZOrder		      688
+      LibraryVersion	      "1.497"
+      SourceBlock	      "WBToolboxLibrary/Utilities/Configuration"
+      SourceType	      ""
+      SourceProductName	      "Whole Body Toolbox"
+      ContentPreviewEnabled   off
+      ConfigSource	      "Mask"
+      ConfigObject	      "'WBTConfigRobot'"
+      RobotName		      "'icub'"
+      UrdfFile		      "'model.urdf'"
+      ControlledJoints	      "{'torso_yaw'}"
+      ControlBoardsNames      "{'torso'}"
+      LocalName		      "'WBT'"
+      GravityVector	      "[0,0,-9.81]"
+    }
     Block {
       BlockType		      Display
       Name		      "Display"
       SID		      "111"
       Ports		      [1]
-      Position		      [-785, -90, -695, -60]
+      Position		      [-785, 195, -695, 225]
       ZOrder		      603
       Decimation	      "1"
     }
@@ -1217,7 +1344,7 @@ Model {
       Name		      "Display1"
       SID		      "186"
       Ports		      [1]
-      Position		      [-785, 70, -695, 100]
+      Position		      [-785, 355, -695, 385]
       ZOrder		      626
       Decimation	      "1"
     }
@@ -1226,7 +1353,7 @@ Model {
       Name		      "Display2"
       SID		      "187"
       Ports		      [1]
-      Position		      [-785, 230, -695, 260]
+      Position		      [-785, 515, -695, 545]
       ZOrder		      627
       Decimation	      "1"
     }
@@ -1235,27 +1362,45 @@ Model {
       Name		      "Display3"
       SID		      "188"
       Ports		      [1]
-      Position		      [-785, 390, -695, 420]
+      Position		      [-785, 675, -695, 705]
       ZOrder		      628
+      Decimation	      "1"
+    }
+    Block {
+      BlockType		      Display
+      Name		      "Display4"
+      SID		      "315"
+      Ports		      [1]
+      Position		      [-785, 35, -695, 65]
+      ZOrder		      665
+      Decimation	      "1"
+    }
+    Block {
+      BlockType		      Display
+      Name		      "Display5"
+      SID		      "337"
+      Ports		      [1]
+      Position		      [-785, -125, -695, -95]
+      ZOrder		      671
       Decimation	      "1"
     }
     Block {
       BlockType		      From
       Name		      "From"
       SID		      "196"
-      Position		      [-10, -99, 30, -71]
+      Position		      [5, -34, 45, -6]
       ZOrder		      636
       GotoTag		      "norm1"
       Port {
 	PortNumber		1
-	Name			"torso EMS 5"
+	Name			"waist EMS 5"
       }
     }
     Block {
       BlockType		      From
       Name		      "From1"
       SID		      "197"
-      Position		      [-10, -49, 30, -21]
+      Position		      [5, 16, 45, 44]
       ZOrder		      637
       GotoTag		      "norm2"
       Port {
@@ -1265,9 +1410,81 @@ Model {
     }
     Block {
       BlockType		      From
+      Name		      "From10"
+      SID		      "361"
+      Position		      [-10, 851, 30, 879]
+      ZOrder		      677
+      GotoTag		      "raw5"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 1"
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From11"
+      SID		      "362"
+      Position		      [-10, 901, 30, 929]
+      ZOrder		      678
+      GotoTag		      "raw6"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 3"
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From12"
+      SID		      "364"
+      Position		      [-10, 951, 30, 979]
+      ZOrder		      680
+      GotoTag		      "raw7"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 1+3"
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From13"
+      SID		      "437"
+      Position		      [680, 741, 720, 769]
+      ZOrder		      698
+      GotoTag		      "raw5"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 1"
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From14"
+      SID		      "438"
+      Position		      [680, 791, 720, 819]
+      ZOrder		      699
+      GotoTag		      "raw6"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 3"
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From15"
+      SID		      "439"
+      Position		      [680, 841, 720, 869]
+      ZOrder		      700
+      GotoTag		      "raw7"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 1+3"
+      }
+    }
+    Block {
+      BlockType		      From
       Name		      "From2"
       SID		      "198"
-      Position		      [-10, 1, 30, 29]
+      Position		      [5, 66, 45, 94]
       ZOrder		      638
       GotoTag		      "norm3"
       Port {
@@ -1279,7 +1496,7 @@ Model {
       BlockType		      From
       Name		      "From3"
       SID		      "199"
-      Position		      [-10, 51, 30, 79]
+      Position		      [5, 116, 45, 144]
       ZOrder		      639
       GotoTag		      "norm4"
       Port {
@@ -1291,19 +1508,19 @@ Model {
       BlockType		      From
       Name		      "From4"
       SID		      "234"
-      Position		      [-10, 366, 30, 394]
+      Position		      [-10, 651, 30, 679]
       ZOrder		      651
       GotoTag		      "raw1"
       Port {
 	PortNumber		1
-	Name			"torso EMS 5"
+	Name			"waist EMS 5"
       }
     }
     Block {
       BlockType		      From
       Name		      "From5"
       SID		      "235"
-      Position		      [-10, 416, 30, 444]
+      Position		      [-10, 701, 30, 729]
       ZOrder		      652
       GotoTag		      "raw2"
       Port {
@@ -1315,7 +1532,7 @@ Model {
       BlockType		      From
       Name		      "From6"
       SID		      "236"
-      Position		      [-10, 466, 30, 494]
+      Position		      [-10, 751, 30, 779]
       ZOrder		      653
       GotoTag		      "raw3"
       Port {
@@ -1327,7 +1544,7 @@ Model {
       BlockType		      From
       Name		      "From7"
       SID		      "237"
-      Position		      [-10, 516, 30, 544]
+      Position		      [-10, 801, 30, 829]
       ZOrder		      654
       GotoTag		      "raw4"
       Port {
@@ -1336,10 +1553,61 @@ Model {
       }
     }
     Block {
+      BlockType		      From
+      Name		      "From8"
+      SID		      "359"
+      Position		      [5, 166, 45, 194]
+      ZOrder		      675
+      GotoTag		      "norm5"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 1"
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From9"
+      SID		      "360"
+      Position		      [5, 216, 45, 244]
+      ZOrder		      676
+      GotoTag		      "norm6"
+      Port {
+	PortNumber		1
+	Name			"torso EMS 3"
+      }
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "Gain"
+      SID		      "435"
+      Position		      [-580, -200, -550, -170]
+      ZOrder		      696
+      Gain		      "0.5"
+      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Get Limits"
+      SID		      "375"
+      Ports		      [0, 2]
+      Position		      [-1130, -357, -1010, -328]
+      ZOrder		      686
+      BackgroundColor	      "[0.513700, 0.851000, 0.670600]"
+      LibraryVersion	      "1.497"
+      SourceBlock	      "WBToolboxLibrary/wholeBodyStates/Get Limits"
+      SourceType	      "Get Limits"
+      SourceProductName	      "Whole Body Toolbox"
+      ContentPreviewEnabled   off
+      limitsSource	      "ControlBoard"
+      limitsType	      "Position"
+    }
+    Block {
       BlockType		      Goto
       Name		      "Goto"
       SID		      "192"
-      Position		      [-310, -60, -270, -30]
+      Position		      [-310, 225, -270, 255]
       ZOrder		      632
       GotoTag		      "norm1"
     }
@@ -1347,15 +1615,39 @@ Model {
       BlockType		      Goto
       Name		      "Goto1"
       SID		      "201"
-      Position		      [-310, 100, -270, 130]
+      Position		      [-310, 385, -270, 415]
       ZOrder		      642
       GotoTag		      "norm2"
     }
     Block {
       BlockType		      Goto
+      Name		      "Goto10"
+      SID		      "338"
+      Position		      [-310, -95, -270, -65]
+      ZOrder		      673
+      GotoTag		      "norm5"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto11"
+      SID		      "339"
+      Position		      [-310, -130, -270, -100]
+      ZOrder		      674
+      GotoTag		      "raw5"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto12"
+      SID		      "365"
+      Position		      [-310, -200, -270, -170]
+      ZOrder		      681
+      GotoTag		      "raw7"
+    }
+    Block {
+      BlockType		      Goto
       Name		      "Goto2"
       SID		      "202"
-      Position		      [-310, 65, -270, 95]
+      Position		      [-310, 350, -270, 380]
       ZOrder		      643
       GotoTag		      "raw2"
     }
@@ -1363,7 +1655,7 @@ Model {
       BlockType		      Goto
       Name		      "Goto3"
       SID		      "212"
-      Position		      [-310, 260, -270, 290]
+      Position		      [-310, 545, -270, 575]
       ZOrder		      645
       GotoTag		      "norm3"
     }
@@ -1371,7 +1663,7 @@ Model {
       BlockType		      Goto
       Name		      "Goto4"
       SID		      "200"
-      Position		      [-310, -95, -270, -65]
+      Position		      [-310, 190, -270, 220]
       ZOrder		      640
       GotoTag		      "raw1"
     }
@@ -1379,7 +1671,7 @@ Model {
       BlockType		      Goto
       Name		      "Goto5"
       SID		      "213"
-      Position		      [-310, 225, -270, 255]
+      Position		      [-310, 510, -270, 540]
       ZOrder		      646
       GotoTag		      "raw3"
     }
@@ -1387,7 +1679,7 @@ Model {
       BlockType		      Goto
       Name		      "Goto6"
       SID		      "223"
-      Position		      [-310, 420, -270, 450]
+      Position		      [-310, 705, -270, 735]
       ZOrder		      648
       GotoTag		      "norm4"
     }
@@ -1395,18 +1687,35 @@ Model {
       BlockType		      Goto
       Name		      "Goto7"
       SID		      "224"
-      Position		      [-310, 385, -270, 415]
+      Position		      [-310, 670, -270, 700]
       ZOrder		      649
       GotoTag		      "raw4"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto8"
+      SID		      "316"
+      Position		      [-310, 65, -270, 95]
+      ZOrder		      667
+      GotoTag		      "norm6"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto9"
+      SID		      "317"
+      Position		      [-310, 30, -270, 60]
+      ZOrder		      668
+      GotoTag		      "raw6"
     }
     Block {
       BlockType		      Mux
       Name		      "Mux"
       SID		      "191"
-      Ports		      [4, 1]
-      Position		      [-150, -94, -145, 554]
+      Ports		      [6, 1]
+      Position		      [-150, -125, -145, 835]
       ZOrder		      631
       ShowName		      off
+      Inputs		      "6"
       DisplayOption	      "bar"
     }
     Block {
@@ -1414,29 +1723,96 @@ Model {
       Name		      "Real Time Synchronizer"
       SID		      "16"
       Ports		      []
-      Position		      [-1320, -251, -1195, -214]
+      Position		      [-1320, -501, -1195, -464]
       ZOrder		      514
       ForegroundColor	      "[0.916667, 0.916667, 0.916667]"
       BackgroundColor	      "gray"
       ShowName		      off
-      LibraryVersion	      "1.480"
+      LibraryVersion	      "1.497"
       SourceBlock	      "WBToolboxLibrary/Utilities/Real Time Synchronizer"
       SourceType	      "Real Time Synchronizer"
       SourceProductName	      "Whole Body Toolbox"
-      period		      "0.01"
+      period		      "CONFIG.Ts"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Scope"
+      SID		      "378"
+      Ports		      [1]
+      Position		      [-785, -291, -755, -259]
+      ZOrder		      689
+      ScopeSpecificationString "Simulink.scopes.TimeScopeBlockCfg('CurrentConfiguration', extmgr.ConfigurationSet(extm"
+      "gr.Configuration('Core','General UI',true),extmgr.Configuration('Core','Source UI',true),extmgr.Configuration('S"
+      "ources','WiredSimulink',true,'DataLoggingVariableName','ScopeData1'),extmgr.Configuration('Visuals','Time Domain"
+      "',true,'SerializedDisplays',{struct('MinYLimReal','-0.0625','MaxYLimReal','0.5625','YLabelReal','','MinYLimMag',"
+      "'0.00000','MaxYLimMag','0.5625','LegendVisibility','off','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesCol"
+      "or',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.06666666"
+      "66666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.8313725"
+      "49019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0."
+      "650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',1"
+      ",'LineNames',{{'Sine Wave Function'}},'ShowContent',true,'Placement',1)},'DisplayPropertyDefaults',struct('MinYL"
+      "imReal','-0.0625','MaxYLimReal','0.5625','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','0.5625','LegendVis"
+      "ibility','off','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.68627450980"
+      "3922 0.686274509803922 0.686274509803922],'ColorOrder',[0.0745098039215686 0.623529411764706 1;1 0.4117647058823"
+      "53 0.16078431372549;1 1 0.0666666666666667;0.717647058823529 0.274509803921569 1;0.392156862745098 0.83137254901"
+      "9608 0.0745098039215686;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863])),extmgr.Configuration('T"
+      "ools','Plot Navigation',true,'PreviousAutoscale','XY'),extmgr.Configuration('Tools','Measurements',true,'Version"
+      "','2017b')),'Version','2017b','Position',[-21 1253 857 660])"
+      NumInputPorts	      "1"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Set References"
+      SID		      "373"
+      Ports		      [1]
+      Position		      [-650, -370, -575, -320]
+      ZOrder		      684
+      BackgroundColor	      "[0.513700, 0.851000, 0.670600]"
+      LibraryVersion	      "1.497"
+      SourceBlock	      "WBToolboxLibrary/wholeBodyActuators/Set References"
+      SourceType	      "Set References"
+      SourceProductName	      "Whole Body Toolbox"
+      ContentPreviewEnabled   off
+      controlType	      "Position"
+      refSpeed		      "20"
+    }
+    Block {
+      BlockType		      Sin
+      Name		      "Sine Wave\nFunction"
+      SID		      "367"
+      Ports		      [0, 1]
+      Position		      [-940, -360, -910, -330]
+      ZOrder		      682
+      Amplitude		      "0.5"
+      Frequency		      "pi/2"
+      SampleTime	      "CONFIG.Ts"
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum"
+      SID		      "363"
+      Ports		      [2, 1]
+      Position		      [-625, -195, -605, -175]
+      ZOrder		      679
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|++"
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
     }
     Block {
       BlockType		      SubSystem
       Name		      "de-offseted norm 1"
-      SID		      "99"
+      SID		      "340"
       Ports		      [1, 3]
-      Position		      [-585, -96, -350, 6]
-      ZOrder		      598
+      Position		      [-585, -131, -350, -29]
+      ZOrder		      670
       RequestExecContextInheritance off
       Variant		      off
       System {
 	Name			"de-offseted norm 1"
-	Location		[0, 27, 1920, 1047]
+	Location		[-536, -1417, 2024, 0]
 	Open			off
 	PortBlocksUseCompactNotation off
 	ModelBrowserVisibility	off
@@ -1449,34 +1825,68 @@ Model {
 	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"117"
+	ZoomFactor		"80"
 	Block {
 	  BlockType		  Inport
 	  Name			  "vector [3]"
-	  SID			  "100"
+	  SID			  "341"
 	  Position		  [15, 123, 45, 137]
 	  ZOrder		  576
 	  IconDisplay		  "Port number"
 	}
 	Block {
+	  BlockType		  Reference
+	  Name			  "DiscreteFilter"
+	  SID			  "372"
+	  Ports			  [1, 1]
+	  Position		  [135, 115, 195, 145]
+	  ZOrder		  585
+	  BackgroundColor	  "yellow"
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/DiscreteFilter"
+	  SourceType		  "Discrete Filter"
+	  SourceProductName	  "Whole Body Toolbox"
+	  filterType		  "FirstOrderLowPassFilter"
+	  numCoeffs		  "[0]"
+	  denCoeffs		  "[0]"
+	  Fc			  "10"
+	  Ts			  "CONFIG.Ts"
+	  orderMedianFilter	  "0"
+	  initStatus		  off
+	  y0			  "[0]"
+	  u0			  "[0]"
+	}
+	Block {
 	  BlockType		  DotProduct
 	  Name			  "Dot Product1"
-	  SID			  "101"
-	  Position		  [465, 122, 495, 153]
+	  SID			  "342"
+	  Position		  [525, 122, 555, 153]
 	  ZOrder		  579
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
 	}
 	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  "370"
+	  Position		  [420, 115, 450, 145]
+	  ZOrder		  583
+	  Gain			  "(250)/(2^15)"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Nearest"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
 	  BlockType		  Sqrt
 	  Name			  "Sqrt1"
-	  SID			  "102"
-	  Position		  [510, 125, 540, 155]
+	  SID			  "343"
+	  Position		  [570, 125, 600, 155]
 	  ZOrder		  580
 	}
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum"
-	  SID			  "103"
+	  SID			  "344"
 	  Ports			  [2, 1]
 	  Position		  [345, 120, 365, 140]
 	  ZOrder		  523
@@ -1490,13 +1900,13 @@ Model {
 	Block {
 	  BlockType		  Reference
 	  Name			  "holder\n"
-	  SID			  "104"
+	  SID			  "345"
 	  Ports			  [1, 1]
 	  Position		  [280, 154, 340, 176]
 	  ZOrder		  524
 	  BackgroundColor	  "[0.537255, 0.721569, 1.000000]"
 	  ShowName		  off
-	  LibraryVersion	  "1.480"
+	  LibraryVersion	  "1.497"
 	  SourceBlock		  "WBToolboxLibrary/Utilities/holder\n"
 	  SourceType		  "Holder"
 	  SourceProductName	  "Whole Body Toolbox"
@@ -1505,16 +1915,16 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "raw meas."
-	  SID			  "128"
-	  Position		  [700, 68, 730, 82]
+	  SID			  "346"
+	  Position		  [760, 68, 790, 82]
 	  ZOrder		  581
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "corr. norm (no offset)"
-	  SID			  "105"
-	  Position		  [700, 133, 730, 147]
+	  SID			  "347"
+	  Position		  [760, 133, 790, 147]
 	  ZOrder		  577
 	  Port			  "2"
 	  IconDisplay		  "Port number"
@@ -1522,8 +1932,8 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "offsets"
-	  SID			  "106"
-	  Position		  [700, 238, 730, 252]
+	  SID			  "348"
+	  Position		  [760, 238, 790, 252]
 	  ZOrder		  578
 	  Port			  "3"
 	  IconDisplay		  "Port number"
@@ -1534,7 +1944,7 @@ Model {
 	  SrcPort		  1
 	  Points		  [10, 0]
 	  Branch {
-	    ZOrder		    2
+	    ZOrder		    16
 	    Points		    [0, 80]
 	    DstBlock		    "offsets"
 	    DstPort		    1
@@ -1546,73 +1956,87 @@ Model {
 	  }
 	}
 	Line {
-	  ZOrder		  12
+	  ZOrder		  4
 	  SrcBlock		  "vector [3]"
 	  SrcPort		  1
-	  Points		  [205, 0]
-	  Branch {
-	    ZOrder		    14
-	    Points		    [0, 35]
-	    DstBlock		    "holder\n"
-	    DstPort		    1
-	  }
-	  Branch {
-	    ZOrder		    13
-	    DstBlock		    "Sum"
-	    DstPort		    1
-	  }
+	  DstBlock		  "DiscreteFilter"
+	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  17
+	  ZOrder		  7
 	  SrcBlock		  "Dot Product1"
 	  SrcPort		  1
 	  DstBlock		  "Sqrt1"
 	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  19
+	  ZOrder		  17
 	  SrcBlock		  "Sum"
 	  SrcPort		  1
-	  Points		  [55, 0]
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  12
+	  SrcBlock		  "Sqrt1"
+	  SrcPort		  1
+	  DstBlock		  "corr. norm (no offset)"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  18
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [30, 0]
 	  Branch {
-	    ZOrder		    23
+	    ZOrder		    9
 	    Points		    [0, -55]
 	    DstBlock		    "raw meas."
 	    DstPort		    1
 	  }
 	  Branch {
-	    ZOrder		    22
+	    ZOrder		    10
 	    Points		    [0, 15]
 	    DstBlock		    "Dot Product1"
 	    DstPort		    2
 	  }
 	  Branch {
-	    ZOrder		    21
+	    ZOrder		    11
 	    DstBlock		    "Dot Product1"
 	    DstPort		    1
 	  }
 	}
 	Line {
-	  ZOrder		  20
-	  SrcBlock		  "Sqrt1"
+	  ZOrder		  28
+	  SrcBlock		  "DiscreteFilter"
 	  SrcPort		  1
-	  DstBlock		  "corr. norm (no offset)"
-	  DstPort		  1
+	  Points		  [55, 0]
+	  Branch {
+	    ZOrder		    5
+	    Points		    [0, 35]
+	    DstBlock		    "holder\n"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    6
+	    DstBlock		    "Sum"
+	    DstPort		    1
+	  }
 	}
       }
     }
     Block {
       BlockType		      SubSystem
       Name		      "de-offseted norm 2"
-      SID		      "203"
+      SID		      "379"
       Ports		      [1, 3]
-      Position		      [-585, 64, -350, 166]
-      ZOrder		      641
+      Position		      [-585, 29, -350, 131]
+      ZOrder		      690
       RequestExecContextInheritance off
       Variant		      off
       System {
 	Name			"de-offseted norm 2"
-	Location		[0, 27, 1920, 1047]
+	Location		[-536, -1417, 2024, 0]
 	Open			off
 	PortBlocksUseCompactNotation off
 	ModelBrowserVisibility	off
@@ -1625,34 +2049,68 @@ Model {
 	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"117"
+	ZoomFactor		"80"
 	Block {
 	  BlockType		  Inport
 	  Name			  "vector [3]"
-	  SID			  "204"
+	  SID			  "380"
 	  Position		  [15, 123, 45, 137]
 	  ZOrder		  576
 	  IconDisplay		  "Port number"
 	}
 	Block {
+	  BlockType		  Reference
+	  Name			  "DiscreteFilter"
+	  SID			  "381"
+	  Ports			  [1, 1]
+	  Position		  [135, 115, 195, 145]
+	  ZOrder		  585
+	  BackgroundColor	  "yellow"
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/DiscreteFilter"
+	  SourceType		  "Discrete Filter"
+	  SourceProductName	  "Whole Body Toolbox"
+	  filterType		  "FirstOrderLowPassFilter"
+	  numCoeffs		  "[0]"
+	  denCoeffs		  "[0]"
+	  Fc			  "10"
+	  Ts			  "CONFIG.Ts"
+	  orderMedianFilter	  "0"
+	  initStatus		  off
+	  y0			  "[0]"
+	  u0			  "[0]"
+	}
+	Block {
 	  BlockType		  DotProduct
 	  Name			  "Dot Product1"
-	  SID			  "205"
-	  Position		  [465, 122, 495, 153]
+	  SID			  "382"
+	  Position		  [525, 122, 555, 153]
 	  ZOrder		  579
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
 	}
 	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  "383"
+	  Position		  [420, 115, 450, 145]
+	  ZOrder		  583
+	  Gain			  "(250)/(2^15)"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Nearest"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
 	  BlockType		  Sqrt
 	  Name			  "Sqrt1"
-	  SID			  "206"
-	  Position		  [510, 125, 540, 155]
+	  SID			  "384"
+	  Position		  [570, 125, 600, 155]
 	  ZOrder		  580
 	}
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum"
-	  SID			  "207"
+	  SID			  "385"
 	  Ports			  [2, 1]
 	  Position		  [345, 120, 365, 140]
 	  ZOrder		  523
@@ -1666,13 +2124,13 @@ Model {
 	Block {
 	  BlockType		  Reference
 	  Name			  "holder\n"
-	  SID			  "208"
+	  SID			  "386"
 	  Ports			  [1, 1]
 	  Position		  [280, 154, 340, 176]
 	  ZOrder		  524
 	  BackgroundColor	  "[0.537255, 0.721569, 1.000000]"
 	  ShowName		  off
-	  LibraryVersion	  "1.480"
+	  LibraryVersion	  "1.497"
 	  SourceBlock		  "WBToolboxLibrary/Utilities/holder\n"
 	  SourceType		  "Holder"
 	  SourceProductName	  "Whole Body Toolbox"
@@ -1681,16 +2139,16 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "raw meas."
-	  SID			  "209"
-	  Position		  [700, 68, 730, 82]
+	  SID			  "387"
+	  Position		  [760, 68, 790, 82]
 	  ZOrder		  581
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "corr. norm (no offset)"
-	  SID			  "210"
-	  Position		  [700, 133, 730, 147]
+	  SID			  "388"
+	  Position		  [760, 133, 790, 147]
 	  ZOrder		  577
 	  Port			  "2"
 	  IconDisplay		  "Port number"
@@ -1698,8 +2156,8 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "offsets"
-	  SID			  "211"
-	  Position		  [700, 238, 730, 252]
+	  SID			  "389"
+	  Position		  [760, 238, 790, 252]
 	  ZOrder		  578
 	  Port			  "3"
 	  IconDisplay		  "Port number"
@@ -1725,31 +2183,35 @@ Model {
 	  ZOrder		  4
 	  SrcBlock		  "vector [3]"
 	  SrcPort		  1
-	  Points		  [205, 0]
-	  Branch {
-	    ZOrder		    5
-	    Points		    [0, 35]
-	    DstBlock		    "holder\n"
-	    DstPort		    1
-	  }
-	  Branch {
-	    ZOrder		    6
-	    DstBlock		    "Sum"
-	    DstPort		    1
-	  }
+	  DstBlock		  "DiscreteFilter"
+	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  7
+	  ZOrder		  5
 	  SrcBlock		  "Dot Product1"
 	  SrcPort		  1
 	  DstBlock		  "Sqrt1"
 	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  8
+	  ZOrder		  6
 	  SrcBlock		  "Sum"
 	  SrcPort		  1
-	  Points		  [55, 0]
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  7
+	  SrcBlock		  "Sqrt1"
+	  SrcPort		  1
+	  DstBlock		  "corr. norm (no offset)"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  8
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [30, 0]
 	  Branch {
 	    ZOrder		    9
 	    Points		    [0, -55]
@@ -1770,25 +2232,35 @@ Model {
 	}
 	Line {
 	  ZOrder		  12
-	  SrcBlock		  "Sqrt1"
+	  SrcBlock		  "DiscreteFilter"
 	  SrcPort		  1
-	  DstBlock		  "corr. norm (no offset)"
-	  DstPort		  1
+	  Points		  [55, 0]
+	  Branch {
+	    ZOrder		    13
+	    Points		    [0, 35]
+	    DstBlock		    "holder\n"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    14
+	    DstBlock		    "Sum"
+	    DstPort		    1
+	  }
 	}
       }
     }
     Block {
       BlockType		      SubSystem
       Name		      "de-offseted norm 3"
-      SID		      "214"
+      SID		      "390"
       Ports		      [1, 3]
-      Position		      [-585, 224, -350, 326]
-      ZOrder		      644
+      Position		      [-585, 189, -350, 291]
+      ZOrder		      691
       RequestExecContextInheritance off
       Variant		      off
       System {
 	Name			"de-offseted norm 3"
-	Location		[0, 27, 1920, 1047]
+	Location		[-536, -1417, 2024, 0]
 	Open			off
 	PortBlocksUseCompactNotation off
 	ModelBrowserVisibility	off
@@ -1801,34 +2273,68 @@ Model {
 	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"117"
+	ZoomFactor		"80"
 	Block {
 	  BlockType		  Inport
 	  Name			  "vector [3]"
-	  SID			  "215"
+	  SID			  "391"
 	  Position		  [15, 123, 45, 137]
 	  ZOrder		  576
 	  IconDisplay		  "Port number"
 	}
 	Block {
+	  BlockType		  Reference
+	  Name			  "DiscreteFilter"
+	  SID			  "392"
+	  Ports			  [1, 1]
+	  Position		  [135, 115, 195, 145]
+	  ZOrder		  585
+	  BackgroundColor	  "yellow"
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/DiscreteFilter"
+	  SourceType		  "Discrete Filter"
+	  SourceProductName	  "Whole Body Toolbox"
+	  filterType		  "FirstOrderLowPassFilter"
+	  numCoeffs		  "[0]"
+	  denCoeffs		  "[0]"
+	  Fc			  "1000"
+	  Ts			  "CONFIG.Ts"
+	  orderMedianFilter	  "0"
+	  initStatus		  off
+	  y0			  "[0]"
+	  u0			  "[0]"
+	}
+	Block {
 	  BlockType		  DotProduct
 	  Name			  "Dot Product1"
-	  SID			  "216"
-	  Position		  [465, 122, 495, 153]
+	  SID			  "393"
+	  Position		  [525, 122, 555, 153]
 	  ZOrder		  579
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
 	}
 	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  "394"
+	  Position		  [420, 115, 450, 145]
+	  ZOrder		  583
+	  Gain			  "(250)/(2^15)"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Nearest"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
 	  BlockType		  Sqrt
 	  Name			  "Sqrt1"
-	  SID			  "217"
-	  Position		  [510, 125, 540, 155]
+	  SID			  "395"
+	  Position		  [570, 125, 600, 155]
 	  ZOrder		  580
 	}
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum"
-	  SID			  "218"
+	  SID			  "396"
 	  Ports			  [2, 1]
 	  Position		  [345, 120, 365, 140]
 	  ZOrder		  523
@@ -1842,13 +2348,13 @@ Model {
 	Block {
 	  BlockType		  Reference
 	  Name			  "holder\n"
-	  SID			  "219"
+	  SID			  "397"
 	  Ports			  [1, 1]
 	  Position		  [280, 154, 340, 176]
 	  ZOrder		  524
 	  BackgroundColor	  "[0.537255, 0.721569, 1.000000]"
 	  ShowName		  off
-	  LibraryVersion	  "1.480"
+	  LibraryVersion	  "1.497"
 	  SourceBlock		  "WBToolboxLibrary/Utilities/holder\n"
 	  SourceType		  "Holder"
 	  SourceProductName	  "Whole Body Toolbox"
@@ -1857,16 +2363,16 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "raw meas."
-	  SID			  "220"
-	  Position		  [700, 68, 730, 82]
+	  SID			  "398"
+	  Position		  [760, 68, 790, 82]
 	  ZOrder		  581
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "corr. norm (no offset)"
-	  SID			  "221"
-	  Position		  [700, 133, 730, 147]
+	  SID			  "399"
+	  Position		  [760, 133, 790, 147]
 	  ZOrder		  577
 	  Port			  "2"
 	  IconDisplay		  "Port number"
@@ -1874,8 +2380,8 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "offsets"
-	  SID			  "222"
-	  Position		  [700, 238, 730, 252]
+	  SID			  "400"
+	  Position		  [760, 238, 790, 252]
 	  ZOrder		  578
 	  Port			  "3"
 	  IconDisplay		  "Port number"
@@ -1901,31 +2407,35 @@ Model {
 	  ZOrder		  4
 	  SrcBlock		  "vector [3]"
 	  SrcPort		  1
-	  Points		  [205, 0]
-	  Branch {
-	    ZOrder		    5
-	    Points		    [0, 35]
-	    DstBlock		    "holder\n"
-	    DstPort		    1
-	  }
-	  Branch {
-	    ZOrder		    6
-	    DstBlock		    "Sum"
-	    DstPort		    1
-	  }
+	  DstBlock		  "DiscreteFilter"
+	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  7
+	  ZOrder		  5
 	  SrcBlock		  "Dot Product1"
 	  SrcPort		  1
 	  DstBlock		  "Sqrt1"
 	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  8
+	  ZOrder		  6
 	  SrcBlock		  "Sum"
 	  SrcPort		  1
-	  Points		  [55, 0]
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  7
+	  SrcBlock		  "Sqrt1"
+	  SrcPort		  1
+	  DstBlock		  "corr. norm (no offset)"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  8
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [30, 0]
 	  Branch {
 	    ZOrder		    9
 	    Points		    [0, -55]
@@ -1946,25 +2456,35 @@ Model {
 	}
 	Line {
 	  ZOrder		  12
-	  SrcBlock		  "Sqrt1"
+	  SrcBlock		  "DiscreteFilter"
 	  SrcPort		  1
-	  DstBlock		  "corr. norm (no offset)"
-	  DstPort		  1
+	  Points		  [55, 0]
+	  Branch {
+	    ZOrder		    13
+	    Points		    [0, 35]
+	    DstBlock		    "holder\n"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    14
+	    DstBlock		    "Sum"
+	    DstPort		    1
+	  }
 	}
       }
     }
     Block {
       BlockType		      SubSystem
       Name		      "de-offseted norm 4"
-      SID		      "225"
+      SID		      "401"
       Ports		      [1, 3]
-      Position		      [-585, 384, -350, 486]
-      ZOrder		      647
+      Position		      [-585, 349, -350, 451]
+      ZOrder		      692
       RequestExecContextInheritance off
       Variant		      off
       System {
 	Name			"de-offseted norm 4"
-	Location		[0, 27, 1920, 1047]
+	Location		[-536, -1417, 2024, 0]
 	Open			off
 	PortBlocksUseCompactNotation off
 	ModelBrowserVisibility	off
@@ -1977,34 +2497,68 @@ Model {
 	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
 	TiledPageScale		1
 	ShowPageBoundaries	off
-	ZoomFactor		"117"
+	ZoomFactor		"80"
 	Block {
 	  BlockType		  Inport
 	  Name			  "vector [3]"
-	  SID			  "226"
+	  SID			  "402"
 	  Position		  [15, 123, 45, 137]
 	  ZOrder		  576
 	  IconDisplay		  "Port number"
 	}
 	Block {
+	  BlockType		  Reference
+	  Name			  "DiscreteFilter"
+	  SID			  "403"
+	  Ports			  [1, 1]
+	  Position		  [135, 115, 195, 145]
+	  ZOrder		  585
+	  BackgroundColor	  "yellow"
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/DiscreteFilter"
+	  SourceType		  "Discrete Filter"
+	  SourceProductName	  "Whole Body Toolbox"
+	  filterType		  "FirstOrderLowPassFilter"
+	  numCoeffs		  "[0]"
+	  denCoeffs		  "[0]"
+	  Fc			  "1000"
+	  Ts			  "CONFIG.Ts"
+	  orderMedianFilter	  "0"
+	  initStatus		  off
+	  y0			  "[0]"
+	  u0			  "[0]"
+	}
+	Block {
 	  BlockType		  DotProduct
 	  Name			  "Dot Product1"
-	  SID			  "227"
-	  Position		  [465, 122, 495, 153]
+	  SID			  "404"
+	  Position		  [525, 122, 555, 153]
 	  ZOrder		  579
 	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
 	}
 	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  "405"
+	  Position		  [420, 115, 450, 145]
+	  ZOrder		  583
+	  Gain			  "(250)/(2^15)"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Nearest"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
 	  BlockType		  Sqrt
 	  Name			  "Sqrt1"
-	  SID			  "228"
-	  Position		  [510, 125, 540, 155]
+	  SID			  "406"
+	  Position		  [570, 125, 600, 155]
 	  ZOrder		  580
 	}
 	Block {
 	  BlockType		  Sum
 	  Name			  "Sum"
-	  SID			  "229"
+	  SID			  "407"
 	  Ports			  [2, 1]
 	  Position		  [345, 120, 365, 140]
 	  ZOrder		  523
@@ -2018,13 +2572,13 @@ Model {
 	Block {
 	  BlockType		  Reference
 	  Name			  "holder\n"
-	  SID			  "230"
+	  SID			  "408"
 	  Ports			  [1, 1]
 	  Position		  [280, 154, 340, 176]
 	  ZOrder		  524
 	  BackgroundColor	  "[0.537255, 0.721569, 1.000000]"
 	  ShowName		  off
-	  LibraryVersion	  "1.480"
+	  LibraryVersion	  "1.497"
 	  SourceBlock		  "WBToolboxLibrary/Utilities/holder\n"
 	  SourceType		  "Holder"
 	  SourceProductName	  "Whole Body Toolbox"
@@ -2033,16 +2587,16 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "raw meas."
-	  SID			  "231"
-	  Position		  [700, 68, 730, 82]
+	  SID			  "409"
+	  Position		  [760, 68, 790, 82]
 	  ZOrder		  581
 	  IconDisplay		  "Port number"
 	}
 	Block {
 	  BlockType		  Outport
 	  Name			  "corr. norm (no offset)"
-	  SID			  "232"
-	  Position		  [700, 133, 730, 147]
+	  SID			  "410"
+	  Position		  [760, 133, 790, 147]
 	  ZOrder		  577
 	  Port			  "2"
 	  IconDisplay		  "Port number"
@@ -2050,8 +2604,8 @@ Model {
 	Block {
 	  BlockType		  Outport
 	  Name			  "offsets"
-	  SID			  "233"
-	  Position		  [700, 238, 730, 252]
+	  SID			  "411"
+	  Position		  [760, 238, 790, 252]
 	  ZOrder		  578
 	  Port			  "3"
 	  IconDisplay		  "Port number"
@@ -2077,31 +2631,35 @@ Model {
 	  ZOrder		  4
 	  SrcBlock		  "vector [3]"
 	  SrcPort		  1
-	  Points		  [205, 0]
-	  Branch {
-	    ZOrder		    5
-	    Points		    [0, 35]
-	    DstBlock		    "holder\n"
-	    DstPort		    1
-	  }
-	  Branch {
-	    ZOrder		    6
-	    DstBlock		    "Sum"
-	    DstPort		    1
-	  }
+	  DstBlock		  "DiscreteFilter"
+	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  7
+	  ZOrder		  5
 	  SrcBlock		  "Dot Product1"
 	  SrcPort		  1
 	  DstBlock		  "Sqrt1"
 	  DstPort		  1
 	}
 	Line {
-	  ZOrder		  8
+	  ZOrder		  6
 	  SrcBlock		  "Sum"
 	  SrcPort		  1
-	  Points		  [55, 0]
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  7
+	  SrcBlock		  "Sqrt1"
+	  SrcPort		  1
+	  DstBlock		  "corr. norm (no offset)"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  8
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [30, 0]
 	  Branch {
 	    ZOrder		    9
 	    Points		    [0, -55]
@@ -2122,10 +2680,468 @@ Model {
 	}
 	Line {
 	  ZOrder		  12
+	  SrcBlock		  "DiscreteFilter"
+	  SrcPort		  1
+	  Points		  [55, 0]
+	  Branch {
+	    ZOrder		    13
+	    Points		    [0, 35]
+	    DstBlock		    "holder\n"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    14
+	    DstBlock		    "Sum"
+	    DstPort		    1
+	  }
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "de-offseted norm 5"
+      SID		      "412"
+      Ports		      [1, 3]
+      Position		      [-585, 509, -350, 611]
+      ZOrder		      693
+      RequestExecContextInheritance off
+      Variant		      off
+      System {
+	Name			"de-offseted norm 5"
+	Location		[-536, -1417, 2024, 0]
+	Open			off
+	PortBlocksUseCompactNotation off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"80"
+	Block {
+	  BlockType		  Inport
+	  Name			  "vector [3]"
+	  SID			  "413"
+	  Position		  [15, 123, 45, 137]
+	  ZOrder		  576
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "DiscreteFilter"
+	  SID			  "414"
+	  Ports			  [1, 1]
+	  Position		  [135, 115, 195, 145]
+	  ZOrder		  585
+	  BackgroundColor	  "yellow"
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/DiscreteFilter"
+	  SourceType		  "Discrete Filter"
+	  SourceProductName	  "Whole Body Toolbox"
+	  filterType		  "FirstOrderLowPassFilter"
+	  numCoeffs		  "[0]"
+	  denCoeffs		  "[0]"
+	  Fc			  "1000"
+	  Ts			  "CONFIG.Ts"
+	  orderMedianFilter	  "0"
+	  initStatus		  off
+	  y0			  "[0]"
+	  u0			  "[0]"
+	}
+	Block {
+	  BlockType		  DotProduct
+	  Name			  "Dot Product1"
+	  SID			  "415"
+	  Position		  [525, 122, 555, 153]
+	  ZOrder		  579
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  "416"
+	  Position		  [420, 115, 450, 145]
+	  ZOrder		  583
+	  Gain			  "(250)/(2^15)"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Nearest"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sqrt
+	  Name			  "Sqrt1"
+	  SID			  "417"
+	  Position		  [570, 125, 600, 155]
+	  ZOrder		  580
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum"
+	  SID			  "418"
+	  Ports			  [2, 1]
+	  Position		  [345, 120, 365, 140]
+	  ZOrder		  523
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "holder\n"
+	  SID			  "419"
+	  Ports			  [1, 1]
+	  Position		  [280, 154, 340, 176]
+	  ZOrder		  524
+	  BackgroundColor	  "[0.537255, 0.721569, 1.000000]"
+	  ShowName		  off
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/holder\n"
+	  SourceType		  "Holder"
+	  SourceProductName	  "Whole Body Toolbox"
+	  ContentPreviewEnabled	  off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "raw meas."
+	  SID			  "420"
+	  Position		  [760, 68, 790, 82]
+	  ZOrder		  581
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "corr. norm (no offset)"
+	  SID			  "421"
+	  Position		  [760, 133, 790, 147]
+	  ZOrder		  577
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "offsets"
+	  SID			  "422"
+	  Position		  [760, 238, 790, 252]
+	  ZOrder		  578
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  ZOrder		  1
+	  SrcBlock		  "holder\n"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  Branch {
+	    ZOrder		    2
+	    Points		    [0, 80]
+	    DstBlock		    "offsets"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    3
+	    DstBlock		    "Sum"
+	    DstPort		    2
+	  }
+	}
+	Line {
+	  ZOrder		  4
+	  SrcBlock		  "vector [3]"
+	  SrcPort		  1
+	  DstBlock		  "DiscreteFilter"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  5
+	  SrcBlock		  "Dot Product1"
+	  SrcPort		  1
+	  DstBlock		  "Sqrt1"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  6
+	  SrcBlock		  "Sum"
+	  SrcPort		  1
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  7
 	  SrcBlock		  "Sqrt1"
 	  SrcPort		  1
 	  DstBlock		  "corr. norm (no offset)"
 	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  8
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [30, 0]
+	  Branch {
+	    ZOrder		    9
+	    Points		    [0, -55]
+	    DstBlock		    "raw meas."
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    10
+	    Points		    [0, 15]
+	    DstBlock		    "Dot Product1"
+	    DstPort		    2
+	  }
+	  Branch {
+	    ZOrder		    11
+	    DstBlock		    "Dot Product1"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  ZOrder		  12
+	  SrcBlock		  "DiscreteFilter"
+	  SrcPort		  1
+	  Points		  [55, 0]
+	  Branch {
+	    ZOrder		    13
+	    Points		    [0, 35]
+	    DstBlock		    "holder\n"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    14
+	    DstBlock		    "Sum"
+	    DstPort		    1
+	  }
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "de-offseted norm 6"
+      SID		      "423"
+      Ports		      [1, 3]
+      Position		      [-585, 669, -350, 771]
+      ZOrder		      694
+      RequestExecContextInheritance off
+      Variant		      off
+      System {
+	Name			"de-offseted norm 6"
+	Location		[-536, -1417, 2024, 0]
+	Open			off
+	PortBlocksUseCompactNotation off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"80"
+	Block {
+	  BlockType		  Inport
+	  Name			  "vector [3]"
+	  SID			  "424"
+	  Position		  [15, 123, 45, 137]
+	  ZOrder		  576
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "DiscreteFilter"
+	  SID			  "425"
+	  Ports			  [1, 1]
+	  Position		  [135, 115, 195, 145]
+	  ZOrder		  585
+	  BackgroundColor	  "yellow"
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/DiscreteFilter"
+	  SourceType		  "Discrete Filter"
+	  SourceProductName	  "Whole Body Toolbox"
+	  filterType		  "FirstOrderLowPassFilter"
+	  numCoeffs		  "[0]"
+	  denCoeffs		  "[0]"
+	  Fc			  "1000"
+	  Ts			  "CONFIG.Ts"
+	  orderMedianFilter	  "0"
+	  initStatus		  off
+	  y0			  "[0]"
+	  u0			  "[0]"
+	}
+	Block {
+	  BlockType		  DotProduct
+	  Name			  "Dot Product1"
+	  SID			  "426"
+	  Position		  [525, 122, 555, 153]
+	  ZOrder		  579
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	}
+	Block {
+	  BlockType		  Gain
+	  Name			  "Gain"
+	  SID			  "427"
+	  Position		  [420, 115, 450, 145]
+	  ZOrder		  583
+	  Gain			  "(250)/(2^15)"
+	  ParamDataTypeStr	  "Inherit: Inherit via internal rule"
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  RndMeth		  "Nearest"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sqrt
+	  Name			  "Sqrt1"
+	  SID			  "428"
+	  Position		  [570, 125, 600, 155]
+	  ZOrder		  580
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum"
+	  SID			  "429"
+	  Ports			  [2, 1]
+	  Position		  [345, 120, 365, 140]
+	  ZOrder		  523
+	  ShowName		  off
+	  IconShape		  "round"
+	  Inputs		  "|+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Reference
+	  Name			  "holder\n"
+	  SID			  "430"
+	  Ports			  [1, 1]
+	  Position		  [280, 154, 340, 176]
+	  ZOrder		  524
+	  BackgroundColor	  "[0.537255, 0.721569, 1.000000]"
+	  ShowName		  off
+	  LibraryVersion	  "1.497"
+	  SourceBlock		  "WBToolboxLibrary/Utilities/holder\n"
+	  SourceType		  "Holder"
+	  SourceProductName	  "Whole Body Toolbox"
+	  ContentPreviewEnabled	  off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "raw meas."
+	  SID			  "431"
+	  Position		  [760, 68, 790, 82]
+	  ZOrder		  581
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "corr. norm (no offset)"
+	  SID			  "432"
+	  Position		  [760, 133, 790, 147]
+	  ZOrder		  577
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "offsets"
+	  SID			  "433"
+	  Position		  [760, 238, 790, 252]
+	  ZOrder		  578
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  ZOrder		  1
+	  SrcBlock		  "holder\n"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  Branch {
+	    ZOrder		    2
+	    Points		    [0, 80]
+	    DstBlock		    "offsets"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    3
+	    DstBlock		    "Sum"
+	    DstPort		    2
+	  }
+	}
+	Line {
+	  ZOrder		  4
+	  SrcBlock		  "vector [3]"
+	  SrcPort		  1
+	  DstBlock		  "DiscreteFilter"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  5
+	  SrcBlock		  "Dot Product1"
+	  SrcPort		  1
+	  DstBlock		  "Sqrt1"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  6
+	  SrcBlock		  "Sum"
+	  SrcPort		  1
+	  DstBlock		  "Gain"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  7
+	  SrcBlock		  "Sqrt1"
+	  SrcPort		  1
+	  DstBlock		  "corr. norm (no offset)"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  8
+	  SrcBlock		  "Gain"
+	  SrcPort		  1
+	  Points		  [30, 0]
+	  Branch {
+	    ZOrder		    9
+	    Points		    [0, -55]
+	    DstBlock		    "raw meas."
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    10
+	    Points		    [0, 15]
+	    DstBlock		    "Dot Product1"
+	    DstPort		    2
+	  }
+	  Branch {
+	    ZOrder		    11
+	    DstBlock		    "Dot Product1"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  ZOrder		  12
+	  SrcBlock		  "DiscreteFilter"
+	  SrcPort		  1
+	  Points		  [55, 0]
+	  Branch {
+	    ZOrder		    13
+	    Points		    [0, 35]
+	    DstBlock		    "holder\n"
+	    DstPort		    1
+	  }
+	  Branch {
+	    ZOrder		    14
+	    DstBlock		    "Sum"
+	    DstPort		    1
+	  }
 	}
       }
     }
@@ -2133,35 +3149,35 @@ Model {
       BlockType		      Scope
       Name		      "norm "
       SID		      "125"
-      Ports		      [4]
-      Position		      [230, -109, 485, 89]
+      Ports		      [6]
+      Position		      [385, -43, 635, 253]
       ZOrder		      614
       ScopeSpecificationString "Simulink.scopes.TimeScopeBlockCfg('CurrentConfiguration', extmgr.ConfigurationSet(extm"
       "gr.Configuration('Core','General UI',true),extmgr.Configuration('Core','Source UI',true),extmgr.Configuration('S"
       "ources','WiredSimulink',true),extmgr.Configuration('Visuals','Time Domain',true,'SerializedDisplays',{struct('Mi"
-      "nYLimReal','-1239.62762','MaxYLimReal','11156.6486','YLabelReal','','MinYLimMag','  0.00000','MaxYLimMag','11156"
-      ".6486','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor"
-      "',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.074509803921568"
-      "6 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.831372549019608 0.074509803921568"
-      "6;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','"
-      "%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',4,'LineNames',{{'torso EMS "
-      "5','right_leg EMS8','right_leg EMS 9','right_leg EMS 11'}},'ShowContent',true,'Placement',1)},'DisplayPropertyDe"
-      "faults',struct('MinYLimReal','-1239.62762','MaxYLimReal','11156.6486','YLabelReal','','MinYLimMag','  0.00000','"
-      "MaxYLimMag','11156.6486','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0"
-      " 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667"
-      ";0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.831372549019608"
-      " 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.65098039"
-      "2156863],'Title','%<SignalLabel>')),extmgr.Configuration('Tools','Plot Navigation',true,'OnceAtStop',false,'Prev"
-      "iousAutoscale','XY'),extmgr.Configuration('Tools','Measurements',true,'Version','2017b')),'Version','2017b','Pos"
-      "ition',[1 34 1920 928])"
-      NumInputPorts	      "4"
+      "nYLimReal','-344.76159','MaxYLimReal','1934.30508','YLabelReal','','MinYLimMag',' 0.00000','MaxYLimMag','1934.30"
+      "508','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',"
+      "[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 "
+      "0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;"
+      "0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<"
+      "SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',6,'LineNames',{{'waist EMS 5'"
+      ",'right_leg EMS8','right_leg EMS 9','right_leg EMS 11','torso EMS 1','torso EMS 3'}},'ShowContent',true,'Placeme"
+      "nt',1)},'DisplayPropertyDefaults',struct('MinYLimReal','-344.76159','MaxYLimReal','1934.30508','YLabelReal','','"
+      "MinYLimMag',' 0.00000','MaxYLimMag','1934.30508','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase"
+      "',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder'"
+      ",[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862"
+      "745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.074"
+      "5098039215686 0.650980392156863],'Title','%<SignalLabel>')),extmgr.Configuration('Tools','Plot Navigation',true,"
+      "'OnceAtStop',false,'PreviousAutoscale','XY'),extmgr.Configuration('Tools','Measurements',true,'Version','2017b')"
+      "),'Version','2017b','Position',[1 47 1440 758])"
+      NumInputPorts	      "6"
     }
     Block {
       BlockType		      Display
       Name		      "offset"
       SID		      "126"
       Ports		      [1]
-      Position		      [70, 170, 310, 290]
+      Position		      [70, 455, 310, 575]
       ZOrder		      615
       Decimation	      "1"
     }
@@ -2170,7 +3186,7 @@ Model {
       Name		      "parse gyro"
       SID		      "121"
       Ports		      [1, 2]
-      Position		      [-1000, -90, -850, -30]
+      Position		      [-1000, 195, -850, 255]
       ZOrder		      613
       RequestExecContextInheritance off
       Variant		      off
@@ -2431,7 +3447,7 @@ Model {
       Name		      "parse gyro1"
       SID		      "285"
       Ports		      [1, 2]
-      Position		      [-1000, 70, -850, 130]
+      Position		      [-1000, 355, -850, 415]
       ZOrder		      660
       RequestExecContextInheritance off
       Variant		      off
@@ -2692,7 +3708,7 @@ Model {
       Name		      "parse gyro2"
       SID		      "294"
       Ports		      [1, 2]
-      Position		      [-1000, 230, -850, 290]
+      Position		      [-1000, 515, -850, 575]
       ZOrder		      661
       RequestExecContextInheritance off
       Variant		      off
@@ -2953,7 +3969,7 @@ Model {
       Name		      "parse gyro3"
       SID		      "303"
       Ports		      [1, 2]
-      Position		      [-1000, 390, -850, 450]
+      Position		      [-1000, 675, -850, 735]
       ZOrder		      662
       RequestExecContextInheritance off
       Variant		      off
@@ -3229,66 +4245,661 @@ Model {
       }
     }
     Block {
+      BlockType		      SubSystem
+      Name		      "parse gyro4"
+      SID		      "327"
+      Ports		      [1, 2]
+      Position		      [-1000, 35, -850, 95]
+      ZOrder		      666
+      RequestExecContextInheritance off
+      Variant		      off
+      System {
+	Name			"parse gyro4"
+	Location		[0, 27, 1920, 1047]
+	Open			off
+	PortBlocksUseCompactNotation off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"117"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "328"
+	  Position		  [20, 28, 50, 42]
+	  ZOrder		  613
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "MATLAB Function"
+	  SID			  "329"
+	  Ports			  [1, 1]
+	  Position		  [235, 12, 305, 58]
+	  ZOrder		  616
+	  ErrorFcn		  "Stateflow.Translate.translate"
+	  PermitHierarchicalResolution "ExplicitOnly"
+	  TreatAsAtomicUnit	  on
+	  RequestExecContextInheritance	off
+	  SFBlockType		  "MATLAB Function"
+	  Variant		  off
+	  System {
+	    Name		    "MATLAB Function"
+	    Location		    [223, 338, 826, 833]
+	    Open		    off
+	    PortBlocksUseCompactNotation off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "21"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "u"
+	      SID		      "329::1"
+	      Position		      [20, 101, 40, 119]
+	      ZOrder		      -1
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      SID		      "329::20"
+	      Ports		      [1, 1]
+	      Position		      [270, 230, 320, 270]
+	      ZOrder		      11
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      S-Function
+	      Name		      " SFunction "
+	      SID		      "329::19"
+	      Tag		      "Stateflow S-Function debugGyros 5"
+	      Ports		      [1, 2]
+	      Position		      [180, 100, 230, 160]
+	      ZOrder		      10
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[1 2]"
+	      SFunctionDeploymentMode off
+	      EnableBusSupport	      on
+	      SFcnIsStateOwnerBlock   off
+	      Port {
+		PortNumber		2
+		Name			"y"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      SID		      "329::21"
+	      Position		      [460, 241, 480, 259]
+	      ZOrder		      12
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "y"
+	      SID		      "329::5"
+	      Position		      [460, 101, 480, 119]
+	      ZOrder		      -5
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      ZOrder		      1
+	      SrcBlock		      "u"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "y"
+	      ZOrder		      2
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "y"
+	      DstPort		      1
+	    }
+	    Line {
+	      ZOrder		      3
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      ZOrder		      4
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector"
+	  SID			  "330"
+	  Ports			  [1, 1]
+	  Position		  [140, 16, 180, 54]
+	  ZOrder		  608
+	  InputPortWidth	  "8"
+	  IndexOptions		  "Index vector (dialog)"
+	  Indices		  "[1:4]"
+	  OutputSizes		  "1"
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector1"
+	  SID			  "331"
+	  Ports			  [1, 1]
+	  Position		  [140, 76, 180, 114]
+	  ZOrder		  611
+	  InputPortWidth	  "8"
+	  IndexOptions		  "Index vector (dialog)"
+	  Indices		  "3"
+	  OutputSizes		  "1"
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector2"
+	  SID			  "332"
+	  Ports			  [1, 1]
+	  Position		  [140, 141, 180, 179]
+	  ZOrder		  612
+	  InputPortWidth	  "8"
+	  IndexOptions		  "Index vector (dialog)"
+	  Indices		  "[6 7 8]"
+	  OutputSizes		  "1"
+	}
+	Block {
+	  BlockType		  Stop
+	  Name			  "Stop Simulation"
+	  SID			  "333"
+	  Position		  [345, 17, 380, 53]
+	  ZOrder		  607
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "gyro ID"
+	  SID			  "334"
+	  Position		  [345, 88, 375, 102]
+	  ZOrder		  614
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "angular speed [3]: deg/s"
+	  SID			  "335"
+	  Position		  [345, 153, 375, 167]
+	  ZOrder		  615
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  ZOrder		  1
+	  SrcBlock		  "Selector"
+	  SrcPort		  1
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  2
+	  SrcBlock		  "Selector1"
+	  SrcPort		  1
+	  DstBlock		  "gyro ID"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  3
+	  SrcBlock		  "Selector2"
+	  SrcPort		  1
+	  DstBlock		  "angular speed [3]: deg/s"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  4
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [64, 0]
+	  Branch {
+	    ZOrder		    5
+	    Points		    [0, 60]
+	    Branch {
+	      ZOrder		      6
+	      Points		      [0, 65]
+	      DstBlock		      "Selector2"
+	      DstPort		      1
+	    }
+	    Branch {
+	      ZOrder		      7
+	      DstBlock		      "Selector1"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    ZOrder		    8
+	    DstBlock		    "Selector"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  ZOrder		  9
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  1
+	  DstBlock		  "Stop Simulation"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "parse gyro5"
+      SID		      "349"
+      Ports		      [1, 2]
+      Position		      [-1000, -125, -850, -65]
+      ZOrder		      672
+      RequestExecContextInheritance off
+      Variant		      off
+      System {
+	Name			"parse gyro5"
+	Location		[-536, -1417, 2024, 0]
+	Open			off
+	PortBlocksUseCompactNotation off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"117"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "350"
+	  Position		  [20, 28, 50, 42]
+	  ZOrder		  613
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  SubSystem
+	  Name			  "MATLAB Function"
+	  SID			  "351"
+	  Ports			  [1, 1]
+	  Position		  [235, 12, 305, 58]
+	  ZOrder		  616
+	  ErrorFcn		  "Stateflow.Translate.translate"
+	  PermitHierarchicalResolution "ExplicitOnly"
+	  TreatAsAtomicUnit	  on
+	  RequestExecContextInheritance	off
+	  SFBlockType		  "MATLAB Function"
+	  Variant		  off
+	  System {
+	    Name		    "MATLAB Function"
+	    Location		    [223, 338, 826, 833]
+	    Open		    off
+	    PortBlocksUseCompactNotation off
+	    ModelBrowserVisibility  off
+	    ModelBrowserWidth	    200
+	    ScreenColor		    "white"
+	    PaperOrientation	    "landscape"
+	    PaperPositionMode	    "auto"
+	    PaperType		    "usletter"
+	    PaperUnits		    "inches"
+	    TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
+	    TiledPageScale	    1
+	    ShowPageBoundaries	    off
+	    ZoomFactor		    "100"
+	    SIDHighWatermark	    "21"
+	    Block {
+	      BlockType		      Inport
+	      Name		      "u"
+	      SID		      "351::1"
+	      Position		      [20, 101, 40, 119]
+	      ZOrder		      -1
+	      IconDisplay	      "Port number"
+	    }
+	    Block {
+	      BlockType		      Demux
+	      Name		      " Demux "
+	      SID		      "351::20"
+	      Ports		      [1, 1]
+	      Position		      [270, 230, 320, 270]
+	      ZOrder		      11
+	      Outputs		      "1"
+	    }
+	    Block {
+	      BlockType		      S-Function
+	      Name		      " SFunction "
+	      SID		      "351::19"
+	      Tag		      "Stateflow S-Function debugGyros 6"
+	      Ports		      [1, 2]
+	      Position		      [180, 100, 230, 160]
+	      ZOrder		      10
+	      FunctionName	      "sf_sfun"
+	      PortCounts	      "[1 2]"
+	      SFunctionDeploymentMode off
+	      EnableBusSupport	      on
+	      SFcnIsStateOwnerBlock   off
+	      Port {
+		PortNumber		2
+		Name			"y"
+	      }
+	    }
+	    Block {
+	      BlockType		      Terminator
+	      Name		      " Terminator "
+	      SID		      "351::21"
+	      Position		      [460, 241, 480, 259]
+	      ZOrder		      12
+	    }
+	    Block {
+	      BlockType		      Outport
+	      Name		      "y"
+	      SID		      "351::5"
+	      Position		      [460, 101, 480, 119]
+	      ZOrder		      -5
+	      IconDisplay	      "Port number"
+	    }
+	    Line {
+	      ZOrder		      1
+	      SrcBlock		      "u"
+	      SrcPort		      1
+	      DstBlock		      " SFunction "
+	      DstPort		      1
+	    }
+	    Line {
+	      Name		      "y"
+	      ZOrder		      2
+	      Labels		      [0, 0]
+	      SrcBlock		      " SFunction "
+	      SrcPort		      2
+	      DstBlock		      "y"
+	      DstPort		      1
+	    }
+	    Line {
+	      ZOrder		      3
+	      SrcBlock		      " Demux "
+	      SrcPort		      1
+	      DstBlock		      " Terminator "
+	      DstPort		      1
+	    }
+	    Line {
+	      ZOrder		      4
+	      SrcBlock		      " SFunction "
+	      SrcPort		      1
+	      DstBlock		      " Demux "
+	      DstPort		      1
+	    }
+	  }
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector"
+	  SID			  "352"
+	  Ports			  [1, 1]
+	  Position		  [140, 16, 180, 54]
+	  ZOrder		  608
+	  InputPortWidth	  "8"
+	  IndexOptions		  "Index vector (dialog)"
+	  Indices		  "[1:4]"
+	  OutputSizes		  "1"
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector1"
+	  SID			  "353"
+	  Ports			  [1, 1]
+	  Position		  [140, 76, 180, 114]
+	  ZOrder		  611
+	  InputPortWidth	  "8"
+	  IndexOptions		  "Index vector (dialog)"
+	  Indices		  "3"
+	  OutputSizes		  "1"
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector2"
+	  SID			  "354"
+	  Ports			  [1, 1]
+	  Position		  [140, 141, 180, 179]
+	  ZOrder		  612
+	  InputPortWidth	  "8"
+	  IndexOptions		  "Index vector (dialog)"
+	  Indices		  "[6 7 8]"
+	  OutputSizes		  "1"
+	}
+	Block {
+	  BlockType		  Stop
+	  Name			  "Stop Simulation"
+	  SID			  "355"
+	  Position		  [345, 17, 380, 53]
+	  ZOrder		  607
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "gyro ID"
+	  SID			  "356"
+	  Position		  [345, 88, 375, 102]
+	  ZOrder		  614
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "angular speed [3]: deg/s"
+	  SID			  "357"
+	  Position		  [345, 153, 375, 167]
+	  ZOrder		  615
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  ZOrder		  1
+	  SrcBlock		  "Selector"
+	  SrcPort		  1
+	  DstBlock		  "MATLAB Function"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  2
+	  SrcBlock		  "Selector1"
+	  SrcPort		  1
+	  DstBlock		  "gyro ID"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  3
+	  SrcBlock		  "Selector2"
+	  SrcPort		  1
+	  DstBlock		  "angular speed [3]: deg/s"
+	  DstPort		  1
+	}
+	Line {
+	  ZOrder		  4
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [64, 0]
+	  Branch {
+	    ZOrder		    5
+	    Points		    [0, 60]
+	    Branch {
+	      ZOrder		      6
+	      Points		      [0, 65]
+	      DstBlock		      "Selector2"
+	      DstPort		      1
+	    }
+	    Branch {
+	      ZOrder		      7
+	      DstBlock		      "Selector1"
+	      DstPort		      1
+	    }
+	  }
+	  Branch {
+	    ZOrder		    8
+	    DstBlock		    "Selector"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  ZOrder		  9
+	  SrcBlock		  "MATLAB Function"
+	  SrcPort		  1
+	  DstBlock		  "Stop Simulation"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
       BlockType		      Scope
       Name		      "raw"
       SID		      "238"
-      Ports		      [4]
-      Position		      [230, 356, 485, 554]
+      Ports		      [7]
+      Position		      [385, 637, 630, 993]
       ZOrder		      650
       ScopeSpecificationString "Simulink.scopes.TimeScopeBlockCfg('CurrentConfiguration', extmgr.ConfigurationSet(extm"
       "gr.Configuration('Core','General UI',true),extmgr.Configuration('Core','Source UI',true),extmgr.Configuration('S"
       "ources','WiredSimulink',true,'DataLoggingVariableName','ScopeData1'),extmgr.Configuration('Visuals','Time Domain"
-      "',true,'SerializedDisplays',{struct('MinYLimReal','-641.75','MaxYLimReal','485.75','YLabelReal','','MinYLimMag',"
-      "' 0.00000','MaxYLimMag','641.75','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesCol"
-      "or',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.06666666"
-      "66666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.8313725"
-      "49019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0."
-      "650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',3"
-      ",'LineNames',{{'torso EMS 5:1','torso EMS 5:2','torso EMS 5:3'}},'ShowContent',true,'Placement',1),struct('MinYL"
-      "imReal','-8376.00000','MaxYLimReal','9414.00000','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000'"
-      ",'LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.6"
-      "86274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.62"
-      "3529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.71"
-      "7647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<Sign"
-      "alLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',3,'LineNames',{{'right_leg EMS8:1"
-      "','right_leg EMS8:2','right_leg EMS8:3'}},'ShowContent',true,'Placement',2),struct('MinYLimReal','-11190.25','Ma"
-      "xYLimReal','14492.25','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisibility','On','X"
-      "Grid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.6862745098"
-      "03922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.4117647"
-      "05882353 0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.27450980392"
-      "1569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCa"
-      "che',{{}},'UserDefinedChannelNames',{{}},'NumLines',3,'LineNames',{{'right_leg EMS 9:1','right_leg EMS 9:2','rig"
-      "ht_leg EMS 9:3'}},'ShowContent',true,'Placement',3),struct('MinYLimReal','-8116.375','MaxYLimReal','9187.375','Y"
-      "LabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisibility','On','XGrid',true,'YGrid',true,"
-      "'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922]"
-      ",'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.1607843137254"
-      "9;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.058823529411764"
-      "7 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedCh"
-      "annelNames',{{}},'NumLines',3,'LineNames',{{'right_leg EMS 11:1','right_leg EMS 11:2','right_leg EMS 11:3'}},'Sh"
-      "owContent',true,'Placement',4)},'DisplayPropertyDefaults',struct('YLabelReal','','LegendVisibility','On','XGrid'"
-      ",true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922"
-      " 0.686274509803922],'ColorOrder',[0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;1 "
-      "1 0.0666666666666667;0.717647058823529 0.274509803921569 1;0.392156862745098 0.831372549019608 0.074509803921568"
-      "6;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863]),'DisplayLayoutDimensions',[4 1]),extmgr.Config"
-      "uration('Tools','Plot Navigation',true,'PreviousAutoscale','XY'),extmgr.Configuration('Tools','Measurements',tru"
-      "e,'Version','2017b')),'Version','2017b','Position',[1 34 1920 928],'VisibleAtModelOpen','on')"
-      NumInputPorts	      "4"
+      "',true,'SerializedDisplays',{struct('MinYLimReal','-2.29389','MaxYLimReal','0.55192','YLabelReal','','MinYLimMag"
+      "','0.00000','MaxYLimMag','2.29389','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesC"
+      "olor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.066666"
+      "6666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.83137"
+      "2549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 "
+      "0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines'"
+      ",3,'LineNames',{{'waist EMS 5:1','waist EMS 5:2','waist EMS 5:3'}},'ShowContent',true,'Placement',1),struct('Min"
+      "YLimReal','-0.31127','MaxYLimReal','0.41','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','Legen"
+      "dVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.68627450"
+      "9803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411"
+      "764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058"
+      "823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel"
+      ">','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',3,'LineNames',{{'right_leg EMS8:1','righ"
+      "t_leg EMS8:2','right_leg EMS8:3'}},'ShowContent',true,'Placement',2),struct('MinYLimReal','-0.48424','MaxYLimRea"
+      "l','2.41136','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisibility','On','XGrid',tru"
+      "e,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.6"
+      "86274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 "
+      "0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0."
+      "0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}}"
+      ",'UserDefinedChannelNames',{{}},'NumLines',3,'LineNames',{{'right_leg EMS 9:1','right_leg EMS 9:2','right_leg EM"
+      "S 9:3'}},'ShowContent',true,'Placement',3),struct('MinYLimReal','-0.51118','MaxYLimReal','2.35146','YLabelReal',"
+      "'','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPha"
+      "se',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrde"
+      "r',[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.3921568"
+      "62745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0"
+      "745098039215686 0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames'"
+      ",{{}},'NumLines',3,'LineNames',{{'right_leg EMS 11:1','right_leg EMS 11:2','right_leg EMS 11:3'}},'ShowContent',"
+      "true,'Placement',4),struct('MinYLimReal','-0.5601','MaxYLimReal','2.15359','YLabelReal','','MinYLimMag','0.00000"
+      "','MaxYLimMag','281.00000','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0"
+      " 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.06666666666666"
+      "67;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.8313725490196"
+      "08 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980"
+      "392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',3,'Line"
+      "Names',{{'torso EMS 1:1','torso EMS 1:2','torso EMS 1:3'}},'ShowContent',true,'Placement',5),struct('MinYLimReal"
+      "','-136.375','MaxYLimReal','167.375','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisi"
+      "bility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.6862745098039"
+      "22 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.62352941176470"
+      "6 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.71764705882352"
+      "9 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel>','L"
+      "inePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',6,'LineNames',{{'torso EMS 3:1','torso EMS 3:"
+      "2','torso EMS 3:3','torso EMS 1+3:1','torso EMS 1+3:2','torso EMS 1+3:3'}},'ShowContent',true,'Placement',6)},'D"
+      "isplayPropertyDefaults',struct('YLabelReal','','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',"
+      "false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',["
+      "0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;1 1 0.0666666666666667;0.71764705882"
+      "3529 0.274509803921569 1;0.392156862745098 0.831372549019608 0.0745098039215686;0.0588235294117647 1 1;1 0.07450"
+      "98039215686 0.650980392156863]),'DisplayLayoutDimensions',[3 2]),extmgr.Configuration('Tools','Plot Navigation',"
+      "true,'PreviousAutoscale','XY','OnceAtStop',false),extmgr.Configuration('Tools','Measurements',true,'Version','20"
+      "17b')),'Version','2017b','Position',[-535 901 2560 1344])"
+      NumInputPorts	      "7"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "raw1"
+      SID		      "436"
+      Ports		      [3]
+      Position		      [1080, 731, 1315, 879]
+      ZOrder		      697
+      ScopeSpecificationString "Simulink.scopes.TimeScopeBlockCfg('CurrentConfiguration', extmgr.ConfigurationSet(extm"
+      "gr.Configuration('Core','General UI',true),extmgr.Configuration('Core','Source UI',true),extmgr.Configuration('S"
+      "ources','WiredSimulink',true,'DataLoggingVariableName','ScopeData2'),extmgr.Configuration('Visuals','Time Domain"
+      "',true,'SerializedDisplays',{struct('MinYLimReal','-2.29389','MaxYLimReal','0.55192','YLabelReal','','MinYLimMag"
+      "','0.00000','MaxYLimMag','2.29389','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesC"
+      "olor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.066666"
+      "6666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.83137"
+      "2549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 "
+      "0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines'"
+      ",3,'LineNames',{{'torso EMS 1:1','torso EMS 1:2','torso EMS 1:3'}},'ShowContent',true,'Placement',1),struct('Min"
+      "YLimReal','-0.31127','MaxYLimReal','0.41','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','Legen"
+      "dVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.68627450"
+      "9803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411"
+      "764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058"
+      "823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel"
+      ">','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',3,'LineNames',{{'torso EMS 3:1','torso E"
+      "MS 3:2','torso EMS 3:3'}},'ShowContent',true,'Placement',2),struct('MinYLimReal','-0.48424','MaxYLimReal','2.411"
+      "36','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisibility','On','XGrid',true,'YGrid'"
+      ",true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.6862745098"
+      "03922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.1607843"
+      "1372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.058823529"
+      "4117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDef"
+      "inedChannelNames',{{}},'NumLines',3,'LineNames',{{'torso EMS 1+3:1','torso EMS 1+3:2','torso EMS 1+3:3'}},'ShowC"
+      "ontent',true,'Placement',3),struct('MinYLimReal','-0.51118','MaxYLimReal','2.35146','YLabelReal','','MinYLimMag'"
+      ",'0.00000','MaxYLimMag','281.00000','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase',false,'Axes"
+      "Color',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder',[1 1 0.06666"
+      "66666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;0.392156862745098 0.8313"
+      "72549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.0588235294117647 1 1;1 0.0745098039215686"
+      " 0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines"
+      "',0,'LineNames',{{}},'ShowContent',false,'Placement',4),struct('MinYLimReal','-0.5601','MaxYLimReal','2.15359','"
+      "YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisibility','On','XGrid',true,'YGrid',true"
+      ",'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922"
+      "],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.160784313725"
+      "49;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.274509803921569 1;0.05882352941176"
+      "47 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel>','LinePropertiesCache',{{}},'UserDefinedC"
+      "hannelNames',{{}},'NumLines',0,'LineNames',{{}},'ShowContent',false,'Placement',5),struct('MinYLimReal','-136.37"
+      "5','MaxYLimReal','167.375','YLabelReal','','MinYLimMag','0.00000','MaxYLimMag','281.00000','LegendVisibility','O"
+      "n','XGrid',true,'YGrid',true,'PlotMagPhase',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.68627"
+      "4509803922 0.686274509803922],'ColorOrder',[1 1 0.0666666666666667;0.0745098039215686 0.623529411764706 1;1 0.41"
+      "1764705882353 0.16078431372549;0.392156862745098 0.831372549019608 0.0745098039215686;0.717647058823529 0.274509"
+      "803921569 1;0.0588235294117647 1 1;1 0.0745098039215686 0.650980392156863],'Title','%<SignalLabel>','LinePropert"
+      "iesCache',{{}},'UserDefinedChannelNames',{{}},'NumLines',0,'LineNames',{{}},'ShowContent',false,'Placement',6)},"
+      "'DisplayPropertyDefaults',struct('YLabelReal','','LegendVisibility','On','XGrid',true,'YGrid',true,'PlotMagPhase"
+      "',false,'AxesColor',[0 0 0],'AxesTickColor',[0.686274509803922 0.686274509803922 0.686274509803922],'ColorOrder'"
+      ",[0.0745098039215686 0.623529411764706 1;1 0.411764705882353 0.16078431372549;1 1 0.0666666666666667;0.717647058"
+      "823529 0.274509803921569 1;0.392156862745098 0.831372549019608 0.0745098039215686;0.0588235294117647 1 1;1 0.074"
+      "5098039215686 0.650980392156863]),'DisplayLayoutDimensions',[3 2]),extmgr.Configuration('Tools','Plot Navigation"
+      "',true,'PreviousAutoscale','XY','OnceAtStop',false),extmgr.Configuration('Tools','Measurements',true,'Version','"
+      "2017b')),'Version','2017b','Position',[585 901 2560 1344])"
+      NumInputPorts	      "3"
     }
     Block {
       BlockType		      Reference
       Name		      "right leg GYRO (ems11) Read"
       SID		      "107"
       Ports		      [0, 1]
-      Position		      [-1185, 396, -1125, 444]
+      Position		      [-1185, 681, -1125, 729]
       ZOrder		      599
       ForegroundColor	      "[0.490196, 0.000000, 0.000000]"
       HideAutomaticName	      off
-      LibraryVersion	      "1.480"
+      LibraryVersion	      "1.497"
       SourceBlock	      "WBToolboxLibrary/Utilities/Yarp Read"
       SourceType	      "YARP Read"
       SourceProductName	      "Whole Body Toolbox"
       portName		      "'/icub/right_leg/inertialMTB'"
       signalSize	      "86"
+      timeout		      "0.5"
       blocking		      off
       timestamp		      off
       autoconnect	      on
@@ -3299,16 +4910,17 @@ Model {
       Name		      "right leg GYRO (ems8) Read"
       SID		      "108"
       Ports		      [0, 1]
-      Position		      [-1185, 76, -1125, 124]
+      Position		      [-1185, 361, -1125, 409]
       ZOrder		      600
       ForegroundColor	      "[0.490196, 0.000000, 0.000000]"
       HideAutomaticName	      off
-      LibraryVersion	      "1.480"
+      LibraryVersion	      "1.497"
       SourceBlock	      "WBToolboxLibrary/Utilities/Yarp Read"
       SourceType	      "YARP Read"
       SourceProductName	      "Whole Body Toolbox"
       portName		      "'/icub/right_leg/inertialEMS8'"
       signalSize	      "8"
+      timeout		      "0.5"
       blocking		      off
       timestamp		      off
       autoconnect	      on
@@ -3319,16 +4931,17 @@ Model {
       Name		      "right leg GYRO (ems9) Read"
       SID		      "109"
       Ports		      [0, 1]
-      Position		      [-1185, 236, -1125, 284]
+      Position		      [-1185, 521, -1125, 569]
       ZOrder		      601
       ForegroundColor	      "[0.490196, 0.000000, 0.000000]"
       HideAutomaticName	      off
-      LibraryVersion	      "1.480"
+      LibraryVersion	      "1.497"
       SourceBlock	      "WBToolboxLibrary/Utilities/Yarp Read"
       SourceType	      "YARP Read"
       SourceProductName	      "Whole Body Toolbox"
       portName		      "'/icub/right_leg/inertialEMS9'"
       signalSize	      "8"
+      timeout		      "0.5"
       blocking		      off
       timestamp		      off
       autoconnect	      on
@@ -3336,19 +4949,62 @@ Model {
     }
     Block {
       BlockType		      Reference
-      Name		      "torso GYRO (ems5) Read"
-      SID		      "20"
+      Name		      "torso GYRO (ems1) Read"
+      SID		      "358"
       Ports		      [0, 1]
-      Position		      [-1185, -84, -1125, -36]
-      ZOrder		      521
+      Position		      [-1185, -119, -1125, -71]
+      ZOrder		      669
       ForegroundColor	      "[0.490196, 0.000000, 0.000000]"
       HideAutomaticName	      off
-      LibraryVersion	      "1.480"
+      LibraryVersion	      "1.497"
       SourceBlock	      "WBToolboxLibrary/Utilities/Yarp Read"
       SourceType	      "YARP Read"
       SourceProductName	      "Whole Body Toolbox"
-      portName		      "'/icub/torso/inertialEMS5'"
+      portName		      "'/icub/torso/inertialEMS1'"
       signalSize	      "8"
+      timeout		      "0.5"
+      blocking		      off
+      timestamp		      off
+      autoconnect	      on
+      errorOnConnection	      off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "torso GYRO (ems3) Read"
+      SID		      "336"
+      Ports		      [0, 1]
+      Position		      [-1185, 41, -1125, 89]
+      ZOrder		      663
+      ForegroundColor	      "[0.490196, 0.000000, 0.000000]"
+      HideAutomaticName	      off
+      LibraryVersion	      "1.497"
+      SourceBlock	      "WBToolboxLibrary/Utilities/Yarp Read"
+      SourceType	      "YARP Read"
+      SourceProductName	      "Whole Body Toolbox"
+      portName		      "'/icub/torso/inertialEMS3'"
+      signalSize	      "8"
+      timeout		      "0.5"
+      blocking		      off
+      timestamp		      off
+      autoconnect	      on
+      errorOnConnection	      off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "waist GYRO (ems5) Read"
+      SID		      "20"
+      Ports		      [0, 1]
+      Position		      [-1185, 201, -1125, 249]
+      ZOrder		      521
+      ForegroundColor	      "[0.490196, 0.000000, 0.000000]"
+      HideAutomaticName	      off
+      LibraryVersion	      "1.497"
+      SourceBlock	      "WBToolboxLibrary/Utilities/Yarp Read"
+      SourceType	      "YARP Read"
+      SourceProductName	      "Whole Body Toolbox"
+      portName		      "'/icub/waist/inertialEMS5'"
+      signalSize	      "8"
+      timeout		      "0.5"
       blocking		      off
       timestamp		      off
       autoconnect	      on
@@ -3356,23 +5012,23 @@ Model {
     }
     Line {
       ZOrder		      208
-      SrcBlock		      "torso GYRO (ems5) Read"
+      SrcBlock		      "waist GYRO (ems5) Read"
       SrcPort		      1
       DstBlock		      "parse gyro"
       DstPort		      1
     }
     Line {
-      ZOrder		      211
+      ZOrder		      399
       SrcBlock		      "parse gyro"
       SrcPort		      2
-      DstBlock		      "de-offseted norm 1"
+      DstBlock		      "de-offseted norm 3"
       DstPort		      1
     }
     Line {
-      ZOrder		      292
+      ZOrder		      401
       SrcBlock		      "parse gyro1"
       SrcPort		      2
-      DstBlock		      "de-offseted norm 2"
+      DstBlock		      "de-offseted norm 4"
       DstPort		      1
     }
     Line {
@@ -3383,10 +5039,10 @@ Model {
       DstPort		      1
     }
     Line {
-      ZOrder		      295
+      ZOrder		      405
       SrcBlock		      "parse gyro2"
       SrcPort		      2
-      DstBlock		      "de-offseted norm 3"
+      DstBlock		      "de-offseted norm 5"
       DstPort		      1
     }
     Line {
@@ -3397,10 +5053,10 @@ Model {
       DstPort		      1
     }
     Line {
-      ZOrder		      298
+      ZOrder		      409
       SrcBlock		      "parse gyro3"
       SrcPort		      2
-      DstBlock		      "de-offseted norm 4"
+      DstBlock		      "de-offseted norm 6"
       DstPort		      1
     }
     Line {
@@ -3439,49 +5095,50 @@ Model {
       DstPort		      1
     }
     Line {
-      ZOrder		      255
-      SrcBlock		      "de-offseted norm 1"
-      SrcPort		      3
-      DstBlock		      "Mux"
-      DstPort		      1
-    }
-    Line {
-      ZOrder		      263
-      SrcBlock		      "de-offseted norm 2"
-      SrcPort		      3
-      DstBlock		      "Mux"
-      DstPort		      2
-    }
-    Line {
-      ZOrder		      267
+      ZOrder		      398
       SrcBlock		      "de-offseted norm 3"
       SrcPort		      3
       DstBlock		      "Mux"
       DstPort		      3
     }
     Line {
-      ZOrder		      271
+      ZOrder		      404
       SrcBlock		      "de-offseted norm 4"
       SrcPort		      3
       DstBlock		      "Mux"
       DstPort		      4
     }
     Line {
+      ZOrder		      408
+      SrcBlock		      "de-offseted norm 5"
+      SrcPort		      3
+      DstBlock		      "Mux"
+      DstPort		      5
+    }
+    Line {
+      ZOrder		      412
+      SrcBlock		      "de-offseted norm 6"
+      SrcPort		      3
+      DstBlock		      "Mux"
+      DstPort		      6
+    }
+    Line {
       ZOrder		      242
       SrcBlock		      "Mux"
       SrcPort		      1
+      Points		      [102, 0; 0, 160]
       DstBlock		      "offset"
       DstPort		      1
     }
     Line {
-      ZOrder		      247
-      SrcBlock		      "de-offseted norm 1"
+      ZOrder		      400
+      SrcBlock		      "de-offseted norm 3"
       SrcPort		      2
       DstBlock		      "Goto"
       DstPort		      1
     }
     Line {
-      Name		      "torso EMS 5"
+      Name		      "waist EMS 5"
       ZOrder		      251
       Labels		      [1, 1]
       SrcBlock		      "From"
@@ -3517,50 +5174,50 @@ Model {
       DstPort		      4
     }
     Line {
-      ZOrder		      259
-      SrcBlock		      "de-offseted norm 1"
+      ZOrder		      397
+      SrcBlock		      "de-offseted norm 3"
       SrcPort		      1
       DstBlock		      "Goto4"
       DstPort		      1
     }
     Line {
-      ZOrder		      260
-      SrcBlock		      "de-offseted norm 2"
+      ZOrder		      402
+      SrcBlock		      "de-offseted norm 4"
       SrcPort		      1
       DstBlock		      "Goto2"
       DstPort		      1
     }
     Line {
-      ZOrder		      261
-      SrcBlock		      "de-offseted norm 2"
+      ZOrder		      403
+      SrcBlock		      "de-offseted norm 4"
       SrcPort		      2
       DstBlock		      "Goto1"
       DstPort		      1
     }
     Line {
-      ZOrder		      264
-      SrcBlock		      "de-offseted norm 3"
+      ZOrder		      406
+      SrcBlock		      "de-offseted norm 5"
       SrcPort		      1
       DstBlock		      "Goto5"
       DstPort		      1
     }
     Line {
-      ZOrder		      265
-      SrcBlock		      "de-offseted norm 3"
+      ZOrder		      407
+      SrcBlock		      "de-offseted norm 5"
       SrcPort		      2
       DstBlock		      "Goto3"
       DstPort		      1
     }
     Line {
-      ZOrder		      268
-      SrcBlock		      "de-offseted norm 4"
+      ZOrder		      410
+      SrcBlock		      "de-offseted norm 6"
       SrcPort		      1
       DstBlock		      "Goto7"
       DstPort		      1
     }
     Line {
-      ZOrder		      269
-      SrcBlock		      "de-offseted norm 4"
+      ZOrder		      411
+      SrcBlock		      "de-offseted norm 6"
       SrcPort		      2
       DstBlock		      "Goto6"
       DstPort		      1
@@ -3584,7 +5241,7 @@ Model {
       DstPort		      4
     }
     Line {
-      Name		      "torso EMS 5"
+      Name		      "waist EMS 5"
       ZOrder		      274
       Labels		      [1, 1]
       SrcBlock		      "From4"
@@ -3601,6 +5258,203 @@ Model {
       DstBlock		      "raw"
       DstPort		      3
     }
+    Line {
+      ZOrder		      393
+      SrcBlock		      "de-offseted norm 2"
+      SrcPort		      1
+      DstBlock		      "Goto9"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      326
+      SrcBlock		      "parse gyro4"
+      SrcPort		      2
+      Points		      [230, 0]
+      Branch {
+	ZOrder			396
+	DstBlock		"de-offseted norm 2"
+	DstPort			1
+      }
+      Branch {
+	ZOrder			361
+	DstBlock		"Sum"
+	DstPort			2
+      }
+    }
+    Line {
+      ZOrder		      327
+      SrcBlock		      "torso GYRO (ems3) Read"
+      SrcPort		      1
+      DstBlock		      "parse gyro4"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      394
+      SrcBlock		      "de-offseted norm 2"
+      SrcPort		      3
+      DstBlock		      "Mux"
+      DstPort		      2
+    }
+    Line {
+      ZOrder		      395
+      SrcBlock		      "de-offseted norm 2"
+      SrcPort		      2
+      DstBlock		      "Goto8"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      330
+      SrcBlock		      "parse gyro4"
+      SrcPort		      1
+      DstBlock		      "Display4"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      337
+      SrcBlock		      "parse gyro5"
+      SrcPort		      2
+      Points		      [189, 0]
+      Branch {
+	ZOrder			363
+	Points			[0, -105]
+	DstBlock		"Sum"
+	DstPort			1
+      }
+      Branch {
+	ZOrder			362
+	DstBlock		"de-offseted norm 1"
+	DstPort			1
+      }
+    }
+    Line {
+      ZOrder		      338
+      SrcBlock		      "torso GYRO (ems1) Read"
+      SrcPort		      1
+      DstBlock		      "parse gyro5"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      339
+      SrcBlock		      "de-offseted norm 1"
+      SrcPort		      2
+      DstBlock		      "Goto10"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      340
+      SrcBlock		      "parse gyro5"
+      SrcPort		      1
+      DstBlock		      "Display5"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      341
+      SrcBlock		      "de-offseted norm 1"
+      SrcPort		      1
+      DstBlock		      "Goto11"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      351
+      SrcBlock		      "de-offseted norm 1"
+      SrcPort		      3
+      DstBlock		      "Mux"
+      DstPort		      1
+    }
+    Line {
+      Name		      "torso EMS 1"
+      ZOrder		      355
+      Labels		      [1, 1]
+      SrcBlock		      "From8"
+      SrcPort		      1
+      DstBlock		      "norm "
+      DstPort		      5
+    }
+    Line {
+      Name		      "torso EMS 3"
+      ZOrder		      354
+      Labels		      [1, 1]
+      SrcBlock		      "From9"
+      SrcPort		      1
+      DstBlock		      "norm "
+      DstPort		      6
+    }
+    Line {
+      Name		      "torso EMS 1"
+      ZOrder		      359
+      Labels		      [1, 1]
+      SrcBlock		      "From10"
+      SrcPort		      1
+      DstBlock		      "raw"
+      DstPort		      5
+    }
+    Line {
+      Name		      "torso EMS 3"
+      ZOrder		      358
+      Labels		      [1, 1]
+      SrcBlock		      "From11"
+      SrcPort		      1
+      DstBlock		      "raw"
+      DstPort		      6
+    }
+    Line {
+      ZOrder		      367
+      SrcBlock		      "Sum"
+      SrcPort		      1
+      DstBlock		      "Gain"
+      DstPort		      1
+    }
+    Line {
+      Name		      "torso EMS 1+3"
+      ZOrder		      366
+      Labels		      [1, 1]
+      SrcBlock		      "From12"
+      SrcPort		      1
+      DstBlock		      "raw"
+      DstPort		      7
+    }
+    Line {
+      ZOrder		      413
+      SrcBlock		      "Sine Wave\nFunction"
+      SrcPort		      1
+      Points		      [54, 0; 0, 70]
+      DstBlock		      "Scope"
+      DstPort		      1
+    }
+    Line {
+      ZOrder		      416
+      SrcBlock		      "Gain"
+      SrcPort		      1
+      DstBlock		      "Goto12"
+      DstPort		      1
+    }
+    Line {
+      Name		      "torso EMS 1"
+      ZOrder		      421
+      Labels		      [1, 1]
+      SrcBlock		      "From13"
+      SrcPort		      1
+      DstBlock		      "raw1"
+      DstPort		      1
+    }
+    Line {
+      Name		      "torso EMS 3"
+      ZOrder		      422
+      Labels		      [1, 1]
+      SrcBlock		      "From14"
+      SrcPort		      1
+      DstBlock		      "raw1"
+      DstPort		      2
+    }
+    Line {
+      Name		      "torso EMS 1+3"
+      ZOrder		      420
+      Labels		      [1, 1]
+      SrcBlock		      "From15"
+      SrcPort		      1
+      DstBlock		      "raw1"
+      DstPort		      3
+    }
   }
 }
 #Finite State Machines
@@ -3614,10 +5468,8 @@ Stateflow {
     name		    "debugGyros"
     created		    "05-May-2016 17:01:28"
     isLibrary		    0
-    debug {
-    }
     sfVersion		    80000012
-    firstTarget		    30
+    firstTarget		    44
   }
   chart {
     id			    2
@@ -3628,9 +5480,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 3 0 0]
     viewObj		    2
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -3755,9 +5604,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 10 0 0]
     viewObj		    9
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -3882,9 +5728,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 17 0 0]
     viewObj		    16
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -4009,9 +5852,6 @@ Stateflow {
     screen		    [1 1 3600 1200 1.180555555555556]
     treeNode		    [0 24 0 0]
     viewObj		    23
-    visible		    1
-    subviewS {
-    }
     ssIdHighWaterMark	    5
     decomposition	    CLUSTER_CHART
     type		    EML_CHART
@@ -4127,8 +5967,256 @@ Stateflow {
     name		    "parse gyro3/MATLAB Function"
     chart		    23
   }
-  target {
+  chart {
     id			    30
+    machine		    1
+    name		    "parse gyro4/MATLAB Function"
+    windowPosition	    [422 539.941 189 413]
+    viewLimits		    [0 156.75 0 153.75]
+    screen		    [1 1 3600 1200 1.180555555555556]
+    treeNode		    [0 31 0 0]
+    viewObj		    30
+    ssIdHighWaterMark	    5
+    decomposition	    CLUSTER_CHART
+    type		    EML_CHART
+    chartFileNumber	    5
+    disableImplicitCasting  1
+    eml {
+      name		      "fcn"
+    }
+    firstData		    32
+    firstTransition	    35
+    firstJunction	    34
+  }
+  state {
+    id			    31
+    labelString		    "eML_blk_kernel()"
+    position		    [18 64.5 118 66]
+    fontSize		    12
+    chart		    30
+    treeNode		    [30 0 0 0]
+    superState		    SUBCHART
+    subviewer		    30
+    ssIdNumber		    1
+    type		    FUNC_STATE
+    decomposition	    CLUSTER_STATE
+    eml {
+      isEML		      1
+      script		      "function y = fcn(u)\n\nif (u(1) ~= 1.0 || u(2) ~= 6.0 || u(4) ~= 3.0)\n    y = 1;\n    error(['Wr"
+      "ong metadata from Gyro ' u(3) '!!']);\nelse\n    y = 0;\nend\n\nend\n"
+      editorLayout	      "100 M4x1[10 5 700 500]"
+    }
+  }
+  data {
+    id			    32
+    ssIdNumber		    4
+    name		    "u"
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [30 0 33]
+  }
+  data {
+    id			    33
+    ssIdNumber		    5
+    name		    "y"
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [30 32 0]
+  }
+  junction {
+    id			    34
+    position		    [23.5747 49.5747 7]
+    chart		    30
+    subviewer		    30
+    ssIdNumber		    3
+    type		    CONNECTIVE_JUNCTION
+    linkNode		    [30 0 0]
+  }
+  transition {
+    id			    35
+    labelString		    "{eML_blk_kernel();}"
+    labelPosition	    [28.125 13.875 102.544 14.964]
+    fontSize		    12
+    src {
+      intersection	      [0 0 1 0 23.5747 14.625 0 0]
+    }
+    dst {
+      id		      34
+      intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
+    }
+    midPoint		    [23.5747 24.9468]
+    chart		    30
+    dataLimits		    [21.175 25.975 14.625 42.575]
+    subviewer		    30
+    drawStyle		    SMART
+    slide {
+      sticky		      BOTH_STICK
+    }
+    executionOrder	    1
+    ssIdNumber		    2
+    linkNode		    [30 0 0]
+  }
+  instance {
+    id			    36
+    machine		    1
+    name		    "parse gyro4/MATLAB Function"
+    chart		    30
+  }
+  chart {
+    id			    37
+    machine		    1
+    name		    "parse gyro5/MATLAB Function"
+    windowPosition	    [422 539.941 189 413]
+    viewLimits		    [0 156.75 0 153.75]
+    screen		    [1 1 3600 1200 1.180555555555556]
+    treeNode		    [0 38 0 0]
+    viewObj		    37
+    ssIdHighWaterMark	    5
+    decomposition	    CLUSTER_CHART
+    type		    EML_CHART
+    chartFileNumber	    6
+    disableImplicitCasting  1
+    eml {
+      name		      "fcn"
+    }
+    firstData		    39
+    firstTransition	    42
+    firstJunction	    41
+  }
+  state {
+    id			    38
+    labelString		    "eML_blk_kernel()"
+    position		    [18 64.5 118 66]
+    fontSize		    12
+    chart		    37
+    treeNode		    [37 0 0 0]
+    superState		    SUBCHART
+    subviewer		    37
+    ssIdNumber		    1
+    type		    FUNC_STATE
+    decomposition	    CLUSTER_STATE
+    eml {
+      isEML		      1
+      script		      "function y = fcn(u)\n\nif (u(1) ~= 1.0 || u(2) ~= 6.0 || u(4) ~= 3.0)\n    y = 1;\n    error(['Wr"
+      "ong metadata from Gyro ' u(3) '!!']);\nelse\n    y = 0;\nend\n\nend\n"
+      editorLayout	      "100 M4x1[10 5 700 500]"
+    }
+  }
+  data {
+    id			    39
+    ssIdNumber		    4
+    name		    "u"
+    scope		    INPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [37 0 40]
+  }
+  data {
+    id			    40
+    ssIdNumber		    5
+    name		    "y"
+    scope		    OUTPUT_DATA
+    machine		    1
+    props {
+      array {
+	size			"-1"
+      }
+      type {
+	method			SF_INHERITED_TYPE
+	primitive		SF_DOUBLE_TYPE
+      }
+      complexity	      SF_COMPLEX_INHERITED
+      frame		      SF_FRAME_NO
+      unit {
+	name			"inherit"
+      }
+    }
+    dataType		    "Inherit: Same as Simulink"
+    linkNode		    [37 39 0]
+  }
+  junction {
+    id			    41
+    position		    [23.5747 49.5747 7]
+    chart		    37
+    subviewer		    37
+    ssIdNumber		    3
+    type		    CONNECTIVE_JUNCTION
+    linkNode		    [37 0 0]
+  }
+  transition {
+    id			    42
+    labelString		    "{eML_blk_kernel();}"
+    labelPosition	    [28.125 13.875 102.544 14.964]
+    fontSize		    12
+    src {
+      intersection	      [0 0 1 0 23.5747 14.625 0 0]
+    }
+    dst {
+      id		      41
+      intersection	      [1 0 -1 0 23.5747 42.5747 0 0]
+    }
+    midPoint		    [23.5747 24.9468]
+    chart		    37
+    dataLimits		    [21.175 25.975 14.625 42.575]
+    subviewer		    37
+    drawStyle		    SMART
+    slide {
+      sticky		      BOTH_STICK
+    }
+    executionOrder	    1
+    ssIdNumber		    2
+    linkNode		    [37 0 0]
+  }
+  instance {
+    id			    43
+    machine		    1
+    name		    "parse gyro5/MATLAB Function"
+    chart		    37
+  }
+  target {
+    id			    44
     machine		    1
     name		    "sfun"
     description		    "Default Simulink S-Function Target."
