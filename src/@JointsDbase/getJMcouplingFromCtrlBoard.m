@@ -11,26 +11,28 @@ function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx ] = getJMcoup
 if ~joint2coupling.isKey(jointName)
     % create remote control board and get coupling info
     remoteCtrlBoard = RemoteControlBoard(robotName,part);
-    couplingList = remoteCtrlBoard.getCouplings();
-    
-    % save it to the mappings:
-    % - joint name => coupling/idxInCtrlBoardServer/cpldMotorSharingIdx
-    % (Each motor shares the same index as a joint from the coupling)
-    for idx = 1:numel(couplingList)
-        % Get the coupling and respective joint names, joint and motor indexes
-        % (idxInCtrlBoardServer, cpldMotorSharingIdx)
-        coupling = couplingList{idx};
-        keys = coupling.coupledJoints;
-        jointIdxes = num2cell(remoteCtrlBoard.getJointsMappedIdxes(keys));
-        % Build array of structures (1 structure per joint)
-        values = struct(...
-            'idxInCtrlBoardServer',jointIdxes,...
-            'cpldMotorSharingIdx',coupling.coupledMotors);
-        [values.coupling] = deal(coupling);
-        % Convert to a list and then add to the mapping 'joint2coupling'
-        [valueCells] = arrayfun(@(elem) elem,values,'UniformOutput',false);
-        addedJoints = containers.Map(coupling.coupledJoints,valueCells);
-        joint2coupling = concatMap(joint2coupling,addedJoints);
+    if ~isnan(remoteCtrlBoard.driver)
+        couplingList = remoteCtrlBoard.getCouplings();
+        
+        % save it to the mappings:
+        % - joint name => coupling/idxInCtrlBoardServer/cpldMotorSharingIdx
+        % (Each motor shares the same index as a joint from the coupling)
+        for idx = 1:numel(couplingList)
+            % Get the coupling and respective joint names, joint and motor indexes
+            % (idxInCtrlBoardServer, cpldMotorSharingIdx)
+            coupling = couplingList{idx};
+            keys = coupling.coupledJoints;
+            jointIdxes = num2cell(remoteCtrlBoard.getJointsMappedIdxes(keys));
+            % Build array of structures (1 structure per joint)
+            values = struct(...
+                'idxInCtrlBoardServer',jointIdxes,...
+                'cpldMotorSharingIdx',coupling.coupledMotors);
+            [values.coupling] = deal(coupling);
+            % Convert to a list and then add to the mapping 'joint2coupling'
+            [valueCells] = arrayfun(@(elem) elem,values,'UniformOutput',false);
+            addedJoints = containers.Map(coupling.coupledJoints,valueCells);
+            joint2coupling = concatMap(joint2coupling,addedJoints);
+        end
     end
     
     % delete the remoteCtrlBoard object
