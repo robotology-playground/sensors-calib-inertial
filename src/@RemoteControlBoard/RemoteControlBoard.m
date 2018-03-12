@@ -30,9 +30,15 @@ classdef RemoteControlBoard < handle
             obj.options = yarp.Property('(device remote_controlboard)');
             obj.options.put('remote',['/' robotName '/' part]);
             obj.options.put('local',['/AxisInfoCollector/' robotName '/' part]);
-            obj.driver = yarp.PolyDriver();
-            if (~obj.driver.open(obj.options))
-                error(['AxisInfoCollector: Couldn''t open the driver for part ' part]);
+            % Check that port is registered
+            if system(['yarp name query /' robotName '/' part])
+                warning('Port not registered!! skipping...');
+                obj.driver = NaN;
+            else
+                obj.driver = yarp.PolyDriver();
+                if (~obj.driver.open(obj.options))
+                    error(['AxisInfoCollector: Couldn''t open the driver for part ' part]);
+                end
             end
             
             % Get config from hardcoded mechanicals config file. This will
@@ -61,7 +67,9 @@ classdef RemoteControlBoard < handle
         
         % Destructor
         function delete(obj)
-            obj.driver.close();
+            if ~isnan(obj.driver)
+                obj.driver.close();
+            end
         end
         
         % Get number of axes
