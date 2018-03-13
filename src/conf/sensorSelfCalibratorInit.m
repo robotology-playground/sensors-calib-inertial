@@ -6,7 +6,7 @@
 robotName = 'icubSim'; % 'icub' or 'icubSim'
 dataPath  = '../../data/dumper';
 %modelPath = '../models/icubSim/icub.urdf';
-modelPath = '../models/iCubGenova04/icub.urdf';
+modelPath = '../models/iCubGenova04/model.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 %calibrationMapFile = 'calibrationMap.mat';
 calibrationMapFile = '';
@@ -67,7 +67,7 @@ acquiredParts = {'torso'};
 % head     :       head_imu 3D accelerometer
 % mtbSensorAct idx:  1
 % 
-% torso    :       9b7..9b10
+% torso    :       0b7..0b10
 % mtbSensorAct idx:  7....10
 % 
 % some sensors are de-activated because of faulty behaviour
