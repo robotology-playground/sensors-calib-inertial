@@ -110,7 +110,7 @@ classdef Connection < handle
                     error('Wrong yarpdatadumper PID!');
                 end
                 % check that required port is now open
-                if ~SensorDataYarpI.waitPortOpen(obj.to,5)
+                if ~SensorYarpDataDumper.waitPortOpen(obj.to,5)
                     error(['Couldn''t open port ' obj.to ' !!']);
                 end
             else

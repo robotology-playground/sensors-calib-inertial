@@ -1,4 +1,4 @@
-classdef SensorDataYarpI < handle
+classdef SensorYarpDataDumper < handle
     % Interface for accessing YARP interface.
     %   This class handles the logging of sensor data from YARP ports or
     %   just the access to and loading of previously logged data into
@@ -20,7 +20,7 @@ classdef SensorDataYarpI < handle
     end
     
     methods(Access = public)
-        function obj = SensorDataYarpI(robotName,dataFolderPath)
+        function obj = SensorYarpDataDumper(robotName,dataFolderPath)
             % Create YARP Network device, for initializing YARP classes for
             % communication, if not yet initialized
             if ~yarp.Network.initialized
@@ -115,7 +115,7 @@ classdef SensorDataYarpI < handle
         end
     end
     
-    %%===============  PROTECTED METHODS  ================================
+    %% ===============  PROTECTED METHODS  ================================
     
     methods(Access = protected)
         % only this class and derivates should build the port mapping from
@@ -124,7 +124,7 @@ classdef SensorDataYarpI < handle
             % init parameters from config file
             run yarpPortNameRules;
             sensorType = {...
-                'joint_from','acc_from','gyro8_from','gyro9_from','imu_from','xsens_from','fts_from','jtorq_from,'...
+                'joint_from','acc_from','gyro8_from','gyro9_from','imu_from','xsens_from','fts_from','jtorq_from',...
                 'joint_to','acc_to','gyro8_to','gyro9_to','imu_to','xsens_to','fts_to','jtorq_to',...
                 'joint_path','acc_path','gyro8_path','gyro9_path','imu_path','xsens_path','fts_path','jtorq_path'};
             portNamingRule = {...

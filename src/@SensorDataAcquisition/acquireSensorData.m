@@ -24,7 +24,7 @@ function acqSensorDataAccessor = acquireSensorData(...
 
 % First, init MotionSequencer static data, clean YARP ports
 clear SequenceParams;
-SensorDataYarpI.clean();
+SensorYarpDataDumper.clean();
 
 % Init sequence parameters from data acquisition input configuration
 sequenceParams = SequenceParams(calibedParts,selector,seqHomeParams,seqEndParams);
@@ -38,7 +38,7 @@ sequences = sequenceParams.buildMapSequences();
 % Create Yarp data interface. It can create the necessary yarp ports
 % for logging the data and holds a method for connecting or disconnecting
 % the ports. It also access data previously logged.
-logger = SensorDataYarpI(robotModel.robotName,dataPath);
+logger = SensorYarpDataDumper(robotModel.robotName,dataPath);
 % Configure callback logger commands
 logCmd.sched = @logger.scheduleNewAcquisition;
 logCmd.new   = @logger.newLog;
