@@ -14,6 +14,9 @@ joints = obj.getAxesNames();
 % ... the motor names. We assume there is an equal number of joints and
 % motors. Format of motor name: m_<part>_<idx>
 motors = cellfun(@(idx) ['m_' obj.part '_' num2str(idx)],num2cell(1:numel(joints)),'UniformOutput',false);
+% The PWM fullscale values and gearbox ratios
+fullscalePWMs = obj.getFullscalePWMs();           % WIP
+gearboxDqM2Jratios = obj.getGearboxDqM2Jratios(); % WIP
 
 % This matrix has several joint/motor pair couplings as well as
 % standalone joint/motor pairs.
@@ -48,21 +51,27 @@ G = graph(A,[motors,joints]); % create a graph from adjacence matrix and node na
 couplings = G.conncomp('OutputForm','cell');
 
 % Now 'couplings' is a cell array where each cell stands for a couplings
-% and contains the list of joints and motors names in that couling.
+% and contains the list of joints and motors names in that coupling.
 % Create the respective coupling objects.
 couplingList = cell(1,numel(couplings));
 for idx = 1:numel(couplings)
     % coupled joints
     jointsBitmap = ismember(joints,couplings{idx});
     cpldJoints = joints(jointsBitmap);
-    % coupled motors
+    
+    % coupled motors, respective PWM fullscale values and gearbox ratios
     motorsBitmap = ismember(motors,couplings{idx});
     cpldMotors = motors(motorsBitmap);
-    % coupling matrix
-    invT = rawCoupling(motorsBitmap,jointsBitmap);
+    cpldFullscalePWMs = fullscalePWMs(motorsBitmap);
+    cpldGearboxDqM2Jratios = gearboxDqM2Jratios(motorsBitmap);
     
-    % create the coupling object
-    couplingList{idx} = JointMotorCoupling(invT,cpldJoints,cpldMotors,[],obj.part);
+    % coupling matrix
+    Tm2j = rawCoupling(jointsBitmap,motorsBitmap);
+    
+    % create the coupling object.
+    couplingList{idx} = JointMotorCoupling(...
+        Tm2j,cpldJoints,cpldMotors, ...
+        cpldGearboxDqM2Jratios, cpldFullscalePWMs, obj.part);
 end
 
 end

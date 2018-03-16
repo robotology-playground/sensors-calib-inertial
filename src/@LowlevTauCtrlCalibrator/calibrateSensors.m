@@ -55,7 +55,15 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
 % Get respective torques (matrix 6xNsamples)
 tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
-tauMotor   = jointMotorCoupling.invT(motorIdx,:) * tauJoints;
+% We have the coupling matrix Tm2j (motor to joint) and:
+% dq_j = Tm2j * dq_m
+% Tau_j = Tm2j^{-t} * Tau_m <=> Tau_m = Tm2j^t * Tau_j
+% 
+% which is also applicable for a gearbox ratio:
+% if   dq_j = Gm2j * dq_m
+% then Tau_m = Gm2j^t * Tau_j.
+% Since Gm2j is a scalar, then Tau_m = Gm2j * Tau_j.
+tauMotor = jointMotorCoupling.gearboxDqM2Jratios(motorIdx) * jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
 
 switch frictionOrKtau
     case 'friction'
@@ -82,7 +90,8 @@ end
 
 %% Convert theta vector to model parameters (motor calibration) and save it to the calibration map
 
-% Get the motor calibration or create a new one
+% Get the motor calibration or create a new one. The method returns a
+% handle on the MotorTransFunc object.
 calib = MotorTransFunc.GetMotorTransFunc(motorName,calibrationMap);
 
 switch frictionOrKtau
@@ -100,8 +109,7 @@ switch frictionOrKtau
         % Check that the model is symmetrical
         [KoffP, KoffN, KpwmP, KpwmN] = deal(thetaPosXvar(1),thetaNegXvar(1),thetaPosXvar(2),thetaNegXvar(2));
         if ...
-                abs(KoffP-KoffN)>1e-3 ...
-                && abs(KoffP+KoffN)>abs(KoffP)/100 ...
+                abs(KoffP+KoffN)>abs(KoffP)/100 ...
                 || abs(KpwmP-KpwmN)>abs(KpwmP)/100
             warning('calibrateSensors: The Ktau model is not symmetrical');
         end
@@ -110,7 +118,10 @@ switch frictionOrKtau
         if abs(theta(1))>1e-3 % Tau offset
             warning('calibrateSensors: There is a torque offset in the model PWM to torque !!');
         end
-        calib.setKpwm(theta(2));
+        % theta_2 = Tau(Nm)/PWM(%) => theta_2*100/fullscale =
+        % Tau(Nm)/PWM(raw) = Kpwm Nm.raw^{-1}
+        % \overline{Kpwm} = 1/Kpwm = 1/theta_2/100*fullscale
+        calib.setKpwm(theta(2)*100/jointMotorCoupling.fullscalePWMs(motorIdx));
         
     otherwise
         error('calibrateSensors: unknown calibration type !!');

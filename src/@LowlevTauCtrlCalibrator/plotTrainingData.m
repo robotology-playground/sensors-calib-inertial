@@ -74,7 +74,15 @@ time = data.parsedParams.time;
 
 % Get respective torques (matrix 6xNsamples)
 tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
-tauMotor   = jointMotorCoupling.invT(motorIdx,:) * tauJoints;
+% We have the coupling matrix Tm2j (motor to joint) and:
+% dq_j = Tm2j * dq_m
+% Tau_j = Tm2j^{-t} * Tau_m <=> Tau_m = Tm2j^t * Tau_j
+% 
+% which is also applicable for a gearbox ratio:
+% if   dq_j = Gm2j * dq_m
+% then Tau_m = Gm2j^t * Tau_j.
+% Since Gm2j is a scalar, then Tau_m = Gm2j * Tau_j.
+tauMotor = jointMotorCoupling.gearboxDqM2Jratios(motorIdx) * jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
 
 switch frictionOrKtau
     case 'friction'

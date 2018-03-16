@@ -27,10 +27,10 @@ if ~joint2coupling.isKey(jointName)
             'idxInCtrlBoardServer',jointIdxes,...
             'cpldMotorSharingIdx',coupling.coupledMotors);
         [values.coupling] = deal(coupling);
-        % Convert to a list and then add to the mapping 'joint2coupling'
+        % Convert to a list and then add (merge) to the mapping 'joint2coupling'
         [valueCells] = arrayfun(@(elem) elem,values,'UniformOutput',false);
         addedJoints = containers.Map(coupling.coupledJoints,valueCells);
-        joint2coupling = concatMap(joint2coupling,addedJoints);
+        joint2coupling = concatMap(joint2coupling,addedJoints); % merge mappings
     end
     
     % delete the remoteCtrlBoard object
