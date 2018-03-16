@@ -48,12 +48,25 @@ classdef RemoteControlBoard < handle
         
         % Get Axes list
         function axesNames = getAxesNames(obj)
+            % Get joint names from robot interface
             nbAxes = obj.getAxes();
             iaxis = obj.driver.viewIAxisInfo();
-            axesNames = cell(1,nbAxes);
+            refAxesNames = cell(1,nbAxes);
             for axisIdx = 1:nbAxes
-                axesNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
+                refAxesNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
             end
+            % Get joint names from config file
+            axesNames = hardwareMechanicals.(obj.part).jointNames;
+            % Through warning if differ from 'refAxesNames'
+            if ~strcmp(cell2mat(refAxesNames),cell2mat(axesNames))
+                warning(['joint names ordering in the config file differs from ' ...
+                'the one given by the robot interface!']);
+            end
+        end
+        
+        % Get Motors list from 'mechanicals' config file
+        function motorNames = getMotorNames(obj)
+            motorNames = hardwareMechanicals.(obj.part).motorNames;
         end
         
         % Get the digested coupling information
@@ -64,8 +77,16 @@ classdef RemoteControlBoard < handle
     end
     
     methods(Access=protected)
-        % Get the coupling parameters
-        rawCouplingInfo = getRawCoupling(obj);
+        % Get parameters from 'mechanicals' config file
+        rawCouplingInfo = getRawCoupling(obj,hardwareMechanicals);
+        
+        function fullscalePWMs = getFullscalePWMs(obj,hardwareMechanicals)
+            fullscalePWMs = hardwareMechanicals.(obj.part).fullscalePWM;
+        end
+        
+        function gearboxDqM2Jratios = getGearboxDqM2Jratios(obj,hardwareMechanicals)
+            gearboxDqM2Jratios = hardwareMechanicals.(obj.part).Gearbox_M2J;
+        end
     end
     
 end

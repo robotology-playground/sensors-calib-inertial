@@ -62,7 +62,7 @@ tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
 % which is also applicable for a gearbox ratio:
 % if   dq_j = Gm2j * dq_m
 % then Tau_m = Gm2j^t * Tau_j.
-% Since Gm2j is a scalar, then Tau_m = Gm2j * Tau_j.
+% Since Gm2j is a diagonal matrix, then Tau_m = Gm2j * Tau_j.
 tauMotor = jointMotorCoupling.gearboxDqM2Jratios(motorIdx) * jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
 
 switch frictionOrKtau
@@ -120,7 +120,7 @@ switch frictionOrKtau
         end
         % theta_2 = Tau(Nm)/PWM(%) => theta_2*100/fullscale =
         % Tau(Nm)/PWM(raw) = Kpwm Nm.raw^{-1}
-        % \overline{Kpwm} = 1/Kpwm = 1/theta_2/100*fullscale
+        % \overline{Kpwm} = 1/Kpwm = (1/theta_2)*(fullscale/100)
         calib.setKpwm(theta(2)*100/jointMotorCoupling.fullscalePWMs(motorIdx));
         
     otherwise

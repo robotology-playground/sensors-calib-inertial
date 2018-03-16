@@ -7,16 +7,21 @@ function [ couplingList ] = getCouplings( obj )
 %
 % where invT defined as : $$ \dot{m} = T^{-1} \dot{q} $$
 
+% Get config from hardcoded mechanicals config file
+hardwareMechanicals = Init.load('hardwareMechanicalsConfig');
+
 % We get the raw coupling matrix.
-rawCoupling = obj.getRawCoupling();
+rawCoupling = obj.getRawCoupling(hardwareMechanicals);
 % ... the joint names.
 joints = obj.getAxesNames();
-% ... the motor names. We assume there is an equal number of joints and
-% motors. Format of motor name: m_<part>_<idx>
-motors = cellfun(@(idx) ['m_' obj.part '_' num2str(idx)],num2cell(1:numel(joints)),'UniformOutput',false);
+% ... the motor names. We assume there is an equal number of joint DoFs and
+% motors. Motors are named as follows..
+% 1 DoF joint: l_knee --> motor: l_knee
+% 3 DoF joint: torso_yaw/torso_roll/torso_pitch --> torso_1/torso_2/torso_3
+motors = obj.getMotorNames();
 % The PWM fullscale values and gearbox ratios
-fullscalePWMs = obj.getFullscalePWMs();           % WIP
-gearboxDqM2Jratios = obj.getGearboxDqM2Jratios(); % WIP
+fullscalePWMs = obj.getFullscalePWMs(hardwareMechanicals);
+gearboxDqM2Jratios = obj.getGearboxDqM2Jratios(hardwareMechanicals);
 
 % This matrix has several joint/motor pair couplings as well as
 % standalone joint/motor pairs.
@@ -62,8 +67,8 @@ for idx = 1:numel(couplings)
     % coupled motors, respective PWM fullscale values and gearbox ratios
     motorsBitmap = ismember(motors,couplings{idx});
     cpldMotors = motors(motorsBitmap);
-    cpldFullscalePWMs = fullscalePWMs(motorsBitmap);
-    cpldGearboxDqM2Jratios = gearboxDqM2Jratios(motorsBitmap);
+    cpldFullscalePWMs = fullscalePWMs.values(cpldMotors);
+    cpldGearboxDqM2Jratios = gearboxDqM2Jratios.values(cpldMotors);
     
     % coupling matrix
     Tm2j = rawCoupling(jointsBitmap,motorsBitmap);
