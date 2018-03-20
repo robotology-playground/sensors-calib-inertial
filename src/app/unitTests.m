@@ -77,10 +77,10 @@ jointNameList = {...
     'l_ankle_roll'};
 
 motorNameList = {...
-    'm_left_arm_1','m_left_arm_4','m_left_arm_7',...
-    'm_torso_3','m_torso_2','m_torso_1',...
-    'm_head_2',...
-    'm_left_leg_6'};
+    'l_shoulder_1','l_elbow','l_wrist_2',...
+    'torso_3','torso_2','torso_1',...
+    'neck_2',...
+    'l_ankle_roll'};
 
 % Get the list of joint/motor couplings.
 jmCouplings = model.jointsDbase.getJMcouplings('joints',jointNameList)
@@ -152,19 +152,63 @@ obj.close();
 
 % Set a non-coupled motor to PWM control mode and PWM value using motor name
 obj.open({'left_leg'})
-[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('m_left_leg_4')
-ok = obj.setMotorPWM('m_left_leg_4',0)
+[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('l_knee')
+ok = obj.setMotorPWM('l_knee',0)
 obj.close();
 
 %% Set a coupled motor to PWM control mode and PWM value using motor name
 obj.open({'torso'})
-[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('m_torso_1')
-ok = obj.setMotorPWM('m_torso_1',10)
-ok = obj.setMotorPWM('m_torso_1',0)
+[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('torso_1')
+ok = obj.setMotorPWM('torso_1',10)
+ok = obj.setMotorPWM('torso_1',0)
 obj.close();
 
 
-%% 5 - Test plotters from 'Plotter' class
+%% 5 - Timers and rate threads.
+% 
+
+% clear all variables and close all previous figures
+clear
+close all
+clc
+
+%Clear static data
+clear classes;
+
+% Clear all timers
+timersArray = timerfind;
+for idx = 1:length(timersArray)
+    delete(timersArray(idx));
+end
+
+% Create YARP Network device, for initializing YARP classes for communication
+yarp.Network.init();
+
+% define the rate function
+rateThreadPeriod = 0.01;
+testFunction = @(timerObj,thisEvent,timerStopFcn) UT.testRateFunction(timerObj,thisEvent,timerStopFcn,rateThreadPeriod);
+
+% define the rate threads
+%
+% local timer
+myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'local',rateThreadPeriod,20);
+myRateThread.run(true);
+delete(myRateThread);
+
+% local timer synced with Yarp
+myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'localSyncYarp',rateThreadPeriod,20);
+myRateThread.run(true);
+delete(myRateThread);
+
+% Yarp timer only
+myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'yarp',rateThreadPeriod,20);
+myRateThread.run(true);
+delete(myRateThread);
+
+clear Timers;
+
+
+%% 7 - Test plotters from 'Plotter' class
 
 run unitTestsInit;
 
@@ -205,7 +249,7 @@ Plotter.plot2dDataNfittedModel(...
     'dataLegend','modelLegend');
 
 
-%% 6 - Test 'LowlevTauCtrlCalibrator'
+%% 8 - Test 'LowlevTauCtrlCalibrator'
 
 run unitTestsInit;
 
