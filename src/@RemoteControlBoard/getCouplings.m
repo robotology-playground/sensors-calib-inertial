@@ -13,12 +13,12 @@ hardwareMechanicals = Init.load('hardwareMechanicalsConfig');
 % We get the raw coupling matrix.
 rawCoupling = obj.getRawCoupling(hardwareMechanicals);
 % ... the joint names.
-joints = obj.getAxesNames();
+joints = obj.getAxesNames(hardwareMechanicals);
 % ... the motor names. We assume there is an equal number of joint DoFs and
 % motors. Motors are named as follows..
 % 1 DoF joint: l_knee --> motor: l_knee
 % 3 DoF joint: torso_yaw/torso_roll/torso_pitch --> torso_1/torso_2/torso_3
-motors = obj.getMotorNames();
+motors = obj.getMotorNames(hardwareMechanicals);
 % The PWM fullscale values and gearbox ratios
 fullscalePWMs = obj.getFullscalePWMs(hardwareMechanicals);
 gearboxDqM2Jratios = obj.getGearboxDqM2Jratios(hardwareMechanicals);

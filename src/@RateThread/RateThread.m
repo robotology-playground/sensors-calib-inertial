@@ -123,7 +123,6 @@ classdef RateThread < handle
             %timerObj.Period = timerObj.Period - adjust; => this action is
             %not possible while the timer is running
             if (adjust<-0.001)
-                adjust
                 Timers.wait(-adjust);
             end
             

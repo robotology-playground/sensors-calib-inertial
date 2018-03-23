@@ -208,6 +208,46 @@ delete(myRateThread);
 clear Timers;
 
 
+%% 6 - High-level torque control.
+% 
+run unitTestsInit;
+
+% Create robot model. The model holds the robot name, the parameters
+% extracted from the URDF model, the sensor calibration parameters and the
+% joint/motor parameters (PWM to torque rate, friction parameters, ...).
+model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
+
+% Create motor control boards remapper and set joints to PWM ctrl mode
+ctrlBoard=RemoteControlBoardRemapper(model,'test')
+ctrlBoard.open({'left_leg'})
+
+jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})
+[readPids,readPidsMatArray] = ctrlBoard.getMotorPids(obj,'posPID',jointsIdxes);
+
+% % Create PWM controller
+% pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard)
+% 
+% jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})
+% ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')
+% [ok,modes] = obj.getJointsControlMode(jointsIdxes)
+% 
+% % high-level control, keep joint at current position
+% ok = obj.setMotorsPWM(jointsIdxes,[0])
+% pause;
+% 
+% % Run a PID on the joint. Send a command every 10ms
+% quit = false;
+% while (~quit)
+%     
+% end
+% 
+% % End of test: set each motor back to position control mode
+% ok = obj.setJointsControlMode(jointsIdxes,'ctrl')
+% [ok,modes] = obj.getJointsControlMode(jointsIdxes)
+% obj.close();
+% clear all;
+
+
 %% 7 - Test plotters from 'Plotter' class
 
 run unitTestsInit;

@@ -47,7 +47,7 @@ classdef RemoteControlBoard < handle
         end
         
         % Get Axes list
-        function axesNames = getAxesNames(obj)
+        function axesNames = getAxesNames(obj,hardwareMechanicals)
             % Get joint names from robot interface
             nbAxes = obj.getAxes();
             iaxis = obj.driver.viewIAxisInfo();
@@ -65,7 +65,7 @@ classdef RemoteControlBoard < handle
         end
         
         % Get Motors list from 'mechanicals' config file
-        function motorNames = getMotorNames(obj)
+        function motorNames = getMotorNames(obj,hardwareMechanicals)
             motorNames = hardwareMechanicals.(obj.part).motorNames;
         end
         

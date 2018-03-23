@@ -13,6 +13,10 @@ classdef y
         VOCAB_CM_VELOCITY        = y.vocabEnc('vel');
         VOCAB_CM_CURRENT         = y.vocabEnc('icur');
         VOCAB_CM_PWM             = y.vocabEnc('ipwm');
+        VOCAB_PIDTYPE_POSITION   = y.vocabEnc('pos');
+        VOCAB_PIDTYPE_VELOCITY   = y.vocabEnc('vel');
+        VOCAB_PIDTYPE_TORQUE     = y.vocabEnc('trq');
+        VOCAB_PIDTYPE_CURRENT    = y.vocabEnc('cur');
     end
     
     methods(Static = true)

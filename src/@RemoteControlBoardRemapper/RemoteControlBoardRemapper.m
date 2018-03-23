@@ -11,7 +11,7 @@ classdef RemoteControlBoardRemapper < handle
         defaultSpeed = 10; % m/s
         defaultAcc   = 2;  % m/s^2
         
-        ctrlModeVocabDef ={...
+        ctrlModeVocabDef = {...
             'idlectrl'  , y.VOCAB_CM_IDLE     ;
             'torqctrl'  , y.VOCAB_CM_TORQUE   ;
             'ctrl'      , y.VOCAB_CM_POSITION ;
@@ -28,6 +28,21 @@ classdef RemoteControlBoardRemapper < handle
         vocab2ctrlMode = containers.Map(...
             RemoteControlBoardRemapper.ctrlModeVocabDef(:,2),...
             RemoteControlBoardRemapper.ctrlModeVocabDef(:,1));
+        
+        pidTypeVocabDef = {...
+            'posPID' , y.VOCAB_PIDTYPE_POSITION;
+            'velPID' , y.VOCAB_PIDTYPE_VELOCITY;
+            'torqPID', y.VOCAB_PIDTYPE_TORQUE  ;
+            'currPID', y.VOCAB_PIDTYPE_CURRENT
+            };
+        
+        pidType2vocab = containers.Map(...
+            RemoteControlBoardRemapper.pidTypeVocabDef(:,1),...
+            RemoteControlBoardRemapper.pidTypeVocabDef(:,2));
+        
+        vocab2pidType = containers.Map(...
+            RemoteControlBoardRemapper.pidTypeVocabDef(:,2),...
+            RemoteControlBoardRemapper.pidTypeVocabDef(:,1));
     end
     
     properties(SetAccess = protected, GetAccess = public)
@@ -84,13 +99,13 @@ classdef RemoteControlBoardRemapper < handle
         end
         
         % Read joint encoders
-        [readedEncoders,readEncsMat] = getEncoders(obj)
+        [readEncoders,readEncsMat] = getEncoders(obj);
         
         % Write joint encoders
-        ok = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)
+        ok = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin);
         
         % Wait for motion to be completed
-        ok = waitMotionDone(obj,timeout)
+        ok = waitMotionDone(obj,timeout);
         
         % Get joints indexes as per the control board remapper mapping
         [jointsIdxList,matchingBitmap] = getJointsMappedIdxes(obj,jointNameList);
@@ -99,6 +114,9 @@ classdef RemoteControlBoardRemapper < handle
         % Position, Open loop (applicable for PWM, torque, current).
         ok = setJointsControlMode(obj,jointsIdxList,mode);
         [ok, modes] = getJointsControlMode(obj,jointsIdxList);
+        
+        % Get motor PIDs
+        [readPids,readPidsMat] = getMotorsPids(obj,pidCtrlMode,jointsIdxList);
         
         % Set the motor in PWM control mode and handle the coupled
         % motors keeping their control mode and state unchanged. If
