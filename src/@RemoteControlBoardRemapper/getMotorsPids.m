@@ -1,13 +1,13 @@
-function [readPids,readPidsMatArray] = getMotorsPids(obj,pidCtrlType,jointsIdxList)
+function [readPids,readPidsMatArray] = getMotorsPids(obj,pidCtrlType,motorsIdxList)
 
 % Get the encoders values
 ipids = obj.driver.viewIPidControl();
 readPids = yarp.PidVector();
-readPids.resize(length(jointsIdxList));
+readPids.resize(length(motorsIdxList));
 readPid = yarp.Pid();
 
 % Read PID values for each joint/motor
-for idx = 1:length(jointsIdxList)
+for idx = 1:length(motorsIdxList)
     cLikeIdx = idx-1; % C like index
     ipids.getPid(pidCtrlType,cLikeIdx,readPid);
     readPids.set(cLikeIdx,readPid);

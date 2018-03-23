@@ -89,10 +89,11 @@ for seqIdx = 1:numel(obj.sequences)
                 % motors keeping their control mode and state unchanged. If
                 % this is not supported by the YARP remoteControlBoardRemapper,
                 % emulate it. We can only emulate position control.
-                [ok,coupling,couplingMode] = obj.ctrlBoardRemap.setMotorPWMcontrolMode(motorName);
+                pwmController = MotorPWMcontroller(motorName,obj.ctrlBoardRemap);
+                ok = pwmController.start();
                 
                 % Set the desired PWM level (0-100%) for the named motor
-                ok = obj.ctrlBoardRemap.setMotorPWM(motorName,pwm);
+                ok = pwmController.setMotorPWM(pwm);
                 
                 % Prompt the user to proceed
                 promptString = sequence.prpt{stepIdx}();
@@ -101,10 +102,11 @@ for seqIdx = 1:numel(obj.sequences)
                     pause;
                 end
                 
-                % Set all joints from the impacted coupling back to the
-                % previous control mode.
-                [jointsIdxList,~] = obj.ctrlBoardRemap.getJointsMappedIdxes(coupling.coupledJoints);
-                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxList,couplingMode);
+                % Stop the controller. This also restores the previous
+                % control mode for the named motor and eventual coupled
+                % motors.
+                ok = pwmController.stop();
+                delete(pwmController);
                 
             otherwise
                 error('Unknown control mode!');
