@@ -11,8 +11,6 @@ ipwm = obj.driver.viewIPWMControl();
 % convert parameters to types handled by the bindings API
 motorsVec = motorsIdxList-1; % C++ like indexes
 
-% Convert % to duty-cycle values TBD
-
 % configure mode for specified joints
 for idx = 1:numel(motorsVec)
     ok = ipwm.setRefDutyCycle(motorsVec(idx),pwmVec(idx));

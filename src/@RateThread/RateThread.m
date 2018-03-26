@@ -90,24 +90,24 @@ classdef RateThread < handle
             delete(obj.threadTimer);
         end
         
-        function success = run(obj,waitTimerStop)
+        function ok = run(obj,waitTimerStop)
             % latch Yarp clock and local clock
             obj.firstYarpTime = yarp.Time.now;
             obj.currentLocalTime = tic;
             % Start the timer and wait termination by 'rateFunctionH' or
             % timeout.
             start(obj.threadTimer);
-            success = nan;
+            ok = nan;
             if waitTimerStop
                 wait(obj.threadTimer);
                 % return motion done success or failure
-                success = get(obj.threadTimer,'UserData');
+                ok = get(obj.threadTimer,'UserData');
             end
         end
         
-        function stop(obj)
-            % Set the completion flag to true
-            set(obj.threadTimer,'UserData',true);
+        function stop(obj,completion)
+            % Set the completion flag (bool)
+            set(obj.threadTimer,'UserData',completion);
             % stop the timer
             stop(obj.threadTimer);
         end

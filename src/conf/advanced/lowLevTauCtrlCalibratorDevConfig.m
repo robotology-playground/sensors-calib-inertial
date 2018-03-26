@@ -11,3 +11,5 @@ subSamplingSize = 400; % number of samples after sub-sampling the raw data
 filtParams.type = 'sgolay';
 filtParams.sgolayK = 5;
 filtParams.sgolayF = 11;
+
+samplingPeriod = 0.01; % seconds

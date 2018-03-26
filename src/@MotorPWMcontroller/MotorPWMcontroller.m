@@ -9,31 +9,47 @@ classdef MotorPWMcontroller < handle
         % control board remapper
         remCtrlBoardRemap@RemoteControlBoardRemapper;
         % controlled motor and respective coupling info
-        ctrledMotor@struct;
+        pwmCtrledMotor@struct;
+        posCtrledMotors@struct;
         coupling@JointMotorCoupling;
+        couplingMotorIdxes@double;
         % Last state before switching to PWM control emulating Pos control
         couplingPrevMode@char;
-        lastMotorsPos@double;
-        lastMotorsPwm@double;
+        lastMotorsPosInPrevMode@double;
+        lastMotorsPwmInPrevMode@double;
         % PID gains and real time synchronization
         ctrllerThread@RateThread;
         ctrllerThreadPeriod@double;
         pidGains@struct;
-        % Mask to de/activate position control emulation motor wise
-        posCtrlMotorsMask@double;
+        % Running flag for avoiding state inconsistencies
+        running@bool;
     end
     
     methods
         % Constructor
         function obj = MotorPWMcontroller(motorName,remCtrlBoardRemapper)
-            % set properties
-            obj.ctrledMotor.name = motorName;
-            obj.ctrledMotor.idx = remCtrlBoardRemapper.getMotorsMappedIdxes({motorName});
-            obj.ctrledMotor.pwm = 0;
+            % controller not running
+            obj.running = false;
+            obj.ctrllerThread = nan;
+            obj.ctrllerThreadPeriod = nan;
+            
+            % Set control board remapper
             obj.remCtrlBoardRemap = remCtrlBoardRemapper;
+            
             % Get coupled motors/joints
             couplings = remCtrlBoardRemapper.robotModel.jointsDbase.getJMcouplings('motors',{motorName});
             obj.coupling = couplings{1};
+            
+            % Get indices of coupled motors
+            [obj.couplingMotorIdxes,~] = ...
+                obj.remCtrlBoardRemap.getMotorsMappedIdxes(ob.coupling.coupledMotors);
+            
+            % set position (emulated) and PWM controlled motor settings
+            obj.pwmCtrledMotor.name = motorName;
+            obj.pwmCtrledMotor.idx = remCtrlBoardRemapper.getMotorsMappedIdxes({motorName});
+            obj.pwmCtrledMotor.pwm = 0;
+            obj.posCtrledMotors.idx = setdiff(obj.couplingMotorIdxes,obj.pwmCtrledMotor.idx,'stable');
+            obj.posCtrledMotors.pwm = zeros(size(obj.posCtrledMotors.idx));
         end
         
         % Destructor
@@ -51,16 +67,6 @@ classdef MotorPWMcontroller < handle
         % control mode for the named motor and eventual coupled
         % motors.
         ok = stop(obj);
-                
-        % Emulate position control on all the coupled motors except the
-        % motor 'obj.ctrledMotorName' which is explicitely controlled
-        % through PWM.
-        ok = runPwmEmulPosCtrlMode(obj,samplingPeriod);
-        
-        % Restore the control mode that was set previous the position
-        % control emulator setting, on all coupled motors of
-        % 'obj.coupling'.
-        ok = restorePrevCtrlMode(obj);
         
         % Select new motor to control in explicit PWM mode. The position
         % control emulation is turned off for this motor.
@@ -72,8 +78,14 @@ classdef MotorPWMcontroller < handle
     end
     
     methods (Access=protected)
-        ok = ctrllerThreadStartFcn(obj,motorsIdxList);
-        ok = ctrllerThreadStopFcn(obj,motorsIdxList);
+        % Emulate position control on all the coupled motors except the
+        % motor 'obj.pwmCtrledMotor.name' which is explicitely controlled
+        % through PWM.
+        ok = runPwmEmulPosCtrlMode(obj,samplingPeriod);
+        
+        % Rate thread functions
+        ok = ctrllerThreadStartFcn(obj);
+        ok = ctrllerThreadStopFcn(obj);
         ok = ctrllerThreadUpdateFcn(timerObj,thisEvent,timerStopFcn,rateThreadPeriod,PIDCtrller);
     end
     
