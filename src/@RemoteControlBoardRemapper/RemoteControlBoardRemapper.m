@@ -49,6 +49,7 @@ classdef RemoteControlBoardRemapper < handle
         robotName;
         robotModel;
         jointsList={};
+        motorsList={};
         % YARP objects
         axesNames; axesList; remoteControlBoards; remoteControlBoardsList;
         options;

@@ -19,7 +19,8 @@ classdef JointsDbase < DataBase
             propNameList = {...
                 'jointName','iDynObject',...
                 'firstAttachedLink','secondAttachedLink','part','DoF','maxDq0',...
-                'jmCoupling','idxInCtrlBoardServer','cpldMotorSharingIdx'};
+                'jmCoupling','idxInCtrlBoardServer','cpldMotorSharingIdx',...
+                'gearboxDqM2Jratio','fullscalePWM'};
             propValueList = cell(iDynTreeModelFromURDF.getNrOfJoints(),length(propNameList));
             
             % Set 'propValueList' with the properties from the iDynTree model
@@ -41,21 +42,23 @@ classdef JointsDbase < DataBase
                 % This joint might be coupled with other joints to a set of motors.
                 % Retrieve the respective joints/motors coupling information
                 if DoF>0
-                    [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx] = ...
-                        JointsDbase.getJMcouplingFromCtrlBoard(...
-                        joint2coupling,robotName,part,jointName);
+                    [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM] = ...
+                        JointsDbase.getJMcouplingFromCtrlBoard(joint2coupling,robotName,part,jointName);
                 else
                     warning('JointsDbase: %s is a fixed joint.',jointName);
                     parentCoupling = [];
                     idxInCtrlBoardServer = [];
                     cpldMotorSharingIdx = '';
+                    gearboxDqM2Jratio = [];
+                    fullscalePWM = [];
                 end
                 
                 % fill the properties list
                 propValueList(propValueLineIdx,:) = {...
                     jointName,iDynObject,...
                     firstAttachedLink,secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,...
-                    parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx};
+                    parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,...
+                    gearboxDqM2Jratio,fullscalePWM};
                 
                 % increment pointer
                 propValueLineIdx = propValueLineIdx+1;
@@ -74,6 +77,12 @@ classdef JointsDbase < DataBase
         
         % Get joints sharing the same indexes as the given motors
         jointNameList = getCpldJointSharingIdx(obj,motorNameList);
+        
+        % Get motors sharing the same indexes as the given joints
+        motorNameList = getCpldMotorSharingIdx(obj,jointNameList);
+        
+        % Get the gearbox ratios and fullscale values for a given list of motors
+        [gearboxDqM2Jratio,fullscalePWM] = getMotorGearboxRatioNfullscale(obj,motorNameList);
         
         % Get the list of joint/motor couplings. Input type is 'joints'
         % or 'motors'.
@@ -101,8 +110,8 @@ classdef JointsDbase < DataBase
         % The method stores the respective retrieved objects in the running
         % 'joint2coupling', for future queries. It returns the handle of the
         % coupling to which the joint belongs.
-        [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx] = getJMcouplingFromCtrlBoard(...
-            joint2coupling,robotName,part,jointName);
+        [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM] = ...
+            getJMcouplingFromCtrlBoard(joint2coupling,robotName,part,jointName);
     end
 end
 

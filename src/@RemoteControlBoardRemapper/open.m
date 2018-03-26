@@ -29,5 +29,8 @@ obj.driver = yarp.PolyDriver();
 if (~obj.driver.open(obj.options))
     error('RemoteControlBoardRemapper: couldn''t open the driver');
 end
-    
+
+% Build motor names list for later use
+obj.motorsList = obj.robotModel.jointsDbase.getCpldMotorSharingIdx(obj.jointsList);
+
 end
