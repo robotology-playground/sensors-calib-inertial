@@ -3,16 +3,22 @@ function [ ok ] = ctrllerThreadUpdateFcn( obj, ~,~,timerStopFcn,rateThreadPeriod
 %   Detailed explanation goes here
 
 % Get the positions and velocities of the emulated pos controlled motors
-currentMotorsPos = obj.remCtrlBoardRemap.getMotorEncoders(obj.posCtrledMotors.idx);
+[currentMotorsPos,currentMotorsTime] = obj.remCtrlBoardRemap.getMotorEncoders(obj.posCtrledMotors.idx);
 currentMotorsVel = obj.remCtrlBoardRemap.getMotorEncoderSpeeds(obj.posCtrledMotors.idx);
 
+% compute ellapsed time
+if any(obj.prevMotorsTime == Nan)
+    timeStep = ones(size(currentMotorsTime))*rateThreadPeriod;
+else
+    timeStep = currentMotorsTime - obj.prevMotorsTime;
+end
+obj.prevMotorsTime = currentMotorsTime;
+
 % Run the PID controller
-[ok,posPwmVec] = PIDCtrller.run(obj.lastMotorsPosInPrevMode,currentMotorsPos,currentMotorsVel);
-if ~ok
-    % stop the timer with an error
-    timerStopFcn(false);
-    % throw error
-    error('PID processing failed during position control emulation !!');
+[intSat,outSat,posPwmVec] = PIDCtrller.step(timeStep(:),obj.lastMotorsPosInPrevMode(:),currentMotorsPos(:),currentMotorsVel(:));
+if any(intSat,outSat)
+    % throw warning
+    warning(['PID produced a saturated value (intSat=' num2str(intSat) ',outSat=' num2str(outSat) ') during position control emulation !!']);
 end
 
 % Set the computed PWM values
@@ -25,5 +31,5 @@ if ~ok
     % throw error
     error('PWM setting failed during position control emulation !!');
 end
-    
+
 end

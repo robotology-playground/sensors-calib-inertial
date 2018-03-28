@@ -8,7 +8,11 @@ function ok = runPwmEmulPosCtrlMode(obj,samplingPeriod)
 % Define and run the position control emulator thread with a discrete PID
 % controller.
 obj.ctrllerThreadPeriod = samplingPeriod;          % thread period
-PIDCtrller = PIDcontroller(obj.pidGains,filter);   % discrete PID controller
+aFilter = DSP.IdentityFilter([]); % define the filter
+PIDCtrller = PIDcontroller(...
+    [obj.pidGains.Kp],[obj.pidGains.Kd],[obj.pidGains.Ki],...                 % P, I, D gains
+    [obj.pidGains.max_int],[obj.pidGains.max_output],[obj.pidGains.scale],... % max integral term and max correction term
+    aFilter);                                                                 % discrete PID controller
 startFcn  = @(~,~) obj.ctrllerThreadStartFcn(PIDCtrller);
 stopFcn   = @(~,~) obj.ctrllerThreadStopFcn();
 updateFcn = @(timerObj,thisEvent,timerStopFcn) ... % update function

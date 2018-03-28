@@ -99,13 +99,13 @@ classdef RemoteControlBoardRemapper < handle
         end
         
         % Read joint encoders
-        [readEncoders,readEncsMat] = getEncoders(obj);
+        [readEncs] = getEncoders(obj);
         
         % Read motor encoders
-        [readEncoders,readEncsMat] = getMotorEncoders(obj,motorsIdxList);
+        [readEncs,timeEncs] = getMotorEncoders(obj,motorsIdxList);
         
         % Read motor encoder speeds
-        [readEncoderSpeeds,readEncSpeedsMat] = getMotorEncoderSpeeds(obj,motorsIdxList);
+        [readEncSpeeds] = getMotorEncoderSpeeds(obj,motorsIdxList);
         
         % Write joint encoders
         ok = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin);

@@ -5,7 +5,7 @@ obj.running = true;
 
 % For the motors in emulated pos control...
 % Save the last position as the reference position to keep
-obj.lastMotorsPosInPrevMode = obj.remCtrlBoardRemap.getMotorEncoders(obj.posCtrledMotors.idx);
+[obj.lastMotorsPosInPrevMode,~] = obj.remCtrlBoardRemap.getMotorEncoders(obj.posCtrledMotors.idx);
 % Save the last PWM as the init value for the PID integration term
 obj.lastMotorsPwmInPrevMode = obj.remCtrlBoardRemap.getMotorsPWM(obj.posCtrledMotors.idx);
 
@@ -16,6 +16,6 @@ obj.pwmCtrledMotor.pwm = obj.remCtrlBoardRemap.getMotorsPWM(obj.pwmCtrledMotor.i
 ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,'pwmctrl');
 
 % Reset PID controller
-PIDCtrller.Reset(obj.lastMotorsPwmInPrevMode);
+PIDCtrller.reset(obj.lastMotorsPwmInPrevMode(:));
 
 end

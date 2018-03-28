@@ -23,6 +23,8 @@ classdef MotorPWMcontroller < handle
         pidGains@struct;
         % Running flag for avoiding state inconsistencies
         running@bool;
+        % Previous time of motor encoders measurement
+        prevMotorsTime@double;
     end
     
     methods
@@ -50,6 +52,9 @@ classdef MotorPWMcontroller < handle
             obj.pwmCtrledMotor.pwm = 0;
             obj.posCtrledMotors.idx = setdiff(obj.couplingMotorIdxes,obj.pwmCtrledMotor.idx,'stable');
             obj.posCtrledMotors.pwm = zeros(size(obj.posCtrledMotors.idx));
+            
+            % Previous time of motor encoders measurement
+            obj.prevMotorsTime = nan;
         end
         
         % Destructor

@@ -22,7 +22,7 @@ if(ismember(motorName,obj.coupling.coupledMotors))
     ok = true;
 else
     ok = false;
-    error([motorName ' is not in the current coupled motors set being calibrated!!']);
+    warning([motorName ' is not in the current coupled motors set being calibrated!!']);
 end
 
 end
