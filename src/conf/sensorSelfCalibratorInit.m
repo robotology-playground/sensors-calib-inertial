@@ -48,8 +48,8 @@ defaultExportPlot = false;
 %% 'acquireSensorsTestData': Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
-%acquiredParts = {'left_leg','right_leg'};%'left_arm', ,'right_arm'
-acquiredParts = {'right_leg'};%'left_arm', ,'right_arm'
+acquiredParts = {'left_leg','right_leg'};%'left_arm', ,'right_arm'
+%acquiredParts = {'right_leg'};%'left_arm', ,'right_arm'
 % Profile = ... TBD!!
 
 % Fine selection of the accelerometers:
