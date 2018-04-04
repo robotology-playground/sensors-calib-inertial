@@ -5,9 +5,10 @@ classdef RemoteControlBoard < handle
     properties(SetAccess = protected, GetAccess = public)
         robotName;
         part;
+        hardwareMechanicals;
+        hwMechanials2robotInterAxesNamesMapping;
         jointsList={};
-        % YARP objects
-        axesNames; axesList; remoteControlBoards; remoteControlBoardsList;
+        robotInterAxesNames;
         options;
         driver;
     end
@@ -33,6 +34,29 @@ classdef RemoteControlBoard < handle
             if (~obj.driver.open(obj.options))
                 error(['AxisInfoCollector: Couldn''t open the driver for part ' part]);
             end
+            
+            % Get config from hardcoded mechanicals config file. This will
+            % be compared against the config retrieved from the robot
+            % interface.
+            hwMechConfigAllParts = Init.load('hardwareMechanicalsConfig');
+            obj.hardwareMechanicals = hwMechConfigAllParts.(part);
+            
+            % Get axes names from the robot interface
+            obj.robotInterAxesNames = obj.getAxesNames();
+            
+            % Get axes (joints) names from config file
+            hwMechanialsAxesNames = obj.hardwareMechanicals.jointNames;
+            
+            % compute bitmap
+            [~,obj.hwMechanials2robotInterAxesNamesMapping] = ...
+                ismember(hwMechanialsAxesNames,obj.robotInterAxesNames);
+            
+            % Through warning if order of matching axes differ from the
+            % order in the hardwareMechanicalsDevConfig file.
+            if issorted(obj.hwMechanials2robotInterAxesNamesMapping,'ascend')
+                warning(['joint names ordering in the config file differs from ' ...
+                'the one given by the robot interface!']);
+            end
         end
         
         % Destructor
@@ -47,26 +71,21 @@ classdef RemoteControlBoard < handle
         end
         
         % Get Axes list
-        function axesNames = getAxesNames(obj,hardwareMechanicals)
+        function axesNames = getAxesNames(obj)
             % Get joint names from robot interface
             nbAxes = obj.getAxes();
             iaxis = obj.driver.viewIAxisInfo();
-            refAxesNames = cell(1,nbAxes);
+            axesNames = cell(1,nbAxes);
             for axisIdx = 1:nbAxes
-                refAxesNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
-            end
-            % Get joint names from config file
-            axesNames = hardwareMechanicals.(obj.part).jointNames;
-            % Through warning if differ from 'refAxesNames'
-            if ~strcmp(cell2mat(refAxesNames),cell2mat(axesNames))
-                warning(['joint names ordering in the config file differs from ' ...
-                'the one given by the robot interface!']);
+                axesNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
             end
         end
         
         % Get Motors list from 'mechanicals' config file
-        function motorNames = getMotorNames(obj,hardwareMechanicals)
-            motorNames = hardwareMechanicals.(obj.part).motorNames;
+        function motorNames = getMotorNames(obj)
+            % Motor names from axes not listed in the config file will
+            % be set from 'robotInterAxesNames'
+            motorNames = obj.setFullFromSubvector(obj.hardwareMechanicals.motorNames,obj.robotInterAxesNames);
         end
         
         % Get the digested coupling information
@@ -78,14 +97,28 @@ classdef RemoteControlBoard < handle
     
     methods(Access=protected)
         % Get parameters from 'mechanicals' config file
-        rawCouplingInfo = getRawCoupling(obj,hardwareMechanicals);
+        rawCouplingInfo = getRawCoupling(obj);
         
-        function fullscalePWMs = getFullscalePWMs(obj,hardwareMechanicals)
-            fullscalePWMs = hardwareMechanicals.(obj.part).fullscalePWM;
+        function fullscalePWMs = getFullscalePWMs(obj)
+            defaultFullVector = num2cell(ones(size(obj.robotInterAxesNames)));
+            % Return the mapping from motor names to fullscalePWM values
+            fullscalePWMvalues = obj.setFullFromSubvector(obj.hardwareMechanicals.fullscalePWM,defaultFullVector);
+            fullscalePWMs = containers.Map(obj.getMotorNames(),fullscalePWMvalues);
         end
         
-        function gearboxDqM2Jratios = getGearboxDqM2Jratios(obj,hardwareMechanicals)
-            gearboxDqM2Jratios = hardwareMechanicals.(obj.part).Gearbox_M2J;
+        function gearboxDqM2Jratios = getGearboxDqM2Jratios(obj)
+            defaultFullVector = num2cell(ones(size(obj.robotInterAxesNames)))*100;
+            % Return the mapping from motor names to Gearbox ratios
+            gearboxDqM2JratioValues = obj.setFullFromSubvector(obj.hardwareMechanicals.Gearbox_M2J,defaultFullVector);
+            gearboxDqM2Jratios = containers.Map(obj.getMotorNames(),gearboxDqM2JratioValues);
+        end
+        
+        function fullVector = setFullFromSubvector(obj,subVector,defaultFullVector)
+            % values not set from subVecor will be set from the default
+            % fullVector
+            nbAxes = obj.getAxes();
+            fullVector(1,1:nbAxes) = defaultFullVector;
+            fullVector(1,obj.hwMechanials2robotInterAxesNamesMapping) = subVector;
         end
     end
     

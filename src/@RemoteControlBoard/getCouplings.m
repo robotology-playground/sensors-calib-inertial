@@ -6,22 +6,20 @@ function [ couplingList ] = getCouplings( obj )
 %   - coupling.coupledMotors : ordered list of coupled motor names
 %
 % where invT defined as : $$ \dot{m} = T^{-1} \dot{q} $$
-
-% Get config from hardcoded mechanicals config file
-hardwareMechanicals = Init.load('hardwareMechanicalsConfig');
+% 
 
 % We get the raw coupling matrix.
-rawCoupling = obj.getRawCoupling(hardwareMechanicals);
+rawCoupling = obj.getRawCoupling();
 % ... the joint names.
-joints = obj.getAxesNames(hardwareMechanicals);
+joints = obj.getAxesNames();
 % ... the motor names. We assume there is an equal number of joint DoFs and
 % motors. Motors are named as follows..
 % 1 DoF joint: l_knee --> motor: l_knee
 % 3 DoF joint: torso_yaw/torso_roll/torso_pitch --> torso_1/torso_2/torso_3
-motors = obj.getMotorNames(hardwareMechanicals);
+motors = obj.getMotorNames();
 % The PWM fullscale values and gearbox ratios
-fullscalePWMs = obj.getFullscalePWMs(hardwareMechanicals);
-gearboxDqM2Jratios = obj.getGearboxDqM2Jratios(hardwareMechanicals);
+fullscalePWMs = obj.getFullscalePWMs();
+gearboxDqM2Jratios = obj.getGearboxDqM2Jratios();
 
 % This matrix has several joint/motor pair couplings as well as
 % standalone joint/motor pairs.

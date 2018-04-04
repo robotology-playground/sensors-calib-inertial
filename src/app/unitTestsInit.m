@@ -11,3 +11,4 @@ yarp.Network.init();
 
 % load application main interface parameters
 init = Init.load('sensorSelfCalibratorInit');
+hardwareMechanicals = Init.load('hardwareMechanicalsConfig');

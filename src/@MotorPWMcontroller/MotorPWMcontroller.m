@@ -44,7 +44,7 @@ classdef MotorPWMcontroller < handle
             
             % Get indices of coupled motors
             [obj.couplingMotorIdxes,~] = ...
-                obj.remCtrlBoardRemap.getMotorsMappedIdxes(ob.coupling.coupledMotors);
+                obj.remCtrlBoardRemap.getMotorsMappedIdxes(obj.coupling.coupledMotors);
             
             % set position (emulated) and PWM controlled motor settings
             obj.pwmCtrledMotor.name = motorName;
@@ -91,7 +91,7 @@ classdef MotorPWMcontroller < handle
         % Rate thread functions
         ok = ctrllerThreadStartFcn(obj);
         ok = ctrllerThreadStopFcn(obj);
-        ok = ctrllerThreadUpdateFcn(timerObj,thisEvent,timerStopFcn,rateThreadPeriod,PIDCtrller);
+        ok = ctrllerThreadUpdateFcn(ctrllerThreadStop,rateThreadPeriod,PIDCtrller);
     end
     
 end

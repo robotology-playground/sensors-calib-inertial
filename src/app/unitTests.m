@@ -8,7 +8,7 @@ run unitTestsInit; % clear all variables and close all previous figures
 
 % open remote control board and get list of remote debug variables
 obj.options = yarp.Property('(device remote_controlboard)');
-obj.options.put('remote','/icubSim/torso');
+obj.options.put('remote',['/' init.robotName '/torso']);
 obj.options.put('local','/collector/torso');
 obj.driver = yarp.PolyDriver()
 obj.driver.open(obj.options)
@@ -40,7 +40,7 @@ end
 
 run unitTestsInit;
 
-remoteCtrlBoard = RemoteControlBoard('icubSim','left_arm');
+remoteCtrlBoard = RemoteControlBoard(init.robotName,'left_arm');
 %rawCouplingInfo = remoteCtrlBoard.getRawCoupling();
 nbAxes = remoteCtrlBoard.getAxes();
 axesNames = remoteCtrlBoard.getAxesNames();
@@ -49,7 +49,7 @@ couplingList = remoteCtrlBoard.getCouplings();
 delete(remoteCtrlBoard);
 
 for part = {'left_arm','right_arm','left_leg','right_leg','torso','head'}
-    remoteCtrlBoard = RemoteControlBoard('icubSim',cell2mat(part));
+    remoteCtrlBoard = RemoteControlBoard(init.robotName,cell2mat(part));
     couplingList = remoteCtrlBoard.getCouplings();
     for coupling = couplingList
         coupling{1}

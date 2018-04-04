@@ -1,4 +1,4 @@
-function [ rawCouplingInfo ] = getRawCoupling( obj,hardwareMechanicals )
+function [ rawCouplingInfo ] = getRawCoupling( obj )
 %This method retrieves the raw coupling parameters from a local config file
 %   As there is currently no API method for retrieving these
 %   parameters from the robot interface, the coupling parameters are
@@ -42,7 +42,12 @@ function [ rawCouplingInfo ] = getRawCoupling( obj,hardwareMechanicals )
 % Get the list of raw coupling matrices from a local config file, and
 % convert it into a single one by concatenating the matrices T along the
 % diagonal.
-listOfT = hardwareMechanicals.(obj.part).matrixM2J;
-rawCouplingInfo = blkdiag(listOfT{:});
+% Coupling values from axes not listed in the config file will result in 1
+% to 1 coupling.
+listOfT = obj.hardwareMechanicals.matrixM2J;
+nbAxes = obj.getAxes();
+idxBitmap = obj.hwMechanials2robotInterAxesNamesMapping;
+rawCouplingInfo = eye(nbAxes);
+rawCouplingInfo(idxBitmap,idxBitmap) = blkdiag(listOfT{:});
 
 end

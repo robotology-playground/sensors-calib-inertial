@@ -12,22 +12,22 @@ classdef PIDcontroller < handle
         scale@double % overall scale factor
         I@double;  % current integral term vector
         nbChannels@uint8; % number of input channels
-        filter@DSP.IDiscreteFilter; % filter coefficients (same for every channel)
+        filter@DSP.IDiscreteFilter; % filter coefficients (same filter for every channel)
     end
     
     methods
         function obj = PIDcontroller(Kp,Kd,Ki,max_int,max_output,scale,aFilter)
             obj.nbChannels = length(Kp);
-            % check dimensions
+            % check dimensions. Input params have to be line or column
+            % vectors of dimension "nbChannels"
             inSizes = sort(cell2mat(sizes(Kp,Kd,Ki,max_int,max_output,scale)),2);
-            if ~isequal(inSizes,repmat([1,nbChannels],[6 1]))
+            if ~isequal(inSizes,repmat([1,obj.nbChannels],[6 1]))
                 error('Kp, Kd, Ki, max integral, max output and scale sizes don''t match!! Please use evenly sized column vectors.');
             end
             % save properties
             [obj.Kp,obj.Kd,obj.Ki,obj.max_int,obj.max_output,obj.scale,obj.filter] = ...
                 deal(Kp(:),Kd(:),Ki(:),max_int(:),max_output(:),scale(:),aFilter);
             obj.I = zeros(obj.nbChannels,1);
-            obj.filter = aFilter;
         end
         
         function reset(obj,integralTermVecInit)

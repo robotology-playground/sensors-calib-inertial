@@ -1,6 +1,9 @@
 %
 % Model parameters for the low level joint torque control calibration
 % 
+% We can define here information relative to a subset of the axes retrieved
+% through the robot interface.
+%
 
 % libraries
 import containers.Map;
@@ -14,8 +17,8 @@ axisConfig = {...
 
 left_arm.jointNames   = axisConfig(1,:);
 left_arm.motorNames   = axisConfig(2,:);
-left_arm.fullscalePWM = Map(axisConfig(2,:),axisConfig(3,:));
-left_arm.Gearbox_M2J  = Map(axisConfig(2,:),axisConfig(4,:));
+left_arm.fullscalePWM = axisConfig(3,:);
+left_arm.Gearbox_M2J  = axisConfig(4,:);
 left_arm.matrixM2J = {...
    [1.000   0.000   0.000   0.000
     1.000   0.615   0.000   0.000
@@ -31,8 +34,8 @@ axisConfig = {...
 
 right_arm.jointNames   = axisConfig(1,:);
 right_arm.motorNames   = axisConfig(2,:);
-right_arm.fullscalePWM = Map(axisConfig(2,:),axisConfig(3,:));
-right_arm.Gearbox_M2J  = Map(axisConfig(2,:),axisConfig(4,:));
+right_arm.fullscalePWM = axisConfig(3,:);
+right_arm.Gearbox_M2J  = axisConfig(4,:);
 right_arm.matrixM2J = {...
    [1.000   0.000   0.000   0.000
     1.000   0.615   0.000   0.000
@@ -48,8 +51,8 @@ axisConfig = {...
 
 left_leg.jointNames   = axisConfig(1,:);
 left_leg.motorNames   = axisConfig(2,:);
-left_leg.fullscalePWM = Map(axisConfig(2,:),axisConfig(3,:));
-left_leg.Gearbox_M2J  = Map(axisConfig(2,:),axisConfig(4,:));
+left_leg.fullscalePWM = axisConfig(3,:);
+left_leg.Gearbox_M2J  = axisConfig(4,:);
 left_leg.matrixM2J = {...
    [1.00    0.00    0.00    0.00
     0.00    1.00    0.00    0.00
@@ -67,8 +70,8 @@ axisConfig = {...
 
 right_leg.jointNames   = axisConfig(1,:);
 right_leg.motorNames   = axisConfig(2,:);
-right_leg.fullscalePWM = Map(axisConfig(2,:),axisConfig(3,:));
-right_leg.Gearbox_M2J  = Map(axisConfig(2,:),axisConfig(4,:));
+right_leg.fullscalePWM = axisConfig(3,:);
+right_leg.Gearbox_M2J  = axisConfig(4,:);
 right_leg.matrixM2J = {...
    [1.00    0.00    0.00    0.00
     0.00    1.00    0.00    0.00
@@ -86,8 +89,8 @@ axisConfig = {...
 
 torso.jointNames   = axisConfig(1,:);
 torso.motorNames   = axisConfig(2,:);
-torso.fullscalePWM = Map(axisConfig(2,:),axisConfig(3,:));
-torso.Gearbox_M2J  = Map(axisConfig(2,:),axisConfig(4,:));
+torso.fullscalePWM = axisConfig(3,:);
+torso.Gearbox_M2J  = axisConfig(4,:);
 torso.matrixM2J = {...
    [0.500    0.500    0.000
    -0.500    0.500    0.000
@@ -102,8 +105,8 @@ axisConfig = {...
 
 head.jointNames   = axisConfig(1,:);
 head.motorNames   = axisConfig(2,:);
-head.fullscalePWM = Map(axisConfig(2,:),axisConfig(3,:));
-head.Gearbox_M2J  = Map(axisConfig(2,:),axisConfig(4,:));
+head.fullscalePWM = axisConfig(3,:);
+head.Gearbox_M2J  = axisConfig(4,:);
 head.matrixM2J = {...
    [0.500  -0.500
     0.500   0.500],...

@@ -1,4 +1,4 @@
-function [ ok ] = ctrllerThreadUpdateFcn( obj, ~,~,timerStopFcn,rateThreadPeriod,PIDCtrller )
+function [ ok ] = ctrllerThreadUpdateFcn( obj,ctrllerThreadStop,rateThreadPeriod,PIDCtrller )
 %Run the PID controller and set the computed PWM values
 %   Detailed explanation goes here
 
@@ -27,9 +27,9 @@ ok = ok && obj.remCtrlBoardRemap.setMotorsPWM(obj.pwmCtrledMotor.idx,obj.pwmCtrl
 
 if ~ok
     % stop the timer with an error
-    timerStopFcn(false);
+    ctrllerThreadStop(false);
     % throw error
-    error('PWM setting failed during position control emulation !!');
+    warning('PWM setting failed during position control emulation !!');
 end
 
 end

@@ -6,7 +6,8 @@ readPids = yarp.PidVector();
 readPids.resize(length(motorsIdxList));
 readPid = yarp.Pid();
 
-% Read PID values for each joint/motor
+% Read PID values for each joint/motor and format the data as a structure
+% array
 for idx = 1:length(motorsIdxList)
     cLikeIdx = idx-1; % C like index
     ipids.getPid(pidCtrlType,cLikeIdx,readPid);

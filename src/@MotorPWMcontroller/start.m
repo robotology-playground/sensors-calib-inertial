@@ -16,7 +16,7 @@ end
 obj.couplingPrevMode = modes{1}; % All modes from a coupling are identical
 
 if (length(obj.couplingMotorIdxes) == 1)
-    % Simple case, no coupling. Set single coupled motor to PWM control mode
+    % Simple case, no coupling. Set single motor to PWM control mode
     ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,'pwmctrl');
 else
     % Processing depending on the mode
