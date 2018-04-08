@@ -9,6 +9,8 @@ classdef PIDcontroller < handle
         Kp@double; % P gains column vector
         Kd@double; % D gains column vector
         Ki@double; % I gains column vector
+        max_int@double;    % maximum integral component value
+        max_output@double; % maximum overall PID output value
         scale@double % overall scale factor
         I@double;  % current integral term vector
         nbChannels@uint8; % number of input channels
@@ -17,7 +19,7 @@ classdef PIDcontroller < handle
     
     methods
         function obj = PIDcontroller(Kp,Kd,Ki,max_int,max_output,scale,aFilter)
-            obj.nbChannels = length(Kp);
+            obj.nbChannels = uint8(numel(Kp));
             % check dimensions. Input params have to be line or column
             % vectors of dimension "nbChannels"
             inSizes = sort(cell2mat(sizes(Kp,Kd,Ki,max_int,max_output,scale)),2);
@@ -50,10 +52,12 @@ classdef PIDcontroller < handle
             % integral term
             integr = obj.I + epsilon.*timeStep;
             obj.I = min(integr,obj.max_int);
+            obj.I = max(obj.I,-obj.max_int);
             intSat = ~isequal(obj.I,integr);
             % output total term
             pidOut = obj.scale.*(PD + obj.I);
-            nextCorr = min(pidOut,obj.max_out);
+            nextCorr = min(pidOut,obj.max_output);
+            nextCorr = max(nextCorr,-obj.max_output);
             outSat = ~isequal(nextCorr,pidOut);
         end
     end

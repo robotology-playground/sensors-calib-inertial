@@ -3,13 +3,15 @@ function ok = runPwmEmulPosCtrlMode(obj,samplingPeriod)
 %   Detailed explanation goes here
 
 % Get the PID parameters (as a structure array)
-[~,obj.pidGains] = obj.remCtrlBoardRemap.getMotorsPids(obj,'posPID',obj.posCtrledMotors.idx);
+[~,obj.pidGains] = obj.remCtrlBoardRemap.getMotorsPids('posPID',obj.posCtrledMotors.idx);
+% DEBUG: force scale to 1 (we don't know yet how this should be applied)
+[obj.pidGains.scale] = deal(1);
 
 % Define and run the position control emulator thread with a discrete PID
 % controller.
 obj.ctrllerThreadPeriod = samplingPeriod; % thread period
 aFilter = DSP.IdentityFilter([]);         % define the filter
-PIDCtrller = PIDcontroller(...
+PIDCtrller = DSP.PIDcontroller(...
     [obj.pidGains.Kp],[obj.pidGains.Kd],[obj.pidGains.Ki],...                 % P, I, D gains
     [obj.pidGains.max_int],[obj.pidGains.max_output],[obj.pidGains.scale],... % max integral term and max correction term
     aFilter);                                                                 % discrete PID controller

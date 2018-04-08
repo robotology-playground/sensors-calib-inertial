@@ -20,7 +20,7 @@ if (length(obj.couplingMotorIdxes) == 1)
     ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,'pwmctrl');
 else
     % Processing depending on the mode
-    switch couplingPrevMode
+    switch obj.couplingPrevMode
         case 'ctrl'
             % Run the position control emulator
             config = Init.load('lowLevTauCtrlCalibratorDevConfig');
@@ -30,7 +30,7 @@ else
                 'setMotorPWMcontrolMode: previous mode was %s. For that mode we ' ...
                 'don''t  support setting one single motor to PWM control while ' ...
                 'emulating the previous mode for the others!'];
-            warning(warningMessage,couplingPrevMode);
+            warning(warningMessage,obj.couplingPrevMode);
             % Set all coupled motors to PWM control mode
             ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,'pwmctrl');
     end

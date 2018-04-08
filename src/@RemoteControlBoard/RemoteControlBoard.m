@@ -53,7 +53,7 @@ classdef RemoteControlBoard < handle
             
             % Through warning if order of matching axes differ from the
             % order in the hardwareMechanicalsDevConfig file.
-            if issorted(obj.hwMechanials2robotInterAxesNamesMapping,'ascend')
+            if ~issorted(obj.hwMechanials2robotInterAxesNamesMapping,'ascend')
                 warning(['joint names ordering in the config file differs from ' ...
                 'the one given by the robot interface!']);
             end
@@ -85,7 +85,8 @@ classdef RemoteControlBoard < handle
         function motorNames = getMotorNames(obj)
             % Motor names from axes not listed in the config file will
             % be set from 'robotInterAxesNames'
-            motorNames = obj.setFullFromSubvector(obj.hardwareMechanicals.motorNames,obj.robotInterAxesNames);
+            dfltMotorNamesVec = cellfun(@(elem) [elem '_m'],obj.robotInterAxesNames,'UniformOutput',false);
+            motorNames = obj.setFullFromSubvector(obj.hardwareMechanicals.motorNames,dfltMotorNamesVec);
         end
         
         % Get the digested coupling information
@@ -100,16 +101,18 @@ classdef RemoteControlBoard < handle
         rawCouplingInfo = getRawCoupling(obj);
         
         function fullscalePWMs = getFullscalePWMs(obj)
-            defaultFullVector = num2cell(ones(size(obj.robotInterAxesNames)));
+            dfltFullscalePWM = obj.hardwareMechanicals.fullscalePWM{1};
+            dfltFullscaleVec = num2cell(ones(size(obj.robotInterAxesNames))*dfltFullscalePWM);
             % Return the mapping from motor names to fullscalePWM values
-            fullscalePWMvalues = obj.setFullFromSubvector(obj.hardwareMechanicals.fullscalePWM,defaultFullVector);
+            fullscalePWMvalues = obj.setFullFromSubvector(obj.hardwareMechanicals.fullscalePWM,dfltFullscaleVec);
             fullscalePWMs = containers.Map(obj.getMotorNames(),fullscalePWMvalues);
         end
         
         function gearboxDqM2Jratios = getGearboxDqM2Jratios(obj)
-            defaultFullVector = num2cell(ones(size(obj.robotInterAxesNames)))*100;
+            dfltGearboxRatio = obj.hardwareMechanicals.Gearbox_M2J{1};
+            dfltGearboxRatiosVector = num2cell(ones(size(obj.robotInterAxesNames))*dfltGearboxRatio);
             % Return the mapping from motor names to Gearbox ratios
-            gearboxDqM2JratioValues = obj.setFullFromSubvector(obj.hardwareMechanicals.Gearbox_M2J,defaultFullVector);
+            gearboxDqM2JratioValues = obj.setFullFromSubvector(obj.hardwareMechanicals.Gearbox_M2J,dfltGearboxRatiosVector);
             gearboxDqM2Jratios = containers.Map(obj.getMotorNames(),gearboxDqM2JratioValues);
         end
         

@@ -22,7 +22,7 @@ classdef MotorPWMcontroller < handle
         ctrllerThreadPeriod@double;
         pidGains@struct;
         % Running flag for avoiding state inconsistencies
-        running@bool;
+        running@logical;
         % Previous time of motor encoders measurement
         prevMotorsTime@double;
     end
@@ -32,7 +32,6 @@ classdef MotorPWMcontroller < handle
         function obj = MotorPWMcontroller(motorName,remCtrlBoardRemapper)
             % controller not running
             obj.running = false;
-            obj.ctrllerThread = nan;
             obj.ctrllerThreadPeriod = nan;
             
             % Set control board remapper
@@ -47,19 +46,31 @@ classdef MotorPWMcontroller < handle
                 obj.remCtrlBoardRemap.getMotorsMappedIdxes(obj.coupling.coupledMotors);
             
             % set position (emulated) and PWM controlled motor settings
-            obj.pwmCtrledMotor.name = motorName;
-            obj.pwmCtrledMotor.idx = remCtrlBoardRemapper.getMotorsMappedIdxes({motorName});
-            obj.pwmCtrledMotor.pwm = 0;
-            obj.posCtrledMotors.idx = setdiff(obj.couplingMotorIdxes,obj.pwmCtrledMotor.idx,'stable');
-            obj.posCtrledMotors.pwm = zeros(size(obj.posCtrledMotors.idx));
+            obj.pwmCtrledMotor = struct(...
+                'name',motorName,...
+                'idx',remCtrlBoardRemapper.getMotorsMappedIdxes({motorName}),...
+                'pwm',0);
+            
+            posCtrledMotorsIdxes = setdiff(obj.couplingMotorIdxes,obj.pwmCtrledMotor.idx,'stable');
+            
+            obj.posCtrledMotors = struct(...
+                'idx',posCtrledMotorsIdxes,...
+                'pwm',zeros(size(posCtrledMotorsIdxes)));
             
             % Previous time of motor encoders measurement
             obj.prevMotorsTime = nan;
+            
+            % start the controller
+            obj.start();
         end
         
         % Destructor
         function delete(obj)
-            delete(obj.ctrllerThread);
+            % stop the controller
+            obj.stop();
+            if ~isempty(obj.ctrllerThread)
+                delete(obj.ctrllerThread);
+            end
         end
         
         % Set the motor in PWM control mode and handle the coupled
@@ -89,7 +100,7 @@ classdef MotorPWMcontroller < handle
         ok = runPwmEmulPosCtrlMode(obj,samplingPeriod);
         
         % Rate thread functions
-        ok = ctrllerThreadStartFcn(obj);
+        ok = ctrllerThreadStartFcn(obj,PIDCtrller);
         ok = ctrllerThreadStopFcn(obj);
         ok = ctrllerThreadUpdateFcn(ctrllerThreadStop,rateThreadPeriod,PIDCtrller);
     end

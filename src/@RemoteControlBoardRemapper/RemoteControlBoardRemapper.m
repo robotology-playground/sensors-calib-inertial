@@ -41,8 +41,8 @@ classdef RemoteControlBoardRemapper < handle
             RemoteControlBoardRemapper.pidTypeVocabDef(:,2));
         
         vocab2pidType = containers.Map(...
-            RemoteControlBoardRemapper.pidTypeVocabDef(:,2),...
-            RemoteControlBoardRemapper.pidTypeVocabDef(:,1));
+            RemoteControlBoardRemapper.pidTypeVocabDef(:,1),...
+            RemoteControlBoardRemapper.pidTypeVocabDef(:,2));
     end
     
     properties(SetAccess = protected, GetAccess = public)

@@ -48,12 +48,12 @@ jointIdx = remoteCtrlBoard.getJointsMappedIdxes({'l_shoulder_pitch','l_shoulder_
 couplingList = remoteCtrlBoard.getCouplings();
 delete(remoteCtrlBoard);
 
-for part = {'left_arm','right_arm','left_leg','right_leg','torso','head'}
+for part = {'head','torso','left_arm','right_arm','left_leg','right_leg'}
     remoteCtrlBoard = RemoteControlBoard(init.robotName,cell2mat(part));
     couplingList = remoteCtrlBoard.getCouplings();
     for coupling = couplingList
         coupling{1}
-        coupling{1}.invT
+        coupling{1}.Tm2j
     end
     delete(remoteCtrlBoard);
     clear remoteCtrlBoard;
@@ -77,10 +77,10 @@ jointNameList = {...
     'l_ankle_roll'};
 
 motorNameList = {...
-    'l_shoulder_1','l_elbow','l_wrist_2',...
-    'torso_3','torso_2','torso_1',...
-    'neck_2',...
-    'l_ankle_roll'};
+    'l_shoulder_m1','l_elbow_m','l_wrist_yaw_m',...
+    'torso_m3','torso_m2','torso_m1',...
+    'neck_m2',...
+    'l_ankle_roll_m'};
 
 % Get the list of joint/motor couplings.
 jmCouplings = model.jointsDbase.getJMcouplings('joints',jointNameList)
@@ -101,6 +101,11 @@ motorIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',motorNameList)
 % Get joints sharing the same indexes as the given motors
 jointNameListSharingIdx = model.jointsDbase.getCpldJointSharingIdx(motorNameList)
 
+% Get motors sharing the same indexes as the given joints
+motorNameList2 = model.jointsDbase.getCpldMotorSharingIdx(jointNameList);
+
+% Get the gearbox ratios and fullscale values for a given list of motors
+[gearboxDqM2Jratio,fullscalePWM] = model.jointsDbase.getMotorGearboxRatioNfullscale(motorNameList);
 
 %% 4 - Below tests require a full RobotModel class object.
 % 
@@ -150,19 +155,6 @@ ok = obj.setJointsControlMode(jointsIdxes,'ctrl')
 [ok,modes] = obj.getJointsControlMode(jointsIdxes)
 obj.close();
 
-% Set a non-coupled motor to PWM control mode and PWM value using motor name
-obj.open({'left_leg'})
-[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('l_knee')
-ok = obj.setMotorPWM('l_knee',0)
-obj.close();
-
-%% Set a coupled motor to PWM control mode and PWM value using motor name
-obj.open({'torso'})
-[ok, coupling, couplingPrevMode] = obj.setMotorPWMcontrolMode('torso_1')
-ok = obj.setMotorPWM('torso_1',10)
-ok = obj.setMotorPWM('torso_1',0)
-obj.close();
-
 
 %% 5 - Timers and rate threads.
 % 
@@ -184,31 +176,54 @@ end
 % Create YARP Network device, for initializing YARP classes for communication
 yarp.Network.init();
 
+% Display text window
+timerDisplay = sprintf([...
+    'ellapsed Yarp time = 0.000000 \n'...
+    'Error w.r.t. local time = 0.000000 \n'...
+    'Error w.r.t. Yarp time = 0.000000']);
+out = dialog(...
+    'WindowStyle','normal','units','normalized',...
+    'Position',[0.3,0.4,0.4,0.25],'resize','off',...
+    'Name','Timer stats');
+aTimerStatsH=uicontrol(...
+    'parent',out,'Style','text','String',timerDisplay,...
+    'units','normalized','fontunits','normalized',...
+    'fontsize',0.15,'Position',[0.1,0.1,0.8,0.8]);
+
 % define the rate function
 rateThreadPeriod = 0.01;
-testFunction = @(timerObj,thisEvent,timerStopFcn) UT.testRateFunction(timerObj,thisEvent,timerStopFcn,rateThreadPeriod);
+testFunction = @(timerObj,thisEvent,threadStopFcn) UT.testRateFunction(timerObj,thisEvent,threadStopFcn,rateThreadPeriod,aTimerStatsH);
 
 % define the rate threads
 %
 % local timer
 myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'local',rateThreadPeriod,20);
-myRateThread.run(true);
-delete(myRateThread);
+ok = myRateThread.run(true)
+pause;
+ok = myRateThread.run(false)
+pause;
+myRateThread.stop(true)
+delete(myRateThread)
 
 % local timer synced with Yarp
-myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'localSyncYarp',rateThreadPeriod,20);
-myRateThread.run(true);
-delete(myRateThread);
+% myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'localSyncYarp',rateThreadPeriod,20);
+% myRateThread.run(false);
+% myRateThread.stop(true);
+% delete(myRateThread);
 
 % Yarp timer only
 myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'yarp',rateThreadPeriod,20);
-myRateThread.run(true);
-delete(myRateThread);
+ok = myRateThread.run(true)
+pause;
+ok = myRateThread.run(false)
+pause;
+myRateThread.stop(true)
+delete(myRateThread)
 
 clear Timers;
 
 
-%% 6 - High-level torque control.
+%% 6 - High-level position control emulation.
 % 
 run unitTestsInit;
 
@@ -218,13 +233,91 @@ run unitTestsInit;
 model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
 
 % Create motor control boards remapper and set joints to PWM ctrl mode
-ctrlBoard=RemoteControlBoardRemapper(model,'test')
+ctrlBoard = RemoteControlBoardRemapper(model,'test')
 ctrlBoard.open({'left_leg'})
 
-jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})
-[readPids,readPidsMatArray] = ctrlBoard.getMotorPids(obj,'posPID',jointsIdxes);
+% PID gains
+jointsIdxes = ctrlBoard.getJointsMappedIdxes({'l_hip_roll'})
+[readPids,readPidsMatArray] = ctrlBoard.getMotorsPids('posPID',jointsIdxes);
 
-% % Create PWM controller
+% close device
+ctrlBoard.close()
+
+% force scale to 1
+[readPidsMatArray.scale] = deal(1);
+
+% PID controller
+aFilter = DSP.IdentityFilter([])         % define the filter
+PIDCtrller = DSP.PIDcontroller(...
+    [readPidsMatArray.Kp],[readPidsMatArray.Kd],[readPidsMatArray.Ki],...                 % P, I, D gains
+    [readPidsMatArray.max_int],[readPidsMatArray.max_output],[readPidsMatArray.scale],... % max integral term and max correction term
+    aFilter)                                                                              % discrete PID controller
+
+PIDCtrller.reset(5)
+
+[intSat,outSat,nextCorr] = PIDCtrller.step(0.01,3,0,0)
+
+%% PWM controller
+
+% Set the motor in PWM control mode and handle the coupled
+% motors keeping their control mode and state unchanged. If
+% this is not supported by the YARP remoteControlBoardRemapper,
+% emulate it. We can only emulate position control.
+% For this create an PWM controller that handles single and
+% coupled motors seamlessly.
+
+%% Set a non-coupled motor to PWM control mode and PWM value using motor name
+ctrlBoard.open({'left_leg'})
+pwmController = MotorPWMcontroller('l_knee_m',ctrlBoard);
+
+% Set the desired PWM level (0-100%) for the named motor
+pwmController.setMotorPWM(-3)
+pause
+pwmController.setMotorPWM(0)
+pause
+
+% Stop the controller. This also restores the previous
+% control mode for the named motor and eventual coupled
+% motors.
+clear pwmController
+ctrlBoard.close()
+
+%% Set a coupled motor to PWM control mode and PWM value
+ctrlBoard.open({'torso'})
+pwmController = MotorPWMcontroller('torso_m1',ctrlBoard)
+
+% Set the desired PWM level (0-100%) for the named motor
+pwmController.setMotorPWM(0)
+pause
+pwmController.setMotorPWM(2)
+pause
+pwmController.setMotorPWM(-2)
+pause
+
+% Stop the controller. This also restores the previous
+% control mode for the named motor and eventual coupled
+% motors.
+clear pwmController
+ctrlBoard.close();
+
+%% Set a coupled motor to PWM control mode and PWM value
+ctrlBoard.open({'torso'})
+pwmController = MotorPWMcontroller('torso_m2',ctrlBoard)
+
+% Set the desired PWM level (0-100%) for the named motor
+pwmController.setMotorPWM(0)
+pause
+pwmController.setMotorPWM(2)
+pause
+pwmController.setMotorPWM(-2)
+pause
+
+% Stop the controller. This also restores the previous
+% control mode for the named motor and eventual coupled
+% motors.
+clear pwmController
+ctrlBoard.close();
+
 % pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard)
 % 
 % jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})

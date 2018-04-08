@@ -1,4 +1,4 @@
-function testRateFunction(timerObj,thisEvent,timerStopFcn,threadPeriod)
+function testRateFunction(timerObj,thisEvent,threadStopFcn,threadPeriod,aTextH)
 %UNTITLED Summary of this function goes here
 %   threadPeriod: thread period in seconds
 persistent firstYarpTime;
@@ -15,11 +15,13 @@ currentYarpTime = yarp.Time.now - firstYarpTime;
 localTimeErr = currentYarpTime - toc(currentLocalTime);
 yarpTimeErr = currentYarpTime - (timerObj.TasksExecuted-2)*threadPeriod;
 
-clc;
-
-disp(['ellapsed Yarp time = ' num2str(currentYarpTime)]);
-disp(['Error w.r.t. local time = ' num2str(localTimeErr)]);
-disp(['Error w.r.t. Yarp time = ' num2str(yarpTimeErr)]);
+% Refresh text window
+newText = sprintf([...
+    'ellapsed Yarp time = %f \n'...
+    'Error w.r.t. local time = %f \n'...
+    'Error w.r.t. Yarp time = %f'],...
+    currentYarpTime,localTimeErr,yarpTimeErr);
+set(aTextH,'String',newText);
 
 % Displaying all the below information can cause the rate function
 % execution time to thrift.
@@ -32,7 +34,7 @@ disp(['Error w.r.t. Yarp time = ' num2str(yarpTimeErr)]);
 
 if (timerObj.TasksExecuted == 2000)
     % stop the timer
-    timerStopFcn();
+    threadStopFcn(true);
 end
 
 end

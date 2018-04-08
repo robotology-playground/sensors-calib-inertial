@@ -97,7 +97,7 @@ classdef RateThread < handle
             % Start the timer and wait termination by 'rateFunctionH' or
             % timeout.
             start(obj.threadTimer);
-            ok = nan;
+            ok = true;
             if waitTimerStop
                 wait(obj.threadTimer);
                 % return motion done success or failure
