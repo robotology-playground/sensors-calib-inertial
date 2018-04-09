@@ -1,4 +1,4 @@
-function [ ok,pwmVecMat ] = getMotorsPWM( obj,motorsIdxList )
+function [ pwmVecMat ] = getMotorsPWM( obj,motorsIdxList )
 %Get the PWM values (0-100%) for a set of motor indexes
 %   (for calibration purpose).
 %   There is no concept of coupled motors in the control board
@@ -10,12 +10,11 @@ ipwm = obj.driver.viewIPWMControl();
 
 % Read all PWMs
 allPwmVec = yarp.Vector();
-allPwmVec.resize(length(motorsIdxList));
-ok = ipwm.getDutyCycles(allPwmVec.data());
+allPwmVec.resize(length(obj.motorsList));
+ipwm.getDutyCycles(allPwmVec.data());
+allPwmVecMat = RemoteControlBoardRemapper.toMatlab(allPwmVec);
 
 % select sub vector
-cLikemotorsIdxList = num2cell(motorsIdxList-1); % C++ like indexes
-pwmVec = allPwmVec.subVector(cLikemotorsIdxList{:});
-pwmVecMat = RemoteControlBoardRemapper.toMatlab(pwmVec);
+pwmVecMat = allPwmVecMat(motorsIdxList);
 
 end

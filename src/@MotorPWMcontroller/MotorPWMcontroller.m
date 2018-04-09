@@ -21,18 +21,25 @@ classdef MotorPWMcontroller < handle
         ctrllerThread@RateThread;
         ctrllerThreadPeriod@double;
         pidGains@struct;
-        % Running flag for avoiding state inconsistencies
+        % Position Emulator mode running (for avoiding state
+        % inconsistencies)
         running@logical;
+        % Controller ready for setting PWM (couplings checked and position
+        % control emulator activated if necessary)
+        controllerReady@logical;
         % Previous time of motor encoders measurement
         prevMotorsTime@double;
+        % test mode
+        testMode@logical;
     end
     
     methods
         % Constructor
-        function obj = MotorPWMcontroller(motorName,remCtrlBoardRemapper)
-            % controller not running
+        function obj = MotorPWMcontroller(motorName,remCtrlBoardRemapper,threadActivation)
+            % default init values. Controller not running...
             obj.running = false;
             obj.ctrllerThreadPeriod = nan;
+            obj.controllerReady = false;
             
             % Set control board remapper
             obj.remCtrlBoardRemap = remCtrlBoardRemapper;
@@ -60,17 +67,19 @@ classdef MotorPWMcontroller < handle
             % Previous time of motor encoders measurement
             obj.prevMotorsTime = nan;
             
-            % start the controller
-            obj.start();
+            % start the controller. Check for test mode
+            switch threadActivation
+                case System.Const.ThreadON
+                    obj.testMode = false; obj.start();
+                case System.Const.ThreadTEST
+                    obj.testMode = true; obj.start();
+                otherwise
+            end
         end
         
         % Destructor
         function delete(obj)
-            % stop the controller
-            obj.stop();
-            if ~isempty(obj.ctrllerThread)
-                delete(obj.ctrllerThread);
-            end
+            disp('delete');
         end
         
         % Set the motor in PWM control mode and handle the coupled
@@ -97,12 +106,12 @@ classdef MotorPWMcontroller < handle
         % Emulate position control on all the coupled motors except the
         % motor 'obj.pwmCtrledMotor.name' which is explicitely controlled
         % through PWM.
-        ok = runPwmEmulPosCtrlMode(obj,samplingPeriod);
+        ok = runPwmEmulPosCtrlMode(obj,samplingPeriod,timeout);
         
         % Rate thread functions
         ok = ctrllerThreadStartFcn(obj,PIDCtrller);
         ok = ctrllerThreadStopFcn(obj);
-        ok = ctrllerThreadUpdateFcn(ctrllerThreadStop,rateThreadPeriod,PIDCtrller);
+        ok = ctrllerThreadUpdateFcn(obj,ctrllerThreadStop,rateThreadPeriod,PIDCtrller);
     end
     
 end

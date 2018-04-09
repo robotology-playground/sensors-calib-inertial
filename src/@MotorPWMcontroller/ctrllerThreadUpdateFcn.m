@@ -7,7 +7,7 @@ function [ ok ] = ctrllerThreadUpdateFcn( obj,ctrllerThreadStop,rateThreadPeriod
 currentMotorsVel = obj.remCtrlBoardRemap.getMotorEncoderSpeeds(obj.posCtrledMotors.idx);
 
 % compute ellapsed time
-if any(obj.prevMotorsTime == Nan)
+if any(isnan(obj.prevMotorsTime))
     timeStep = ones(size(currentMotorsTime))*rateThreadPeriod;
 else
     timeStep = currentMotorsTime - obj.prevMotorsTime;
@@ -16,7 +16,7 @@ obj.prevMotorsTime = currentMotorsTime;
 
 % Run the PID controller
 [intSat,outSat,posPwmVec] = PIDCtrller.step(timeStep(:),obj.lastMotorsPosInPrevMode(:),currentMotorsPos(:),currentMotorsVel(:));
-if any(intSat,outSat)
+if any([intSat,outSat])
     % throw warning
     warning(['PID produced a saturated value (intSat=' num2str(intSat) ',outSat=' num2str(outSat) ') during position control emulation !!']);
 end

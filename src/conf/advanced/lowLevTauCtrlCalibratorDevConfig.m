@@ -12,4 +12,5 @@ filtParams.type = 'sgolay';
 filtParams.sgolayK = 5;
 filtParams.sgolayF = 11;
 
-samplingPeriod = 0.01; % seconds
+posCtrlEmulator.samplingPeriod = 0.01; % seconds
+posCtrlEmulator.timeout = 300; % seconds

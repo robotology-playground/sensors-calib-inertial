@@ -1,4 +1,4 @@
-function ok = runPwmEmulPosCtrlMode(obj,samplingPeriod)
+function ok = runPwmEmulPosCtrlMode(obj,samplingPeriod,timeout)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -22,7 +22,11 @@ updateFcn = @(~,~,ctrllerThreadStop) ... % update function
 
 % Use a timer fully synchronised with Yarp as done by the realtime
 % synchronizer in Simulink through the WB-toolbox
-obj.ctrllerThread = RateThread(updateFcn,startFcn,stopFcn,'yarp',samplingPeriod,100);
+if obj.testMode 
+    obj.ctrllerThread = UT.RateThread_CB(updateFcn,startFcn,stopFcn,'yarp',samplingPeriod,timeout);
+else
+    obj.ctrllerThread = RateThread(updateFcn,startFcn,stopFcn,'yarp',samplingPeriod,timeout);
+end
 ok = obj.ctrllerThread.run(false); % run and don't wait for thread termination
 
 end

@@ -1,7 +1,6 @@
 % Add main folders in Matlab path
 run generatePaths.m;
 
-
 %% 1 - test retrieval of kinematic_mj and axis list directly using YARP bindings
 
 run unitTestsInit; % clear all variables and close all previous figures
@@ -144,11 +143,22 @@ obj.close();
 % setMotorPWMcontrolMode(),
 % setMotorsPWM(),
 % setMotorPWM(),
+% getMotorsPWM()
 obj.open({'left_leg'})
-jointsIdxes = obj.getJointsMappedIdxes({'l_knee'})
+jointsIdxes = obj.getJointsMappedIdxes({'l_hip_pitch','l_knee','l_ankle_roll'})
+% change control mode to PWM
+[ok,modes] = obj.getJointsControlMode(jointsIdxes)
 ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')
 [ok,modes] = obj.getJointsControlMode(jointsIdxes)
-ok = obj.setMotorsPWM(jointsIdxes,[0])
+pause
+% change PWM
+pwmVecMat = obj.getMotorsPWM(jointsIdxes)
+ok = obj.setMotorsPWM(jointsIdxes,[3 -3 2])
+pwmVecMat = obj.getMotorsPWM(jointsIdxes)
+
+% get motor positions and velocities
+[readEncs,timeEncs] = obj.getMotorEncoders(jointsIdxes)
+[readSpeeds] = obj.getMotorEncoderSpeeds(jointsIdxes)
 
 % Set each motor back to position control mode
 ok = obj.setJointsControlMode(jointsIdxes,'ctrl')
@@ -168,10 +178,7 @@ clc
 clear classes;
 
 % Clear all timers
-timersArray = timerfind;
-for idx = 1:length(timersArray)
-    delete(timersArray(idx));
-end
+System.clearTimers();
 
 % Create YARP Network device, for initializing YARP classes for communication
 yarp.Network.init();
@@ -268,7 +275,7 @@ PIDCtrller.reset(5)
 
 %% Set a non-coupled motor to PWM control mode and PWM value using motor name
 ctrlBoard.open({'left_leg'})
-pwmController = MotorPWMcontroller('l_knee_m',ctrlBoard);
+pwmController = MotorPWMcontroller('l_knee_m',ctrlBoard,Const.ThreadON);
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(-3)
@@ -283,8 +290,37 @@ clear pwmController
 ctrlBoard.close()
 
 %% Set a coupled motor to PWM control mode and PWM value
+% In runPwmEmulPosCtrlMode(), replace "obj.ctrllerThread = RateThread(...)"
+% by "obj.ctrllerThread = UT.RateThread_CB(...)"
 ctrlBoard.open({'torso'})
-pwmController = MotorPWMcontroller('torso_m1',ctrlBoard)
+% change control mode to Position control
+ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
+[ok,modes] = ctrlBoard.getJointsControlMode(1:3)
+
+pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,Const.ThreadTEST)
+f = pwmController.ctrllerThread.threadTimer.TimerFcn;
+aThreadTimer = pwmController.ctrllerThread.threadTimer;
+pause
+pwmController.setMotorPWM(3)
+f(aThreadTimer,[]);
+yarp.Time.delay(5);
+pwmController.setMotorPWM(-3)
+f(aThreadTimer,[]);
+yarp.Time.delay(5);
+pwmController.stop();
+pause
+pwmController.setMotorPWM(3); % this shouldn't work
+clear pwmController
+ctrlBoard.close();
+
+%% Set a coupled motor to PWM control mode and PWM value
+% In runPwmEmulPosCtrlMode(), restore "obj.ctrllerThread = RateThread(...)"
+ctrlBoard.open({'torso'})
+% change control mode to Position control
+ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
+[ok,modes] = ctrlBoard.getJointsControlMode(1:3)
+
+pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,Const.ThreadON)
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(0)
@@ -297,12 +333,17 @@ pause
 % Stop the controller. This also restores the previous
 % control mode for the named motor and eventual coupled
 % motors.
+pwmController.stop();
 clear pwmController
 ctrlBoard.close();
 
 %% Set a coupled motor to PWM control mode and PWM value
 ctrlBoard.open({'torso'})
-pwmController = MotorPWMcontroller('torso_m2',ctrlBoard)
+% change control mode to Position control
+ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
+[ok,modes] = ctrlBoard.getJointsControlMode(1:3)
+
+pwmController = MotorPWMcontroller('torso_m2',ctrlBoard,Const.ThreadON)
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(0)
@@ -315,10 +356,11 @@ pause
 % Stop the controller. This also restores the previous
 % control mode for the named motor and eventual coupled
 % motors.
+pwmController.stop();
 clear pwmController
 ctrlBoard.close();
 
-% pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard)
+% pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard,Const.ThreadON)
 % 
 % jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})
 % ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')

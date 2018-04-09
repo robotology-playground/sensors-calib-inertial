@@ -14,4 +14,10 @@ else
     ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,obj.couplingPrevMode);
 end
 
+% Controller back to default init state
+if ~isempty(obj.ctrllerThread)
+    delete(obj.ctrllerThread);
+end
+obj.controllerReady = false;
+
 end

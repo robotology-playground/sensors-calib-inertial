@@ -24,7 +24,7 @@ else
         case 'ctrl'
             % Run the position control emulator
             config = Init.load('lowLevTauCtrlCalibratorDevConfig');
-            ok = obj.runPwmEmulPosCtrlMode(config.samplingPeriod);
+            ok = obj.runPwmEmulPosCtrlMode(config.posCtrlEmulator.samplingPeriod,config.posCtrlEmulator.timeout);
         otherwise
             warningMessage = [...
                 'setMotorPWMcontrolMode: previous mode was %s. For that mode we ' ...
@@ -35,5 +35,8 @@ else
             ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,'pwmctrl');
     end
 end
+
+% Controller is ready now
+obj.controllerReady = true;
 
 end

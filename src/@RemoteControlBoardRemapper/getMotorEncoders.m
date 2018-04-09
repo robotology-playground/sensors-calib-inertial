@@ -4,15 +4,17 @@ function [readEncs,timeEncs] = getMotorEncoders(obj,motorsIdxList)
 imotorencs = obj.driver.viewIMotorEncoders();
 readAllEncoders = yarp.Vector();
 timeAllEncoders = yarp.Vector();
-readAllEncoders.resize(length(obj.jointsList));
-timeAllEncoders.resize(length(obj.jointsList));
+readAllEncoders.resize(length(obj.motorsList));
+timeAllEncoders.resize(length(obj.motorsList));
 imotorencs.getMotorEncodersTimed(readAllEncoders.data(),timeAllEncoders.data());
+readAllEncs = RemoteControlBoardRemapper.toMatlab(readAllEncoders);
+timeAllEncs = RemoteControlBoardRemapper.toMatlab(timeAllEncoders);
 
 % select sub vector
-cLikeMotorsIdxList = num2cell(motorsIdxList-1); % C++ like indexes
-readEncoders = readAllEncoders.subVector(cLikeMotorsIdxList{:});
-timeEncoders = timeAllEncoders.subVector(cLikeMotorsIdxList{:});
-readEncs = RemoteControlBoardRemapper.toMatlab(readEncoders);
-timeEncs = RemoteControlBoardRemapper.toMatlab(timeEncoders);
+readEncs = readAllEncs(motorsIdxList);
+timeEncs = timeAllEncs(motorsIdxList);
+% DEBUG: only the first element has a tiing <> 0, so use that value for the
+% others
+timeEncs(:) = timeEncs(1);
 
 end
