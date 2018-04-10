@@ -144,6 +144,9 @@ obj.close();
 % setMotorsPWM(),
 % setMotorPWM(),
 % getMotorsPWM()
+% getMotorEncoders(),
+% getMotorEncoderSpeeds(),
+% getJointTorques().
 obj.open({'left_leg'})
 jointsIdxes = obj.getJointsMappedIdxes({'l_hip_pitch','l_knee','l_ankle_roll'})
 % change control mode to PWM
@@ -159,6 +162,9 @@ pwmVecMat = obj.getMotorsPWM(jointsIdxes)
 % get motor positions and velocities
 [readEncs,timeEncs] = obj.getMotorEncoders(jointsIdxes)
 [readSpeeds] = obj.getMotorEncoderSpeeds(jointsIdxes)
+
+% get joint torques
+[torqVecMat] = obj.getJointTorques(jointsIdxes)
 
 % Set each motor back to position control mode
 ok = obj.setJointsControlMode(jointsIdxes,'ctrl')
@@ -222,7 +228,9 @@ delete(myRateThread)
 myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'yarp',rateThreadPeriod,20);
 ok = myRateThread.run(true)
 pause;
+isit = myRateThread.isRunning()
 ok = myRateThread.run(false)
+isit = myRateThread.isRunning()
 pause;
 myRateThread.stop(true)
 delete(myRateThread)
@@ -239,8 +247,10 @@ run unitTestsInit;
 % joint/motor parameters (PWM to torque rate, friction parameters, ...).
 model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
 
-% Create motor control boards remapper and set joints to PWM ctrl mode
+% Create motor control boards remapper
 ctrlBoard = RemoteControlBoardRemapper(model,'test')
+
+%% PID controller
 ctrlBoard.open({'left_leg'})
 
 % PID gains
@@ -275,7 +285,7 @@ PIDCtrller.reset(5)
 
 %% Set a non-coupled motor to PWM control mode and PWM value using motor name
 ctrlBoard.open({'left_leg'})
-pwmController = MotorPWMcontroller('l_knee_m',ctrlBoard,Const.ThreadON);
+pwmController = MotorPWMcontroller('l_knee_m',ctrlBoard,System.Const.ThreadON);
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(-3)
@@ -297,7 +307,7 @@ ctrlBoard.open({'torso'})
 ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
 
-pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,Const.ThreadTEST)
+pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,System.Const.ThreadTEST)
 f = pwmController.ctrllerThread.threadTimer.TimerFcn;
 aThreadTimer = pwmController.ctrllerThread.threadTimer;
 pause
@@ -320,7 +330,7 @@ ctrlBoard.open({'torso'})
 ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
 
-pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,Const.ThreadON)
+pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,System.Const.ThreadON)
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(0)
@@ -343,7 +353,7 @@ ctrlBoard.open({'torso'})
 ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
 
-pwmController = MotorPWMcontroller('torso_m2',ctrlBoard,Const.ThreadON)
+pwmController = MotorPWMcontroller('torso_m2',ctrlBoard,System.Const.ThreadON)
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(0)
@@ -360,7 +370,7 @@ pwmController.stop();
 clear pwmController
 ctrlBoard.close();
 
-% pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard,Const.ThreadON)
+% pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard,System.Const.ThreadON)
 % 
 % jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})
 % ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')

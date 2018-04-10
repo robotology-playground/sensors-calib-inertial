@@ -15,6 +15,9 @@ end
 [ok,modes] = obj.remCtrlBoardRemap.getJointsControlMode(obj.couplingMotorIdxes);
 obj.couplingPrevMode = modes{1}; % All modes from a coupling are identical
 
+% Load sampling and timeout parameters
+config = Init.load('lowLevTauCtrlCalibratorDevConfig');
+
 if (length(obj.couplingMotorIdxes) == 1)
     % Simple case, no coupling. Set single motor to PWM control mode
     ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,'pwmctrl');
@@ -23,7 +26,6 @@ else
     switch obj.couplingPrevMode
         case 'ctrl'
             % Run the position control emulator
-            config = Init.load('lowLevTauCtrlCalibratorDevConfig');
             ok = obj.runPwmEmulPosCtrlMode(config.posCtrlEmulator.samplingPeriod,config.posCtrlEmulator.timeout);
         otherwise
             warningMessage = [...
@@ -35,6 +37,9 @@ else
             ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,'pwmctrl');
     end
 end
+
+% Run the real-time plotter
+ok = obj.runRealtimePlotter(config.plotterThread.samplingPeriod,config.plotterThread.timeout);
 
 % Controller is ready now
 obj.controllerReady = true;

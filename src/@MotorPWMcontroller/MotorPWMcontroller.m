@@ -13,6 +13,7 @@ classdef MotorPWMcontroller < handle
         posCtrledMotors@struct;
         coupling@JointMotorCoupling;
         couplingMotorIdxes@double;
+        couplingJointIdxes@double;
         % Last state before switching to PWM control emulating Pos control
         couplingPrevMode@char;
         lastMotorsPosInPrevMode@double;
@@ -31,6 +32,10 @@ classdef MotorPWMcontroller < handle
         prevMotorsTime@double;
         % test mode
         testMode@logical;
+        % plotter thread (slave)
+        plotterThread@RateThread;
+        % temporary plot parameters
+        tempPlot@struct;
     end
     
     methods
@@ -40,6 +45,7 @@ classdef MotorPWMcontroller < handle
             obj.running = false;
             obj.ctrllerThreadPeriod = nan;
             obj.controllerReady = false;
+            obj.tempPlot = struct('figH',[],'units',[],'convertFromRad',[]);
             
             % Set control board remapper
             obj.remCtrlBoardRemap = remCtrlBoardRemapper;
@@ -48,9 +54,11 @@ classdef MotorPWMcontroller < handle
             couplings = remCtrlBoardRemapper.robotModel.jointsDbase.getJMcouplings('motors',{motorName});
             obj.coupling = couplings{1};
             
-            % Get indices of coupled motors
+            % Get indices of joints and coupled motors
             [obj.couplingMotorIdxes,~] = ...
                 obj.remCtrlBoardRemap.getMotorsMappedIdxes(obj.coupling.coupledMotors);
+            [obj.couplingJointIdxes,~] = ...
+                obj.remCtrlBoardRemap.getJointsMappedIdxes(obj.coupling.coupledJoints);
             
             % set position (emulated) and PWM controlled motor settings
             obj.pwmCtrledMotor = struct(...
@@ -79,7 +87,6 @@ classdef MotorPWMcontroller < handle
         
         % Destructor
         function delete(obj)
-            disp('delete');
         end
         
         % Set the motor in PWM control mode and handle the coupled
@@ -107,11 +114,17 @@ classdef MotorPWMcontroller < handle
         % motor 'obj.pwmCtrledMotor.name' which is explicitely controlled
         % through PWM.
         ok = runPwmEmulPosCtrlMode(obj,samplingPeriod,timeout);
+        ok = runRealtimePlotter(obj,threadPeriod,threadTimeout);
         
-        % Rate thread functions
+        % Rate thread functions for the controller
         ok = ctrllerThreadStartFcn(obj,PIDCtrller);
         ok = ctrllerThreadStopFcn(obj);
         ok = ctrllerThreadUpdateFcn(obj,ctrllerThreadStop,rateThreadPeriod,PIDCtrller);
+        
+        % Rate thread functions for the real-time plotter
+        plotterThreadStartFcn(obj);
+        plotterThreadStopFcn(obj);
+        plotterThreadUpdateFcn(obj);
     end
     
 end

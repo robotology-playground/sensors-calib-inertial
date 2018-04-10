@@ -1,5 +1,7 @@
 function acqSensorDataAccessor = run(obj)
 
+import System.Const;
+
 % init logged sequences. These information will be needed by the calibrators for 
 % retrieving the acquired data they require.
 loggedSeqs = {};
@@ -89,8 +91,7 @@ for seqIdx = 1:numel(obj.sequences)
                 % motors keeping their control mode and state unchanged. If
                 % this is not supported by the YARP remoteControlBoardRemapper,
                 % emulate it. We can only emulate position control.
-                pwmController = MotorPWMcontroller(motorName,obj.ctrlBoardRemap);
-                ok = pwmController.start();
+                pwmController = MotorPWMcontroller(motorName,obj.ctrlBoardRemap,Const.ThreadON);
                 
                 % Set the desired PWM level (0-100%) for the named motor
                 ok = pwmController.setMotorPWM(pwm);
@@ -106,7 +107,6 @@ for seqIdx = 1:numel(obj.sequences)
                 % control mode for the named motor and eventual coupled
                 % motors.
                 ok = pwmController.stop();
-                delete(pwmController);
                 
             otherwise
                 error('Unknown control mode!');

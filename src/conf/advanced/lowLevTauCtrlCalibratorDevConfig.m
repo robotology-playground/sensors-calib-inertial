@@ -14,3 +14,6 @@ filtParams.sgolayF = 11;
 
 posCtrlEmulator.samplingPeriod = 0.01; % seconds
 posCtrlEmulator.timeout = 300; % seconds
+
+plotterThread.samplingPeriod = 0.05; % seconds
+plotterThread.timeout = 300; % seconds

@@ -112,7 +112,7 @@ classdef RemoteControlBoard < handle
             dfltGearboxRatio = obj.hardwareMechanicals.Gearbox_M2J{1};
             dfltGearboxRatiosVector = num2cell(ones(size(obj.robotInterAxesNames))*dfltGearboxRatio);
             % Return the mapping from motor names to Gearbox ratios
-            gearboxDqM2JratioValues = obj.setFullFromSubvector(obj.hardwareMechanicals.Gearbox_M2J,dfltGearboxRatiosVector);
+            gearboxDqM2JratioValues = num2cell(cell2mat(obj.setFullFromSubvector(obj.hardwareMechanicals.Gearbox_M2J,dfltGearboxRatiosVector)).^-1);
             gearboxDqM2Jratios = containers.Map(obj.getMotorNames(),gearboxDqM2JratioValues);
         end
         

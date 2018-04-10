@@ -1,4 +1,4 @@
-function ok = runPwmEmulPosCtrlMode(obj,samplingPeriod,timeout)
+function [ ok ] = runPwmEmulPosCtrlMode( obj,samplingPeriod,timeout )
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 

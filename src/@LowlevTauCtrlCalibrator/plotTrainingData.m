@@ -82,7 +82,7 @@ tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
 % if   dq_j = Gm2j * dq_m
 % then Tau_m = Gm2j^t * Tau_j.
 % Since Gm2j is a diagonal matrix, then Tau_m = Gm2j * Tau_j.
-tauMotor = jointMotorCoupling.gearboxDqM2Jratios(motorIdx) * jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
+tauMotor = jointMotorCoupling.gearboxDqM2Jratios{motorIdx} * jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
 
 switch frictionOrKtau
     case 'friction'

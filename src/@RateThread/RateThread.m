@@ -111,6 +111,10 @@ classdef RateThread < handle
             % stop the timer
             stop(obj.threadTimer);
         end
+        
+        function isit = isRunning(obj)
+            isit = obj.threadTimer.Running;
+        end
     end
     
     methods (Access=protected)

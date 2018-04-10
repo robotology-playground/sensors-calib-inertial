@@ -6,6 +6,8 @@ classdef Const < uint8
         ThreadOFF(0)
         ThreadON(1)
         ThreadTEST(2)
+        Degrees(3)
+        Radians(4)
     end
     
 end

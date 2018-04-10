@@ -139,6 +139,9 @@ classdef RemoteControlBoardRemapper < handle
         
         % Set the desired PWM value (0-100%) for the named motor
         ok = setMotorPWM(obj,motorName,pwm);
+        
+        % Get the torque values for a set of joint indexes
+        [torqVecMat] = getJointTorques(obj,jointsIdxList);
     end
     
     methods(Static = true)
