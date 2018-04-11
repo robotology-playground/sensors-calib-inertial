@@ -14,6 +14,7 @@ classdef MotorPWMcontroller < handle
         coupling@JointMotorCoupling;
         couplingMotorIdxes@double;
         couplingJointIdxes@double;
+        pwmCtrledMotorIdxInCouplingMtx@double;
         % Last state before switching to PWM control emulating Pos control
         couplingPrevMode@char;
         lastMotorsPosInPrevMode@double;
@@ -45,7 +46,7 @@ classdef MotorPWMcontroller < handle
             obj.running = false;
             obj.ctrllerThreadPeriod = nan;
             obj.controllerReady = false;
-            obj.tempPlot = struct('figH',[],'units',[],'convertFromRad',[]);
+            obj.tempPlot = struct('figH',[],'an',[],'units',[],'convertFromRad',[]);
             
             % Set control board remapper
             obj.remCtrlBoardRemap = remCtrlBoardRemapper;
@@ -59,6 +60,7 @@ classdef MotorPWMcontroller < handle
                 obj.remCtrlBoardRemap.getMotorsMappedIdxes(obj.coupling.coupledMotors);
             [obj.couplingJointIdxes,~] = ...
                 obj.remCtrlBoardRemap.getJointsMappedIdxes(obj.coupling.coupledJoints);
+            [~,obj.pwmCtrledMotorIdxInCouplingMtx] = ismember(motorName,obj.coupling.coupledMotors);
             
             % set position (emulated) and PWM controlled motor settings
             obj.pwmCtrledMotor = struct(...

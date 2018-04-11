@@ -31,6 +31,7 @@ if (~obj.driver.open(obj.options))
 end
 
 % Build motor names list for later use
-obj.motorsList = obj.robotModel.jointsDbase.getCpldMotorSharingIdx(obj.jointsList);
+motorsList = obj.robotModel.jointsDbase.getCpldMotorSharingIdx(obj.jointsList);
+obj.motorsList = reshape(motorsList,size(obj.jointsList));
 
 end

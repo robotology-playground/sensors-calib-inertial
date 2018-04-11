@@ -38,10 +38,12 @@ classdef PIDcontroller < handle
                 error(['Input doesn''t match expected dimensions (' num2str(obj.nbChannels) 'x1)!!']);
             end
             % Initialize the integral term
-            obj.I = integralTermVecInit;
+            obj.I = obj.Ki.*integralTermVecInit;
         end
         
         function [intSat,outSat,nextCorr] = step(obj,timeStep,desiredX,currentX,currentDx)
+            % Reshape inputs as column vectors
+            [desiredX,currentX,currentDx] = deal(desiredX(:),currentX(:),currentDx(:));
             % Filter current position measurement
             filteredCurrX = obj.filter.procSig(currentX);
             % Error to desired position
@@ -50,15 +52,15 @@ classdef PIDcontroller < handle
             % proportional and derivative terms
             PD = obj.Kp.*epsilon + obj.Kd.*depsilon;
             % integral term
-            integr = obj.I + epsilon.*timeStep;
-            obj.I = min(integr,obj.max_int);
+            obj.I = obj.I + obj.Ki.*epsilon.*timeStep;
+            obj.I = min(obj.I,obj.max_int);
             obj.I = max(obj.I,-obj.max_int);
-            intSat = ~isequal(obj.I,integr);
+            intSat = any([obj.I==obj.max_int,obj.I==-obj.max_int]);
             % output total term
             pidOut = obj.scale.*(PD + obj.I);
             nextCorr = min(pidOut,obj.max_output);
             nextCorr = max(nextCorr,-obj.max_output);
-            outSat = ~isequal(nextCorr,pidOut);
+            outSat = any([nextCorr==obj.max_output,nextCorr==-obj.max_output]);
         end
     end
 end

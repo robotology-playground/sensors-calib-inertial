@@ -116,6 +116,15 @@ classdef RemoteControlBoardRemapper < handle
         % Get joints indexes as per the control board remapper mapping
         [jointsIdxList,matchingBitmap] = getJointsMappedIdxes(obj,jointNameList);
         
+        % Get number of axes (joints or motors)
+        [nbAxes] = getAxes(obj);
+        
+        % Get joint names from mapped indexes
+        [jointsNames] = getJointsNames(obj,jointIdxList);
+        
+        % Get motor names from mapped indexes
+        [motorsNames] = getMotorsNames(obj,motorIdxList);
+        
         % Get motors indexes as per the control board remapper mapping
         [motorsIdxList,matchingBitmap] = getMotorsMappedIdxes(obj,motorNameList);
         

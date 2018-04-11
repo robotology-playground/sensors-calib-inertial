@@ -3,8 +3,8 @@ function plotterThreadUpdateFcn( obj )
 
 % get motor velocity (rads from the robot interface) and convert it to the
 % units defined in the online plotter
-motorVelrad = obj.remCtrlBoardRemap.getMotorEncoderSpeeds(obj.pwmCtrledMotor.idx);
-motorVel = obj.tempPlot.convertFromRad(motorVelrad);
+motorVel = obj.remCtrlBoardRemap.getMotorEncoderSpeeds(obj.pwmCtrledMotor.idx);
+%motorVel = obj.tempPlot.convertFromRad(motorVelrad);
 
 % get the motor torque from the respective coupled joints torques
 cpledJointTorques = obj.remCtrlBoardRemap.getJointTorques(obj.couplingJointIdxes);
@@ -17,13 +17,13 @@ cpledJointTorques = obj.remCtrlBoardRemap.getJointTorques(obj.couplingJointIdxes
 % then Tau_m = Gm2j^t * Tau_j.
 % Since Gm2j is a diagonal matrix, then Tau_m = Gm2j * Tau_j.
 motorTorq = ...
-    obj.coupling.gearboxDqM2Jratios{obj.pwmCtrledMotor.idx} ...
-    * obj.coupling.Tm2j(:,obj.pwmCtrledMotor.idx)' ...
+    obj.coupling.Tm2j(:,obj.pwmCtrledMotorIdxInCouplingMtx)' ...
     * cpledJointTorques(:);
+jointVel = motorVel*obj.coupling.gearboxDqM2Jratios{obj.pwmCtrledMotorIdxInCouplingMtx};
 
 % plot the quantities
-figure(obj.tempPlot.figH);
-scatter(motorVel,motorTorq,20,'blue','filled');
+addpoints(obj.tempPlot.an,jointVel,motorTorq);
+drawnow limitrate
 
 end
 
