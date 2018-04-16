@@ -101,10 +101,10 @@ motorIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('motors',motorNameList)
 jointNameListSharingIdx = model.jointsDbase.getCpldJointSharingIdx(motorNameList)
 
 % Get motors sharing the same indexes as the given joints
-motorNameList2 = model.jointsDbase.getCpldMotorSharingIdx(jointNameList);
+motorNameList2 = model.jointsDbase.getCpldMotorSharingIdx(jointNameList)
 
 % Get the gearbox ratios and fullscale values for a given list of motors
-[gearboxDqM2Jratio,fullscalePWM] = model.jointsDbase.getMotorGearboxRatioNfullscale(motorNameList);
+[gearboxDqM2Jratio,fullscalePWM] = model.jointsDbase.getMotorGearboxRatioNfullscale(motorNameList)
 
 %% 4 - Below tests require a full RobotModel class object.
 % 

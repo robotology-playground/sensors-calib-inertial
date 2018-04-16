@@ -14,7 +14,7 @@ yRange = [-10,10]; % N.m
 obj.tempPlot.convertFromRad = Math.convertFromRadians(obj.tempPlot.units);
 
 % create figure
-obj.tempPlot.figH = figure('Name',figTitle);
+obj.tempPlot.figH = figure('Name',figTitle,'WindowStyle', 'docked');
 
 % This is a temporary figure and won't be docked, so display it full screen.
 set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
