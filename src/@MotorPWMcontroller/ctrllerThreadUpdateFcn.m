@@ -14,14 +14,23 @@ else
 end
 obj.prevMotorsTime = currentMotorsTime;
 
-% Run the PID controller
-[intSat,outSat,posPwmVec] = PIDCtrller.step(timeStep(:),obj.lastMotorsPosInPrevMode(:),currentMotorsPos(:),currentMotorsVel(:));
+% Run the PID controller.
+% We apply the PID control to the variables measured at the gearbox output,
+% i.e. we consider the block [motor+gearbox] as a black box.
+gearboxRatios = obj.normOfgearboxDqM2Jratios(~obj.pwmCtrledMotorBitmapInCoupling);
+[intSat,outSat,posPwmVec] = PIDCtrller.step(...
+    timeStep(:),...
+    obj.lastMotorsPosInPrevMode(:).*gearboxRatios(:),...
+    currentMotorsPos(:).*gearboxRatios(:),...
+    currentMotorsVel(:).*gearboxRatios(:));
+
 if any([intSat,outSat])
     % throw warning
     warning(['PID produced a saturated value (intSat=' num2str(intSat) ',outSat=' num2str(outSat) ') during position control emulation !!']);
 end
 
 % Set the computed PWM values
+obj.posCtrledMotors.pwm = posPwmVec;
 ok = obj.remCtrlBoardRemap.setMotorsPWM(obj.posCtrledMotors.idx,posPwmVec);
 ok = ok && obj.remCtrlBoardRemap.setMotorsPWM(obj.pwmCtrledMotor.idx,obj.pwmCtrledMotor.pwm);
 

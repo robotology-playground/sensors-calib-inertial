@@ -14,7 +14,8 @@ classdef MotorPWMcontroller < handle
         coupling@JointMotorCoupling;
         couplingMotorIdxes@double;
         couplingJointIdxes@double;
-        pwmCtrledMotorIdxInCouplingMtx@double;
+        normOfgearboxDqM2Jratios@double;
+        pwmCtrledMotorBitmapInCoupling@logical;
         % Last state before switching to PWM control emulating Pos control
         couplingPrevMode@char;
         lastMotorsPosInPrevMode@double;
@@ -54,13 +55,15 @@ classdef MotorPWMcontroller < handle
             % Get coupled motors/joints
             couplings = remCtrlBoardRemapper.robotModel.jointsDbase.getJMcouplings('motors',{motorName});
             obj.coupling = couplings{1};
+            % norm of gearbox ratios
+            obj.normOfgearboxDqM2Jratios = abs(cell2mat(obj.coupling.gearboxDqM2Jratios));
             
             % Get indices of joints and coupled motors
             [obj.couplingMotorIdxes,~] = ...
                 obj.remCtrlBoardRemap.getMotorsMappedIdxes(obj.coupling.coupledMotors);
             [obj.couplingJointIdxes,~] = ...
                 obj.remCtrlBoardRemap.getJointsMappedIdxes(obj.coupling.coupledJoints);
-            [~,obj.pwmCtrledMotorIdxInCouplingMtx] = ismember(motorName,obj.coupling.coupledMotors);
+            obj.pwmCtrledMotorBitmapInCoupling = ismember(obj.coupling.coupledMotors,motorName);
             
             % set position (emulated) and PWM controlled motor settings
             obj.pwmCtrledMotor = struct(...

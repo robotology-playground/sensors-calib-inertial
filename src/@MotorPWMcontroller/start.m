@@ -40,6 +40,7 @@ end
 
 % Run the real-time plotter
 ok = obj.runRealtimePlotter(config.plotterThread.samplingPeriod,config.plotterThread.timeout);
+%ok = obj.runRealtimePidPlotter(config.plotterThread.samplingPeriod,config.plotterThread.timeout);
 
 % Controller is ready now
 obj.controllerReady = true;

@@ -38,7 +38,7 @@ classdef PIDcontroller < handle
                 error(['Input doesn''t match expected dimensions (' num2str(obj.nbChannels) 'x1)!!']);
             end
             % Initialize the integral term
-            obj.I = obj.Ki.*integralTermVecInit;
+            obj.I = integralTermVecInit;
         end
         
         function [intSat,outSat,nextCorr] = step(obj,timeStep,desiredX,currentX,currentDx)
@@ -47,8 +47,8 @@ classdef PIDcontroller < handle
             % Filter current position measurement
             filteredCurrX = obj.filter.procSig(currentX);
             % Error to desired position
-            epsilon = desiredX - filteredCurrX;
-            depsilon = 0 - currentDx;
+            epsilon = filteredCurrX - desiredX;
+            depsilon = currentDx - 0;
             % proportional and derivative terms
             PD = obj.Kp.*epsilon + obj.Kd.*depsilon;
             % integral term

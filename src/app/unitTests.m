@@ -244,6 +244,7 @@ pause;
 myRateThread.stop(true)
 delete(myRateThread)
 
+System.clearTimers;
 clear Timers;
 
 
@@ -303,6 +304,7 @@ pause
 pwmController.stop();
 clear pwmController
 ctrlBoard.close()
+System.clearTimers; % cleanup timers
 
 %% Set a coupled motor to PWM control mode and PWM value
 % In runPwmEmulPosCtrlMode(), replace "obj.ctrllerThread = RateThread(...)"
@@ -327,6 +329,7 @@ pause
 pwmController.setMotorPWM(3); % this shouldn't work
 clear pwmController
 ctrlBoard.close();
+System.clearTimers; % cleanup timers
 
 %% Set a coupled motor to PWM control mode and PWM value
 % In runPwmEmulPosCtrlMode(), restore "obj.ctrllerThread = RateThread(...)"
@@ -351,6 +354,7 @@ pause
 pwmController.stop();
 clear pwmController
 ctrlBoard.close();
+System.clearTimers; % cleanup timers
 
 %% Set a coupled motor to PWM control mode and PWM value
 ctrlBoard.open({'torso'})
@@ -374,6 +378,7 @@ pause
 pwmController.stop();
 clear pwmController
 ctrlBoard.close();
+System.clearTimers; % cleanup timers
 
 % pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard,System.Const.ThreadON)
 % 
@@ -500,6 +505,7 @@ pause;
 
 plotterThread.stop(true);
 clear plotterThread;
+System.clearTimers; % cleanup timers
 
 %% 9 - Test 'LowlevTauCtrlCalibrator'
 

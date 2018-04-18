@@ -1,14 +1,14 @@
-function plotterThreadStartFcn( obj )
+function pidPlotterThreadStartFcn( obj )
 %Creates the figure for plotting Tau vs dq
 %    Required for friction calibration only.
 
 % Figure parameters
-figTitle = 'Motor velocity to torque model';
-xLabel = 'Motor velocity (degrees/s)';
-yLabel = 'Motor torque (N.m)';
+figTitle = 'PID output';
+xLabel = 'Motor position (degrees)';
+yLabel = 'PID output (% fullscale)';
 obj.tempPlot.units = System.Const.Degrees;
 xRange = [-60,60]; % degrees
-yRange = [-10,10]; % N.m
+yRange = [-10,10]; % percent fullscale
 
 % units conversion
 obj.tempPlot.convertFromRad = Math.convertFromRadians(obj.tempPlot.units);
