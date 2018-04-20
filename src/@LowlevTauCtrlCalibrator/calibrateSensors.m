@@ -128,8 +128,9 @@ switch frictionOrKtau
             warning('calibrateSensors: The friction model is not symmetrical');
         end
         % Run a fitting again but matching a single Kc and a single Kv
-        theta = Regressors.normalEquationSym(xVar',tauMotorG');
-        calib.setFriction(theta(1), theta(2));
+        fittedModel = Regressors.frictionModel2(xVar',tauMotorG');
+        calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
+        calib.setStiction(fittedModel.theta(3),-fittedModel.theta(3));
         
     case 'ktau'
         % Check that the model is symmetrical
@@ -140,17 +141,17 @@ switch frictionOrKtau
             warning('calibrateSensors: The Ktau model is not symmetrical');
         end
         % Run a fitting again but matching a single Ktau
-        theta = Regressors.normalEquationSym(xVar',tauMotorG');
-        if abs(theta(1))>1e-3 % Tau offset
+        fittedModel = Regressors.pwmModel1Sym(xVar',tauMotorG');
+        if abs(fittedModel.theta(1))>1e-3 % Tau offset
             warning('calibrateSensors: There is a torque offset in the model PWM to torque !!');
         end
-        calib.setKpwm(theta(2));
+        calib.setKpwm(fittedModel.theta(2));
         
     otherwise
         error('calibrateSensors: unknown calibration type !!');
 end
 
 % Plot fitted model over acquired data.
-obj.plotModel(frictionOrKtau,theta,xVar,1000);
+obj.plotModel(frictionOrKtau,fittedModel,xVar,1000);
 
 end

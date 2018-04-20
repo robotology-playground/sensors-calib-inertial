@@ -4,8 +4,6 @@ function [ ok ] = runPwmEmulPosCtrlMode( obj,samplingPeriod,timeout )
 
 % Get the PID parameters (as a structure array)
 [~,obj.pidGains] = obj.remCtrlBoardRemap.getMotorsPids('posPID',obj.posCtrledMotors.idx);
-% DEBUG: force scale to 1 (we don't know yet how this should be applied)
-[obj.pidGains.scale] = deal(1);
 
 % Define and run the position control emulator thread with a discrete PID
 % controller.
