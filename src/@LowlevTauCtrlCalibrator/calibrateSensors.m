@@ -31,7 +31,8 @@ dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(...
 
 plot = false; loadJointPos = true;
 data = SensorsData(dataPath,obj.subSamplingSize,...
-    obj.timeStart,obj.timeStop,plot,calibrationMap);
+    obj.timeStart,obj.timeStop,plot,...
+    calibrationMap,obj.filtParams);
 data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
 %% Fitting process implementation.
@@ -40,9 +41,9 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 % 
 % For N samples of dimension D (group of D coupled joints), we get:
 % 
-% joint velocities table [DxN] : data.parsedParams.dqMsRad_<label>
-% joint PWM table [DxN]        : data.parsedParams.pwms_<label>
-% joint torques table [DxN]    : data.parsedParams.taus_<label>
+% joint velocities table [DxN] : data.parsedParams.dqMRad_<label>
+% joint PWM table [DxN]        : data.parsedParams.pwm_<label>
+% joint torques table [DxN]    : data.parsedParams.tau_<label>
 % 
 % Parameter names finishing by 's' are the ones recomputed after resampling
 % (refer to 'subSamplingSize' in lowLevTauCtrlCalibratorDevConfig.m config
@@ -54,7 +55,7 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 [~,motorIdx] = ismember(motorName,jointMotorCoupling.coupledMotors);
 
 % Get respective torques (matrix 6xNsamples)
-tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
+tauJoints  = data.parsedParams.(['tau_' jointMotorCoupling.part '_state']);
 
 % FRICTION parameters
 %
@@ -93,11 +94,11 @@ switch frictionOrKtau
         % get motor velocity to be the x axis variable
         xVar = ...
             jointMotorCoupling.gearboxDqM2Jratios{motorIdx} ...
-            * data.parsedParams.(['dqMsRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
+            * data.parsedParams.(['dqMRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
     case 'ktau'
         % get motor PWM to be the x axis variable
-        xVar = data.parsedParams.(['pwms_' jointMotorCoupling.part '_state'])(motorIdx,:);
+        xVar = data.parsedParams.(['pwm_' jointMotorCoupling.part '_state'])(motorIdx,:);
         % WRKAROUND: convert PWM (% Fullscale) --> (raw dutycycle)
         xVar = xVar*jointMotorCoupling.fullscalePWMs{motorIdx}/100;
     otherwise
@@ -128,9 +129,17 @@ switch frictionOrKtau
             warning('calibrateSensors: The friction model is not symmetrical');
         end
         % Run a fitting again but matching a single Kc and a single Kv
-        fittedModel = Regressors.frictionModel2(xVar',tauMotorG');
-        calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
-        calib.setStiction(fittedModel.theta(3),-fittedModel.theta(3));
+        % For non-coupled joints fit also the static friction parameter
+        if(jointMotorCoupling.Tm2j == 1)
+            fittedModel = Regressors.frictionModel2(xVar',tauMotorG');
+            calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
+            calib.setStiction(fittedModel.theta(3),fittedModel.theta(4));
+        else
+            
+            fittedModel = Regressors.frictionModel1Sym(xVar',tauMotorG');
+            calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
+            calib.setStiction(nan,nan);
+        end
         
     case 'ktau'
         % Check that the model is symmetrical

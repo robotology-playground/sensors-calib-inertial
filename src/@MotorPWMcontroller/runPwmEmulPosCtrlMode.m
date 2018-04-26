@@ -9,6 +9,10 @@ function [ ok ] = runPwmEmulPosCtrlMode( obj,samplingPeriod,timeout )
 % controller.
 obj.ctrllerThreadPeriod = samplingPeriod; % thread period
 aFilter = DSP.IdentityFilter([]);         % define the filter
+% DEBUG
+[obj.pidGains.Ki] = deal(-5);
+[obj.pidGains.Kp] = deal(-4);
+% DEBUG
 PIDCtrller = DSP.PIDcontroller(...
     [obj.pidGains.Kp],[obj.pidGains.Kd],[obj.pidGains.Ki],...                 % P, I, D gains
     [obj.pidGains.max_int],[obj.pidGains.max_output],[obj.pidGains.scale],... % max integral term and max correction term

@@ -42,7 +42,7 @@ classdef MotorTransFunc < handle
         end
         
         function setStiction(obj,stictionP, stictionN)
-            obj.tictionP = stictionP;
+            obj.stictionP = stictionP;
             obj.stictionN = stictionN;
         end
     end

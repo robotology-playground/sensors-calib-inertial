@@ -1,5 +1,5 @@
 function model = frictionModel2( x,y )
-%frictionModel1Sym Computes the closed-form solution to linear regression 
+%frictionModel2 Computes the closed-form solution to linear regression 
 %   using the normal equations.
 %   \in x: column vector (function inputs)
 %   \in y: column vector (measurements)

@@ -152,12 +152,12 @@ obj.close();
 % getMotorEncoders(),
 % getMotorEncoderSpeeds(),
 % getJointTorques().
-obj.open({'right_leg'})
+obj.open({'torso'})
 
 obj.getJointsNames(1:obj.getAxes())
 obj.getMotorsNames(1:obj.getAxes())
 
-jointsIdxes = obj.getJointsMappedIdxes({'r_hip_pitch','r_knee','r_ankle_roll'})
+jointsIdxes = obj.getJointsMappedIdxes({'torso_yaw','torso_roll','torso_pitch'})
 % change control mode to PWM
 [ok,modes] = obj.getJointsControlMode(jointsIdxes)
 ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')
