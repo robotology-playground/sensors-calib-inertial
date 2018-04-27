@@ -1,5 +1,7 @@
 function acqSensorDataAccessor = run(obj)
 
+import System.Const;
+
 % init logged sequences. These information will be needed by the calibrators for 
 % retrieving the acquired data they require.
 loggedSeqs = {};
@@ -61,7 +63,7 @@ for seqIdx = 1:numel(obj.sequences)
                 promptString = sequence.prpt{stepIdx}();
                 if isempty(promptString)
                     % run the sequencer step
-                    waitMotionDone = true; timeout = 120; % in seconds
+                    waitMotionDone = true; timeout = 10; % in seconds
                     if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
                         error('Waiting for motion done timeout!');
                     end
@@ -89,10 +91,10 @@ for seqIdx = 1:numel(obj.sequences)
                 % motors keeping their control mode and state unchanged. If
                 % this is not supported by the YARP remoteControlBoardRemapper,
                 % emulate it. We can only emulate position control.
-                [ok,coupling,couplingMode] = obj.ctrlBoardRemap.setMotorPWMcontrolMode(motorName);
+                pwmController = MotorPWMcontroller(motorName,obj.ctrlBoardRemap,Const.ThreadON);
                 
                 % Set the desired PWM level (0-100%) for the named motor
-                ok = obj.ctrlBoardRemap.setMotorPWM(motorName,pwm);
+                ok = pwmController.setMotorPWM(pwm);
                 
                 % Prompt the user to proceed
                 promptString = sequence.prpt{stepIdx}();
@@ -101,10 +103,10 @@ for seqIdx = 1:numel(obj.sequences)
                     pause;
                 end
                 
-                % Set all joints from the impacted coupling back to the
-                % previous control mode.
-                [jointsIdxList,~] = obj.ctrlBoardRemap.getJointsMappedIdxes(coupling.coupledJoints);
-                obj.ctrlBoardRemap.setJointsControlMode(jointsIdxList,couplingMode);
+                % Stop the controller. This also restores the previous
+                % control mode for the named motor and eventual coupled
+                % motors.
+                ok = pwmController.stop();
                 
             otherwise
                 error('Unknown control mode!');

@@ -11,7 +11,7 @@ if savePlot
     fileID = fopen([figsFolder '.txt'],'w');
     fprintf(fileID,'figs folder = %s\n',[dataPath '/' figsFolder]);
     fprintf(fileID,'iterator = %d\n',iterator);
-    fprintf(fileID,whos);
+    %fprintf(fileID,whos);
     fclose(fileID);
 end
 

@@ -49,12 +49,12 @@ classdef SensorsData < handle
             % conditional parameter varargin:
             % calibrationMap, filtParams
             %
-            if nargin>6 && length(varargin{1})>0
+            if nargin>5 && length(varargin{1})>0
                 obj.calibrationMap = varargin{1};
             else
                 obj.calibrationMap = containers.Map('KeyType','char','ValueType','any');
             end
-            if nargin>7 && length(varargin{2})>0
+            if nargin>6 && length(varargin{2})>0
                 obj.filtParams = varargin{2};
             else
                 filtParams.type = 'sgolay';

@@ -9,5 +9,9 @@ clear classes;
 % Create YARP Network device, for initializing YARP classes for communication
 yarp.Network.init();
 
+% import constants
+import System.Const;
+
 % load application main interface parameters
 init = Init.load('sensorSelfCalibratorInit');
+hardwareMechanicals = Init.load('hardwareMechanicalsConfig');

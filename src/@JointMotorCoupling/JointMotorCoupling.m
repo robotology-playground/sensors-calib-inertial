@@ -6,19 +6,26 @@ classdef JointMotorCoupling < handle
     
     properties(GetAccess=public, SetAccess=protected)
         label@char = ''; % unique id of the coupling
-        invT = 0;           % coupling matrix
+        Tm2j = 1;           % coupling matrix
+        Tj2m = 1;           % inverted coupling matrix
         coupledJoints = {}; % cell array of strings
         coupledMotors = {}; % cell array of motor names
-        gearboxRatios = []; % NOT REQUIRED FOR NOW
+        gearboxDqM2Jratios = []; % array of motors gearbox ratios
+        fullscalePWMs = [];  % array of motors PWM fullscale values
         part = '';       % parent part of the coupled joints/motors
     end
     
     methods
-        function obj = JointMotorCoupling(invT, cpldJoints, cpldMotors, ratios, part)
-            obj.invT = invT;
+        function obj = JointMotorCoupling(...
+                Tm2j, cpldJoints, cpldMotors, ...
+                cpldGearboxDqM2Jratios, cpldFullscalePWMs, part)
+            
+            obj.Tm2j = Tm2j;
+            obj.Tj2m = inv(Tm2j);
             obj.coupledJoints = cpldJoints(:)';
             obj.coupledMotors = cpldMotors(:)';
-            obj.gearboxRatios = ratios(:)';
+            obj.gearboxDqM2Jratios = cpldGearboxDqM2Jratios(:)';
+            obj.fullscalePWMs = cpldFullscalePWMs(:)';
             obj.part = part;
             obj.label = [obj.coupledJoints{:}];
         end

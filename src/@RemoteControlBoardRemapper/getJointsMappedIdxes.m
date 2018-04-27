@@ -1,5 +1,5 @@
 function [jointsIdxList,matchingBitmap] = getJointsMappedIdxes( obj,jointNameList )
-%UNTITLED Get joints indexes as per the control board remapper mapping
+%Get joints indexes as per the control board remapper mapping
 %   Detailed explanation goes here
 
 % Get the indexes of each joint from 'jointNameList' in the controlboard

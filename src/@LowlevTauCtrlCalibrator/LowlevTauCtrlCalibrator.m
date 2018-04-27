@@ -109,7 +109,7 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         
         plotTrainingData(obj,path,sensors,parts,model,taskSpec);
         
-        plotModel(obj,frictionOrKtau,theta,xVar,nbSamples);
+        plotModel(obj,frictionOrKtau,model,xVar,nbSamples);
         
         calibrateSensors(obj,...
             dataPath,~,measedSensorList,measedPartsList,...

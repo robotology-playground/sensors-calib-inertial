@@ -311,6 +311,21 @@ fprintf('Processed raw sensors\n')
 
 for i = 1 : length(obj.parts)
     if strcmp(obj.type{i}, 'stateExt:o')
+        q    = ['q_' obj.labels{i}];
+        dq   = ['dq_' obj.labels{i}];
+        d2q  = ['d2q_' obj.labels{i}];
+        dqM  = ['dqM_' obj.labels{i}];
+        
+        qRad    = ['qRad_' obj.labels{i}];
+        dqRad   = ['dqRad_' obj.labels{i}];
+        d2qRad  = ['d2qRad_' obj.labels{i}];
+        dqMRad  = ['dqMRad_' obj.labels{i}];
+        
+        eval(['obj.parsedParams.' qRad ' = obj.parsedParams.' q '*pi/180;']);
+        eval(['obj.parsedParams.' dqRad ' = obj.parsedParams.' dq '*pi/180;']);
+        eval(['obj.parsedParams.' d2qRad ' = obj.parsedParams.' d2q '*pi/180;']);
+        eval(['obj.parsedParams.' dqMRad ' = obj.parsedParams.' dqM '*pi/180;']);
+        
         qs    = ['qs_' obj.labels{i}];
         dqs   = ['dqs_' obj.labels{i}];
         d2qs  = ['d2qs_' obj.labels{i}];

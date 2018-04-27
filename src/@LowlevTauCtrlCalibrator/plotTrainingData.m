@@ -58,9 +58,9 @@ obj.figuresHandlerMap(obj.task) = figuresHandler;
 % 
 % For N samples of dimension D (group of D coupled joints), we get:
 % 
-% Motor velocities table [DxN] : data.parsedParams.dqMsRad_<label>
-% joint PWM table [DxN]        : data.parsedParams.pwms_<label>
-% joint torques table [DxN]    : data.parsedParams.taus_<label>
+% Motor velocities table [DxN] : data.parsedParams.dqMRad_<label>
+% joint PWM table [DxN]        : data.parsedParams.pwm_<label>
+% joint torques table [DxN]    : data.parsedParams.tau_<label>
 % 
 % Parameter names finishing by 's' are the ones recomputed after resampling
 % (refer to 'subSamplingSize' in lowLevTauCtrlCalibratorDevConfig.m config
@@ -73,44 +73,80 @@ time = data.parsedParams.time;
 [~,motorIdx] = ismember(motorName,jointMotorCoupling.coupledMotors);
 
 % Get respective torques (matrix 6xNsamples)
-tauJoints  = data.parsedParams.(['taus_' jointMotorCoupling.part '_state']);
-tauMotor   = jointMotorCoupling.invT(motorIdx,:) * tauJoints;
+tauJoints  = data.parsedParams.(['tau_' jointMotorCoupling.part '_state']);
+
+% FRICTION parameters
+%
+% We express the joint velocities and torques w.r.t. the motor respective
+% quantities using the coupling matrix Tm2j (motor to joint) and gearbox ratios:
+% 
+% dq_j = Tm2j * Gm2j * dq_m
+%
+% Where Gm2j is a diagonal matrix. We then pose the conservation of
+% transmission power:
+%
+% dq_j' * Tau_j = dq_m' * Tau_m
+%
+% <=> dq_m' * Gm2j' * Tm2j' * Tau_j = dq_m' * Tau_m  ∀dq_m
+%
+% <=> Tau_m = Gm2j' * Tm2j' * Tau_j
+% 
+% Anyway we consider here the motor and gearbox as a single block, and
+% the velocity and torque as the outputs of that same block:
+%
+% xVar = S * Gm2j * dq_m
+% yVar = S * Tm2j' * Tau_j
+%
+% Where Gm2j is a diagonal matrix whose diagonal terms are represented by
+% gearboxDqM2Jratios, and S is a selective matrix. So, for motorIdx "i",
+% S=[0..0 1 0..0] (ith column set to 1). For any matrix A, we get S * A =
+% A(i,:), and A * S' = A(:,i). We get or each sample at instant "t":
+%
+% xVar = Gm2j(i,:) * dq_m = gearboxDqM2Jratios(i) * dq_m(i)
+% yVar = (Tm2j * S')' * Tau_j = Tm2j(:,i)' * Tau_j
+%
+tauMotorG = jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
+time = data.parsedParams.(['time_' jointMotorCoupling.part '_state']);
 
 switch frictionOrKtau
     case 'friction'
-        dqMrad = data.parsedParams.(['dqMsRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
+        dqMradG = ...
+            jointMotorCoupling.gearboxDqM2Jratios{motorIdx} ...
+            * data.parsedParams.(['dqMRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
         % filtered Tau(time) & dqM(time)
         Plotter.plot2funcTimeseriesYY(...
             figuresHandler,...
             'Motor velocity and torque over time','motorVel_N_TorqFilt',...
-            time,dqMrad,time,tauMotor,...
+            time,dqMradG,time,tauMotorG,...
             'Motor velocity (radians/s)','Motor torque (N.m)');
         
         % filtered Tau VS dqM
         Plotter.plot2dDataNfittedModel(...
             figuresHandler,...
             'Motor velocity to torque model','motorVel2torq',...
-            dqMrad,tauMotor,...
+            dqMradG,tauMotorG,...
             [],[],...
             'Motor velocity (radians/s)','Motor torque (N.m)',...
             'Training data','');
         
     case 'ktau'
-        pwm = data.parsedParams.(['pwms_' jointMotorCoupling.part '_state'])(motorIdx,:);
+        pwmDutyCycle = ...
+            data.parsedParams.(['pwm_' jointMotorCoupling.part '_state'])(motorIdx,:) ...
+            * jointMotorCoupling.fullscalePWMs{motorIdx}/100;
         
         % filtered Tau(time) & pwm(time)
         Plotter.plot2funcTimeseriesYY(...
             figuresHandler,...
             'Motor PWM and torque over time','motorPWM_N_torqFilt',...
-            time,pwm,time,tauMotor,...
+            time,pwmDutyCycle,time,tauMotorG,...
             'Motor PWM (duty cycle)','Motor torque (N.m)');
         
         % filtered Tau VS pwm
         Plotter.plot2dDataNfittedModel(...
             figuresHandler,...
             'Motor PWM to torque model','motorPWM2torq',...
-            pwm,tauMotor,...
+            pwmDutyCycle,tauMotorG,...
             [],[],...
             'Motor PWM (duty cycle)','Motor torque (N.m)',...
             'Training data','');

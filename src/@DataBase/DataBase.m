@@ -85,6 +85,10 @@ classdef DataBase < handle
         % properties specified in 'inputPropsStruct'.
         propList = getPropList(obj,queryPropsStruct,outputPropName);
         
+        % Retrieve the 'outputPropNameList' properties of elements matching input
+        % properties specified in 'inputPropsStruct'.
+        propList = getMultiPropList(obj,queryPropsStruct,outputPropNameList);
+        
         % Set to 'propValueToSet' the 'propNameToSet' property of elements matching
         % input properties specified in 'inputPropsStruct'.
         success = setProp(obj,queryPropsStruct,propNameToSet,propValueToSet);

@@ -1,10 +1,10 @@
-function [readedEncoders,readEncsMat] = getEncoders(obj)
+function [readEncs] = getEncoders(obj)
 
 % Get the encoders values
 iencs = obj.driver.viewIEncoders();
-readedEncoders = yarp.Vector();
-readedEncoders.resize(length(obj.jointsList));
-iencs.getEncoders(readedEncoders.data());
-readEncsMat=RemoteControlBoardRemapper.toMatlab(readedEncoders);
+readEncoders = yarp.Vector();
+readEncoders.resize(length(obj.jointsList));
+iencs.getEncoders(readEncoders.data());
+readEncs=RemoteControlBoardRemapper.toMatlab(readEncoders);
 
 end

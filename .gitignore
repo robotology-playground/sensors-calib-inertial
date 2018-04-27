@@ -6,7 +6,10 @@ dumper/
 *.mat
 data/
 html/
+doc/
 tmp/
 /src/models/
+wiki/
 matlab-workspace
 octave-workspace
+src/app/dataLogInfoMap.txt

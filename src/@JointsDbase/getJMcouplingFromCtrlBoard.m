@@ -1,5 +1,5 @@
-function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx ] = getJMcouplingFromCtrlBoard( ...
-    joint2coupling,robotName,part,jointName )
+function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM ] = ...
+    getJMcouplingFromCtrlBoard( joint2coupling,robotName,part,jointName )
 %Get the joint/motor coupling info from the control board server.
 %   The method stores the respective retrieved objects in the running
 %   'joint2coupling', for future queries. It returns the handle of the
@@ -25,12 +25,14 @@ if ~joint2coupling.isKey(jointName)
         % Build array of structures (1 structure per joint)
         values = struct(...
             'idxInCtrlBoardServer',jointIdxes,...
-            'cpldMotorSharingIdx',coupling.coupledMotors);
+            'cpldMotorSharingIdx',coupling.coupledMotors,...
+            'gearboxDqM2Jratio',num2cell(coupling.gearboxDqM2Jratios),...
+            'fullscalePWM',num2cell(coupling.fullscalePWMs));
         [values.coupling] = deal(coupling);
-        % Convert to a list and then add to the mapping 'joint2coupling'
+        % Convert to a list and then add (merge) to the mapping 'joint2coupling'
         [valueCells] = arrayfun(@(elem) elem,values,'UniformOutput',false);
         addedJoints = containers.Map(coupling.coupledJoints,valueCells);
-        joint2coupling = concatMap(joint2coupling,addedJoints);
+        joint2coupling = concatMap(joint2coupling,addedJoints); % merge mappings
     end
     
     % delete the remoteCtrlBoard object
@@ -44,6 +46,8 @@ if joint2coupling.isKey(jointName)
     parentCoupling = jointInfo.coupling;
     idxInCtrlBoardServer = jointInfo.idxInCtrlBoardServer;
     cpldMotorSharingIdx = jointInfo.cpldMotorSharingIdx;
+    gearboxDqM2Jratio = jointInfo.gearboxDqM2Jratio;
+    fullscalePWM = jointInfo.fullscalePWM;
 else
     warning(...
         'getJMcouplingFromCtrlBoard: %s doesn''t match any coupling data extracted from the control board server.',...
@@ -51,6 +55,8 @@ else
     parentCoupling = [];
     idxInCtrlBoardServer = [];
     cpldMotorSharingIdx = [];
+    gearboxDqM2Jratio = [];
+    fullscalePWM = [];
 end
 
 end

@@ -8,7 +8,6 @@ classdef MotorTransFunc < handle
     
     properties(GetAccess=public, SetAccess=protected)
         name@char;
-        % Kpwm, Kc and Kv actually already include the gearbox rate
         Kpwm = 0;
         Kc = 0;
         Kv = 0;
@@ -28,6 +27,8 @@ classdef MotorTransFunc < handle
             if ~isKey(calibrationMap,motorName)
                 calibrationMap(motorName) = MotorTransFunc(motorName);
             end
+            % Return the handle on the newly created or already existing
+            % MotorTransFunc object.
             transFunc = calibrationMap(motorName);
         end
     end
@@ -41,7 +42,7 @@ classdef MotorTransFunc < handle
         end
         
         function setStiction(obj,stictionP, stictionN)
-            obj.tictionP = stictionP;
+            obj.stictionP = stictionP;
             obj.stictionN = stictionN;
         end
     end
