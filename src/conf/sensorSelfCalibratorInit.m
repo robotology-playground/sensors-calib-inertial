@@ -3,13 +3,13 @@
 %====================================================================
 
 %% Common model and calibration input parameters
-robotName = 'icubSim'; % 'icub' or 'icubSim'
+robotName = 'icub'; % 'icub' or 'icubSim'
 dataPath  = '../../data/dumper';
 %modelPath = '../models/icubSim/icub.urdf';
 modelPath = '../models/iCubGenova04/icub.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
-%calibrationMapFile = 'calibrationMap.mat';
-calibrationMapFile = '';
+calibrationMapFile = 'calibrationMap.mat';
+%calibrationMapFile = '';
 
 %% Standard or custom calibration
 calibrationType = 'standard';
@@ -23,12 +23,12 @@ calibrateGyroscopes     = false;
 calibrateLowLevTauCtrl  = true;
 
 %% Diagnosis and visualization
-runDiagnosis = true;
+runDiagnosis = false;
 
 %% Common output parameters
-saveCalibration = false;
-defaultSavePlot = false;
-defaultExportPlot = false;
+saveCalibration = true;
+defaultSavePlot = true;
+defaultExportPlot = true;
 
 
 %% Custom calibration sequence
@@ -228,7 +228,7 @@ clear calibedParts calibedJointsIdxes mtbSensorAct savePlot exportPlot loadJoint
 
 % Calibrated parts:
 % Only the joint parameters from these parts (limbs) will be calibrated
-calibedParts = {'left_leg'};
+calibedParts = {'right_leg'};
 
 % Fine selection of joints to calibrate:
 % Select the joints to calibrate through the respective indexes. These indexes match 
@@ -253,7 +253,7 @@ calibedParts = {'left_leg'};
 %=================================================================
 calibedJointsIdxes.left_arm = 0:3;
 calibedJointsIdxes.right_arm = 0:3;
-calibedJointsIdxes.left_leg = [1 3];
+calibedJointsIdxes.left_leg = 0:5;
 calibedJointsIdxes.right_leg = 0:5;
 calibedJointsIdxes.torso = 0:2;
 calibedJointsIdxes.head = 0:2;

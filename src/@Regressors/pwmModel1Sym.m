@@ -17,7 +17,7 @@ filtIdxes = abs(x)>abs(max(x)/100);
 y = y(filtIdxes);
 x = x(filtIdxes);
 
-% format X adding the column of sign(x)
+% format X adding the column of ones
 M = @(dq) [ones(size(dq)) dq]
 X = M(x);
 

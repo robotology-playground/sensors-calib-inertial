@@ -31,6 +31,17 @@ classdef MotorTransFunc < handle
             % MotorTransFunc object.
             transFunc = calibrationMap(motorName);
         end
+        
+        function isEq = eq(aTransFunc,anotherTransFunc)
+            isEq = true;
+            for field = fieldnames(aTransFunc)'
+                if ischar(aTransFunc.(field{1}))
+                    isEq = isEq && strcmp(aTransFunc.(field{1}),anotherTransFunc.(field{1}));
+                elseif isnumeric(aTransFunc.(field{1}))
+                    isEq = isEq && aTransFunc.(field{1}) == anotherTransFunc.(field{1});
+                end
+            end
+        end
     end
     
     methods(Access=public)
