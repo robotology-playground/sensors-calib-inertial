@@ -91,16 +91,14 @@ tauMotorG = jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
 
 switch frictionOrKtau
     case 'friction'
-        % get motor velocity to be the x axis variable
+        % get motor velocity * Gm2j (rad/s) to be the x axis variable
         xVar = ...
             jointMotorCoupling.gearboxDqM2Jratios{motorIdx} ...
             * data.parsedParams.(['dqMRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
     case 'ktau'
-        % get motor PWM to be the x axis variable
+        % get motor PWM (% Fullscale) to be the x axis variable
         xVar = data.parsedParams.(['pwm_' jointMotorCoupling.part '_state'])(motorIdx,:);
-        % WRKAROUND: convert PWM (% Fullscale) --> (raw dutycycle)
-        xVar = xVar*jointMotorCoupling.fullscalePWMs{motorIdx}/100;
     otherwise
         error('calibrateSensors: unknown calibration type !!');
 end
