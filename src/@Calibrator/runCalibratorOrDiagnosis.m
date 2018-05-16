@@ -14,6 +14,7 @@ acqSensorDataAccessor = obj.acqSensorDataAccessorMap(obj.task);
 % If the prior sensor data acquisition was done in N motion sequences
 % (it is the case for calibrating the torso which needs a dedicated
 % sequence), we get a folder path per sequence, so N paths.
+% TEMP SOLUTION FOR CALIB. THE TORSO JOINTS --> set <calibedSensorType> to 'acc'.
 [dataFolderPathList,calibedPartsList] = ...
     acqSensorDataAccessor.getFolderPaths4calibedSensor(calibedSensorType,init.dataPath);
 

@@ -100,10 +100,10 @@ mtbType = {'none','mtb_acc','mtb_gyro'};
 %         eoas_inertial_pos_r_upper_leg_7         = 20+eoas_inertial_pos_offsetright,     // label 11B7   canloc = (CAN1,  7)
 %
 %         // central parts
-%         eoas_inertial_pos_chest_1               = 1+eoas_inertial_pos_offsetcentral,    // 9B7
-%         eoas_inertial_pos_chest_2               = 2+eoas_inertial_pos_offsetcentral,    // 9B8
-%         eoas_inertial_pos_chest_3               = 3+eoas_inertial_pos_offsetcentral,    // 9B9
-%         eoas_inertial_pos_chest_4               = 4+eoas_inertial_pos_offsetcentral,    // 9B10
+%         eoas_inertial_pos_chest_1               = 1+eoas_inertial_pos_offsetcentral,    // 0B7
+%         eoas_inertial_pos_chest_2               = 2+eoas_inertial_pos_offsetcentral,    // 0B8
+%         eoas_inertial_pos_chest_3               = 3+eoas_inertial_pos_offsetcentral,    // 0B9
+%         eoas_inertial_pos_chest_4               = 4+eoas_inertial_pos_offsetcentral,    // 0B10
 %
 %         eOas_inertial_pos_jolly_1               = 60,
 %         eOas_inertial_pos_jolly_2               = 61,
@@ -120,7 +120,7 @@ obj.mapMTBpos2code = {'none',...
     '2b7','2b8','2b9','2b10','2b11','2b12','2b13',...
     '11b12','11b13','11b8','11b9','11b10','11b11','11b1','11b2','11b3','11b5','11b4','11b6','11b7',...
     'none','none','none','none',...
-    '9b7','9b8','9b9','9b10'};
+    '0b7','0b8','0b9','0b10'};
 
 %% check metadata is constant
 %

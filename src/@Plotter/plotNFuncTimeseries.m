@@ -2,8 +2,16 @@ function plotNFuncTimeseries(...
     figuresHandler,aTitle,aLabel,...
     time,Y,...
     yLabel,yLegends)
-%UNTITLED9 Summary of this function goes here
-%   Detailed explanation goes here
+%Plots y1(t), y2(t),...,yn(t) on the same axis.
+%   Plots several timeseries functions y(time) with a single y axis,
+%   using a default set of colors.
+%   figuresHandler: class object handling all the figures (figure list
+%   tracking, saving figures,...)
+%   aTitle: figure title
+%   aLabel: figure label for the figures handler
+%   Y: each column j defines all the samples of a function yj(t)
+%   yLabel: y axis units
+%   yLegends: legends for all the functions
 
 % create figure
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
@@ -15,7 +23,7 @@ end
 % Define the line colors
 lineColors = {'b','g','r','c','m','y','k','w'};
 timeYnColorsRaw(1,1:size(Y,2)) = {time};
-timeYnColorsRaw(2,:) = num2cell(Y,1); % Y is supposed to have the format NsamplesXnComponents
+timeYnColorsRaw(2,:) = num2cell(Y,1); % Y is supposed to have the format NsamplesXnFunctions
 timeYnColorsRaw(3,:) = lineColors(1,1:size(Y,2));
 timeYnColors = timeYnColorsRaw(:)';
 yLegends = yLegends(1:size(Y,2));
