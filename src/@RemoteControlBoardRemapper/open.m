@@ -20,7 +20,7 @@ obj.options.put('axesNames',obj.axesNames.get(0)) % add the pair {'<property nam
 % Fill the list of the axis control boards and add it to the options
 obj.remoteControlBoardsList.clear();
 for part = partList
-    obj.remoteControlBoardsList.addString(['/' obj.robotName '/' part{:}]);
+    obj.remoteControlBoardsList.addString(['/' obj.robotModel.robotEnvNames.yarpPortPrefix '/' part{:}]);
 end
 obj.options.put('remoteControlBoards',obj.remoteControlBoards.get(0));
 

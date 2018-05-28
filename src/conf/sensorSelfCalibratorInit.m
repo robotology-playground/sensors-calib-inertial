@@ -3,7 +3,7 @@
 %====================================================================
 
 %% Common model and calibration input parameters
-robotName = 'icub'; % 'icub' or 'icubSim'
+modelName = 'iCubGenova04'; % as the models defined in 'icub-models' repo
 dataPath  = '../../data/dumper';
 %modelPath = '../models/icubSim/icub.urdf';
 modelPath = '../models/iCubGenova04/model.urdf';

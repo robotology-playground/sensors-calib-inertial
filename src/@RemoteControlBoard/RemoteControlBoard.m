@@ -3,7 +3,7 @@ classdef RemoteControlBoard < handle
     %   Detailed explanation goes here
     
     properties(SetAccess = protected, GetAccess = public)
-        robotName;
+        robotYarpPortPrefix;
         part;
         hardwareMechanicals;
         hwMechanials2robotInterAxesNamesMapping;
@@ -15,23 +15,23 @@ classdef RemoteControlBoard < handle
     
     methods(Access=public)
         % Constructor
-        function obj = RemoteControlBoard(robotName,part)
+        function obj = RemoteControlBoard(robotYarpPortPrefix,part)
             % Create YARP Network device if not yet done, to initialize
             % YARP classes for communication.
             if ~yarp.Network.initialized
                 yarp.Network.init();
             end
             % Save parameters
-            obj.robotName = robotName;
+            obj.robotYarpPortPrefix = robotYarpPortPrefix;
             obj.part = part;
             
             % Create the remote control board device associated to the
             % robot part 'part', and open the driver.
             obj.options = yarp.Property('(device remote_controlboard)');
-            obj.options.put('remote',['/' robotName '/' part]);
-            obj.options.put('local',['/AxisInfoCollector/' robotName '/' part]);
+            obj.options.put('remote',['/' robotYarpPortPrefix '/' part]);
+            obj.options.put('local',['/AxisInfoCollector/' robotYarpPortPrefix '/' part]);
             % Check that port is registered
-            if system(['yarp name query /' robotName '/' part])
+            if system(['yarp name query /' robotYarpPortPrefix '/' part])
                 warning('Port not registered!! skipping...');
                 obj.driver = NaN;
             else

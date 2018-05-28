@@ -8,7 +8,6 @@ classdef MotionSequencer < handle
     properties(SetAccess = protected, GetAccess = public)
         calibApp;
         robotModel;
-        robotName;
         sequences;
         logCmd;
         dummyCmd;
@@ -20,7 +19,6 @@ classdef MotionSequencer < handle
             % Init class parameters
             obj.calibApp = calibApp;
             obj.robotModel = robotModel;
-            obj.robotName = robotModel.robotName;
             % logger commands
             obj.logCmd = logCmd;
             % dummy commands (used instead of logger commands if logging is

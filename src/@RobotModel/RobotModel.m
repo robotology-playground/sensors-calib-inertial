@@ -18,25 +18,27 @@ classdef RobotModel < handle
     %   joint/motor parameters (PWM to torque rate, friction parameters, ...).
     
     properties(GetAccess = public, SetAccess = protected)
-        robotName = '';
-        urdfModelFile = '';
-        calibrationMapFile = '';
-        calibrationMap;
-        estimator;  % iDynTree.ExtWrenchesAndJointTorquesEstimator
-        jointsDbase;  % Joint database built from iDynTree model parameters
-        sensorsDbase; % Sensor database built from iDynTree model parameters
+        robotEnvNames@struct;
+        urdfModelFile@char;
+        calibrationMapFile@char;
+        calibrationMap@containers.Map;
+        estimator@iDynTree.ExtWrenchesAndJointTorquesEstimator;
+        jointsDbase@JointsDbase;  % Joint database built from iDynTree model parameters
+        sensorsDbase@SensorsDbase; % Sensor database built from iDynTree model parameters
     end
     
     methods(Access = public)
         % Constructor
-        function obj = RobotModel(robotName,urdfModelFile,calibrationMapFile)
+        function obj = RobotModel(modelName,urdfModelFile,calibrationMapFile)
+            % Set robot environment names from the model name (yarp port prefix, yarp
+            % robot name)
+            obj.robotEnvNames = obj.getRobotEnvNames(modelName);
+
             % Set parameters from environment if needed
-            if isempty(robotName)
-                robotName = getenv('YARP_ROBOT_NAME');
-            end
             if isempty(urdfModelFile)
-                % Let Yarp resource finder get the model path for 'robotName'. Trash the
-                % error/warning output and get only the result path
+                % Let Yarp resource finder get the model path for the respective Yarp
+                % robot name. Trash the error/warning output and get only the result path
+                setenv('YARP_ROBOT_NAME',obj.robotEnvNames.yarpRobotName);
                 [status,path] = system('yarp resource --find model.urdf 2> /dev/null');
                 if status
                     error('robot model not found !!');
@@ -45,11 +47,10 @@ classdef RobotModel < handle
                 urdfModelFile = strip(path,'"'); % remove the quotation marks
             end
             if isempty(calibrationMapFile)
-                calibrationMapFile = ['../../data/calibration/' robotName '_calibrationMap.mat'];
+                calibrationMapFile = ['../../data/calibration/' modelName '_calibrationMap.mat'];
             end
             
-            % set class attributes
-            obj.robotName = robotName;
+            % set remaining class attributes
             obj.urdfModelFile = urdfModelFile;
             obj.calibrationMapFile = calibrationMapFile;
             
@@ -69,7 +70,7 @@ classdef RobotModel < handle
             % Build a typical database from the URDF model parameters
             % previously loaded in iDynTree, allowing to query elements
             % matching specified properties.
-            obj.jointsDbase = JointsDbase(obj.estimator.model,robotName);
+            obj.jointsDbase = JointsDbase(obj.estimator.model,robotEnvNames.yarpPortPrefix);
             obj.sensorsDbase = SensorsDbase(obj.estimator.sensors);
         end
         
@@ -98,6 +99,8 @@ classdef RobotModel < handle
     
     methods(Static = true, Access = public)
         part = link2part(link);
+        
+        robotEnvNames = getRobotEnvNames(modelName);
     end
 end
 

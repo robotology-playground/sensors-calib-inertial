@@ -46,7 +46,6 @@ classdef RemoteControlBoardRemapper < handle
     end
     
     properties(SetAccess = protected, GetAccess = public)
-        robotName;
         robotModel;
         jointsList={};
         motorsList={};
@@ -66,7 +65,6 @@ classdef RemoteControlBoardRemapper < handle
             
             % Save robot model
             obj.robotModel = robotModel;
-            obj.robotName = robotModel.robotName;
             
             % Create a RemoteControlBoardRemapper device
             % for controlling just the torso+head chain
