@@ -11,7 +11,7 @@ function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jr
 if ~joint2coupling.isKey(jointName)
     % create remote control board and get coupling info
     remoteCtrlBoard = RemoteControlBoard(robotYarpPortPrefix,part);
-    if ~isnan(remoteCtrlBoard.driver)
+    if isobject(remoteCtrlBoard.driver) % opposite to NaN
         couplingList = remoteCtrlBoard.getCouplings();
 
         % save it to the mappings:

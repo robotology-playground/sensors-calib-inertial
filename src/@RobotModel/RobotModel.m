@@ -20,6 +20,7 @@ classdef RobotModel < handle
     properties(GetAccess = public, SetAccess = protected)
         robotEnvNames@struct;
         urdfModelFile@char;
+        link2partMapping@struct;
         calibrationMapFile@char;
         calibrationMap@containers.Map;
         estimator@iDynTree.ExtWrenchesAndJointTorquesEstimator;
@@ -30,6 +31,9 @@ classdef RobotModel < handle
     methods(Access = public)
         % Constructor
         function obj = RobotModel(modelName,urdfModelFile,calibrationMapFile)
+            % Refresh model configuration files
+            obj.refreshModelConfig(modelName);
+            
             % Set robot environment names from the model name (yarp port prefix, yarp
             % robot name)
             obj.robotEnvNames = obj.getRobotEnvNames(modelName);
@@ -70,8 +74,8 @@ classdef RobotModel < handle
             % Build a typical database from the URDF model parameters
             % previously loaded in iDynTree, allowing to query elements
             % matching specified properties.
-            obj.jointsDbase = JointsDbase(obj.estimator.model,robotEnvNames.yarpPortPrefix);
-            obj.sensorsDbase = SensorsDbase(obj.estimator.sensors);
+            obj.jointsDbase = JointsDbase(obj.estimator.model,@obj.link2part,obj.robotEnvNames.yarpPortPrefix);
+            obj.sensorsDbase = SensorsDbase(obj.estimator.sensors,@obj.link2part);
         end
         
         % Load all sensors calibration parameters from the file path set at
@@ -95,11 +99,18 @@ classdef RobotModel < handle
         
         % Rebuild the 'jointsDbase' and 'sensorsDbase' databases.
         buildDatabase(obj);
+        
+        % Get the part the link is attached to
+        part = link2part(obj,link);
+    end
+    
+    methods(Access=protected)
+        % Update Matlab path with model path and reload model configuration
+        % data from the model folder
+        refreshModelConfig(obj,modelName);
     end
     
     methods(Static = true, Access = public)
-        part = link2part(link);
-        
         robotEnvNames = getRobotEnvNames(modelName);
     end
 end

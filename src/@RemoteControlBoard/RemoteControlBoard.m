@@ -31,7 +31,7 @@ classdef RemoteControlBoard < handle
             obj.options.put('remote',['/' robotYarpPortPrefix '/' part]);
             obj.options.put('local',['/AxisInfoCollector/' robotYarpPortPrefix '/' part]);
             % Check that port is registered
-            if system(['yarp name query /' robotYarpPortPrefix '/' part])
+            if system(['yarp name query /' robotYarpPortPrefix '/' part '/stateExt:o'])
                 warning('Port not registered!! skipping...');
                 obj.driver = NaN;
             else

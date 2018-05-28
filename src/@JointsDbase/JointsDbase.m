@@ -12,7 +12,7 @@ classdef JointsDbase < DataBase
     
     methods(Access = public)
         % Constructor
-        function obj = JointsDbase(iDynTreeModelFromURDF,robotYarpPortPrefix)
+        function obj = JointsDbase(iDynTreeModelFromURDF,link2partH,robotYarpPortPrefix)
             % create property names and keys
             propKeyList = {'jointName','cpldMotorSharingIdx'};
             propNameList = {...
@@ -36,7 +36,7 @@ classdef JointsDbase < DataBase
                 DoF = iDynObject.getNrOfDOFs();
                 
                 % determine to which part the parent link is attached to
-                part = RobotModel.link2part(secondAttachedLink);
+                part = link2partH(secondAttachedLink);
                 
                 % This joint might be coupled with other joints to a set of motors.
                 % Retrieve the respective joints/motors coupling information

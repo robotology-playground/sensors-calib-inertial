@@ -8,7 +8,6 @@ data/
 html/
 doc/
 tmp/
-/src/models/
 wiki/
 matlab-workspace
 octave-workspace

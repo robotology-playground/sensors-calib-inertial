@@ -31,7 +31,7 @@ classdef SensorsDbase < DataBase
     end
     
     methods(Access = public)        % Constructor
-        function obj = SensorsDbase(iDynTreeSensorsFromURDF)
+        function obj = SensorsDbase(iDynTreeSensorsFromURDF,link2partH)
             % create database
             propKeyList = {'sensorLabel','sensorHwId','sensorFrameName'};
             propNameList = {...
@@ -58,7 +58,7 @@ classdef SensorsDbase < DataBase
                     cadType = SensorsDbase.frame2cadType(sensorFrameName);
                     sensorLabel = [cadType '_' sensorHwId];
                     fullscaleGain = SensorsDbase.cadType2gain(cadType);
-                    part = RobotModel.link2part(parentLink); % part to witch the parent link is attached
+                    part = link2partH(parentLink); % part to witch the parent link is attached
                     
                     % fill the properties list
                     propValueList(propValueLineIdx,:) = {...
