@@ -14,4 +14,3 @@ import System.Const;
 
 % load application main interface parameters
 init = Init.load('sensorSelfCalibratorInit');
-hardwareMechanicals = Init.load('hardwareMechanicalsConfig');

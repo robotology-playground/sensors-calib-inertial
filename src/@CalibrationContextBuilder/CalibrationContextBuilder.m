@@ -84,14 +84,14 @@ classdef CalibrationContextBuilder < handle
             obj.fixedBasePos.worldBasePos().setRotation(iDynTree.Rotation.Identity());
             obj.fixedBasePos.worldBasePos().setPosition(iDynTree.Position.Zero());
 
-            %% Specify unknown wrenches (specific to APPROACH 1)
+            %% Specify unknown wrenches (unknown Full wrench applied at the origin of the base_link frame)
             % We need to set the location of the unknown wrench. We express the unknown
-            % wrench at the origin of the base_link frame
+            % wrench at the origin of the base_link frame (conctact point wrt to base_link is zero)
             unknownWrench = iDynTree.UnknownWrenchContact();
             unknownWrench.unknownType = iDynTree.FULL_WRENCH;
-            
-            % the position is the origin, so the conctact point wrt to base_link is zero
             unknownWrench.contactPoint.zero();
+            % 'forceDirection', 'knownWrench' are irrelevant for an unknown FULL_WRENCH.
+            % 'contactId' is by default 0.
             
             % The fullBodyUnknowns is a class storing all the unknown external wrenches
             % acting on a class: we consider the pole reaction on the base link as the only
