@@ -136,6 +136,12 @@ vecModes.fromMatlab([y.VOCAB_CM_IDLE y.VOCAB_CM_PWM y.VOCAB_CM_TORQUE])
 iCtrlMode.setControlModes(3,vecJoints,vecModes)
 iCtrlMode.getControlModes(3,vecJoints,vecModes)
 RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
+% restore previous modes
+vecModes.fromMatlab([y.VOCAB_CM_POSITION y.VOCAB_CM_POSITION y.VOCAB_CM_POSITION])
+iCtrlMode.setControlModes(3,vecJoints,vecModes)
+iCtrlMode.getControlModes(3,vecJoints,vecModes)
+RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
+
 obj.close();
 
 %% Test RemoteControlBoardRemapper public methods
@@ -320,10 +326,10 @@ aThreadTimer = pwmController.ctrllerThread.threadTimer;
 pause
 pwmController.setMotorPWM(3)
 f(aThreadTimer,[]);
-yarp.Time.delay(5);
+yarp.delay(5);
 pwmController.setMotorPWM(-3)
 f(aThreadTimer,[]);
-yarp.Time.delay(5);
+yarp.delay(5);
 pwmController.stop();
 pause
 pwmController.setMotorPWM(3); % this shouldn't work

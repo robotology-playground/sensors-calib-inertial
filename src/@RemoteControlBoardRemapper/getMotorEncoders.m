@@ -16,6 +16,6 @@ readAllEncs = RemoteControlBoardRemapper.toMatlab(readAllEncoders);
 % select sub vector
 readEncs = readAllEncs(motorsIdxList);
 % timeEncs = timeAllEncs(motorsIdxList);
-timeEncs(1:numel(readEncs)) = yarp.Time.now();
+timeEncs(1:numel(readEncs)) = yarp.now();
 
 end

@@ -6,12 +6,12 @@ persistent currentLocalTime;
 
 if (timerObj.TasksExecuted <= 2)
     % latch Yarp clock and local clock
-    firstYarpTime = yarp.Time.now;
+    firstYarpTime = yarp.now;
     currentLocalTime = tic;
 end
 
 % compute the error
-currentYarpTime = yarp.Time.now - firstYarpTime;
+currentYarpTime = yarp.now - firstYarpTime;
 localTimeErr = currentYarpTime - toc(currentLocalTime);
 yarpTimeErr = currentYarpTime - (timerObj.TasksExecuted-2)*threadPeriod;
 
