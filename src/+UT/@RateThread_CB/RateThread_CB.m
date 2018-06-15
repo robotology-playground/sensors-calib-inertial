@@ -11,11 +11,11 @@ classdef RateThread_CB < RateThread
         
         function ok = run(obj,~)
             % latch Yarp clock and local clock
-            obj.firstYarpTime = yarp.Time.now;
+            obj.firstYarpTime = yarp.now;
             obj.currentLocalTime = tic;
             % test the start/update callback-functions of the timer thread
             f = obj.threadTimer.StartFcn; f(obj.threadTimer,[]);
-            yarp.Time.delay(obj.period);
+            yarp.delay(obj.period);
             f = obj.threadTimer.TimerFcn; f(obj.threadTimer,[]);
             ok = true;
         end

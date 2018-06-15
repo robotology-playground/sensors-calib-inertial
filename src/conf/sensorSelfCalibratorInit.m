@@ -6,7 +6,7 @@
 robotName = 'icub'; % 'icub' or 'icubSim'
 dataPath  = '../../data/dumper';
 %modelPath = '../models/icubSim/icub.urdf';
-modelPath = '../models/iCubGenova04/icub.urdf';
+modelPath = '../models/iCubGenova04/model.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 calibrationMapFile = 'calibrationMap.mat';
 %calibrationMapFile = '';
