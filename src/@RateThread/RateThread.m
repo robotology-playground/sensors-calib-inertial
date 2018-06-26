@@ -92,7 +92,7 @@ classdef RateThread < handle
         
         function ok = run(obj,waitTimerStop)
             % latch Yarp clock and local clock
-            obj.firstYarpTime = yarp.Time.now;
+            obj.firstYarpTime = yarp.now;
             obj.currentLocalTime = tic;
             % Start the timer and wait termination by 'rateFunctionH' or
             % timeout.
@@ -120,7 +120,7 @@ classdef RateThread < handle
     methods (Access=protected)
         function localSyncYarpClock(obj,timerObj,thisEvent,rateFcn)
             % fine adjust the period, for aavoiding thrift
-            currentYarpTime = yarp.Time.now - obj.firstYarpTime;
+            currentYarpTime = yarp.now - obj.firstYarpTime;
             adjust = round(currentYarpTime - toc(obj.currentLocalTime),3);
             % adjust > 0 means that the Yarp clock is faster than the local
             % and we have to shorten the period by as much
@@ -139,9 +139,9 @@ classdef RateThread < handle
             % to trigger the execution of 'rateFcn()' at t=N*period.
             
             % check the elapsed Yarp time
-            currentYarpTime = yarp.Time.now - obj.firstYarpTime;
+            currentYarpTime = yarp.now - obj.firstYarpTime;
             % wait depending on desired period
-            yarp.Time.delay(timerObj.TasksExecuted*obj.period - currentYarpTime);
+            yarp.delay(timerObj.TasksExecuted*obj.period - currentYarpTime);
             % call the requested external timer function
             rateFcn(timerObj,thisEvent,@obj.stop);
         end
