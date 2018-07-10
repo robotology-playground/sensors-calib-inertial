@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of symmd</title>
+  <meta name="keywords" content="symmd">
+  <meta name="description" content="Create a diagonal matrix of symbolic variables.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>symmd
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Create a diagonal matrix of symbolic variables.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function S = symmd(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Create a diagonal matrix of symbolic variables.
+
+ See also: <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>
+
+ Examples:
+ D = symmd('D',3)
+    creates a symbolic diagonal 3-by-3 matrix
+ D = symmd('D',5,6)
+    creates a symbolic diagonal 5-by-6 matrix
+ D = symmd('D',[7,12])
+    creates a symbolic diagonal 7-by-12 matrix</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="symmvars.html" class="code" title="function [variable,type,sz] = symmvars(deftype, variable, varargin)">symmvars</a>	Parse parameters for symbolic matrix creation.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="pqdistpoly.html" class="code" title="function pqdistpoly">pqdistpoly</a>	Polynomial in parameter t for distance between point y and foot point x.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function S = symmd(varargin)</a>
+0002 <span class="comment">% Create a diagonal matrix of symbolic variables.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also: symm</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Examples:</span>
+0007 <span class="comment">% D = symmd('D',3)</span>
+0008 <span class="comment">%    creates a symbolic diagonal 3-by-3 matrix</span>
+0009 <span class="comment">% D = symmd('D',5,6)</span>
+0010 <span class="comment">%    creates a symbolic diagonal 5-by-6 matrix</span>
+0011 <span class="comment">% D = symmd('D',[7,12])</span>
+0012 <span class="comment">%    creates a symbolic diagonal 7-by-12 matrix</span>
+0013 
+0014 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0015 
+0016 [variable,type,sz] = <a href="symmvars.html" class="code" title="function [variable,type,sz] = symmvars(deftype, variable, varargin)">symmvars</a>(<span class="string">'clear'</span>,varargin{:});
+0017 <a href="../../../src/@S/S.html" class="code" title="">S</a> = sym;
+0018 <a href="../../../src/@S/S.html" class="code" title="">S</a>(sz(1),sz(2)) = 0;  <span class="comment">% expand matrix to desired dimensions</span>
+0019 
+0020 <span class="comment">% populate matrix with entries</span>
+0021 <span class="keyword">if</span> min(sz) &lt; 10
+0022     <span class="keyword">for</span> k = 1 : min(sz)
+0023         <a href="../../../src/@S/S.html" class="code" title="">S</a>(k,k) = sym([variable num2str(k, <span class="string">'%d'</span>)], type);
+0024     <span class="keyword">end</span>
+0025 <span class="keyword">else</span>
+0026     <span class="keyword">for</span> k = 1 : min(sz)
+0027         <a href="../../../src/@S/S.html" class="code" title="">S</a>(k,k) = sym([variable <span class="string">'_'</span> num2str(k, <span class="string">'%d'</span>)], type);
+0028     <span class="keyword">end</span>
+0029 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

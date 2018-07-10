@@ -1,0 +1,10 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  JointMotorCoupling -> JointMotorCoupling;
+  JointMotorCoupling -> getMotorsFromList;
+  JointMotorCoupling -> getPartsFromList;
+
+  JointMotorCoupling [URL="JointMotorCoupling.html"];
+  getMotorsFromList [URL="getMotorsFromList.html"];
+  getPartsFromList [URL="getPartsFromList.html"];
+}

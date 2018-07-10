@@ -1,0 +1,33 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  MotorPWMcontroller -> MotorPWMcontroller;
+  MotorPWMcontroller -> ctrllerThreadStartFcn;
+  MotorPWMcontroller -> ctrllerThreadStopFcn;
+  MotorPWMcontroller -> ctrllerThreadUpdateFcn;
+  MotorPWMcontroller -> plotterThreadStartFcn;
+  MotorPWMcontroller -> plotterThreadStopFcn;
+  MotorPWMcontroller -> plotterThreadUpdateFcn;
+  MotorPWMcontroller -> runPwmEmulPosCtrlMode;
+  MotorPWMcontroller -> runRealtimePlotter;
+  MotorPWMcontroller -> setMotorPWM;
+  MotorPWMcontroller -> start;
+  MotorPWMcontroller -> stop;
+  MotorPWMcontroller -> switchCtrlledMotor;
+
+  MotorPWMcontroller [URL="MotorPWMcontroller.html"];
+  ctrllerThreadStartFcn [URL="ctrllerThreadStartFcn.html"];
+  ctrllerThreadStopFcn [URL="ctrllerThreadStopFcn.html"];
+  ctrllerThreadUpdateFcn [URL="ctrllerThreadUpdateFcn.html"];
+  pidPlotterThreadStartFcn [URL="pidPlotterThreadStartFcn.html"];
+  pidPlotterThreadUpdateFcn [URL="pidPlotterThreadUpdateFcn.html"];
+  plotterThreadStartFcn [URL="plotterThreadStartFcn.html"];
+  plotterThreadStopFcn [URL="plotterThreadStopFcn.html"];
+  plotterThreadUpdateFcn [URL="plotterThreadUpdateFcn.html"];
+  runPwmEmulPosCtrlMode [URL="runPwmEmulPosCtrlMode.html"];
+  runRealtimePidPlotter [URL="runRealtimePidPlotter.html"];
+  runRealtimePlotter [URL="runRealtimePlotter.html"];
+  setMotorPWM [URL="setMotorPWM.html"];
+  start [URL="start.html"];
+  stop [URL="stop.html"];
+  switchCtrlledMotor [URL="switchCtrlledMotor.html"];
+}

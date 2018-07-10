@@ -1,0 +1,196 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipseproj</title>
+  <meta name="keywords" content="ellipseproj">
+  <meta name="description" content="Projects a set of points onto an ellipse.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipseproj
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Projects a set of points onto an ellipse.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Wp,rss] = ellipseproj(W, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Projects a set of points onto an ellipse.
+ The algorithm is proven to converge and reaches an accuracy of 7-8
+ significant digits, and it takes 4-5 iterations per point, on average.
+
+ Input arguments:
+ W:
+    data points to project to the quadratic curve
+
+ Output arguments:
+ Wp:
+    data points that lie on the quadratic curve
+ rss:
+    residual sum of squares (i.e. the sum of squares of the distances)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="quad2dproj.html" class="code" title="function [Wp,rss] = quad2dproj(W, varargin)">quad2dproj</a>	Projects a set of points onto a quadratic curve.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Wp,rss] = ellipseproj(W, varargin)</a>
+0002 <span class="comment">% Projects a set of points onto an ellipse.</span>
+0003 <span class="comment">% The algorithm is proven to converge and reaches an accuracy of 7-8</span>
+0004 <span class="comment">% significant digits, and it takes 4-5 iterations per point, on average.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input arguments:</span>
+0007 <span class="comment">% W:</span>
+0008 <span class="comment">%    data points to project to the quadratic curve</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Output arguments:</span>
+0011 <span class="comment">% Wp:</span>
+0012 <span class="comment">%    data points that lie on the quadratic curve</span>
+0013 <span class="comment">% rss:</span>
+0014 <span class="comment">%    residual sum of squares (i.e. the sum of squares of the distances)</span>
+0015 
+0016 <span class="comment">% References:</span>
+0017 <span class="comment">% Nikolai Chernov and H. Ma, &quot;Least squares fitting of quadratic curves</span>
+0018 <span class="comment">%    and surfaces&quot;, Computer Vision, 2011, pages 285--302</span>
+0019 <span class="comment">% D. Eberly, &quot;Distance from a point to an ellipse in 2D&quot; (2004), Geometric</span>
+0020 <span class="comment">%    Tools, LLC, http://www.geometrictools.com</span>
+0021 
+0022 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0023 
+0024 narginchk(2,4);
+0025 validateattributes(W, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'2d'</span>}, mfilename, <span class="string">'W'</span>, 1);
+0026 <span class="keyword">if</span> size(W,1) &gt; size(W,2)
+0027     validateattributes(W, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[NaN,2]}, 1);
+0028     transposed = true;
+0029     W = W.';
+0030 <span class="keyword">else</span>
+0031     validateattributes(W, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[2,NaN]}, 1);
+0032     transposed = false;
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">if</span> nargin &gt; 2
+0035     narginchk(4,4);
+0036     [center, axes, angle] = varargin{:};
+0037     validateattributes(center, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,2}, mfilename, <span class="string">'center'</span>, 2);
+0038     validateattributes(axes, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,2}, mfilename, <span class="string">'axes'</span>, 3);
+0039     validateattributes(angle, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'scalar'</span>}, mfilename, <span class="string">'angle'</span>, 4);
+0040     center = center(:);
+0041     axes = axes(:);
+0042 <span class="keyword">else</span>
+0043     narginchk(2,2);
+0044     params = varargin{:};
+0045     validateattributes(params, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,5}, mfilename, <span class="string">'p'</span>, 2);
+0046     params = params(:);
+0047     center = params(1:2);
+0048     axes = params(3:4);
+0049     angle = params(5);
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">% set tolerance</span>
+0053 tolerance = 1e-9;
+0054 
+0055 <span class="comment">% set maximum number of iterations for vectorized Newton's method</span>
+0056 iterations_vectorized = 5;
+0057 
+0058 <span class="comment">% set maximum number of iterations for Newton's method</span>
+0059 iterations_scalar = 20;
+0060 
+0061 <span class="keyword">if</span> abs((axes(1)-axes(2)) / axes(1)) &lt; tolerance  <span class="comment">% special case: circle</span>
+0062     phi = atan2(W(2,:) - center(2), W(1,:) - center(1));
+0063     Wp = [ axes(1)*cos(phi) ; axes(2)*sin(phi) ];
+0064     Wp = bsxfun(@plus, Wp, center);
+0065 <span class="keyword">else</span>  <span class="comment">% ellipse</span>
+0066     a = axes(1);
+0067     b = axes(2);
+0068 
+0069     <span class="comment">% matrix Q for rotating the points and the ellipse to the canonical system</span>
+0070     Q = [cos(angle) sin(angle); -sin(angle) cos(angle)];
+0071 
+0072     <span class="comment">% data points in canonical coordinates</span>
+0073     W = Q * bsxfun(@minus, W, center);
+0074     Wsign = sign(W);
+0075     W = abs(W);
+0076 
+0077     <span class="comment">% set initial value</span>
+0078     t = max( a*W(1,:)-a^2, b*W(2,:)-b^2 );
+0079 
+0080     <span class="comment">% apply Newton' method x(n+1) = x(n)-f(x(n)) / f'(x(n))</span>
+0081     n = 0;  <span class="comment">% initialize n (counts iterations)</span>
+0082     <span class="keyword">while</span> n &lt;= iterations_vectorized
+0083         <span class="comment">%f = ( (a*W(1,:))./(t+a^2) ).^2 + ( (b*W(2,:))./(t+b^2) ).^2 - 1;</span>
+0084         <span class="comment">%df = -(2*a^2*W(1,:).^2)./(t+a^2).^3 -(2*b^2*W(2,:).^2)./(t+b^2).^3;</span>
+0085         ta2 = t + a^2;
+0086         tb2 = t + b^2;
+0087         pp1 = (a*W(1,:) ./ ta2).^2;
+0088         pp2 = (b*W(2,:) ./ tb2).^2;
+0089         f  = pp1 + pp2 - 1;
+0090         df = -2 * (pp1 ./ ta2 + pp2 ./ tb2);
+0091 
+0092         <span class="comment">% compute next iterate</span>
+0093         u = t - f ./ df;  <span class="comment">% x(n+1) = x(n) - f(x(n)) / f'(x(n))</span>
+0094 
+0095         t = u;
+0096         n = n + 1;
+0097     <span class="keyword">end</span>
+0098 
+0099     <span class="comment">% apply scalar Newton's method</span>
+0100     tol_a2 = tolerance * a^2;
+0101     <span class="keyword">for</span> i = 1 : size(W,2)
+0102         n = 0;
+0103         <span class="keyword">while</span> n &lt;= iterations_scalar
+0104             f = ( (a*W(1,i))/(t(i)+a^2) )^2 + ( (b*W(2,i))/(t(i)+b^2) )^2 - 1;
+0105             <span class="keyword">if</span> f &lt; 0
+0106                 <span class="keyword">break</span>;
+0107             <span class="keyword">end</span>
+0108 
+0109             df = -(2*a^2*W(1,i)^2)/(a^2 + t(i))^3 -(2*b^2*W(2,i)^2)/(b^2 + t(i))^3;
+0110             r = f / df;
+0111             <span class="keyword">if</span> r &lt; tol_a2
+0112                 <span class="keyword">break</span>;
+0113             <span class="keyword">end</span>
+0114 
+0115             <span class="comment">% compute next iterate</span>
+0116             u = t(i) - r;  <span class="comment">% x(n+1) = x(n) - f(x(n)) / f'(x(n))</span>
+0117 
+0118             t(i) = u;
+0119             n = n + 1;
+0120         <span class="keyword">end</span>
+0121     <span class="keyword">end</span>
+0122 
+0123     <span class="comment">% compute the projection of the point onto the ellipse</span>
+0124     Wp = [(a^2*W(1,:))./(t+a^2) ; (b^2*W(2,:))./(t+b^2)];
+0125     Wp = Wp .* Wsign;
+0126 
+0127     <span class="comment">% rotate back to the original system</span>
+0128     Wp = Q' * Wp;
+0129     Wp = bsxfun(@plus, Wp, center);
+0130 <span class="keyword">end</span>
+0131 
+0132 <span class="keyword">if</span> nargout &gt; 1
+0133     rss = sum(sum((W - Wp).^2,1));
+0134 <span class="keyword">end</span>
+0135 
+0136 <span class="keyword">if</span> transposed
+0137     Wp = Wp.';
+0138 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

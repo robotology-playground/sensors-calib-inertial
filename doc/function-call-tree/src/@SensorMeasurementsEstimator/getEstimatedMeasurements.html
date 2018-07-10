@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getEstimatedMeasurements</title>
+  <meta name="keywords" content="getEstimatedMeasurements">
+  <meta name="description" content="Computes the predicted sensor measurements">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorMeasurementsEstimator -->
+<h1>getEstimatedMeasurements
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Computes the predicted sensor measurements</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas ] = getEstimatedMeasurements( obj,q,dq,d2q,gravity ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Computes the predicted sensor measurements
+   q   : full joints positions vector
+   dq  : full joints velocities vector
+   d2q : full joints accelerations vector</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorMeasurementsEstimator.html" class="code" title="">SensorMeasurementsEstimator</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas ] = getEstimatedMeasurements( obj,q,dq,d2q,gravity )</a>
+0002 <span class="comment">%Computes the predicted sensor measurements</span>
+0003 <span class="comment">%   q   : full joints positions vector</span>
+0004 <span class="comment">%   dq  : full joints velocities vector</span>
+0005 <span class="comment">%   d2q : full joints accelerations vector</span>
+0006 
+0007 <span class="comment">% Fill iDynTree joint vectors.</span>
+0008 <span class="comment">% Warning!! iDynTree takes in input **radians** based units.</span>
+0009 obj.q_idyn.fromMatlab(q);
+0010 obj.dq_idyn.fromMatlab(dq);
+0011 obj.d2q_idyn.fromMatlab(d2q);
+0012 obj.grav_idyn.fromMatlab(gravity);
+0013 
+0014 <span class="comment">% Update the kinematics information in the estimator</span>
+0015 obj.estimator.updateKinematicsFromFixedBase(<span class="keyword">...</span>
+0016     obj.q_idyn,obj.dq_idyn,obj.d2q_idyn, <span class="keyword">...</span>
+0017     obj.base_link_index,obj.grav_idyn);
+0018 
+0019 <span class="comment">% run the estimation</span>
+0020 obj.estimator.computeExpectedFTSensorsMeasurements(<span class="keyword">...</span>
+0021     obj.fullBodyUnknowns,obj.estMeasurements,obj.sink1,obj.sink2);
+0022 
+0023 <span class="comment">% Return serialized measurements. Order is FT, Acc, Gyros,</span>
+0024 <span class="comment">% ThreeAxisAngularAcc, ThreeAxisFT.</span>
+0025 obj.estMeasurements.toVector(obj.allMeas_idyn);
+0026 allMeas = obj.allMeas_idyn.toMatlab();
+0027 
+0028 <span class="comment">% split measurements by type of sensor</span>
+0029 splitMeas = mat2cell(<span class="keyword">...</span>
+0030     allMeas,<span class="keyword">...</span>
+0031     double([obj.nbFTs,obj.nbAccs,obj.nbGyros,obj.nbThAxAngAccs,obj.nbThAxFTs]).*[6 3 3 3 3],<span class="keyword">...</span>
+0032     1);
+0033 FTsMeas         = reshape(splitMeas{1},[6,obj.nbFTs]);
+0034 AccsMeas        = reshape(splitMeas{2},[3,obj.nbAccs]);
+0035 GyrosMeas       = reshape(splitMeas{3},[3,obj.nbGyros]);
+0036 ThAxAngAccsMeas = reshape(splitMeas{4},[3,obj.nbThAxAngAccs]);
+0037 ThAxFTsMeas     = reshape(splitMeas{5},[3,obj.nbThAxFTs]);
+0038 
+0039 <span class="keyword">end</span>
+0040</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

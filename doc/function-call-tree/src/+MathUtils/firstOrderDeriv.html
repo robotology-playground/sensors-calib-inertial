@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of firstOrderDeriv</title>
+  <meta name="keywords" content="firstOrderDeriv">
+  <meta name="description" content="UNTITLED11 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html +MathUtils -->
+<h1>firstOrderDeriv
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED11 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function dx = firstOrderDeriv( x,time ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED11 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function dx = firstOrderDeriv( x,time )</a>
+0002 <span class="comment">%UNTITLED11 Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% right differential</span>
+0006 dxR = diff(x);
+0007 dtR = diff(time);
+0008 dxR(end+1) = dxR(end);
+0009 dtR(end+1) = dtR(end);
+0010 
+0011 <span class="comment">% left differential</span>
+0012 dxL = zeros(size(dxR)); dtL = zeros(size(dtR));
+0013 dxL(2:end) = dxR(1:end-1);
+0014 dxL(1) = dxL(2);
+0015 dtL(2:end) = dtR(1:end-1);
+0016 dtL(1) = dtL(2);
+0017 
+0018 <span class="comment">% division by the total time delta</span>
+0019 dx = (dxL+dxR)./(dtL+dtR);
+0020 
+0021 <span class="keyword">end</span>
+0022</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

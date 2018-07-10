@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipsenormfit</title>
+  <meta name="keywords" content="example_ellipsenormfit">
+  <meta name="description" content="Comparing the accuracy of various ellipse fits with and without normals.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipsenormfit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Comparing the accuracy of various ellipse fits with and without normals.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_ellipsenormfit </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Comparing the accuracy of various ellipse fits with and without normals.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>	Generates points along an ellipse.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li><li><a href="quad2dfit_leastsquares.html" class="code" title="function [p,r] = quad2dfit_leastsquares(x,y)">quad2dfit_leastsquares</a>	Fit a quadratic curve to a set of 2D data points using least-squares.</li><li><a href="quad2dfit_lsnormal.html" class="code" title="function p = quad2dfit_lsnormal(x,y,nx,ny)">quad2dfit_lsnormal</a>	Fit a quadratic curve to a set of 2D data points with normals.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function p = eig_sm(D)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_ellipsenormfit</a>
+0002 <span class="comment">% Comparing the accuracy of various ellipse fits with and without normals.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 N = 175;  <span class="comment">% sample count</span>
+0007 sigma_x = 0.5;
+0008 sigma_y = 0.5;
+0009 sigma_nx = 0.1;
+0010 sigma_ny = 0.1;
+0011 cx = 2;
+0012 cy = 3;
+0013 [x0,y0,nx0,ny0] = <a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>(N, cx, cy, 4, 2, pi/6);
+0014 <span class="comment">%[x0,y0,nx0,ny0] = ellipse(N, 0, 0, 1, 1);</span>
+0015 
+0016 x = x0 + sigma_x * randn(size(x0));
+0017 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + sigma_y * randn(size(y0));
+0018 nx = nx0 + sigma_nx * randn(size(nx0));
+0019 ny = ny0 + sigma_ny * randn(size(ny0));
+0020 
+0021 p = <a href="quad2dfit_lsnormal.html" class="code" title="function p = quad2dfit_lsnormal(x,y,nx,ny)">quad2dfit_lsnormal</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,nx,ny);
+0022 plssq = <a href="quad2dfit_leastsquares.html" class="code" title="function [p,r] = quad2dfit_leastsquares(x,y)">quad2dfit_leastsquares</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0023 pkoop = <a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0024 
+0025 hold all;
+0026 axis equal;
+0027 plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>);
+0028 <span class="keyword">for</span> k = 1 : numel(x0)
+0029     plot([x0(k) x0(k)+nx(k)], [y0(k) y0(k)+ny(k)], <span class="string">'k:'</span>);
+0030 <span class="keyword">end</span>
+0031 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p,[],gca,<span class="string">'LineWidth'</span>,2);
+0032 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(plssq,[],gca,<span class="string">'LineWidth'</span>,2);
+0033 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(pkoop,[],gca,<span class="string">'LineWidth'</span>,2);
+0034 hold off;
+0035 
+0036 <a name="_sub1" href="#_subfunctions" class="code">function p = eig_sm(D)</a>
+0037 
+0038 [V,E] = eig(D);
+0039 e = diag(E);
+0040 <span class="comment">%V = V(:,e&gt;0); e = e(e&gt;0);</span>
+0041 [~,ix] = min(e);
+0042 p = V(:,ix);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

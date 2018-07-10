@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getJMcouplingFromCtrlBoard</title>
+  <meta name="keywords" content="getJMcouplingFromCtrlBoard">
+  <meta name="description" content="Get the joint/motor coupling info from the control board server.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointsDbase -->
+<h1>getJMcouplingFromCtrlBoard
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Get the joint/motor coupling info from the control board server.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM ] =getJMcouplingFromCtrlBoard( joint2coupling,robotYarpPortPrefix,part,jointName ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Get the joint/motor coupling info from the control board server.
+   The method stores the respective retrieved objects in the running
+   'joint2coupling', for future queries. It returns the handle of the
+   coupling to which the joint belongs, and the joint index as mapped in
+   the motors control board server.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@RemoteControlBoard/RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>	</li><li><a href="../../src/utils/concatMap.html" class="code" title="function aMap = concatMap( aMap,addedMap )">concatMap</a>	Stores in 'aMap' the elements of 'addedMap'</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointsDbase.html" class="code" title="">JointsDbase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM ] = </a><span class="keyword">...</span>
+0002     getJMcouplingFromCtrlBoard( joint2coupling,robotYarpPortPrefix,part,jointName )
+0003 <span class="comment">%Get the joint/motor coupling info from the control board server.</span>
+0004 <span class="comment">%   The method stores the respective retrieved objects in the running</span>
+0005 <span class="comment">%   'joint2coupling', for future queries. It returns the handle of the</span>
+0006 <span class="comment">%   coupling to which the joint belongs, and the joint index as mapped in</span>
+0007 <span class="comment">%   the motors control board server.</span>
+0008 
+0009 <span class="comment">% Get the coupling info from the control board server if it hasn't been yet</span>
+0010 <span class="comment">% retrieved</span>
+0011 <span class="keyword">if</span> ~joint2coupling.isKey(jointName)
+0012     <span class="comment">% create remote control board and get coupling info</span>
+0013     remoteCtrlBoard = <a href="../../src/@RemoteControlBoard/RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>(robotYarpPortPrefix,part);
+0014     <span class="keyword">if</span> isobject(remoteCtrlBoard.driver) <span class="comment">% opposite to NaN</span>
+0015         couplingList = remoteCtrlBoard.getCouplings();
+0016 
+0017         <span class="comment">% save it to the mappings:</span>
+0018         <span class="comment">% - joint name =&gt; coupling/idxInCtrlBoardServer/cpldMotorSharingIdx</span>
+0019         <span class="comment">% (Each motor shares the same index as a joint from the coupling)</span>
+0020         <span class="keyword">for</span> idx = 1:numel(couplingList)
+0021             <span class="comment">% Get the coupling and respective joint names, joint and motor indexes</span>
+0022             <span class="comment">% (idxInCtrlBoardServer, cpldMotorSharingIdx)</span>
+0023             coupling = couplingList{idx};
+0024             keys = coupling.coupledJoints;
+0025             jointIdxes = num2cell(remoteCtrlBoard.getJointsMappedIdxes(keys));
+0026             <span class="comment">% Build array of structures (1 structure per joint)</span>
+0027             values = struct(<span class="keyword">...</span>
+0028                 <span class="string">'idxInCtrlBoardServer'</span>,jointIdxes,<span class="keyword">...</span>
+0029                 <span class="string">'cpldMotorSharingIdx'</span>,coupling.coupledMotors,<span class="keyword">...</span>
+0030                 <span class="string">'gearboxDqM2Jratio'</span>,num2cell(coupling.gearboxDqM2Jratios),<span class="keyword">...</span>
+0031                 <span class="string">'fullscalePWM'</span>,num2cell(coupling.fullscalePWMs));
+0032             [values.coupling] = deal(coupling);
+0033             <span class="comment">% Convert to a list and then add (merge) to the mapping 'joint2coupling'</span>
+0034             [valueCells] = arrayfun(@(elem) elem,values,<span class="string">'UniformOutput'</span>,false);
+0035             addedJoints = containers.Map(coupling.coupledJoints,valueCells);
+0036             joint2coupling = <a href="../../src/utils/concatMap.html" class="code" title="function aMap = concatMap( aMap,addedMap )">concatMap</a>(joint2coupling,addedJoints); <span class="comment">% merge mappings</span>
+0037         <span class="keyword">end</span>
+0038     <span class="keyword">end</span>
+0039 
+0040     <span class="comment">% delete the remoteCtrlBoard object</span>
+0041     delete(remoteCtrlBoard);
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">% Get the coupling to which the joint 'jointName' belongs, and the joint</span>
+0045 <span class="comment">% index as mapped in the motors control board server.</span>
+0046 <span class="keyword">if</span> joint2coupling.isKey(jointName)
+0047     jointInfo = joint2coupling(jointName);
+0048     parentCoupling = jointInfo.coupling;
+0049     idxInCtrlBoardServer = jointInfo.idxInCtrlBoardServer;
+0050     cpldMotorSharingIdx = jointInfo.cpldMotorSharingIdx;
+0051     gearboxDqM2Jratio = jointInfo.gearboxDqM2Jratio;
+0052     fullscalePWM = jointInfo.fullscalePWM;
+0053 <span class="keyword">else</span>
+0054     warning(<span class="keyword">...</span>
+0055         <span class="string">'getJMcouplingFromCtrlBoard: %s doesn''t match any coupling data extracted from the control board server.'</span>,<span class="keyword">...</span>
+0056         jointName);
+0057     parentCoupling = [];
+0058     idxInCtrlBoardServer = [];
+0059     cpldMotorSharingIdx = [];
+0060     gearboxDqM2Jratio = [];
+0061     fullscalePWM = [];
+0062 <span class="keyword">end</span>
+0063 
+0064 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

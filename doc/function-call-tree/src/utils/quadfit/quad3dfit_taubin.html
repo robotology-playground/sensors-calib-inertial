@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad3dfit_taubin</title>
+  <meta name="keywords" content="quad3dfit_taubin">
+  <meta name="description" content="General quadric surface fit with Taubin's method.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad3dfit_taubin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>General quadric surface fit with Taubin's method.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = quad3dfit_taubin(x,y,z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> General quadric surface fit with Taubin's method.
+
+ Input arguments:
+ x,y,z;
+    x, y, and z coodinates of 3D points
+
+ Output arguments:
+ p:
+    a 10-parameter vector of the algebraic quadric fit with
+    p(1)*x^2 + p(2)*x*y + p(3)*y^2 + p(4)*x + p(5)*y + p(6) = 0
+
+ References:
+ G. Taubin, &quot;Estimation of Planar Curves, Surfaces and Nonplanar Space Curves Defined
+    by Implicit Equations, with Applications to Edge and Range Image Segmentation&quot;,
+    IEEE Trans. PAMI, Vol. 13, 1991, pp1115-1138.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = quad3dfit_taubin(x,y,z)</a>
+0002 <span class="comment">% General quadric surface fit with Taubin's method.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x,y,z;</span>
+0006 <span class="comment">%    x, y, and z coodinates of 3D points</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Output arguments:</span>
+0009 <span class="comment">% p:</span>
+0010 <span class="comment">%    a 10-parameter vector of the algebraic quadric fit with</span>
+0011 <span class="comment">%    p(1)*x^2 + p(2)*x*y + p(3)*y^2 + p(4)*x + p(5)*y + p(6) = 0</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% References:</span>
+0014 <span class="comment">% G. Taubin, &quot;Estimation of Planar Curves, Surfaces and Nonplanar Space Curves Defined</span>
+0015 <span class="comment">%    by Implicit Equations, with Applications to Edge and Range Image Segmentation&quot;,</span>
+0016 <span class="comment">%    IEEE Trans. PAMI, Vol. 13, 1991, pp1115-1138.</span>
+0017 
+0018 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0019 
+0020 narginchk(3,3);
+0021 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0022 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0023 validateattributes(z, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0024 x = x(:);
+0025 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0026 z = z(:);
+0027 
+0028 <span class="comment">% auxiliary variables</span>
+0029 l = ones(numel(x),1);
+0030 o = zeros(numel(x),1);
+0031 
+0032 <span class="comment">% data</span>
+0033 X = [ x.^2, y.^2, z.^2, x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>, x.*z, y.*z, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z, l ];
+0034 
+0035 <span class="comment">% gradients</span>
+0036 dx = [2*x, o, o, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z, o, l, o, o, o];
+0037 dy = [o, 2*<a href="../../../src/@y/y.html" class="code" title="">y</a>, o, x, o, z, o, l, o, o];
+0038 dz = [o, o, 2*z, o, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, o, o, l, o];
+0039 dX = [dx; dy; dz];
+0040 
+0041 <span class="comment">% scatter matrices</span>
+0042 A = X'*X;
+0043 B = dX'*dX;
+0044 
+0045 [V,D] = eig(A,B);
+0046 [~,ix] = min(abs(diag(D)));
+0047 p = V(:,ix);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

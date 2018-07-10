@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sym2matlab</title>
+  <meta name="keywords" content="sym2matlab">
+  <meta name="description" content="Convert symbolic expression containing matrix entries into MatLab.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>sym2matlab
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Convert symbolic expression containing matrix entries into MatLab.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function c = sym2matlab(c) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Convert symbolic expression containing matrix entries into MatLab.
+
+ See also: <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="strjoin.html" class="code" title="function string = strjoin(items, adjoiner)">strjoin</a>	Concatenate a cell array of strings.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_symm.html" class="code" title="function example_symm">example_symm</a>	Sample code for matrices in symbolic variables</li><li><a href="pqdistpoly.html" class="code" title="function pqdistpoly">pqdistpoly</a>	Polynomial in parameter t for distance between point y and foot point x.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function string = strjoin(adjoiner, strings)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function c = sym2matlab(c)</a>
+0002 <span class="comment">% Convert symbolic expression containing matrix entries into MatLab.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also: symm</span>
+0005 
+0006 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0007 
+0008 greek = {
+0009     <span class="string">'alpha'</span>, <span class="keyword">...</span>
+0010     <span class="string">'beta'</span>, <span class="keyword">...</span>
+0011     <span class="string">'gamma'</span>, <span class="keyword">...</span>
+0012     <span class="string">'delta'</span>, <span class="keyword">...</span>
+0013     <span class="string">'epsilon'</span>, <span class="keyword">...</span>
+0014     <span class="string">'varepsilon'</span>, <span class="keyword">...</span>
+0015     <span class="string">'zeta'</span>, <span class="keyword">...</span>
+0016     <span class="string">'eta'</span>, <span class="keyword">...</span>
+0017     <span class="string">'theta'</span>, <span class="keyword">...</span>
+0018     <span class="string">'vartheta'</span>, <span class="keyword">...</span>
+0019     <span class="string">'iota'</span>, <span class="keyword">...</span>
+0020     <span class="string">'kappa'</span>, <span class="keyword">...</span>
+0021     <span class="string">'lambda'</span>, <span class="keyword">...</span>
+0022     <span class="string">'mu'</span>, <span class="keyword">...</span>
+0023     <span class="string">'nu'</span>, <span class="keyword">...</span>
+0024     <span class="string">'xi'</span>, <span class="keyword">...</span>
+0025     <span class="string">'pi'</span>, <span class="keyword">...</span>
+0026     <span class="string">'varpi'</span>, <span class="keyword">...</span>
+0027     <span class="string">'rho'</span>, <span class="keyword">...</span>
+0028     <span class="string">'varrho'</span>, <span class="keyword">...</span>
+0029     <span class="string">'sigma'</span>, <span class="keyword">...</span>
+0030     <span class="string">'varsigma'</span>, <span class="keyword">...</span>
+0031     <span class="string">'tau'</span>, <span class="keyword">...</span>
+0032     <span class="string">'upsilon'</span>, <span class="keyword">...</span>
+0033     <span class="string">'phi'</span>, <span class="keyword">...</span>
+0034     <span class="string">'varphi'</span>, <span class="keyword">...</span>
+0035     <span class="string">'chi'</span>, <span class="keyword">...</span>
+0036     <span class="string">'psi'</span>, <span class="keyword">...</span>
+0037     <span class="string">'omega'</span> <span class="keyword">...</span>
+0038 };
+0039 idpattern = [<span class="string">'([A-Za-z]|'</span>, <a href="strjoin.html" class="code" title="function string = strjoin(items, adjoiner)">strjoin</a>(<span class="string">'|'</span>,greek), <span class="string">')'</span>];
+0040 
+0041 c = char(c);
+0042 c = regexprep(c, [idpattern <span class="string">'_(\d+)_(\d+)'</span>], <span class="string">'$1($2,$3)'</span>);  <span class="comment">% A_23_1 --&gt; A(23,1)</span>
+0043 c = regexprep(c, [idpattern <span class="string">'_(\d+)'</span>], <span class="string">'$1($2)'</span>);  <span class="comment">% b_10 --&gt; b(10)</span>
+0044 c = regexprep(c, [idpattern <span class="string">'(\d)(\d)(?!\d)'</span>], <span class="string">'$1($2,$3)'</span>);  <span class="comment">% A23 --&gt; A(2,3)</span>
+0045 c = regexprep(c, [idpattern <span class="string">'(\d)(?!\d)'</span>], <span class="string">'$1($2)'</span>);  <span class="comment">% b1 --&gt; b(1)</span>
+0046 
+0047 <a name="_sub1" href="#_subfunctions" class="code">function string = strjoin(adjoiner, strings)</a>
+0048 <span class="comment">% Concatenates a cell array of strings.</span>
+0049 <span class="comment">%</span>
+0050 <span class="comment">% Input arguments:</span>
+0051 <span class="comment">% adjoiner:</span>
+0052 <span class="comment">%    string separating each neighboring element</span>
+0053 <span class="comment">% strings:</span>
+0054 <span class="comment">%    a cell array of strings to join</span>
+0055 <span class="comment">%</span>
+0056 <span class="comment">% See also: cell2mat</span>
+0057 
+0058 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0059 
+0060 validateattributes(adjoiner, {<span class="string">'char'</span>}, {<span class="string">'vector'</span>});
+0061 validateattributes(strings, {<span class="string">'cell'</span>}, {<span class="string">'vector'</span>});
+0062 assert(iscellstr(strings), <span class="keyword">...</span>
+0063     <span class="string">'strjoin:ArgumentTypeMismatch'</span>, <span class="keyword">...</span>
+0064     <span class="string">'The elements to join should be stored in a cell vector of strings (character arrays).'</span>);
+0065 
+0066 <span class="comment">% arrange substrings into cell array of strings</span>
+0067 concat = cell(1, 2 * numel(strings) - 1);  <span class="comment">% must be row vector</span>
+0068 j = 1;
+0069 concat{j} = strings{1};
+0070 <span class="keyword">for</span> i = 2 : length(strings)
+0071     j = j + 1;
+0072     concat{j} = adjoiner;
+0073     j = j + 1;
+0074     concat{j} = strings{i};
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">% concatenate substrings preserving spaces</span>
+0078 string = cell2mat(concat);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

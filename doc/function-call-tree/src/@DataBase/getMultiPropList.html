@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getMultiPropList</title>
+  <meta name="keywords" content="getMultiPropList">
+  <meta name="description" content="Retrieve the 'outputPropNameList' properties of elements matching input">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @DataBase -->
+<h1>getMultiPropList
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Retrieve the 'outputPropNameList' properties of elements matching input</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function propList = getMultiPropList(obj,queryPropsStruct,outputPropNameList) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Retrieve the 'outputPropNameList' properties of elements matching input
+            properties specified in 'queryPropsStruct'.
+   
+   This method finds the elements of the database matching the properties
+   specified as input, in 'queryPropsStruct'.
+   
+   queryPropsStruct   : defines the input properties to match.
+   outputPropNameList : returned properties of the matching database element.
+   
+   Note: 'queryPropsStruct' can have several formats. Refer to method
+   getPropList() description.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DataBase.html" class="code" title="">DataBase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function propList = getMultiPropList(obj,queryPropsStruct,outputPropNameList)</a>
+0002 <span class="comment">%Retrieve the 'outputPropNameList' properties of elements matching input</span>
+0003 <span class="comment">%            properties specified in 'queryPropsStruct'.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   This method finds the elements of the database matching the properties</span>
+0006 <span class="comment">%   specified as input, in 'queryPropsStruct'.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   queryPropsStruct   : defines the input properties to match.</span>
+0009 <span class="comment">%   outputPropNameList : returned properties of the matching database element.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Note: 'queryPropsStruct' can have several formats. Refer to method</span>
+0012 <span class="comment">%   getPropList() description.</span>
+0013 <span class="comment">%</span>
+0014 
+0015 <span class="comment">% get line Idx of the queried element</span>
+0016 elemRowIdxList = obj.getElemRowIdxList(queryPropsStruct);
+0017 
+0018 <span class="comment">% get the output property column</span>
+0019 outputPropNameCols = cell2mat(obj.name2colIdx.values(outputPropNameList));
+0020 
+0021 <span class="comment">% get queried value</span>
+0022 propList = obj.propValueList(elemRowIdxList,outputPropNameCols);
+0023 
+0024 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

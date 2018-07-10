@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of stop</title>
+  <meta name="keywords" content="stop">
+  <meta name="description" content="Stop the PWM controller.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotorPWMcontroller -->
+<h1>stop
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Stop the PWM controller.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ ok ] = stop( obj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Stop the PWM controller.
+   This also restores the previous control mode for the named motor and
+   eventual coupled motors.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li><li><a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>	</li><li><a href="../../src/@RemoteControlBoardRemapper/waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a>	Waits for last programmed joint position to be reached.</li><li><a href="../../src/@SensorDataYarpI/waitPortOpen.html" class="code" title="function [ ok ] = waitPortOpen( port,timeout )">waitPortOpen</a>	Waits for specified port to open.</li><li><a href="../../src/utils/quadfit/example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ ok ] = stop( obj )</a>
+0002 <span class="comment">%Stop the PWM controller.</span>
+0003 <span class="comment">%   This also restores the previous control mode for the named motor and</span>
+0004 <span class="comment">%   eventual coupled motors.</span>
+0005 
+0006 <span class="keyword">if</span> obj.running
+0007     <span class="comment">% stop the emulator thread if it's running. As the thread stops, it</span>
+0008     <span class="comment">% should trigger the restoration of the previous control mode</span>
+0009     obj.ctrllerThread.stop(true);
+0010     ok = true;
+0011 <span class="keyword">else</span>
+0012     <span class="comment">% The current PWM control mode didn't require an emulator thread. Just</span>
+0013     <span class="comment">% restore the previous control mode</span>
+0014     ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,obj.couplingPrevMode);
+0015 <span class="keyword">end</span>
+0016 
+0017 <span class="comment">% Controller back to default init state</span>
+0018 
+0019 <span class="comment">% stop and delete plotter thread</span>
+0020 obj.plotterThread.stop(true);
+0021 delete(obj.plotterThread);
+0022 
+0023 <span class="keyword">if</span> ~isempty(obj.ctrllerThread)
+0024     delete(obj.ctrllerThread);
+0025 <span class="keyword">end</span>
+0026 obj.controllerReady = false;
+0027 
+0028 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of yarpPortNameRules</title>
+  <meta name="keywords" content="yarpPortNameRules">
+  <meta name="description" content="definition of the Yarp ports where joint sensors and motion sensors">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- # models --><!-- menu.html iCubGenova04 -->
+<h1>yarpPortNameRules
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>definition of the Yarp ports where joint sensors and motion sensors</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> definition of the Yarp ports where joint sensors and motion sensors
+ (accelerometers, gyroscopes, IMUs and FT sensors) data is published.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% definition of the Yarp ports where joint sensors and motion sensors</span>
+0002 <span class="comment">% (accelerometers, gyroscopes, IMUs and FT sensors) data is published.</span>
+0003 
+0004 joints_port_rule_icub   =        <span class="string">'[''/'' robotYarpPortPrefix ''/'' part ''/stateExt:o'']'</span>;
+0005 joints_port_rule_dumper = <span class="string">'[''/dumper/'' robotYarpPortPrefix ''/'' part ''/stateExt:i'']'</span>;
+0006 joints_folder_rule_dumper =                       <span class="string">'[datapath ''/'' part ''/stateExt:o'']'</span>;
+0007 
+0008 accSensors_port_rule_icub   =        <span class="string">'[''/'' robotYarpPortPrefix ''/'' part ''/inertialMTB'']'</span>;
+0009 accSensors_port_rule_dumper = <span class="string">'[''/dumper/'' robotYarpPortPrefix ''/'' part ''/inertialMTB'']'</span>;
+0010 accSensors_folder_rule_dumper =                       <span class="string">'[datapath ''/'' part ''/inertialMTB'']'</span>;
+0011 
+0012 imuSensors_port_rule_icub   =        <span class="string">'[''/'' robotYarpPortPrefix ''/inertial'']'</span>;
+0013 imuSensors_port_rule_dumper = <span class="string">'[''/dumper/'' robotYarpPortPrefix ''/inertial'']'</span>;
+0014 imuSensors_folder_rule_dumper =            <span class="string">'[datapath ''/'' part ''/inertial'']'</span>;
+0015 
+0016 FTSensors_port_rule_icub   =        <span class="string">'[''/'' robotYarpPortPrefix ''/'' part ''/analog:o'']'</span>;
+0017 FTSensors_port_rule_dumper = <span class="string">'[''/dumper/'' robotYarpPortPrefix ''/'' part ''/analog:i'']'</span>;
+0018 FTSensors_folder_rule_dumper =                       <span class="string">'[datapath ''/'' part ''/analog:o'']'</span>;
+0019 
+0020 xsensSensors_port_rule_icub   =        <span class="string">'[''/'' robotYarpPortPrefix ''/xsens_inertial'']'</span>;
+0021 xsensSensors_port_rule_dumper = <span class="string">'[''/dumper/'' robotYarpPortPrefix ''/xsens_inertial'']'</span>;
+0022 xsensSensors_folder_rule_dumper =            <span class="string">'[datapath ''/'' part ''/xsens_inertial'']'</span>;
+0023 
+0024 gyro8Sensors_port_rule_icub   =        <span class="string">'[''/'' robotYarpPortPrefix ''/'' part ''/inertialEMS8'']'</span>;
+0025 gyro8Sensors_port_rule_dumper = <span class="string">'[''/dumper/'' robotYarpPortPrefix ''/'' part ''/inertialEMS8'']'</span>;
+0026 gyro8Sensors_folder_rule_dumper =                       <span class="string">'[datapath ''/'' part ''/inertialEMS8'']'</span>;
+0027 
+0028 gyro9Sensors_port_rule_icub   =        <span class="string">'[''/'' robotYarpPortPrefix ''/'' part ''/inertialEMS9'']'</span>;
+0029 gyro9Sensors_port_rule_dumper = <span class="string">'[''/dumper/'' robotYarpPortPrefix ''/'' part ''/inertialEMS9'']'</span>;
+0030 gyro9Sensors_folder_rule_dumper =                       <span class="string">'[datapath ''/'' part ''/inertialEMS9'']'</span>;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SingletonP</title>
+  <meta name="keywords" content="SingletonP">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SingletonP -->
+<h1>SingletonP
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SingletonP.html" class="code" title="">SingletonP</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@Calibrator/Calibrator.html" class="code" title="">Calibrator</a>	</li><li><a href="SingletonP.html" class="code" title="">SingletonP</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = SingletonP()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SingletonP.html" class="code" title="">SingletonP</a> &lt; handle
+0002     <span class="comment">%Class implementing a Singleton pattern</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties(Abstract=true, Constant=true, Access=protected)
+0006         singletonObj; <span class="comment">% set from the private constructor</span>
+0007     <span class="keyword">end</span>
+0008     
+0009     methods(Access=protected)
+0010         <a name="_sub0" href="#_subfunctions" class="code">function obj = SingletonP()</a>
+0011         <span class="keyword">end</span>
+0012     <span class="keyword">end</span>
+0013     
+0014     methods(Abstract=true, Static=true, Access=public)
+0015         <span class="comment">% this function should initialize properly the shared attribute</span>
+0016         <span class="comment">% 'singletonObj' and returns the handler to the caller</span>
+0017         theInstance = instance();
+0018     <span class="keyword">end</span>
+0019 <span class="keyword">end</span>
+0020</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

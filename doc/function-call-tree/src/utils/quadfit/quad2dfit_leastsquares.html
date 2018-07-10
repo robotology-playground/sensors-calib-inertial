@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dfit_leastsquares</title>
+  <meta name="keywords" content="quad2dfit_leastsquares">
+  <meta name="description" content="Fit a quadratic curve to a set of 2D data points using least-squares.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dfit_leastsquares
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit a quadratic curve to a set of 2D data points using least-squares.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,r] = quad2dfit_leastsquares(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit a quadratic curve to a set of 2D data points using least-squares.
+
+ Input arguments:
+ x, y:
+    cartesian coordinates of noisy data points
+
+ Output arguments:
+ p:
+    the 6 parameters describing the ellipse algebraically</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsenormfit.html" class="code" title="function example_ellipsenormfit">example_ellipsenormfit</a>	Comparing the accuracy of various ellipse fits with and without normals.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,r] = quad2dfit_leastsquares(x,y)</a>
+0002 <span class="comment">% Fit a quadratic curve to a set of 2D data points using least-squares.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y:</span>
+0006 <span class="comment">%    cartesian coordinates of noisy data points</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Output arguments:</span>
+0009 <span class="comment">% p:</span>
+0010 <span class="comment">%    the 6 parameters describing the ellipse algebraically</span>
+0011 <span class="comment">%</span>
+0012 
+0013 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0014 
+0015 narginchk(2, 2);  <span class="comment">% check input arguments</span>
+0016 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0017 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0018 x = x(:);
+0019 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0020 
+0021 assert(numel(x) &gt;= 5, <span class="keyword">...</span>
+0022     <span class="string">'At least 5 points are required to fit a unique ellipse.'</span>);
+0023 
+0024 <span class="comment">% use singular value decomposition (unconstrained problem)</span>
+0025 D = [ x .^ 2, <span class="keyword">...</span><span class="comment">  % size = (number of data points) x (5 ellipsoid parameters + 1 constant term)</span>
+0026       x .* <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="keyword">...</span>
+0027       <a href="../../../src/@y/y.html" class="code" title="">y</a> .^ 2, <span class="keyword">...</span>
+0028       x, <span class="keyword">...</span>
+0029       <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="keyword">...</span><span class="comment"> </span>
+0030       ones(size(x)) ];
+0031 [~,<a href="../../../src/@S/S.html" class="code" title="">S</a>,V] = svd(D,0);
+0032 p = V(:,end);  <span class="comment">% smallest singular vector</span>
+0033 r = <a href="../../../src/@S/S.html" class="code" title="">S</a>(<span class="keyword">end</span>,end);  <span class="comment">% smallest singular value</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

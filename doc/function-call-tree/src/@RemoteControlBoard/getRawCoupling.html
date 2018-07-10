@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getRawCoupling</title>
+  <meta name="keywords" content="getRawCoupling">
+  <meta name="description" content="This method retrieves the raw coupling parameters from a local config file">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoard -->
+<h1>getRawCoupling
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This method retrieves the raw coupling parameters from a local config file</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ rawCouplingInfo ] = getRawCoupling( obj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This method retrieves the raw coupling parameters from a local config file
+   As there is currently no API method for retrieving these
+   parameters from the robot interface, the coupling parameters are
+   retrieved from a local configuration file instead of the
+   IRemoteVariables debug interface.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ rawCouplingInfo ] = getRawCoupling( obj )</a>
+0002 <span class="comment">%This method retrieves the raw coupling parameters from a local config file</span>
+0003 <span class="comment">%   As there is currently no API method for retrieving these</span>
+0004 <span class="comment">%   parameters from the robot interface, the coupling parameters are</span>
+0005 <span class="comment">%   retrieved from a local configuration file instead of the</span>
+0006 <span class="comment">%   IRemoteVariables debug interface.</span>
+0007 
+0008 <span class="comment">%% Retrieve the raw coupling parameters from the robot interface</span>
+0009 <span class="comment">% (skipped for now since read of remote variable 'matrixM2J' is not</span>
+0010 <span class="comment">% implemented yet).</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% % get coupling parameters into a yarp bottle</span>
+0013 <span class="comment">% ivar = obj.driver.viewIRemoteVariables();</span>
+0014 <span class="comment">% matrixM2Jvar=yarp.Bottle();</span>
+0015 <span class="comment">% ivar.getRemoteVariable('matrixM2J',matrixM2Jvar);</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% % Get the list of matrices invT from the bottle</span>
+0018 <span class="comment">% % T is defined as: dm = invT dq</span>
+0019 <span class="comment">% nbT = matrixM2Jvar.size;</span>
+0020 <span class="comment">% listOfT = cell(1,nbT);</span>
+0021 <span class="comment">% for idx = 1:nbT</span>
+0022 <span class="comment">%     % get the idxth element from the bottle as a line matrix</span>
+0023 <span class="comment">%     Tvec = str2num(matrixM2Jvar.get(idx-1).toString);</span>
+0024 <span class="comment">%     % reshape it into a square matrix</span>
+0025 <span class="comment">%     squareMat = reshape(Tvec,round(sqrt(numel(Tvec))),[]);</span>
+0026 <span class="comment">%     % 'reshape' goes through the vector elements columnwise, while the</span>
+0027 <span class="comment">%     % vector was built by reading the original matrix 'kinematic_mj'</span>
+0028 <span class="comment">%     % rowwise.</span>
+0029 <span class="comment">%     T = squareMat';</span>
+0030 <span class="comment">%     % Fail if the matrix is not square</span>
+0031 <span class="comment">%     if size(T,1)~=size(T,2)</span>
+0032 <span class="comment">%         error('getRawCoupling: Coupling matrix invT is not square !!');</span>
+0033 <span class="comment">%     end</span>
+0034 <span class="comment">%     % add to list of coupling matrices</span>
+0035 <span class="comment">%     listOfT{1,idx} = T;</span>
+0036 <span class="comment">% end</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% % convert the list of matrices invT into a single one by concatenating the</span>
+0039 <span class="comment">% % matrices invT along the diagonal.</span>
+0040 <span class="comment">% refRawCouplingInfo = blkdiag(listOfT{:});</span>
+0041 
+0042 <span class="comment">% Get the list of raw coupling matrices from a local config file, and</span>
+0043 <span class="comment">% convert it into a single one by concatenating the matrices T along the</span>
+0044 <span class="comment">% diagonal.</span>
+0045 <span class="comment">% Coupling values from axes not listed in the config file will result in 1</span>
+0046 <span class="comment">% to 1 coupling.</span>
+0047 listOfT = obj.hardwareMechanicals.matrixM2J;
+0048 nbAxes = obj.getAxes();
+0049 idxBitmap = obj.hwMechanials2robotInterAxesNamesMapping;
+0050 rawCouplingInfo = eye(nbAxes);
+0051 rawCouplingInfo(idxBitmap,idxBitmap) = blkdiag(listOfT{:});
+0052 
+0053 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

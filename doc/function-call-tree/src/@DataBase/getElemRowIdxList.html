@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getElemRowIdxList</title>
+  <meta name="keywords" content="getElemRowIdxList">
+  <meta name="description" content="getElemList Retrieve handles pointing to elements which properties match the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @DataBase -->
+<h1>getElemRowIdxList
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>getElemList Retrieve handles pointing to elements which properties match the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function elemRowIdxList = getElemRowIdxList( obj,queryPropsStruct ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getElemList Retrieve handles pointing to elements which properties match the
+            input parameters 'queryPropsStruct'.
+   
+   This method finds the elements of the database matching the properties
+   specified as input, in 'queryPropsStruct'.
+   
+   queryPropsStruct : defines the input properties to match.
+   elemRowIdxList   : returned index list of the matching database element.
+   
+   Note: 'queryPropsStruct' can have several formats.
+   queryPropsStruct.format = &lt;format id&gt; = [0..n]
+   (current n=2)
+   queryPropsStruct.data =
+   (n = 0) --&gt; {}
+               The query targets all elements.
+   
+   (n = 1) --&gt; {'&lt;prop name1&gt;',&lt;prop value1&gt;;...
+                '&lt;prop name2&gt;',&lt;prop value2&gt;;...
+                ..
+                '&lt;prop nameK&gt;',&lt;prop valueK&gt;}
+               All listed properties have to match (AND of all lines)
+   
+   (n = 2) --&gt; {'&lt;prop name&gt;',{&lt;list of prop values&gt;}}
+               A list of matching elements is returned, as a list of indexes.
+   
+   The method always returns a list, whatever the format of the listed
+   elements type/class (doubles, strings, etc).</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DataBase.html" class="code" title="">DataBase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function elemRowIdxList = getElemRowIdxList( obj,queryPropsStruct )</a>
+0002 <span class="comment">%getElemList Retrieve handles pointing to elements which properties match the</span>
+0003 <span class="comment">%            input parameters 'queryPropsStruct'.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   This method finds the elements of the database matching the properties</span>
+0006 <span class="comment">%   specified as input, in 'queryPropsStruct'.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   queryPropsStruct : defines the input properties to match.</span>
+0009 <span class="comment">%   elemRowIdxList   : returned index list of the matching database element.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   Note: 'queryPropsStruct' can have several formats.</span>
+0012 <span class="comment">%   queryPropsStruct.format = &lt;format id&gt; = [0..n]</span>
+0013 <span class="comment">%   (current n=2)</span>
+0014 <span class="comment">%   queryPropsStruct.data =</span>
+0015 <span class="comment">%   (n = 0) --&gt; {}</span>
+0016 <span class="comment">%               The query targets all elements.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   (n = 1) --&gt; {'&lt;prop name1&gt;',&lt;prop value1&gt;;...</span>
+0019 <span class="comment">%                '&lt;prop name2&gt;',&lt;prop value2&gt;;...</span>
+0020 <span class="comment">%                ..</span>
+0021 <span class="comment">%                '&lt;prop nameK&gt;',&lt;prop valueK&gt;}</span>
+0022 <span class="comment">%               All listed properties have to match (AND of all lines)</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   (n = 2) --&gt; {'&lt;prop name&gt;',{&lt;list of prop values&gt;}}</span>
+0025 <span class="comment">%               A list of matching elements is returned, as a list of indexes.</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">%   The method always returns a list, whatever the format of the listed</span>
+0028 <span class="comment">%   elements type/class (doubles, strings, etc).</span>
+0029 <span class="comment">%</span>
+0030 
+0031 <span class="comment">% the final returned index list is a subset of the full index list</span>
+0032 fullIdxList = 1:obj.nbElems;
+0033 
+0034 <span class="keyword">switch</span> queryPropsStruct.format
+0035     <span class="keyword">case</span> 0
+0036         elemRowIdxList = fullIdxList;
+0037         
+0038     <span class="keyword">case</span> 1
+0039         <span class="comment">% init bitmap element selection table N x K where N is the number</span>
+0040         <span class="comment">% of elements (rows) of the database, and K is the number of requested</span>
+0041         <span class="comment">% property names.</span>
+0042         nbQueriedProps = size(queryPropsStruct.data,1);
+0043         inBitmap = zeros(obj.nbElems,nbQueriedProps);
+0044         
+0045         <span class="comment">% for each property to match, select the database column</span>
+0046         <span class="keyword">for</span> propNameValueIdx = [queryPropsStruct.data';num2cell(1:nbQueriedProps)]
+0047             <span class="comment">% current iterator triplet has the property information:</span>
+0048             <span class="comment">% propNameValueIdx = [&lt;propName&gt;;</span>
+0049             <span class="comment">%                     &lt;propValue&gt;;</span>
+0050             <span class="comment">%                     &lt;propIdx&gt;]</span>
+0051             
+0052             <span class="comment">% select the property column where to run the search</span>
+0053             queryPropNameIdx = obj.name2colIdx(propNameValueIdx{1});
+0054             
+0055             <span class="comment">% get the matching values by using the mapper function for that</span>
+0056             <span class="comment">% respective column</span>
+0057             mapperFuncH = obj.name2rowIdxHandleList{queryPropNameIdx};
+0058             
+0059             <span class="comment">% call mapperFuncH(&lt;queryList)</span>
+0060             inBitmap(:,propNameValueIdx{3}) = mapperFuncH(propNameValueIdx(2));
+0061         <span class="keyword">end</span>
+0062         
+0063         <span class="comment">% combine the results (AND) of all processed columns</span>
+0064         elemRowIdxList = fullIdxList(all(inBitmap,2));
+0065         
+0066     <span class="keyword">case</span> 2  
+0067         <span class="comment">% select the property column where to run the search</span>
+0068         queryPropNameIdx = obj.name2colIdx(queryPropsStruct.data{1});
+0069         
+0070         <span class="comment">% get the matching values by using the mapper function for that</span>
+0071         <span class="comment">% respective column</span>
+0072         mapperFuncH = obj.name2rowIdxHandleList{queryPropNameIdx};
+0073         
+0074         <span class="comment">% call mapperfunc(&lt;queryList,&lt;dataBaseList&gt;)</span>
+0075         [inBitmap,idxList] = mapperFuncH(queryPropsStruct.data{2});
+0076         
+0077         <span class="comment">% the elements in 'inBitmap' and 'idxList' are ordered as the</span>
+0078         <span class="comment">% elements in the database column (obj.propValueList(:,i)). We</span>
+0079         <span class="comment">% need to reorder them following the elements in the query list</span>
+0080         <span class="comment">% 'queryPropsStruct.data{2}':</span>
+0081         <span class="comment">% =&gt; elemRowIdxList(idxList) = fullIdxList</span>
+0082         <span class="comment">% idxList contains zeros (elements of the database not present in</span>
+0083         <span class="comment">% the query list), so we filter them using 'inBitmap'.</span>
+0084         elemRowIdxList(idxList(inBitmap)) = fullIdxList(inBitmap);
+0085         
+0086     <span class="keyword">otherwise</span>
+0087         error(<span class="string">'Unknown query format!'</span>)
+0088 <span class="keyword">end</span>
+0089 
+0090 <span class="keyword">end</span>
+0091 
+0092 <span class="comment">% === Notes on the search methods =========================================</span>
+0093 <span class="comment">%</span>
+0094 <span class="comment">%   'ismember(A,B)' supports the following classes for A and B (A and B</span>
+0095 <span class="comment">% being of same class):</span>
+0096 <span class="comment">% - logical, char, all numeric classes (may combine with double arrays)</span>
+0097 <span class="comment">% - cell arrays of strings (may combine with char arrays)</span>
+0098 <span class="comment">% - 'rows' option is not supported for cell arrays</span>
+0099 <span class="comment">% - objects with methods SORT</span>
+0100 <span class="comment">% So that function won't work for cell arrays of numeric classes.</span>
+0101 <span class="comment">% For using 'ismember', we have to convert A and B elements to arrays of</span>
+0102 <span class="comment">% strings on the first hand. We prefer not to do that conversion when</span>
+0103 <span class="comment">% building the database to avoid back and forth conversions and potential</span>
+0104 <span class="comment">% loss of information or irreversible conversions. Conversion would then be</span>
+0105 <span class="comment">% done only to a temporary discardable format right before call to</span>
+0106 <span class="comment">% 'ismember'. An alternative solution is to convert the cell array to a</span>
+0107 <span class="comment">% matrix of numeric classes before calling 'ismember'.</span>
+0108 <span class="comment">%   'isequal' returns logical 1 (TRUE) if arrays A and B are the same size</span>
+0109 <span class="comment">% and contain the same values, and logical 0 (FALSE) otherwise. So this</span>
+0110 <span class="comment">% solution is dropped.</span>
+0111 <span class="comment">%   For cell arrays of numeric classes, 'A == B' does element by element</span>
+0112 <span class="comment">% comparisons between A and B. If A is a vector, its size has to be</span>
+0113 <span class="comment">% compatible with B's. '==' then tries to match the same order of placement of</span>
+0114 <span class="comment">% elements in A and B, while 'ismember' doesn't. Example:</span>
+0115 <span class="comment">% &gt;&gt; eq([1,2],[1,2;3,4])</span>
+0116 <span class="comment">% ans =</span>
+0117 <span class="comment">%   1   1</span>
+0118 <span class="comment">%   0   0</span>
+0119 <span class="comment">%</span>
+0120 <span class="comment">% &gt;&gt; eq([1,2],[2,1;3,4])</span>
+0121 <span class="comment">% ans =</span>
+0122 <span class="comment">%   0   0</span>
+0123 <span class="comment">%   0   0</span>
+0124 <span class="comment">%</span>
+0125 <span class="comment">% === Retained solution ===</span>
+0126 <span class="comment">%</span>
+0127 <span class="comment">% 1) For matching k values of a single field name (query format 2), we shall</span>
+0128 <span class="comment">% identify the fieldname index through a map container, then use 'ismember'</span>
+0129 <span class="comment">% on the selected column:</span>
+0130 <span class="comment">% - In the case of numeric classes, we do a prior conversion of the list to a</span>
+0131 <span class="comment">% matrix ('cell2mat').</span>
+0132 <span class="comment">% - In the case of objects, use the '==' operator.</span>
+0133 <span class="comment">%</span>
+0134 <span class="comment">% 2) For matching values accross several field names (query format 1), we shall</span>
+0135 <span class="comment">% use 'ismember' to identify the fieldnames, concatenate the selected columns</span>
+0136 <span class="comment">% into a merged single one, then use 'ismember' to match the values with the</span>
+0137 <span class="comment">% query. The query itself shall be a concatenation of all the requested values.</span>
+0138 <span class="comment">%</span>
+0139 <span class="comment">% 3) [bitmap,listk]=ismember(A,B) returns in listk the lowest absolute index in</span>
+0140 <span class="comment">% B for each element in A which is a member of B and 0 if there is no such index.</span>
+0141 <span class="comment">% But we need ALL occurences of queryList elements in the database</span>
+0142 <span class="comment">% elements, we need to do [bitmap,listk]=ismember(database,queryList).</span>
+0143 <span class="comment">% This tells us which elements of the database are present in the query</span>
+0144 <span class="comment">% list, and the respective indexes in the query list.</span>
+0145</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

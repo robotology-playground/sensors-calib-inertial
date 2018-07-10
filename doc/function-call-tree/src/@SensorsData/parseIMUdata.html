@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parseIMUdata</title>
+  <meta name="keywords" content="parseIMUdata">
+  <meta name="description" content="Parses the IMU data on the '/icub/inertial' YARP port.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsData -->
+<h1>parseIMUdata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Parses the IMU data on the '/icub/inertial' YARP port.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function parseIMUdata(obj,~) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Parses the IMU data on the '/icub/inertial' YARP port.
+ 
+ define offsets for parsing Linear Acceleration data from the Head IMU
+
+ Refer to wiki:
+ http://eris.liralab.it/wiki/Inertial_Sensor
+
+ The output consists in 12 double, organized as follows:
+ 
+ euler angles [3]: deg
+ linear acceleration [3]: m/s^2
+ angular speed [3]: deg/s (* see note1)
+ magnetic field [3]: arbitrary units
+
+ header_length = 0;
+ full_acc_size = 12;
+ lin_acc_first_idx = 4;
+ lin_acc_last_idx = 6;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function parseIMUdata(obj,~)</a>
+0002 <span class="comment">% Parses the IMU data on the '/icub/inertial' YARP port.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% define offsets for parsing Linear Acceleration data from the Head IMU</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Refer to wiki:</span>
+0007 <span class="comment">% http://eris.liralab.it/wiki/Inertial_Sensor</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% The output consists in 12 double, organized as follows:</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% euler angles [3]: deg</span>
+0012 <span class="comment">% linear acceleration [3]: m/s^2</span>
+0013 <span class="comment">% angular speed [3]: deg/s (* see note1)</span>
+0014 <span class="comment">% magnetic field [3]: arbitrary units</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% header_length = 0;</span>
+0017 <span class="comment">% full_acc_size = 12;</span>
+0018 <span class="comment">% lin_acc_first_idx = 4;</span>
+0019 <span class="comment">% lin_acc_last_idx = 6;</span>
+0020 <span class="comment">%</span>
+0021 
+0022 <span class="comment">% The robot has only 1 IMU installed in the head, we labelled '1x1_acc'</span>
+0023 obj.mapIMUlabel2position = containers.Map({<span class="string">'imu_acc_1x1'</span>},{<span class="string">'4:6'</span>});
+0024 
+0025 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

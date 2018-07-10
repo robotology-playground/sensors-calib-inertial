@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of run</title>
+  <meta name="keywords" content="run">
+  <meta name="description" content="Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @LowlevTauCtrlCalibrator -->
+<h1>run
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function run(obj,init,model,lastAcqSensorDataAccessorMap) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="../../src/conf/advanced/lowLevTauCtrlCalibratorDevConfig.html" class="code" title="">lowLevTauCtrlCalibratorDevConfig</a>	%</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/+UI/getMappingFromIniFile.html" class="code" title="function [ mapping ] = getMappingFromIniFile( mappingIniScript )">getMappingFromIniFile</a>	UNTITLED2 Summary of this function goes here</li><li><a href="../../src/@AccelerometersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot</li><li><a href="../../src/@Calibrator/Calibrator.html" class="code" title="">Calibrator</a>	</li><li><a href="../../src/@Init/Init.html" class="code" title="">Init</a>	</li><li><a href="../../src/@JointEncodersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li><li><a href="run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li><li><a href="../../src/@SensorDataAcquisition/getSeqProfile.html" class="code" title="function [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams)">getSeqProfile</a>	getSeqProfile Loads the sequence profile parameters from a script ini file</li><li><a href="../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li><li><a href="../../src/app/sensorSelfCalibrator.html" class="code" title="">sensorSelfCalibrator</a>	Calibrates accelerometers, joint encoders using only self sensors</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li><li><a href="../../src/utils/loadInit.html" class="code" title="function init = loadInit(initScript)">loadInit</a>	loadInit Builds input structure init from a script</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function debugDisp(calibrator,messageCompl)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function run(obj,init,model,lastAcqSensorDataAccessorMap)</a>
+0002 <span class="comment">% Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</span>
+0003 
+0004 <span class="comment">% Debug mode</span>
+0005 <span class="keyword">if</span> obj.isDebugMode
+0006     dispParamsNstate = @(calibrator,messageCompl) <a href="#_sub1" class="code" title="subfunction debugDisp(calibrator,messageCompl)">debugDisp</a>(calibrator,messageCompl);
+0007 <span class="keyword">else</span>
+0008     dispParamsNstate = @(calibrator,messageCompl) [];
+0009 <span class="keyword">end</span>
+0010 
+0011 <span class="comment">% Init the state machine context</span>
+0012 obj.init = init;
+0013 obj.model = model;
+0014 obj.lastAcqSensorDataAccessorMap = lastAcqSensorDataAccessorMap;
+0015 
+0016 <span class="comment">% Advanced interface parameters:</span>
+0017 <span class="comment">% - timeStart, timeStop, subSamplingSize</span>
+0018 <a href="run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="../../src/conf/advanced/lowLevTauCtrlCalibratorDevConfig.html" class="code" title="">lowLevTauCtrlCalibratorDevConfig</a>;
+0019 obj.timeStart = timeStart;
+0020 obj.timeStop = timeStop;
+0021 obj.subSamplingSize = subSamplingSize;
+0022 obj.filtParams = filtParams;
+0023 
+0024 <span class="comment">% state machine starting state</span>
+0025 obj.state.current = S.stateStart;
+0026 
+0027 <span class="comment">% The calibration requires a mapping between the joint names and a</span>
+0028 <span class="comment">% structure containing:</span>
+0029 <span class="comment">% - a cell array of references to `MotorFriction` objects. Each joint is associated</span>
+0030 <span class="comment">%   to a list of coupled motors, and the respective friction `MotorFriction` object.</span>
+0031 <span class="comment">%</span>
+0032 <span class="comment">% - a list containing the name of the other joints coupled with the element-joint</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">% - the coupling matrix T (which can be eventually 1 in case of decoupled joints).</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% The class RobotModel already provides model parameters extracted from</span>
+0037 <span class="comment">% the URDF model file and iDynTree library API. It shall also provide the</span>
+0038 <span class="comment">% coupled joints and motor friction information described above, as a list</span>
+0039 <span class="comment">% of joint groups. Each group can either hold a single joint or a list of</span>
+0040 <span class="comment">% coupled joints and respective motors:</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% group(i).coupledJoints : list of joint names (size 1 or n)</span>
+0043 <span class="comment">% group(i).coupledMotors : list of MotorFriction object handles (same size)</span>
+0044 <span class="comment">% group(i).T             : 3x3 matrix or integer 1</span>
+0045 <span class="comment">%</span>
+0046 
+0047 <span class="comment">%% For each joint/motor group do the following 2 phases</span>
+0048 <span class="comment">%</span>
+0049 
+0050 <span class="comment">% PHASE 1 - Calibrating Viscuous and Coulomb friction parameters</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">% 1 - set PWM to 0 for the selected joints/motors group</span>
+0053 <span class="comment">%</span>
+0054 <span class="comment">% 2 - move selected joints and acquire data:</span>
+0055 <span class="comment">%       =&gt; selected motors velocity</span>
+0056 <span class="comment">%       =&gt; selected joints measured torques</span>
+0057 <span class="comment">%       The data is expected to have as many ROWS as the number of joints.</span>
+0058 <span class="comment">%     The order MUST be the same as in jointMotorCoupling.coupledJoints (dim 1)</span>
+0059 <span class="comment">%     and jointMotorCoupling.coupledMotors (dim 2).</span>
+0060 <span class="comment">%</span>
+0061 <span class="comment">% 3 - Plot acquired data</span>
+0062 <span class="comment">%</span>
+0063 <span class="comment">% 4 - fit the friction model</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">% 5 - Plot fitted model over acquired data.</span>
+0066 <span class="comment">%</span>
+0067 <span class="comment">%</span>
+0068 <span class="comment">% PHASE 2 - Calibrating Ktau (PWM -&gt; torque)</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">% 1 - reset calibrated joints/motors to position control</span>
+0071 <span class="comment">%</span>
+0072 <span class="comment">% 2 - move selected joints and acquire data:</span>
+0073 <span class="comment">%       =&gt; selected motors velocity</span>
+0074 <span class="comment">%       =&gt; selected motors PWM</span>
+0075 <span class="comment">%       =&gt; selected joints measured torques</span>
+0076 <span class="comment">%</span>
+0077 <span class="comment">% 3 - Plot acquired data</span>
+0078 <span class="comment">%</span>
+0079 <span class="comment">% 4 - fit the ktau model</span>
+0080 <span class="comment">%</span>
+0081 <span class="comment">% 5 - Plot fitted model over acquired data.</span>
+0082 
+0083 <span class="comment">% Run state machine until reaching &quot;end&quot; state</span>
+0084 <span class="keyword">while</span> (obj.state.current ~= S.stateEnd)
+0085     <span class="comment">% select current state structure with all respective functions</span>
+0086     currentState = obj.stateArray(obj.state.current);
+0087     
+0088     <span class="comment">% Select and run function for processing current state actions</span>
+0089     currentProcH = currentState.currentProc(obj);
+0090     currentProcH();
+0091     
+0092     <span class="comment">% Compute state dependant transition. Result will be among the</span>
+0093     <span class="comment">% following: restart, proceed, skip, end, abort</span>
+0094     transitionH = currentState.transition(obj);
+0095     transition = transitionH();
+0096     obj.state.transition = transition;
+0097     
+0098     <span class="comment">% In debug mode, display init params and state before the transition</span>
+0099     dispParamsNstate(obj,<span class="string">'before transition'</span>);
+0100     
+0101     <span class="comment">% Move to next state</span>
+0102     <span class="keyword">switch</span> transition
+0103         <span class="keyword">case</span> <span class="string">'ABORT'</span>
+0104             <span class="keyword">return</span>;
+0105         <span class="keyword">otherwise</span>
+0106             <span class="comment">% Do transition dependent processing</span>
+0107             transitionProcH = currentState.([transition <span class="string">'Proc'</span>])(obj);
+0108             transitionProcH();
+0109             <span class="comment">% Compute new state</span>
+0110             obj.state.current = currentState.(transition);
+0111     <span class="keyword">end</span>
+0112     
+0113     <span class="comment">% In debug mode, display init params and state after the processing</span>
+0114     dispParamsNstate(obj,<span class="string">'after transition'</span>);
+0115 <span class="keyword">end</span>
+0116 
+0117 <span class="keyword">end</span>
+0118 
+0119 <span class="comment">%============================================================</span>
+0120 
+0121 <a name="_sub1" href="#_subfunctions" class="code">function debugDisp(calibrator,messageCompl)</a>
+0122 
+0123 initSection = calibrator.init.(calibrator.initSection);
+0124 
+0125 <span class="keyword">if</span> [<span class="keyword">...</span>
+0126         isfield(initSection.taskSpecificParams,{<span class="string">'motorName'</span>,<span class="string">'frictionOrKtau'</span>}), <span class="keyword">...</span>
+0127         isfield(initSection,<span class="string">'calibedParts'</span>)]
+0128     fprintf([<span class="keyword">...</span>
+0129         <span class="string">'========== input params ==========\n'</span><span class="keyword">...</span>
+0130         <span class="string">'%s\n%s\n'</span>],<span class="keyword">...</span>
+0131         initSection.taskSpecificParams.motorName,<span class="keyword">...</span>
+0132         initSection.taskSpecificParams.frictionOrKtau);
+0133     disp(initSection.calibedParts);
+0134 <span class="keyword">end</span>
+0135 
+0136 fprintf(<span class="string">'========== state %s ==========\n'</span>,messageCompl);
+0137 
+0138 disp(calibrator.state);
+0139 
+0140 pause;
+0141 
+0142 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

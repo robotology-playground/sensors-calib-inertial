@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SensorDiagnosis</title>
+  <meta name="keywords" content="SensorDiagnosis">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDiagnosis -->
+<h1>SensorDiagnosis
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li><li><a href="checkAccelerometersAnysotropy.html" class="code" title="function checkAccelerometersAnysotropy(data_bc,data_ac,sensorsIdxListFile,sensMeasCell_bc,sensMeasCell_ac,figuresHandler)">checkAccelerometersAnysotropy</a>	measurements before and after calibration</li><li><a href="checkSensorMeasVsEst.html" class="code" title="function angleList = checkSensorMeasVsEst(data,sensorsIdxListFile,sensMeasCell,sensEstCell,figuresHandler,logtag)">checkSensorMeasVsEst</a>	number of measurement samples</li><li><a href="checkSensorMeasVsEstAngleImprovmt.html" class="code" title="function checkSensorMeasVsEstAngleImprovmt(data,sensorsIdxListFile,angleList_bc,angleList_ac,figuresHandler)">checkSensorMeasVsEstAngleImprovmt</a>	convert angles from radians to degrees</li><li><a href="ellipsoid_proj_distance_fromExp.html" class="code" title="function [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(x,y,z,centre,radii,R)">ellipsoid_proj_distance_fromExp</a>	Projections and distance of points projected onto an ellipsoid.</li><li><a href="plotFittingEllipse.html" class="code" title="function plotFittingEllipse(centre,radii,R,sensMeasCell)">plotFittingEllipse</a>	UNTITLED4 Summary of this function goes here</li><li><a href="plotJointTrajectories.html" class="code" title="function plotJointTrajectories(data,modelParams,figuresHandler)">plotJointTrajectories</a>	compute time series</li><li><a href="plotNprintDistrb.html" class="code" title="function [h,ditribLogString] = plotNprintDistrb(dOrient,fitGaussian,color,alpha,prevh,axbc,axac)">plotNprintDistrb</a>	Plots data in the active figure</li><li><a href="runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li><li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>
+0002     <span class="comment">%SensorDiagnosis Holds all methods for running a diagnosis on sensor data</span>
+0003     <span class="comment">%   'runDiagnosis()' is the main procedure for checking the inertial</span>
+0004     <span class="comment">%   sensors data and plotting the key performance indicators related to</span>
+0005     <span class="comment">%   the sensors calibration.</span>
+0006     
+0007     methods(Static = true, Access = public)
+0008         <a href="runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>(<span class="keyword">...</span>
+0009             dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,<span class="keyword">...</span>
+0010             figuresHandlerMap,task);
+0011     <span class="keyword">end</span>
+0012     
+0013     methods(Static = true, Access = protected)
+0014         <a href="checkAccelerometersAnysotropy.html" class="code" title="function checkAccelerometersAnysotropy(data_bc,data_ac,sensorsIdxListFile,sensMeasCell_bc,sensMeasCell_ac,figuresHandler)">checkAccelerometersAnysotropy</a>(<span class="keyword">...</span>
+0015             data_bc,data_ac,sensorsIdxListFile,<span class="keyword">...</span>
+0016             sensMeasCell_bc,sensMeasCell_ac,<span class="keyword">...</span>
+0017             figuresHandler);
+0018         
+0019         [pVec,dVec,dOrient,d] = <a href="ellipsoid_proj_distance_fromExp.html" class="code" title="function [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(x,y,z,centre,radii,R)">ellipsoid_proj_distance_fromExp</a>(x,<a href="../../src/@y/y.html" class="code" title="">y</a>,z,centre,radii,R);
+0020         
+0021         angleList = <a href="checkSensorMeasVsEst.html" class="code" title="function angleList = checkSensorMeasVsEst(data,sensorsIdxListFile,sensMeasCell,sensEstCell,figuresHandler,logtag)">checkSensorMeasVsEst</a>(<span class="keyword">...</span>
+0022             data,sensorsIdxListFile,<span class="keyword">...</span>
+0023             sensMeasCell,sensEstCell,<span class="keyword">...</span>
+0024             figuresHandler,logtag);
+0025         
+0026         <a href="checkSensorMeasVsEstAngleImprovmt.html" class="code" title="function checkSensorMeasVsEstAngleImprovmt(data,sensorsIdxListFile,angleList_bc,angleList_ac,figuresHandler)">checkSensorMeasVsEstAngleImprovmt</a>(<span class="keyword">...</span>
+0027             data,sensorsIdxListFile,<span class="keyword">...</span>
+0028             angleList_bc,angleList_ac,<span class="keyword">...</span>
+0029             figuresHandler);
+0030         
+0031         <a href="plotFittingEllipse.html" class="code" title="function plotFittingEllipse(centre,radii,R,sensMeasCell)">plotFittingEllipse</a>(centre,radii,R,sensMeasCell);
+0032         
+0033         <a href="plotJointTrajectories.html" class="code" title="function plotJointTrajectories(data,modelParams,figuresHandler)">plotJointTrajectories</a>(data,modelParams,figuresHandler);
+0034         
+0035         [h,ditribLogString] = <a href="plotNprintDistrb.html" class="code" title="function [h,ditribLogString] = plotNprintDistrb(dOrient,fitGaussian,color,alpha,prevh,axbc,axac)">plotNprintDistrb</a>(dOrient,fitGaussian,color,alpha,prevh,axbc,axac);
+0036     <span class="keyword">end</span>
+0037     
+0038 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

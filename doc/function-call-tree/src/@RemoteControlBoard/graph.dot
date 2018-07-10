@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  RemoteControlBoard -> RemoteControlBoard;
+  RemoteControlBoard -> getCouplings;
+  RemoteControlBoard -> getJointsMappedIdxes;
+  RemoteControlBoard -> getRawCoupling;
+
+  RemoteControlBoard [URL="RemoteControlBoard.html"];
+  getCouplings [URL="getCouplings.html"];
+  getJointsMappedIdxes [URL="getJointsMappedIdxes.html"];
+  getRawCoupling [URL="getRawCoupling.html"];
+}

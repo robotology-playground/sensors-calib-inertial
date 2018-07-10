@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of generatePaths</title>
+  <meta name="keywords" content="generatePaths">
+  <meta name="description" content="This script generates all required paths to be added to Matlab/Octave">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html app -->
+<h1>generatePaths
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This script generates all required paths to be added to Matlab/Octave</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This script generates all required paths to be added to Matlab/Octave
+ path in order to run the configuration scripts, package functions or
+ class functions from any subfolder of the application.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% This script generates all required paths to be added to Matlab/Octave</span>
+0002 <span class="comment">% path in order to run the configuration scripts, package functions or</span>
+0003 <span class="comment">% class functions from any subfolder of the application.</span>
+0004 
+0005 <span class="comment">% change to main source folder (parent folder of main script calling this one)</span>
+0006 currentPath=pwd;
+0007 cd ..
+0008 
+0009 <span class="comment">% add critical folders to the path</span>
+0010 srcFolder=pwd;
+0011 confFolder=fullfile(pwd,filesep,<span class="string">'conf'</span>);
+0012 appFolder=fullfile(pwd,filesep,<span class="string">'app'</span>);
+0013 utilsFolder=fullfile(pwd,filesep,<span class="string">'utils'</span>);
+0014 
+0015 <span class="comment">% add folders and subfolders (except for srcFolder)</span>
+0016 addpath(<span class="keyword">...</span>
+0017     srcFolder,<span class="keyword">...</span>
+0018     genpath(confFolder),<span class="keyword">...</span>
+0019     genpath(appFolder),<span class="keyword">...</span>
+0020     genpath(utilsFolder),<span class="keyword">...</span>
+0021     <span class="string">'-begin'</span>);
+0022 
+0023 <span class="comment">% back to initial folder</span>
+0024 cd(currentPath);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

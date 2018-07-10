@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getOptimConfig</title>
+  <meta name="keywords" content="getOptimConfig">
+  <meta name="description" content="UNTITLED3 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointEncodersCalibrator -->
+<h1>getOptimConfig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED3 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [optimFunc,options] = getOptimConfig() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED3 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointEncodersCalibrator.html" class="code" title="">JointEncodersCalibrator</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [optimFunc,options] = getOptimConfig()</a>
+0002 
+0003 <span class="comment">%UNTITLED3 Summary of this function goes here</span>
+0004 <span class="comment">%   Detailed explanation goes here</span>
+0005 
+0006 <span class="comment">%% SELECT HERE THE ALGORITHM FOR OPTIMIZING THE COST FUNCTION</span>
+0007 <span class="comment">% fminunc, fmincon, lsqnonlin</span>
+0008 <span class="comment">% DEBUG: use 'fminsearch' for deactivating optimization</span>
+0009 optimFunc = @lsqnonlin;
+0010 
+0011 funcProps = functions(optimFunc);
+0012 funcName = funcProps.function;
+0013 
+0014 <span class="keyword">switch</span> funcName
+0015     <span class="keyword">case</span> <span class="string">'fminunc'</span>
+0016         <span class="comment">% Optimization options: we won't provide the gradient for now</span>
+0017         <span class="comment">%</span>
+0018         Display = <span class="string">'iter'</span>;
+0019         TolFun = 1e-7;
+0020         TolX = 0.1; <span class="comment">% Encoders accuracy =&gt; 12 bits for 360 deg</span>
+0021         <span class="comment">% =&gt; 1 tick = 0.087 deg ~ 0.1 deg * pi/180 ~ 0.002 rad.</span>
+0022         FunValCheck = <span class="string">'on'</span>;
+0023         Algorithm = <span class="string">'interior-point'</span>;
+0024         PlotFcns = {@optimplotx, @optimplotfval, @optimplotstepsize};
+0025         <span class="comment">% ActiveConstrTol:</span>
+0026         <span class="comment">% MaxFunEvals:</span>
+0027         <span class="comment">% MaxIter:</span>
+0028         <span class="comment">% AlwaysHonorConstraints:</span>
+0029         <span class="comment">% GradConstr:</span>
+0030         <span class="comment">% GradObj:</span>
+0031         <span class="comment">% InitTrustRegionRadius:</span>
+0032         <span class="comment">% LargeScale:</span>
+0033         <span class="comment">% ScaleProblem:</span>
+0034         <span class="comment">% SubproblemAlgorithm:</span>
+0035         <span class="comment">% UseParallel:</span>
+0036         <span class="comment">%</span>
+0037         dfltOptions = optimset(<span class="string">'fminunc'</span>);
+0038         options = optimset(dfltOptions,<span class="string">'TolFun'</span>, TolFun, <span class="string">'TolX'</span>, TolX, <span class="string">'FunValCheck'</span>, FunValCheck, <span class="keyword">...</span>
+0039            <span class="string">'Algorithm'</span>, Algorithm, <span class="string">'Display'</span>, Display, <span class="string">'PlotFcns'</span>, PlotFcns);
+0040         
+0041     <span class="keyword">case</span> <span class="string">'lsqnonlin'</span>
+0042         <span class="comment">% Optimization options:</span>
+0043         <span class="comment">%</span>
+0044         Display = <span class="string">'iter'</span>;
+0045         TolFun = 1e-7;
+0046         TolX = 2e-3; <span class="comment">% 0.1 deg</span>
+0047         FunValCheck = <span class="string">'on'</span>;
+0048 <span class="comment">%        Algorithm = 'levenberg-marquardt';</span>
+0049         Algorithm = <span class="string">'trust-region-reflective'</span>;
+0050         PlotFcns = {@optimplotx, @optimplotresnorm, @optimplotstepsize};
+0051         <span class="comment">%</span>
+0052         dfltOptions = optimset(<span class="string">'lsqnonlin'</span>); <span class="comment">% Algorithm = 'trust-region-reflective'</span>
+0053         options = optimset(dfltOptions,<span class="string">'TolFun'</span>, TolFun, <span class="string">'TolX'</span>, TolX, <span class="string">'FunValCheck'</span>, FunValCheck, <span class="keyword">...</span>
+0054             <span class="string">'Algorithm'</span>, Algorithm, <span class="string">'Display'</span>, Display, <span class="string">'PlotFcns'</span>, PlotFcns);
+0055         
+0056     <span class="keyword">otherwise</span>
+0057         options = optimset(funcName);
+0058 <span class="keyword">end</span>
+0059</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

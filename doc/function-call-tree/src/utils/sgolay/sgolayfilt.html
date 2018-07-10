@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sgolayfilt</title>
+  <meta name="keywords" content="sgolayfilt">
+  <meta name="description" content="SGOLAYFILT Savitzky-Golay Filtering.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html sgolay -->
+<h1>sgolayfilt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>SGOLAYFILT Savitzky-Golay Filtering.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function y=sgolayfilt(x,k,F,W,DIM) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">SGOLAYFILT Savitzky-Golay Filtering.
+   SGOLAYFILT(X,K,F) smoothes the signal X using a Savitzky-Golay 
+   (polynomial) smoothing filter.  The polynomial order, K, must
+   be less than the frame size, F, and F must be odd.  The length 
+   of the input X must be &gt;= F.  If X is a matrix, the filtering
+   is done on the columns of X.
+
+   Note that if the polynomial order K equals F-1, no smoothing
+   will occur.
+
+   SGOLAYFILT(X,K,F,W) specifies a weighting vector W with length F
+   containing real, positive valued weights employed during the
+   least-squares minimization. If not specified, or if specified as
+   empty, W defaults to an identity matrix.
+
+   SGOLAYFILT(X,K,F,[],DIM) or SGOLAYFILT(X,K,F,W,DIM) operates along
+   the dimension DIM.
+
+   % Example:
+   %   Smooth the mtlb signal by applying a cubic Savitzky-Golay filter 
+   %   to data frames of length 41.
+
+   load mtlb                        % Load data
+   smtlb = sgolayfilt(mtlb,3,41);   % Apply 3rd-order filter
+   h1 = subplot(2,1,1)
+   plot([1:2000],mtlb(1:2000)); axis([0 2000 -4 4]);
+   title('Original Data'); grid;
+   h2 = subplot(2,1,2)
+   plot([1:2000],smtlb(1:2000)); axis([0 2000 -4 4]);
+   title('Filtered Data'); grid;
+   linkaxes([h1,h2],'x')         % Linking subplots
+
+   See also <a href="sgolay.html" class="code" title="function [B,G] = sgolay(k,F,varargin)">SGOLAY</a>, MEDFILT1, FILTER</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="sgolay.html" class="code" title="function [B,G] = sgolay(k,F,varargin)">sgolay</a>	SGOLAY Savitzky-Golay Filter Design.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@FilterContext/tuneFilter.html" class="code" title="function tuneFilter(hObject,callbackdata,filterContext)">tuneFilter</a>	UNTITLED3 Summary of this function goes here</li><li><a href="../../../src/@SensorsData/loadData.html" class="code" title="function loadData(obj)">loadData</a>	LOADDATA Summary of this function goes here</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function y=sgolayfilt(x,k,F,W,DIM)</a>
+0002 <span class="comment">%SGOLAYFILT Savitzky-Golay Filtering.</span>
+0003 <span class="comment">%   SGOLAYFILT(X,K,F) smoothes the signal X using a Savitzky-Golay</span>
+0004 <span class="comment">%   (polynomial) smoothing filter.  The polynomial order, K, must</span>
+0005 <span class="comment">%   be less than the frame size, F, and F must be odd.  The length</span>
+0006 <span class="comment">%   of the input X must be &gt;= F.  If X is a matrix, the filtering</span>
+0007 <span class="comment">%   is done on the columns of X.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   Note that if the polynomial order K equals F-1, no smoothing</span>
+0010 <span class="comment">%   will occur.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   SGOLAYFILT(X,K,F,W) specifies a weighting vector W with length F</span>
+0013 <span class="comment">%   containing real, positive valued weights employed during the</span>
+0014 <span class="comment">%   least-squares minimization. If not specified, or if specified as</span>
+0015 <span class="comment">%   empty, W defaults to an identity matrix.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   SGOLAYFILT(X,K,F,[],DIM) or SGOLAYFILT(X,K,F,W,DIM) operates along</span>
+0018 <span class="comment">%   the dimension DIM.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%   % Example:</span>
+0021 <span class="comment">%   %   Smooth the mtlb signal by applying a cubic Savitzky-Golay filter</span>
+0022 <span class="comment">%   %   to data frames of length 41.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   load mtlb                        % Load data</span>
+0025 <span class="comment">%   smtlb = sgolayfilt(mtlb,3,41);   % Apply 3rd-order filter</span>
+0026 <span class="comment">%   h1 = subplot(2,1,1)</span>
+0027 <span class="comment">%   plot([1:2000],mtlb(1:2000)); axis([0 2000 -4 4]);</span>
+0028 <span class="comment">%   title('Original Data'); grid;</span>
+0029 <span class="comment">%   h2 = subplot(2,1,2)</span>
+0030 <span class="comment">%   plot([1:2000],smtlb(1:2000)); axis([0 2000 -4 4]);</span>
+0031 <span class="comment">%   title('Filtered Data'); grid;</span>
+0032 <span class="comment">%   linkaxes([h1,h2],'x')         % Linking subplots</span>
+0033 <span class="comment">%</span>
+0034 <span class="comment">%   See also SGOLAY, MEDFILT1, FILTER</span>
+0035  
+0036 <span class="comment">%   References:</span>
+0037 <span class="comment">%     [1] Sophocles J. Orfanidis, INTRODUCTION TO SIGNAL PROCESSING,</span>
+0038 <span class="comment">%              Prentice-Hall, 1995, Chapter 8.</span>
+0039  
+0040 <span class="comment">%   Author(s): R. Losada</span>
+0041 <span class="comment">%   Copyright 1988-2004 The MathWorks, Inc.</span>
+0042  
+0043 narginchk(3,5);
+0044  
+0045 <span class="comment">% Check if the input arguments are valid</span>
+0046 <span class="keyword">if</span> round(F) ~= F, error(message(<span class="string">'signal:sgolayfilt:MustBeIntegerFrameLength'</span>)), <span class="keyword">end</span>
+0047 <span class="keyword">if</span> rem(F,2) ~= 1, error(message(<span class="string">'signal:sgolayfilt:SignalErr'</span>)), <span class="keyword">end</span>
+0048 <span class="keyword">if</span> round(k) ~= k, error(message(<span class="string">'signal:sgolayfilt:MustBeIntegerPolyDegree'</span>)), <span class="keyword">end</span>
+0049 <span class="keyword">if</span> k &gt; F-1, error(message(<span class="string">'signal:sgolayfilt:InvalidRangeDegree'</span>)), <span class="keyword">end</span>
+0050  
+0051 <span class="keyword">if</span> nargin &lt; 4 | isempty(W), <span class="comment">%#ok</span>
+0052    <span class="comment">% No weighting matrix, make W an identity</span>
+0053    W = ones(F,1);
+0054 <span class="keyword">else</span>
+0055    <span class="comment">% Check for right length of W</span>
+0056    <span class="keyword">if</span> length(W) ~= F, error(message(<span class="string">'signal:sgolayfilt:InvalidDimensionsWeight'</span>)),<span class="keyword">end</span>
+0057    <span class="comment">% Check to see if all elements are positive</span>
+0058    <span class="keyword">if</span> min(W) &lt;= 0, error(message(<span class="string">'signal:sgolayfilt:InvalidRangeWeight'</span>)), <span class="keyword">end</span>
+0059 <span class="keyword">end</span>
+0060  
+0061 <span class="keyword">if</span> nargin &lt; 5, DIM = []; <span class="keyword">end</span>
+0062  
+0063 <span class="comment">% Check the input data type. Single precision is not supported.</span>
+0064 <span class="comment">% try</span>
+0065 <span class="comment">%     chkinputdatatype(x,k,F,W,DIM);</span>
+0066 <span class="comment">% catch ME</span>
+0067 <span class="comment">%     throwAsCaller(ME);</span>
+0068 <span class="comment">% end</span>
+0069  
+0070 <span class="comment">% Compute the projection matrix B</span>
+0071 B = <a href="sgolay.html" class="code" title="function [B,G] = sgolay(k,F,varargin)">sgolay</a>(k,F,W);
+0072  
+0073 <span class="keyword">if</span> ~isempty(DIM) &amp;&amp; DIM &gt; ndims(x)
+0074     error(message(<span class="string">'signal:sgolayfilt:InvalidDimensionsInput'</span>, <span class="string">'X'</span>))
+0075 <span class="keyword">end</span>
+0076  
+0077 <span class="comment">% Reshape X into the right dimension.</span>
+0078 <span class="keyword">if</span> isempty(DIM)
+0079     <span class="comment">% Work along the first non-singleton dimension</span>
+0080     [x, nshifts] = shiftdim(x);
+0081 <span class="keyword">else</span>
+0082     <span class="comment">% Put DIM in the first dimension (this matches the order</span>
+0083     <span class="comment">% that the built-in filter function uses)</span>
+0084     perm = [DIM,1:DIM-1,DIM+1:ndims(x)];
+0085     x = permute(x,perm);
+0086 <span class="keyword">end</span>
+0087  
+0088 <span class="keyword">if</span> size(x,1) &lt; F, error(message(<span class="string">'signal:sgolayfilt:InvalidDimensionsTooSmall'</span>)), <span class="keyword">end</span>
+0089  
+0090 <span class="comment">% Preallocate output</span>
+0091 <a href="../../../src/@y/y.html" class="code" title="">y</a> = zeros(size(x));
+0092  
+0093 <span class="comment">% Compute the transient on</span>
+0094 <a href="../../../src/@y/y.html" class="code" title="">y</a>(1:(F+1)/2-1,:) = flipud(B((F-1)/2+2:<span class="keyword">end</span>,:))*flipud(x(1:F,:));
+0095  
+0096 <span class="comment">% Compute the steady state output</span>
+0097 ytemp = filter(B((F-1)./2+1,:),1,x);
+0098 <a href="../../../src/@y/y.html" class="code" title="">y</a>((F+1)/2:end-(F+1)/2+1,:) = ytemp(F:<span class="keyword">end</span>,:);
+0099  
+0100 <span class="comment">% Compute the transient off</span>
+0101 <a href="../../../src/@y/y.html" class="code" title="">y</a>(end-(F+1)/2+2:<span class="keyword">end</span>,:) = flipud(B(1:(F-1)/2,:))*flipud(x(end-(F-1):<span class="keyword">end</span>,:));
+0102  
+0103 <span class="comment">% Convert Y to the original shape of X</span>
+0104 <span class="keyword">if</span> isempty(DIM)
+0105     <a href="../../../src/@y/y.html" class="code" title="">y</a> = shiftdim(<a href="../../../src/@y/y.html" class="code" title="">y</a>, -nshifts);
+0106 <span class="keyword">else</span>
+0107     <a href="../../../src/@y/y.html" class="code" title="">y</a> = ipermute(<a href="../../../src/@y/y.html" class="code" title="">y</a>,perm);
+0108 <span class="keyword">end</span>
+0109</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

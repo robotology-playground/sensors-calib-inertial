@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SensorDataAcquisition -> SensorDataAcquisition;
+  SensorDataAcquisition -> acquireSensorData;
+  SensorDataAcquisition -> getSeqProfile;
+  SensorDataAcquisition -> setValFromGrid;
+
+  SensorDataAcquisition [URL="SensorDataAcquisition.html"];
+  acquireSensorData [URL="acquireSensorData.html"];
+  getSeqProfile [URL="getSeqProfile.html"];
+  setValFromGrid [URL="setValFromGrid.html"];
+}

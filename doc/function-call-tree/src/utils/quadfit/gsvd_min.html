@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gsvd_min</title>
+  <meta name="keywords" content="gsvd_min">
+  <meta name="description" content="Singular vector belonging to smallest singular value.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>gsvd_min
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Singular vector belonging to smallest singular value.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p, s] = gsvd_min(d, c) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Singular vector belonging to smallest singular value.
+
+ Input arguments:
+ d:
+     an N-by-n matrix
+ c:
+     an n-by-n matrix
+
+ Output arguments:
+ p:
+     generalized singular vector belonging to smallest singular value
+ s:
+     smallest generalized singular value</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>	Direct least squares fitting of ellipsoids under the constraint 4J - I^2 > 0.</li><li><a href="planefit.html" class="code" title="function [p,mu,x0,y0,z0] = planefit(x,y,z,sigma_x,sigma_y,sigma_z)">planefit</a>	Plane fit to noisy 3D data points.</li><li><a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>	Fit a quadratic curve to data using consistent algebraic least squares.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p, s] = gsvd_min(d, c)</a>
+0002 <span class="comment">% Singular vector belonging to smallest singular value.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% d:</span>
+0006 <span class="comment">%     an N-by-n matrix</span>
+0007 <span class="comment">% c:</span>
+0008 <span class="comment">%     an n-by-n matrix</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Output arguments:</span>
+0011 <span class="comment">% p:</span>
+0012 <span class="comment">%     generalized singular vector belonging to smallest singular value</span>
+0013 <span class="comment">% s:</span>
+0014 <span class="comment">%     smallest generalized singular value</span>
+0015 
+0016 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0017 
+0018 [ug,vg,xg,cg,sg] = gsvd(d, c, 0); <span class="comment">%#ok&lt;ASGLU&gt;</span>
+0019 p = [1, -xg(1, 2 : end) / xg(2 : <span class="keyword">end</span>, 2 : end)]';
+0020 <span class="keyword">if</span> nargout &gt; 1
+0021     s = cg(1,1) / sg(1,1);  <span class="comment">% smallest generalized singular value</span>
+0022 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

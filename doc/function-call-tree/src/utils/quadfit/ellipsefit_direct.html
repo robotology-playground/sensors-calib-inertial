@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsefit_direct</title>
+  <meta name="keywords" content="ellipsefit_direct">
+  <meta name="description" content="Direct least squares fitting of ellipses.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsefit_direct
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Direct least squares fitting of ellipses.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = ellipsefit_direct(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Direct least squares fitting of ellipses.
+
+ Input arguments:
+ x,y;
+    x and y coodinates of 2D points
+
+ Output arguments:
+ p:
+    a 6-parameter vector of the algebraic ellipse fit with
+    p(1)*x^2 + p(2)*x*y + p(3)*y^2 + p(4)*x + p(5)*y + p(6) = 0
+
+ References:
+ Andrew W. Fitzgibbon, Maurizio Pilu and Robert B. Fisher, &quot;Direct Least
+    Squares Fitting of Ellipses&quot;, IEEE Trans. PAMI 21, 1999, pp476-480.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsefit_robust.html" class="code" title="function p = ellipsefit_robust(R, Q)">ellipsefit_robust</a>	Constrained ellipse fit by solving a modified eigenvalue problem.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li><li><a href="example_ellipsefitnoise.html" class="code" title="function example_ellipsefitnoise">example_ellipsefitnoise</a>	Comparing ellipse fits under various noise conditions.</li><li><a href="example_ellipsefitsector.html" class="code" title="function example_ellipsefitsector">example_ellipsefitsector</a>	Ellipse fitting to data from a limited sector.</li><li><a href="example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li><li><a href="example_quad2dcomp.html" class="code" title="function example_quad2dcomp">example_quad2dcomp</a>	Comparison of various ellipse (and general quadratic curve) fits.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = ellipsefit_direct(x,y)</a>
+0002 <span class="comment">% Direct least squares fitting of ellipses.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x,y;</span>
+0006 <span class="comment">%    x and y coodinates of 2D points</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Output arguments:</span>
+0009 <span class="comment">% p:</span>
+0010 <span class="comment">%    a 6-parameter vector of the algebraic ellipse fit with</span>
+0011 <span class="comment">%    p(1)*x^2 + p(2)*x*y + p(3)*y^2 + p(4)*x + p(5)*y + p(6) = 0</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% References:</span>
+0014 <span class="comment">% Andrew W. Fitzgibbon, Maurizio Pilu and Robert B. Fisher, &quot;Direct Least</span>
+0015 <span class="comment">%    Squares Fitting of Ellipses&quot;, IEEE Trans. PAMI 21, 1999, pp476-480.</span>
+0016 
+0017 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0018 
+0019 narginchk(2,2);
+0020 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0021 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0022 x = x(:);
+0023 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0024 
+0025 <span class="comment">% normalize data</span>
+0026 mx = mean(x);
+0027 my = mean(<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0028 sx = (max(x)-min(x))/2;
+0029 sy = (max(<a href="../../../src/@y/y.html" class="code" title="">y</a>)-min(<a href="../../../src/@y/y.html" class="code" title="">y</a>))/2;
+0030 smax = max(sx,sy);
+0031 sx = smax;
+0032 sy = smax;
+0033 x = (x-mx)/sx;
+0034 <a href="../../../src/@y/y.html" class="code" title="">y</a> = (<a href="../../../src/@y/y.html" class="code" title="">y</a>-my)/sy;
+0035 
+0036 <span class="comment">% build design matrix</span>
+0037 D = [ x.^2  x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>  y.^2  x  <a href="../../../src/@y/y.html" class="code" title="">y</a>  ones(size(x)) ];
+0038 
+0039 <span class="comment">% build scatter matrix</span>
+0040 <a href="../../../src/@S/S.html" class="code" title="">S</a> = D'*D;
+0041 
+0042 <span class="comment">% build 6x6 constraint matrix</span>
+0043 C = zeros(6,6);
+0044 C(1,3) = -2;
+0045 C(2,2) = 1;
+0046 C(3,1) = -2;
+0047 
+0048 <span class="keyword">if</span> 1
+0049     p = <a href="ellipsefit_robust.html" class="code" title="function p = ellipsefit_robust(R, Q)">ellipsefit_robust</a>(<a href="../../../src/@S/S.html" class="code" title="">S</a>,-C);
+0050 <span class="keyword">elseif</span> 0
+0051     <span class="comment">% solve eigensystem</span>
+0052     [gevec, geval] = eig(<a href="../../../src/@S/S.html" class="code" title="">S</a>,C);
+0053     geval = diag(geval);
+0054 
+0055     <span class="comment">% extract eigenvector corresponding to unique negative (nonpositive) eigenvalue</span>
+0056     p = gevec(:,geval &lt; 0 &amp; ~isinf(geval));
+0057     r = geval(geval &lt; 0 &amp; ~isinf(geval));
+0058 <span class="keyword">elseif</span> 0
+0059     <span class="comment">% formulation as convex optimization problem</span>
+0060     gamma = 0; <span class="comment">%#ok&lt;*UNRCH&gt;</span>
+0061     cvx_begin sdp
+0062         variable(<span class="string">'gamma'</span>);
+0063         variable(<span class="string">'lambda'</span>);
+0064         
+0065         maximize(gamma);
+0066         lambda &gt;= 0; <span class="comment">%#ok&lt;*VUNUS&gt;</span>
+0067         <span class="comment">%[ S + lambda*C,       zeros(size(S,1),1) ...</span>
+0068         <span class="comment">%; zeros(1,size(S,2)), lambda - gamma ...</span>
+0069         <span class="comment">%] &gt;= 0;</span>
+0070         <a href="../../../src/@S/S.html" class="code" title="">S</a> + lambda*C &gt;= 0;
+0071         lambda - gamma &gt;= 0;
+0072     cvx_end
+0073     
+0074     <span class="comment">% recover primal optimal values from dual</span>
+0075     [evec, eval] = eig(<a href="../../../src/@S/S.html" class="code" title="">S</a> + lambda*C);
+0076     eval = diag(eval);
+0077     [~,ix] = min(abs(eval));
+0078     p = evec(:,ix);
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="comment">% unnormalize</span>
+0082 p(:) = <span class="keyword">...</span>
+0083 [ p(1)*sy*sy <span class="keyword">...</span>
+0084 ; p(2)*sx*sy <span class="keyword">...</span>
+0085 ; p(3)*sx*sx <span class="keyword">...</span>
+0086 ; -2*p(1)*sy*sy*mx - p(2)*sx*sy*my + p(4)*sx*sy*sy <span class="keyword">...</span>
+0087 ; -p(2)*sx*sy*mx - 2*p(3)*sx*sx*my + p(5)*sx*sx*sy <span class="keyword">...</span>
+0088 ; p(1)*sy*sy*mx*mx + p(2)*sx*sy*mx*my + p(3)*sx*sx*my*my - p(4)*sx*sy*sy*mx - p(5)*sx*sx*sy*my + p(6)*sx*sx*sy*sy <span class="keyword">...</span>
+0089 ];
+0090 
+0091 p = p ./ norm(p);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

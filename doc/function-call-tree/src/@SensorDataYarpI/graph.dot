@@ -1,0 +1,8 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SensorDataYarpI -> SensorDataYarpI;
+  SensorDataYarpI -> waitPortOpen;
+
+  SensorDataYarpI [URL="SensorDataYarpI.html"];
+  waitPortOpen [URL="waitPortOpen.html"];
+}

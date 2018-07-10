@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_ellipsoid_im</title>
+  <meta name="keywords" content="plot_ellipsoid_im">
+  <meta name="description" content="Plot ellipsoid specified with implicit parameters.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>plot_ellipsoid_im
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Plot ellipsoid specified with implicit parameters.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function plot_ellipsoid_im(p,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plot ellipsoid specified with implicit parameters.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>	Cast ellipsoid defined with implicit parameter vector to explicit form.</li><li><a href="ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>	Finds the distance of the point (x,y,z) to the nearest point on the ellipsoid.</li><li><a href="plot_ellipsoid.html" class="code" title="function plot_ellipsoid(cx,cy,cz,ap,bp,cp,R,varargin)">plot_ellipsoid</a>	Plot ellipsoid specified with center, radii and rotation matrix.</li><li><a href="plot_ellipsoid_part.html" class="code" title="function plot_ellipsoid_part(cx,cy,cz,ap,bp,cp,R,x,y,z,varargin)">plot_ellipsoid_part</a>	Plot ellipsoid specified with center, radii and rotation matrix.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>	Direct least squares fitting of ellipsoids under the constraint 4J - I^2 > 0.</li><li><a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>	Simple iterative least squares fitting of ellipsoids under the constraint k*J - I^2 > 0.</li><li><a href="example_ellipsoidcomp.html" class="code" title="function example_ellipsoidcomp">example_ellipsoidcomp</a>	Comparative demonstration of fits to random ellipsoids.</li><li><a href="example_ellipsoidfit1.html" class="code" title="function example_ellipsoidfit1">example_ellipsoidfit1</a>	Demonstration of various ellipsoid fits.</li><li><a href="example_ellipsoidfit2.html" class="code" title="function example_ellipsoidfit2">example_ellipsoidfit2</a>	Demonstration of fits to various special ellipsoids.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plot_ellipsoid_im(p,varargin)</a>
+0002 <span class="comment">% Plot ellipsoid specified with implicit parameters.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 <span class="keyword">if</span> nargin &gt;= 4 &amp;&amp; isnumeric(varargin{1}) &amp;&amp; isnumeric(varargin{2}) &amp;&amp; isnumeric(varargin{3});
+0007     x = varargin{1};
+0008     <a href="../../../src/@y/y.html" class="code" title="">y</a> = varargin{2};
+0009     z = varargin{3};
+0010     args = varargin(4:end);
+0011     
+0012     <span class="comment">%ezimplot3(@(x,y,z) p(1)*x.^2 + p(2)*y.^2 + p(3)*z.^2 + p(4)*x.*y + p(5)*x.*z + p(6)*y.*z + p(7)*x + p(8)*y + p(9)*z + p(10), [min(x) max(x) min(y) max(y) min(z) max(z)]);</span>
+0013 <span class="keyword">else</span>
+0014     x = [];
+0015     <a href="../../../src/@y/y.html" class="code" title="">y</a> = [];
+0016     z = [];
+0017     args = varargin(:);
+0018 <span class="keyword">end</span>
+0019 
+0020 [center,radii,~,R] = <a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>(p);
+0021 
+0022 <span class="keyword">if</span> ~isempty(x) &amp;&amp; ~isempty(<a href="../../../src/@y/y.html" class="code" title="">y</a>) &amp;&amp; ~isempty(z)
+0023     <a href="plot_ellipsoid_part.html" class="code" title="function plot_ellipsoid_part(cx,cy,cz,ap,bp,cp,R,x,y,z,varargin)">plot_ellipsoid_part</a>(center(1),center(2),center(3),radii(1),radii(2),radii(3),R,x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,args{:});
+0024     
+0025     <span class="keyword">if</span> 0
+0026         [xp,yp,zp] = <a href="ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z, center,radii,R);
+0027         hold all;
+0028         plot3(xp,yp,zp,<span class="string">'r.'</span>);
+0029         hold off;
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">else</span>
+0032     <a href="plot_ellipsoid.html" class="code" title="function plot_ellipsoid(cx,cy,cz,ap,bp,cp,R,varargin)">plot_ellipsoid</a>(center(1),center(2),center(3),radii(1),radii(2),radii(3),R,args{:});
+0033 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

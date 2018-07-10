@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  GridGenerator -> GridGenerator;
+  GridGenerator -> buildGrid;
+  GridGenerator -> getMeasTagsFromPaths;
+  GridGenerator -> getPathOnGrid;
+
+  GridGenerator [URL="GridGenerator.html"];
+  buildGrid [URL="buildGrid.html"];
+  getMeasTagsFromPaths [URL="getMeasTagsFromPaths.html"];
+  getPathOnGrid [URL="getPathOnGrid.html"];
+}

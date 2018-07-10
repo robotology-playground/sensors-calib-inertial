@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoidfit_koopmans</title>
+  <meta name="keywords" content="ellipsoidfit_koopmans">
+  <meta name="description" content="Fit an ellipsoid to data using the nonlinear Koopmans method.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsoidfit_koopmans
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit an ellipsoid to data using the nonlinear Koopmans method.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,p0,mu0] = ellipsoidfit_koopmans(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit an ellipsoid to data using the nonlinear Koopmans method.
+
+ Input arguments:
+ x, y, z:
+    vectors of data to fit
+ sigma_x, sigma_y, sigma_z:
+    noise parameter for x, y and z dimensions
+
+ References:
+ Istvan Vajk and Jeno Hetthessy, &quot;Identification of nonlinear errors-in-variables
+    models&quot;, Automatica 39, 2003, pp2099-2107.
+ Qingde Li and John G. Griffiths, &quot;Least Squares Ellipsoid Specific Fitting&quot;,
+    Proceedings of the Geometric Modeling and Processing, 2004.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsoidfit_iterative.html" class="code" title="function p = ellipsoidfit_iterative(fitfunc, R, k)">ellipsoidfit_iterative</a>	Iterative least squares fitting of ellipsoids under the constraint k*J - I^2 > 0.</li><li><a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>	Eigenvalues and eigenvectors for matrix polynomial.</li><li><a href="mpolyval.html" class="code" title="function M = mpolyval(T, s)">mpolyval</a>	Evaluates a matrix polynomial T(s) at the specified value of s.</li><li><a href="quad3dcovpoly.html" class="code" title="function C = quad3dcovpoly(sx, sy, sz, x, y, z)">quad3dcovpoly</a>	Theoretical noise covariance structure corresponding to a 3D quadratic function.</li><li><a href="quad3dfit_paramchk.html" class="code" title="function [x,y,z,sigma_x,sigma_y,sigma_z] = quad3dfit_paramchk(filename, varargin)">quad3dfit_paramchk</a>	Quadratic 2-D fitting parameter check.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsoidcomp.html" class="code" title="function example_ellipsoidcomp">example_ellipsoidcomp</a>	Comparative demonstration of fits to random ellipsoids.</li><li><a href="example_ellipsoidfit1.html" class="code" title="function example_ellipsoidfit1">example_ellipsoidfit1</a>	Demonstration of various ellipsoid fits.</li><li><a href="example_ellipsoidfit2.html" class="code" title="function example_ellipsoidfit2">example_ellipsoidfit2</a>	Demonstration of fits to various special ellipsoids.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [X,e] = qep(M, C, K)</a></li><li><a href="#_sub2" class="code">function [X,e] = quadratic_eigenvalue_problem(M, C, K)</a></li><li><a href="#_sub3" class="code">function tf = is_nonsingular(A)</a></li><li><a href="#_sub4" class="code">function p = ellipsoidfit_sufficient(R, k)</a></li><li><a href="#_sub5" class="code">function p = ellipsoidfit_robust(R, Q)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)</a>
+0002 <span class="comment">% Fit an ellipsoid to data using the nonlinear Koopmans method.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y, z:</span>
+0006 <span class="comment">%    vectors of data to fit</span>
+0007 <span class="comment">% sigma_x, sigma_y, sigma_z:</span>
+0008 <span class="comment">%    noise parameter for x, y and z dimensions</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% References:</span>
+0011 <span class="comment">% Istvan Vajk and Jeno Hetthessy, &quot;Identification of nonlinear errors-in-variables</span>
+0012 <span class="comment">%    models&quot;, Automatica 39, 2003, pp2099-2107.</span>
+0013 <span class="comment">% Qingde Li and John G. Griffiths, &quot;Least Squares Ellipsoid Specific Fitting&quot;,</span>
+0014 <span class="comment">%    Proceedings of the Geometric Modeling and Processing, 2004.</span>
+0015 
+0016 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0017 
+0018 [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,sigma_x,sigma_y,sigma_z] = <a href="quad3dfit_paramchk.html" class="code" title="function [x,y,z,sigma_x,sigma_y,sigma_z] = quad3dfit_paramchk(filename, varargin)">quad3dfit_paramchk</a>(mfilename, varargin{:});
+0019 
+0020 <span class="comment">% build sample data covariance matrix</span>
+0021 Z = [x.^2, y.^2, z.^2, x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>, x.*z, y.*z, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z, ones(numel(x),1)];
+0022 <span class="comment">%Z = [x.^2, y.^2, z.^2, 2*x.*y, 2*x.*z, 2*y.*z, 2*x, 2*y, 2*z, ones(numel(x),1)];</span>
+0023 D = (Z'*Z) / size(Z,1);
+0024 
+0025 <span class="comment">% build noise covariance matrix</span>
+0026 C = <a href="quad3dcovpoly.html" class="code" title="function C = quad3dcovpoly(sx, sy, sz, x, y, z)">quad3dcovpoly</a>(sigma_x, sigma_y, sigma_z, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z);
+0027 
+0028 <span class="comment">% solve quadratic eigenvalue problem (QEP) for noise magnitude given no model constraints</span>
+0029 <span class="keyword">if</span> 1
+0030     [V,e] = <a href="#_sub1" class="code" title="subfunction [X,e] = qep(M, C, K)">qep</a>(-C(:,:,3), -C(:,:,2), D-C(:,:,1));  <span class="comment">% data and noise covariance matrices</span>
+0031 <span class="keyword">else</span>
+0032     T = -C;
+0033     T(:,:,1) = D;
+0034     [V,e] = <a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>(T);
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">% find those eigenvalues whose eigenvector is real</span>
+0038 ix = all(imag(V) &lt; eps, 1);
+0039 e = e(ix);
+0040 V = V(:,ix);
+0041 
+0042 <span class="comment">% find eigenvalue with smallest magnitude</span>
+0043 <span class="comment">% that minimizes p' * (T(:,:,1) - mu*T(:,:,2) - mu^2*T(:,:,3)) * p</span>
+0044 [~,ix] = sort(abs(e));
+0045 mu0 = e(ix(1));
+0046 p0 = V(:,ix(1));  <span class="comment">% parameter estimates without taking constraints into account</span>
+0047 
+0048 <span class="comment">%R = D - quad2dcov(mu0*sigma_x, mu0*sigma_y, dx, dy);</span>
+0049 <span class="keyword">if</span> 1
+0050     R = D-C(:,:,1) - mu0*C(:,:,2) - mu0^2*C(:,:,3);
+0051 <span class="keyword">else</span>
+0052     R = <a href="mpolyval.html" class="code" title="function M = mpolyval(T, s)">mpolyval</a>(T, mu0);
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="comment">% fit ellipsoid with bisection search on k in the expression k*J - I^2 &gt; 0</span>
+0056 p = <a href="ellipsoidfit_iterative.html" class="code" title="function p = ellipsoidfit_iterative(fitfunc, R, k)">ellipsoidfit_iterative</a>(@<a href="#_sub4" class="code" title="subfunction p = ellipsoidfit_sufficient(R, k)">ellipsoidfit_sufficient</a>, R);
+0057 
+0058 <a name="_sub1" href="#_subfunctions" class="code">function [X,e] = qep(M, C, K)</a>
+0059 <span class="comment">% Solves a quadratic eigenvalue problem.</span>
+0060 
+0061 validateattributes(M, {<span class="string">'numeric'</span>}, {<span class="string">'2d'</span>,<span class="string">'real'</span>,<span class="string">'nonempty'</span>});
+0062 validateattributes(C, {<span class="string">'numeric'</span>}, {<span class="string">'2d'</span>,<span class="string">'real'</span>,<span class="string">'nonempty'</span>});
+0063 validateattributes(K, {<span class="string">'numeric'</span>}, {<span class="string">'2d'</span>,<span class="string">'real'</span>,<span class="string">'nonempty'</span>});
+0064 [~,n] = size(M);
+0065 validateattributes(M, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[n,n]});
+0066 validateattributes(C, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[n,n]});
+0067 validateattributes(K, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[n,n]});
+0068 
+0069 <span class="keyword">if</span> <a href="#_sub3" class="code" title="subfunction tf = is_nonsingular(A)">is_nonsingular</a>(K)  <span class="comment">% K is nonsingular (but M is not necessarily)</span>
+0070     swap = false;
+0071     A2 = M;  <span class="comment">% quadratic term</span>
+0072     A1 = C;  <span class="comment">% linear term</span>
+0073     A0 = K;  <span class="comment">% constant term</span>
+0074 <span class="keyword">elseif</span> <a href="#_sub3" class="code" title="subfunction tf = is_nonsingular(A)">is_nonsingular</a>(M)  <span class="comment">% M is nonsingular (but K is not necessarily)</span>
+0075     swap = true;  <span class="comment">% exchange order of terms (solve inverse eigenvalue problem)</span>
+0076     A0 = M;
+0077     A1 = C;
+0078     A2 = K;
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="keyword">if</span> nargout &gt; 1
+0082     [X,e] = <a href="#_sub2" class="code" title="subfunction [X,e] = quadratic_eigenvalue_problem(M, C, K)">quadratic_eigenvalue_problem</a>(A2, A1, A0);
+0083 <span class="keyword">else</span>
+0084     e = <a href="#_sub2" class="code" title="subfunction [X,e] = quadratic_eigenvalue_problem(M, C, K)">quadratic_eigenvalue_problem</a>(A2, A1, A0);
+0085 <span class="keyword">end</span>
+0086 <span class="keyword">if</span> swap
+0087     e = 1 ./ e;
+0088 <span class="keyword">end</span>
+0089 <span class="keyword">if</span> nargout &lt; 2
+0090     X = e;
+0091 <span class="keyword">end</span>
+0092 
+0093 <a name="_sub2" href="#_subfunctions" class="code">function [X,e] = quadratic_eigenvalue_problem(M, C, K)</a>
+0094 
+0095 [~,n] = size(K);
+0096 Z = zeros(n,n);
+0097 <span class="keyword">if</span> <a href="#_sub3" class="code" title="subfunction tf = is_nonsingular(A)">is_nonsingular</a>(K)
+0098     W = -K;
+0099 <span class="keyword">else</span>
+0100     W = eye(n,n);
+0101 <span class="keyword">end</span>
+0102 
+0103 <span class="comment">% build large matrix pair</span>
+0104 A = [ Z, W ; -K, -C ];
+0105 B = [ W, Z ; Z, M ];
+0106 <span class="keyword">if</span> nargout &lt; 2
+0107     X = eig(A, B);  <span class="comment">% preferably a symmetric pair of matrices</span>
+0108 <span class="keyword">else</span>
+0109     [X,E] = eig(A,B);
+0110     e = diag(E);
+0111 
+0112     <span class="comment">% for each eigenvalue, extract the eigenvector from whichever portion</span>
+0113     <span class="comment">% of the big eigenvector matrix X gives the smallest normalized residual</span>
+0114     V = zeros(n,2);
+0115     <span class="keyword">for</span> j = 1 : 2*n
+0116        V(:) = X(:,j);
+0117        R = M;
+0118        <span class="keyword">if</span> ~isinf(e(j))
+0119            R = C + e(j)*R;
+0120            R = K + e(j)*R;
+0121        <span class="keyword">end</span>
+0122        R = R * V;
+0123        res = sum(abs(R)) ./ sum(abs(V));  <span class="comment">% normalized residuals</span>
+0124        [~,ind] = min(res);
+0125        X(1:n,j) = V(:,ind) / norm(V(:,ind));  <span class="comment">% eigenvector with unit 2-norm</span>
+0126     <span class="keyword">end</span>
+0127     X = X(1:n,:);
+0128 <span class="keyword">end</span>
+0129 
+0130 <a name="_sub3" href="#_subfunctions" class="code">function tf = is_nonsingular(A)</a>
+0131 
+0132 tf = rank(A) == min(size(A));
+0133 
+0134 <a name="_sub4" href="#_subfunctions" class="code">function p = ellipsoidfit_sufficient(R, k)</a>
+0135 <span class="comment">% Fits an ellipsoid with the sufficient invariant constraint k*J - I^2 &gt; 0.</span>
+0136 <span class="comment">% In the constraint k*J - I^2 &gt; 0, we have</span>
+0137 <span class="comment">% I = a + b + c</span>
+0138 <span class="comment">% J = ab + bc + ac - f^2 - g^2 - h^2</span>
+0139 
+0140 <span class="comment">% build 10x10 constraint matrix</span>
+0141 Q1 = [ 0 k k ; k 0 k ; k k 0 ] / 2 - 1;
+0142 Q2 = -k/4 * eye(3,3);  <span class="comment">% for [x.^2, y.^2, z.^2, x.*y, x.*z, y.*z, x, y, z, 1]</span>
+0143 <span class="comment">%Q2 = -k * eye(3,3);  % for [x.^2, y.^2, z.^2, 2*x.*y, 2*x.*z, 2*y.*z, 2*x, 2*y, 2*z, 1]</span>
+0144 Q3 = zeros(4,4);
+0145 Q = blkdiag(Q1,Q2,Q3);
+0146 
+0147 <span class="comment">% enforce constraint</span>
+0148 p = <a href="#_sub5" class="code" title="subfunction p = ellipsoidfit_robust(R, Q)">ellipsoidfit_robust</a>(R, Q);  <span class="comment">% parameter estimates taking constraints into account</span>
+0149 <span class="comment">%p = [p(1);p(2);p(3);2*p(4);2*p(5);2*p(6);2*p(7);2*p(8);2*p(9);p(10)];  % for [x.^2, y.^2, z.^2, 2*x.*y, 2*x.*z, 2*y.*z, 2*x, 2*y, 2*z, 1]</span>
+0150 
+0151 <a name="_sub5" href="#_subfunctions" class="code">function p = ellipsoidfit_robust(R, Q)</a>
+0152 <span class="comment">% Constrained fit by solving a modified eigenvalue problem.</span>
+0153 
+0154 <span class="comment">% check that constraint matrix has all zeros except in upper left block</span>
+0155 assert( nnz(Q(7:10,:)) == 0 );
+0156 assert( nnz(Q(:,7:10)) == 0 );
+0157 
+0158 S1 = R(1:6,1:6);     <span class="comment">% quadratic part of the scatter matrix</span>
+0159 S2 = R(1:6,7:10);    <span class="comment">% combined part of the scatter matrix</span>
+0160 S3 = R(7:10,7:10);   <span class="comment">% linear part of the scatter matrix</span>
+0161 T = -(S3 \ S2');     <span class="comment">% for getting a2 from a1</span>
+0162 M = S1 + S2 * T;     <span class="comment">% reduced scatter matrix</span>
+0163 M = Q(1:6,1:6) \ M;  <span class="comment">% premultiply by inv(C1)</span>
+0164 [evec,~] = eig(M);   <span class="comment">% solve eigensystem</span>
+0165 
+0166 <span class="comment">% evaluate a'*C*a</span>
+0167 cond = zeros(1,size(evec,2));
+0168 <span class="keyword">for</span> k = 1 : numel(cond)
+0169     cond(k) = evec(:,k)'*Q(1:6,1:6)*evec(:,k);
+0170 <span class="keyword">end</span>
+0171 
+0172 p1 = evec(:,cond &gt; 0);  <span class="comment">% eigenvector for minimum positive eigenvalue</span>
+0173 p = [p1 ; T * p1];  <span class="comment">% ellipse coefficients</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

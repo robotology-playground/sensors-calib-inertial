@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_quad2dcomp</title>
+  <meta name="keywords" content="example_quad2dcomp">
+  <meta name="description" content="Comparison of various ellipse (and general quadratic curve) fits.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_quad2dcomp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Comparison of various ellipse (and general quadratic curve) fits.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_quad2dcomp </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Comparison of various ellipse (and general quadratic curve) fits.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>	Direct least squares fitting of ellipses.</li><li><a href="ellipsefit_koopmans.html" class="code" title="function [theta,mu] = ellipsefit_koopmans(varargin)">ellipsefit_koopmans</a>	Fit an ellipse to data using the nonlinear Koopmans method.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="is_ellipse.html" class="code" title="function tf = is_ellipse(p)">is_ellipse</a>	Test if implicit parameters represent an ellipse.</li><li><a href="quad2dfit_hyperaccurate.html" class="code" title="function p = quad2dfit_hyperaccurate(x,y)">quad2dfit_hyperaccurate</a>	General quadratic curve fit with Kanatani's hyperaccurate fit method.</li><li><a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li><li><a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>	General quadratic curve fit with Taubin's method.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [b,d] = bias_variance(U, u0)</a></li><li><a href="#_sub2" class="code">function [p_direct,p_taubin,p_hyper,p_nkquad,p_nkellip] = quad2dfit_methods(x0, y0, sigma_x, sigma_y, p0)</a></li><li><a href="#_sub3" class="code">function setlinestyle(line, style)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_quad2dcomp</a>
+0002 <span class="comment">% Comparison of various ellipse (and general quadratic curve) fits.</span>
+0003 
+0004 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0005 
+0006 <span class="comment">% generate data points</span>
+0007 <span class="comment">%N = 31;  % sample count</span>
+0008 N = 5000;
+0009 a = 100;
+0010 b = 50;
+0011 t = linspace(0, pi/2, N);
+0012 x0 = a*cos(t);
+0013 y0 = b*sin(t);
+0014 
+0015 <span class="comment">% true parameter vector</span>
+0016 p0 = [1/a^2 ; 0 ; 1/b^2 ; 0 ; 0 ; -1];
+0017 
+0018 n = 1;  <span class="comment">% number of Monte-Carlo simulations</span>
+0019 
+0020 methodcount = 5;
+0021 <span class="keyword">if</span> n &gt; 1
+0022     sigma = linspace(0, 6, 100);
+0023     bias = zeros(methodcount,numel(sigma));
+0024     divergence = zeros(methodcount,numel(sigma));
+0025 
+0026     <span class="keyword">for</span> i = 1 : numel(sigma)
+0027         P = zeros(6,n,methodcount);
+0028         <span class="keyword">for</span> j = 1 : n
+0029             sigma_x = sigma(i);
+0030             sigma_y = sigma(i);
+0031             [P(:,j,1),P(:,j,2),P(:,j,3),P(:,j,4),P(:,j,5)] = <a href="#_sub2" class="code" title="subfunction [p_direct,p_taubin,p_hyper,p_nkquad,p_nkellip] = quad2dfit_methods(x0, y0, sigma_x, sigma_y, p0)">quad2dfit_methods</a>(x0, y0, sigma_x, sigma_y, p0);
+0032         <span class="keyword">end</span>
+0033         [bias(:,i), divergence(:,i)] = <a href="#_sub1" class="code" title="subfunction [b,d] = bias_variance(U, u0)">bias_variance</a>(P, p0);
+0034     <span class="keyword">end</span>
+0035     
+0036     figure;
+0037     plot(sigma, bias(1,:), sigma, bias(2,:), sigma, bias(3,:), sigma, bias(4,:), sigma, bias(5,:));
+0038     legend(<span class="string">'Direct'</span>,<span class="string">'Taubin'</span>,<span class="string">'Kanatani'</span>,<span class="string">'Koopmans (quad)'</span>,<span class="string">'Koopmans'</span>);
+0039 
+0040     figure;
+0041     plot(sigma, divergence(1,:), sigma, divergence(2,:), sigma, divergence(3,:), sigma, divergence(4,:), sigma, divergence(5,:));
+0042     legend(<span class="string">'Direct'</span>,<span class="string">'Taubin'</span>,<span class="string">'Kanatani'</span>,<span class="string">'Koopmans (quad)'</span>,<span class="string">'Koopmans'</span>);
+0043 <span class="keyword">else</span>
+0044     sigma_x = 6.5;
+0045     sigma_y = 6.5;
+0046     <a href="#_sub2" class="code" title="subfunction [p_direct,p_taubin,p_hyper,p_nkquad,p_nkellip] = quad2dfit_methods(x0, y0, sigma_x, sigma_y, p0)">quad2dfit_methods</a>(x0, y0, sigma_x, sigma_y, p0);
+0047 <span class="keyword">end</span>
+0048 
+0049 <a name="_sub1" href="#_subfunctions" class="code">function [b,d] = bias_variance(U, u0)</a>
+0050 <span class="comment">% Bias and root-mean-square value for estimated parameters.</span>
+0051 
+0052 b = zeros(size(U,3),1);
+0053 d = zeros(size(U,3),1);
+0054 u0 = u0 / sqrt(sum(u0.^2));
+0055 <span class="keyword">for</span> k = 1 : size(U,3)
+0056     <span class="comment">% normalize parameters to unit length</span>
+0057     nU = bsxfun(@rdivide, U(:,:,k), sqrt(sum(U(:,:,k).^2, 1)));
+0058 
+0059     <span class="comment">% orthogonal projection of p onto the true value of p</span>
+0060     P = eye(6,6) - (u0 * u0');
+0061     dU = P * nU;
+0062 
+0063     b(k) = norm(sum(dU, 2) / size(dU, 2));
+0064     d(k) = sqrt(sum(sum(dU.^2, 1)) / size(dU, 2));
+0065 <span class="keyword">end</span>
+0066 
+0067 <a name="_sub2" href="#_subfunctions" class="code">function [p_direct,p_taubin,p_hyper,p_nkquad,p_nkellip] = quad2dfit_methods(x0, y0, sigma_x, sigma_y, p0)</a>
+0068 <span class="comment">% Fits ellipses to noisy data using various estimation methods.</span>
+0069 
+0070 <span class="comment">% pollute with noise</span>
+0071 x = x0 + sigma_x * randn(size(x0));
+0072 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + sigma_y * randn(size(x0));
+0073 
+0074 <span class="comment">%p_ml = ellipsefit(x,y);</span>
+0075 p_direct = <a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0076 p_taubin = <a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0077 p_hyper = <a href="quad2dfit_hyperaccurate.html" class="code" title="function p = quad2dfit_hyperaccurate(x,y)">quad2dfit_hyperaccurate</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0078 p_nkquad = <a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0079 p_nkellip = <a href="ellipsefit_koopmans.html" class="code" title="function [theta,mu] = ellipsefit_koopmans(varargin)">ellipsefit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0080 
+0081 <span class="keyword">if</span> nargout &lt; 1
+0082     <span class="keyword">if</span> <a href="is_ellipse.html" class="code" title="function tf = is_ellipse(p)">is_ellipse</a>(p_taubin) &amp;&amp; <a href="is_ellipse.html" class="code" title="function tf = is_ellipse(p)">is_ellipse</a>(p_hyper)
+0083         figure;
+0084         hold all;
+0085         plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>)
+0086         <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p0);
+0087         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_direct);
+0088         <a href="#_sub3" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'--'</span>);
+0089         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_taubin);
+0090         <a href="#_sub3" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">':'</span>);
+0091         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_hyper);
+0092         <a href="#_sub3" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'-.'</span>);
+0093         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_nkquad);
+0094         <a href="#_sub3" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'--'</span>);
+0095         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_nkellip);
+0096         <a href="#_sub3" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'--'</span>);
+0097         legend(<span class="string">'Data'</span>,<span class="string">'Actual'</span>,<span class="string">'Direct'</span>,<span class="string">'Taubin'</span>,<span class="string">'Kanatani'</span>,<span class="string">'Koopmans (quad)'</span>,<span class="string">'Koopmans'</span>);
+0098         hold off;
+0099     <span class="keyword">else</span>
+0100         figure;
+0101         hold all;
+0102         plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>)
+0103         <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p0);
+0104         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_direct);
+0105         <a href="#_sub3" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'--'</span>);
+0106         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_nkellip);
+0107         <a href="#_sub3" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'--'</span>);
+0108         legend(<span class="string">'Data'</span>,<span class="string">'Actual'</span>,<span class="string">'Direct'</span>,<span class="string">'Koopmans'</span>);
+0109         hold off;
+0110     <span class="keyword">end</span>
+0111 <span class="keyword">end</span>
+0112 
+0113 <a name="_sub3" href="#_subfunctions" class="code">function setlinestyle(line, style)</a>
+0114 
+0115 set(findobj(line, <span class="string">'-property'</span>, <span class="string">'LineStyle'</span>), <span class="string">'LineStyle'</span>, style);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

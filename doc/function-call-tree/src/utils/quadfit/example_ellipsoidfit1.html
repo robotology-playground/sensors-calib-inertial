@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipsoidfit1</title>
+  <meta name="keywords" content="example_ellipsoidfit1">
+  <meta name="description" content="Demonstration of various ellipsoid fits.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipsoidfit1
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstration of various ellipsoid fits.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_ellipsoidfit1 </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstration of various ellipsoid fits.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>	Cast ellipsoid defined with implicit parameter vector to explicit form.</li><li><a href="ellipsoid_projections.html" class="code" title="function ellipsoid_projections(x,y,z,varargin)">ellipsoid_projections</a>	Plots ellipsoid projections on the xy, xz and yz planes.</li><li><a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li><li><a href="ellipsoidfit_aml.html" class="code" title="function theta = ellipsoidfit_aml(x,y,z,sigma)">ellipsoidfit_aml</a>	Approximated maximum likelihood fit of ellipsoids.</li><li><a href="ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>	Direct least squares fitting of ellipsoids under the constraint 4J - I^2 > 0.</li><li><a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>	Fit an ellipsoid to data using the nonlinear Koopmans method.</li><li><a href="ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>	Finds the distance of the point (x,y,z) to the nearest point on the ellipsoid.</li><li><a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>	Plot ellipsoid specified with implicit parameters.</li><li><a href="rot3d.html" class="code" title="function [x,y,z] = rot3d(x,y,z,Q)">rot3d</a>	Rotate points in three dimensions.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function e = ellipsoidfit_error(x0,y0,z0,p)</a></li><li><a href="#_sub2" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_partial</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_ellipsoidfit1</a>
+0002 <span class="comment">% Demonstration of various ellipsoid fits.</span>
+0003 
+0004 <span class="comment">% Copyright 2011-2012 Levente Hunyadi</span>
+0005 
+0006 [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,x0,y0,z0] = <a href="#_sub2" class="code" title="subfunction [x,y,z,x0,y0,z0] = example_ellipsoid_partial">example_ellipsoid_partial</a>();
+0007 <span class="comment">%[x,y,z,x0,y0,z0] = example_ellipsoid();</span>
+0008 
+0009 hold on;
+0010 plot3(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,<span class="string">'k.'</span>);
+0011 xlabel(<span class="string">'x'</span>);
+0012 ylabel(<span class="string">'y'</span>);
+0013 zlabel(<span class="string">'z'</span>);
+0014 <span class="comment">%plot3(x0,y0,z0,'r.');</span>
+0015 hold off;
+0016 
+0017 <span class="keyword">if</span> 0
+0018     p_taubin = ellipsoidfit_taubin(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0019     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_taubin,<span class="string">'EdgeColor'</span>,<span class="string">'blue'</span>);
+0020     err = <a href="#_sub1" class="code" title="subfunction e = ellipsoidfit_error(x0,y0,z0,p)">ellipsoidfit_error</a>(x0,y0,z0,p_taubin);
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">if</span> 0
+0024     p_direct = <a href="ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0025     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_direct,<span class="string">'EdgeColor'</span>,<span class="string">'blue'</span>);
+0026     err = <a href="#_sub1" class="code" title="subfunction e = ellipsoidfit_error(x0,y0,z0,p)">ellipsoidfit_error</a>(x0,y0,z0,p_direct);
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">if</span> 0
+0030     p_aml = <a href="ellipsoidfit_aml.html" class="code" title="function theta = ellipsoidfit_aml(x,y,z,sigma)">ellipsoidfit_aml</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0031     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_aml,<span class="string">'EdgeColor'</span>,<span class="string">'green'</span>);
+0032     err = <a href="#_sub1" class="code" title="subfunction e = ellipsoidfit_error(x0,y0,z0,p)">ellipsoidfit_error</a>(x0,y0,z0,p_aml);
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="keyword">if</span> 1
+0036     p_koopmans = <a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0037     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_koopmans,<span class="string">'EdgeColor'</span>,<span class="string">'blue'</span>);
+0038     err = <a href="#_sub1" class="code" title="subfunction e = ellipsoidfit_error(x0,y0,z0,p)">ellipsoidfit_error</a>(x0,y0,z0,p_koopmans);
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="keyword">if</span> 1
+0042     p_ml = <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0043     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_ml,x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0044     err = <a href="#_sub1" class="code" title="subfunction e = ellipsoidfit_error(x0,y0,z0,p)">ellipsoidfit_error</a>(x0,y0,z0,p_ml);
+0045 <span class="keyword">end</span>
+0046 
+0047 <a href="ellipsoid_projections.html" class="code" title="function ellipsoid_projections(x,y,z,varargin)">ellipsoid_projections</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,p_ml,p_direct,p_koopmans);
+0048 
+0049 <a name="_sub1" href="#_subfunctions" class="code">function e = ellipsoidfit_error(x0,y0,z0,p)</a>
+0050 
+0051 [center,radii,~,R] = <a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>(p);
+0052 [xp,yp,zp] = <a href="ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>(x0,y0,z0,center,radii,R);
+0053 e = mean((xp-x0).^2+(yp-y0).^2+(zp-z0).^2);
+0054 
+0055 <a name="_sub2" href="#_subfunctions" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_partial</a>
+0056 <span class="comment">% A sample ellipsoid.</span>
+0057 
+0058 <span class="comment">% generate points</span>
+0059 xc = 10;
+0060 yc = 20;
+0061 zc = 10;
+0062 <span class="comment">%xc = 0; yc = 0; zc = 0;</span>
+0063 <span class="comment">%xr = 5;</span>
+0064 xr = 15;
+0065 yr = 25;
+0066 zr = 20;
+0067 [x0,y0,z0] = ellipsoid(xc,yc,zc,xr,yr,zr,50);
+0068 x0 = x0(:);
+0069 y0 = y0(:);
+0070 z0 = z0(:);
+0071 
+0072 <span class="comment">% rotate points</span>
+0073 Q = [ 0.36, 0.48, -0.8 ; -0.8, 0.60, 0 ; 0.48, 0.64, 0.60 ];
+0074 <span class="comment">%Q = eye(3,3);</span>
+0075 [x0,y0,z0] = <a href="rot3d.html" class="code" title="function [x,y,z] = rot3d(x,y,z,Q)">rot3d</a>(x0,y0,z0,Q);
+0076 
+0077 <span class="comment">% add noise</span>
+0078 <span class="comment">%RandStream.setDefaultStream(RandStream('mt19937ar','seed',9999));</span>
+0079 x = x0 + randn(size(x0));
+0080 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + randn(size(y0));
+0081 z = z0 + randn(size(z0));
+0082 
+0083 sx = 10; sy = 5; sz = 0;
+0084 f = (x-sx).^2 + (<a href="../../../src/@y/y.html" class="code" title="">y</a>-sy).^2 + (z-sz).^2 &lt; 500;
+0085 
+0086 x0 = x0(f);
+0087 y0 = y0(f);
+0088 z0 = z0(f);
+0089 
+0090 x = x(f);
+0091 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(f);
+0092 z = z(f);
+0093 <span class="comment">%plot3(x,y,z,'.'); return;</span>
+0094 
+0095 <span class="keyword">if</span> nargout &lt; 3
+0096     hold all;
+0097     <span class="comment">%plot3(x,y,z,'.');</span>
+0098     <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0099     hold off;
+0100 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

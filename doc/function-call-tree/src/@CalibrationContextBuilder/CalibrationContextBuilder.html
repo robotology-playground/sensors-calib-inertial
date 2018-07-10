@@ -1,0 +1,623 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of CalibrationContextBuilder</title>
+  <meta name="keywords" content="CalibrationContextBuilder">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @CalibrationContextBuilder -->
+<h1>CalibrationContextBuilder
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="CalibrationContextBuilder.html" class="code" title="">CalibrationContextBuilder</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="CalibrationContextBuilder.html" class="code" title="">CalibrationContextBuilder</a>	</li><li><a href="../../src/@JointEncodersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = CalibrationContextBuilder(estimator)</a></li><li><a href="#_sub2" class="code">function Dq0 = buildSensorsNjointsIDynTreeListsForActivePart(obj,data,modelParams)</a></li><li><a href="#_sub3" class="code">function loadJointNsensorsDataSubset(obj,subsetVec_idx)</a></li><li><a href="#_sub4" class="code">function simulateAccelerometersMeasurements(obj, data, datasetVecIdx)</a></li><li><a href="#_sub5" class="code">function [e,sensMeasCell,sensEstCell] = costFunctionSigma(obj,Dq, data, subsetVec_idx, optimFunction, log, optimized)</a></li><li><a href="#_sub6" class="code">function e = costFunctionSigmaProjOnEachLink(obj,Dq,data,subsetVec_idx,optimFunction)</a></li><li><a href="#_sub7" class="code">function list_kHsens = getListTransforms(obj,refFrameName)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="CalibrationContextBuilder.html" class="code" title="">CalibrationContextBuilder</a> &lt; handle
+0002     <span class="comment">% This class holds :</span>
+0003     <span class="comment">% - the robots sensors and joints names definitions as per the robot URDF</span>
+0004     <span class="comment">% model</span>
+0005     <span class="comment">% - the context for the cost function to be minimised,</span>
+0006     <span class="comment">% as the init methods and the a specific cost function.</span>
+0007     <span class="comment">%</span>
+0008     <span class="comment">% Detailed explanation goes here</span>
+0009         
+0010     properties (SetAccess = public, GetAccess = public)
+0011         grav_idyn             <span class="comment">%% gravity iDynTree object</span>
+0012         dofs                  <span class="comment">%% joint information: DOF</span>
+0013         qi_idyn               <span class="comment">%% joint position iDynTree object</span>
+0014         dqi_idyn              <span class="comment">%% joint velocity iDynTree object</span>
+0015         d2qi_idyn             <span class="comment">%% joint acceleration iDynTree object</span>
+0016         estimator             <span class="comment">%% estimator for computing the estimated sensor measurements</span>
+0017         base_link_index       <span class="comment">%% input param of estimator. iDynTree model indexing</span>
+0018         fullBodyUnknowns      <span class="comment">%% input param of estimator</span>
+0019         estMeasurements       <span class="comment">%% input param of estimator</span>
+0020         sink1                 <span class="comment">%% sink for output estContactForces</span>
+0021         sink2                 <span class="comment">%% sink for output estJointTorques</span>
+0022         sensorsIdxListModel = []; <span class="comment">%% subset of active sensors: indices from iDynTree model</span>
+0023         sensorsIdxListFile  = []; <span class="comment">%% subset of active sensors: indices from 'data.frame' list,</span>
+0024                                   <span class="comment">%  ordered as per the data.log format.</span>
+0025         jointsIdxFile             <span class="comment">%% index of 'StateExt' in 'data.frame' list</span>
+0026         ctrledJointsIdxFromModel  = []; <span class="comment">%% map contolled joints to iDynTree joint index</span>
+0027         calibJointsIdxFromModel = [];   <span class="comment">%% map calibrated joints to iDynTree joint index</span>
+0028         estimatedSensorLinAcc     <span class="comment">%% predicted measurement on sensor frame</span>
+0029         tmpSensorLinAcc           <span class="comment">%% sensor measurement</span>
+0030         q0i     = [];             <span class="comment">%% joint positions for the current processed part.</span>
+0031         dqi     = [];             <span class="comment">%% joint velocities for the current processed part.</span>
+0032         d2qi    = [];             <span class="comment">%% joint accelerations for the current processed part.</span>
+0033         sub_q0i
+0034         sub_dqi
+0035         sub_d2qi
+0036         Dq0;
+0037         DqiEnc  = [];             <span class="comment">%% virtual joint offsets from the encoders.</span>
+0038         <span class="comment">%% specific to APPROACH 2: measurements projected on each link</span>
+0039         traversal_Lk              <span class="comment">%% full traversal for computing the link positions</span>
+0040         fixedBasePos              <span class="comment">%% full tree joint positions (including base link)</span>
+0041                                    <span class="comment">% (required by the estimator interface,</span>
+0042                                    <span class="comment">% but the base position is not really</span>
+0043                                    <span class="comment">% relevant for computing the transforms</span>
+0044                                    <span class="comment">% between segment frames).</span>
+0045         linkPos                   <span class="comment">%% link positions w.r.t. the chosen base (base=&quot;projection link&quot;)</span>
+0046         segments = {};            <span class="comment">%% list of segments for current part.</span>
+0047     <span class="keyword">end</span>
+0048     
+0049     methods
+0050         <a name="_sub0" href="#_subfunctions" class="code">function obj = CalibrationContextBuilder(estimator)</a>
+0051             <span class="comment">%% Prepare inputs for updating the kinematics information in the estimator</span>
+0052             <span class="comment">%</span>
+0053             <span class="comment">% Compute the kinematics information necessary for the accelerometer</span>
+0054             <span class="comment">% sensor measurements estimation. We assume the robot root link is fixed to</span>
+0055             <span class="comment">% the ground (steady kart pole). We then assume to know the gravity (ground</span>
+0056             <span class="comment">% truth) projected on the frame (base_link) fixed to the root link. For more</span>
+0057             <span class="comment">% info on iCub frames check: http://wiki.icub.org/wiki/ICub_Model_naming_conventions.</span>
+0058             <span class="comment">%</span>
+0059             obj.grav_idyn = iDynTree.Vector3();
+0060             grav = [0.0;0.0;-9.81];
+0061             obj.grav_idyn.fromMatlab(grav);
+0062             
+0063             <span class="comment">%% Set the estimator and model...</span>
+0064             <span class="comment">%</span>
+0065             obj.estimator = estimator;
+0066             
+0067             <span class="comment">% Base link index for later applying forward kynematics</span>
+0068             <span class="comment">% (specific to APPROACH 1)</span>
+0069             obj.base_link_index = obj.estimator.model.getFrameIndex(<span class="string">'base_link'</span>);
+0070             
+0071             <span class="comment">% Get joint information: DOF</span>
+0072             obj.dofs = obj.estimator.model.getNrOfDOFs();
+0073             
+0074             <span class="comment">% create joint position iDynTree objects</span>
+0075             <span class="comment">% Note: 'JointPosDoubleArray' is a special type for future evolution which</span>
+0076             <span class="comment">% will handle quaternions. But for now the type has the format as</span>
+0077             <span class="comment">% 'JointDOFsDoubleArray'.</span>
+0078             obj.qi_idyn   = iDynTree.JointPosDoubleArray(obj.dofs);
+0079             obj.dqi_idyn  = iDynTree.JointDOFsDoubleArray(obj.dofs);
+0080             obj.d2qi_idyn = iDynTree.JointDOFsDoubleArray(obj.dofs);
+0081             
+0082             <span class="comment">% Set the position of base link</span>
+0083             obj.fixedBasePos = iDynTree.FreeFloatingPos(obj.estimator.model);
+0084             obj.fixedBasePos.worldBasePos().setRotation(iDynTree.Rotation.Identity());
+0085             obj.fixedBasePos.worldBasePos().setPosition(iDynTree.Position.Zero());
+0086 
+0087             <span class="comment">%% Specify unknown wrenches (unknown Full wrench applied at the origin of the base_link frame)</span>
+0088             <span class="comment">% We need to set the location of the unknown wrench. We express the unknown</span>
+0089             <span class="comment">% wrench at the origin of the base_link frame (conctact point wrt to base_link is zero)</span>
+0090             unknownWrench = iDynTree.UnknownWrenchContact();
+0091             unknownWrench.unknownType = iDynTree.FULL_WRENCH;
+0092             unknownWrench.contactPoint.zero();
+0093             <span class="comment">% 'forceDirection', 'knownWrench' are irrelevant for an unknown FULL_WRENCH.</span>
+0094             <span class="comment">% 'contactId' is by default 0.</span>
+0095             
+0096             <span class="comment">% The fullBodyUnknowns is a class storing all the unknown external wrenches</span>
+0097             <span class="comment">% acting on a class: we consider the pole reaction on the base link as the only</span>
+0098             <span class="comment">% external force.</span>
+0099             <span class="comment">% Build an empty list.</span>
+0100             obj.fullBodyUnknowns = iDynTree.LinkUnknownWrenchContacts(obj.estimator.model());
+0101             obj.fullBodyUnknowns.clear();
+0102             obj.fullBodyUnknowns.addNewContactInFrame(obj.estimator.model, <span class="keyword">...</span>
+0103                                                       obj.base_link_index, <span class="keyword">...</span>
+0104                                                       unknownWrench);
+0105             
+0106             <span class="comment">% Print the unknowns to make sure that everything is properly working</span>
+0107             obj.fullBodyUnknowns.toString(obj.estimator.model())
+0108             
+0109             
+0110             <span class="comment">%% The estimated sensor measurements</span>
+0111             <span class="comment">% `estimator.sensors()` gets used sensors (returns `SensorList`)</span>
+0112             <span class="comment">% ex: `estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER)`</span>
+0113             <span class="comment">%     `estimator.sensors.getSensor(iDynTree.ACCELEROMETER,1)`</span>
+0114             obj.estMeasurements = iDynTree.SensorsMeasurements(obj.estimator.sensors);
+0115             
+0116             <span class="comment">% Memory allocation for unused output variables</span>
+0117             obj.sink1 = iDynTree.LinkContactWrenches(obj.estimator.model);
+0118             obj.sink2 = iDynTree.JointDOFsDoubleArray(obj.dofs);
+0119             
+0120             <span class="comment">% estimation outputs</span>
+0121             obj.estimatedSensorLinAcc = iDynTree.LinearMotionVector3();
+0122             
+0123             <span class="comment">% measurements</span>
+0124             obj.tmpSensorLinAcc = iDynTree.LinearMotionVector3();
+0125             
+0126             <span class="comment">% full traversal for computing the base to link k transforms</span>
+0127             obj.traversal_Lk = iDynTree.Traversal();
+0128             obj.linkPos = iDynTree.LinkPositions(obj.estimator.model);
+0129             
+0130         <span class="keyword">end</span>
+0131         
+0132         <a name="_sub1" href="#_subfunctions" class="code">function Dq0 = buildSensorsNjointsIDynTreeListsForActivePart(obj,data,modelParams)</a>
+0133             <span class="comment">%% Select sensors indices from iDynTree model, matching the list 'jointsToCalibrate'.</span>
+0134             <span class="comment">% Go through 'data.frames', 'data.parts' and 'data.labels' and build :</span>
+0135             <span class="comment">% - the joint list (controlled) mapped into the iDynTree indices</span>
+0136             <span class="comment">% - the sensor list for the current part (part: right_leg, left_arm,...).</span>
+0137             <span class="comment">% This is a list of indexes, that will be later used for retrieving the</span>
+0138             <span class="comment">% sensor predicted measurements and the real measure from the captured data.</span>
+0139             
+0140             <span class="comment">%=== Mapping the inertial sensors measurements to iDynTree</span>
+0141             <span class="comment">%</span>
+0142             <span class="comment">% obj.sensorsIdxListFile, obj.sensorsIdxListModel</span>
+0143             
+0144             allDataTypeIdxes = 1:numel(data.type);
+0145             <span class="comment">% Identify the inertial sensor frames in the 'data' structure</span>
+0146             obj.sensorsIdxListFile = allDataTypeIdxes(ismember(data.type,{<span class="string">'inertialMTB'</span>,<span class="string">'inertial'</span>}));
+0147             
+0148             <span class="comment">% Get respective indexes from the model</span>
+0149             obj.sensorsIdxListModel = cellfun(@(frame) <span class="keyword">...</span>
+0150                 obj.estimator.sensors.getSensorIndex(iDynTree.ACCELEROMETER,char(frame)),<span class="keyword">...</span>
+0151                 data.frames(obj.sensorsIdxListFile),<span class="keyword">...</span>
+0152                 <span class="string">'UniformOutput'</span>,false);
+0153             obj.sensorsIdxListModel = cell2mat(obj.sensorsIdxListModel);
+0154             
+0155             <span class="comment">%=== Mapping the joint encoders measurements to iDynTree</span>
+0156             <span class="comment">%</span>
+0157             <span class="comment">% obj.jointsIdxFile, obj.ctrledJointsIdxFromModel</span>
+0158             <span class="comment">%</span>
+0159             <span class="comment">% obj.q0i, obj.dqi, obj.d2qi</span>
+0160             
+0161             <span class="comment">% Identify the joint state frames in the 'data' structure</span>
+0162             obj.jointsIdxFile = allDataTypeIdxes(ismember(data.type,{<span class="string">'stateExt:i'</span>}));
+0163             
+0164             <span class="comment">% Get the respective controlled parts in 'data'</span>
+0165             modelParamsCtrledParts = data.parts(obj.jointsIdxFile);
+0166             
+0167             <span class="comment">% Get respective indexes in 'modelParams'</span>
+0168             modelParamsCtrledPartsIdxes = cellfun(@(key) <span class="keyword">...</span>
+0169                 modelParams.jointsToCalibrate.mapIdx(key),<span class="keyword">...</span>
+0170                 modelParamsCtrledParts,<span class="keyword">...</span>
+0171                 <span class="string">'UniformOutput'</span>,true);
+0172             
+0173             <span class="comment">% Get full list of controlled joints. The order in</span>
+0174             <span class="comment">% '.ctrledJoints' list has to match the one of the q vector in</span>
+0175             <span class="comment">% stateExt:o yarp port.</span>
+0176             modelParamsCtrledJoints = [modelParams.jointsToCalibrate.ctrledJoints{modelParamsCtrledPartsIdxes}];
+0177             
+0178             <span class="comment">% Get respective controlled joints indexes from iDynTree</span>
+0179             obj.ctrledJointsIdxFromModel = <span class="keyword">...</span>
+0180                 cellfun(@(joint) <span class="keyword">...</span>
+0181                 1 + obj.estimator.model.getJointIndex(joint),<span class="keyword">...</span>
+0182                 modelParamsCtrledJoints,<span class="keyword">...</span>
+0183                 <span class="string">'UniformOutput'</span>,true);
+0184             
+0185             <span class="comment">% Select from label index the joints associated to the current processed part.</span>
+0186             [obj.q0i,obj.dqi,obj.d2qi] = cellfun(@(label) deal(<span class="keyword">...</span>
+0187                 data.parsedParams.([<span class="string">'qsRad_'</span> label])',<span class="keyword">...</span>
+0188                 data.parsedParams.([<span class="string">'dqsRad_'</span> label])',<span class="keyword">...</span>
+0189                 data.parsedParams.([<span class="string">'d2qsRad_'</span> label])'),<span class="keyword">...</span>
+0190                 data.labels(obj.jointsIdxFile),<span class="keyword">...</span>
+0191                 <span class="string">'UniformOutput'</span>,false);
+0192             <span class="comment">% Transpose the resulting matrices (q dimension -&gt; lines, time dimension -&gt; columns)</span>
+0193             obj.q0i  = [obj.q0i{:}]';
+0194             obj.dqi  = [obj.dqi{:}]';
+0195             obj.d2qi = [obj.d2qi{:}]';
+0196             
+0197             <span class="comment">%% === Map the calibration joint position vectors Dq and Dq0 to iDynTree</span>
+0198             <span class="comment">%</span>
+0199             <span class="comment">%      (no need to map them to the read qi,dqi,d2qi. these</span>
+0200             <span class="comment">%      vectors will be set directly by the optimization solver</span>
+0201             <span class="comment">%      and added to the iDynTree vector.</span>
+0202             
+0203             <span class="comment">% Get indexes of calibrated parts</span>
+0204             [~,calibedPartsIdxes] = <span class="keyword">...</span>
+0205                 ismember(modelParams.calibedParts,modelParams.jointMeasedParts);
+0206             
+0207             <span class="comment">% Get full list of calibrated joints and starting point offset Dq0</span>
+0208             <span class="keyword">if</span> ~isempty(calibedPartsIdxes)
+0209                 [modelParamsCalibedJoints,modelParamsCalibedDq0] = cellfun(<span class="keyword">...</span>
+0210                     @(joints,calibedDq0,calibedIdxes) deal(<span class="keyword">...</span>
+0211                     joints(calibedIdxes),calibedDq0(calibedIdxes)),<span class="keyword">...</span>
+0212                     modelParams.jointsToCalibrate.ctrledJoints(calibedPartsIdxes),<span class="keyword">...</span>
+0213                     modelParams.jointsToCalibrate.calibedJointsDq0(calibedPartsIdxes),<span class="keyword">...</span>
+0214                     modelParams.jointsToCalibrate.calibedJointsIdxes(calibedPartsIdxes),<span class="keyword">...</span>
+0215                     <span class="string">'UniformOutput'</span>,false);
+0216                 modelParamsCalibedJoints = [modelParamsCalibedJoints{:}];
+0217                 [Dq0,obj.Dq0] = deal(cell2mat(modelParamsCalibedDq0)); <span class="comment">% decapsulation</span>
+0218                 [Dq0,obj.Dq0] = deal(Dq0(:),obj.Dq0(:)); <span class="comment">% make sure they are vertical vectors</span>
+0219             <span class="keyword">else</span>
+0220                 modelParamsCalibedJoints = {};
+0221                 [Dq0,obj.Dq0] = deal([],[]);
+0222             <span class="keyword">end</span>
+0223             
+0224             <span class="comment">% Get respective calibrated joints indexes from iDynTree</span>
+0225             obj.calibJointsIdxFromModel = <span class="keyword">...</span>
+0226                 cellfun(@(joint) <span class="keyword">...</span>
+0227                 1 + obj.estimator.model.getJointIndex(joint),<span class="keyword">...</span>
+0228                 modelParamsCalibedJoints,<span class="keyword">...</span>
+0229                 <span class="string">'UniformOutput'</span>,true);
+0230         <span class="keyword">end</span>
+0231         
+0232         <a name="_sub2" href="#_subfunctions" class="code">function loadJointNsensorsDataSubset(obj,subsetVec_idx)</a>
+0233             <span class="comment">% Select a time subset of the joint positions</span>
+0234             obj.sub_q0i = obj.q0i(:,subsetVec_idx);
+0235             obj.sub_dqi = obj.dqi(:,subsetVec_idx);
+0236             obj.sub_d2qi = obj.d2qi(:,subsetVec_idx);
+0237         <span class="keyword">end</span>
+0238 
+0239         <a name="_sub3" href="#_subfunctions" class="code">function simulateAccelerometersMeasurements(obj, data, datasetVecIdx)</a>
+0240             <span class="keyword">for</span> ts = 1:length(datasetVecIdx)
+0241                 <span class="comment">% Fill iDynTree joint vectors.</span>
+0242                 <span class="comment">% Warning!! iDynTree takes in input **radians** based units,</span>
+0243                 <span class="comment">% while the iCub port stream **degrees** based units.</span>
+0244                 qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_q0i(:,ts);
+0245                 dqisRobotDOF = zeros(obj.dofs,1); dqisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_dqi(:,ts);
+0246                 d2qisRobotDOF = zeros(obj.dofs,1); d2qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_d2qi(:,ts);
+0247                 obj.qi_idyn.fromMatlab(qisRobotDOF);
+0248                 obj.dqi_idyn.fromMatlab(dqisRobotDOF);
+0249                 obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
+0250                 
+0251                 <span class="comment">% Update the kinematics information in the estimator</span>
+0252                 obj.estimator.updateKinematicsFromFixedBase(obj.qi_idyn,obj.dqi_idyn,obj.d2qi_idyn, <span class="keyword">...</span>
+0253                     obj.base_link_index,obj.grav_idyn);
+0254                 
+0255                 <span class="comment">% run the estimation</span>
+0256                 obj.estimator.computeExpectedFTSensorsMeasurements(obj.fullBodyUnknowns,obj.estMeasurements,obj.sink1,obj.sink2);
+0257                 
+0258                 <span class="comment">% Get predicted sensor data for each sensor referenced in 'sensorsIdxList'</span>
+0259                 <span class="comment">% and write them into the 'data' structure.</span>
+0260                 <span class="keyword">for</span> acc_i = 1:length(obj.sensorsIdxListModel)
+0261                     <span class="comment">% get predicted measurement on sensor frame</span>
+0262                     obj.estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acc_i),obj.estimatedSensorLinAcc);
+0263                     sensEst = obj.estimatedSensorLinAcc.toMatlab;
+0264                     
+0265                     <span class="comment">% get measurement table ys_xxx_acc [3xnSamples] from captured data,</span>
+0266                     <span class="comment">% and then select the sample 's' (&lt;=&gt; timestamp).</span>
+0267                     ys   = [<span class="string">'ys_'</span> data.labels{obj.sensorsIdxListFile(acc_i)}];
+0268                     eval([<span class="string">'data.parsedParams.'</span> ys <span class="string">'(:,subsetVec_idx(ts)) = sensEst;'</span>]);
+0269                 <span class="keyword">end</span>
+0270             <span class="keyword">end</span>
+0271         <span class="keyword">end</span>
+0272 
+0273         <a name="_sub4" href="#_subfunctions" class="code">function [e,sensMeasCell,sensEstCell] = costFunctionSigma(obj,Dq, data, subsetVec_idx, optimFunction, log, optimized)</a>
+0274             <span class="comment">%COSTFUNCTIONSIGMA Summary of this function goes here</span>
+0275             <span class="comment">%   Detailed explanation goes here</span>
+0276             <span class="comment">%</span>
+0277             <span class="comment">%% compute predicted measurements</span>
+0278             <span class="comment">% We compute here the final cost 'e'. As it is a sum of norms, we can also</span>
+0279             <span class="comment">% compute it as :   v^\top \dot v    , v being a vector concatenation of</span>
+0280             <span class="comment">% all the components of the sum. Refer to equation(1) in https://bitbucket.org/</span>
+0281             <span class="comment">% gnuno/jointoffsetcalibinertialdoc/src/6c2f99f3e1be59c8021e4fc5e522fa21bdd97037/</span>
+0282             <span class="comment">% Papers/PaperOnOffsetsCalibration.svg?at=fix/renderingMindmaps</span>
+0283             <span class="comment">%</span>
+0284             <span class="comment">% 'costVec' will be a cell array of cells 'costVec_ts'</span>
+0285             costVec_ts = cell(length(obj.sensorsIdxListModel),1);
+0286             costVec = cell(length(subsetVec_idx),1);
+0287             
+0288             <span class="comment">%DEBUG</span>
+0289             sensMeasNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+0290             sensEstNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+0291             costNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+0292             angleMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+0293             qiMat = zeros(length(subsetVec_idx),obj.dofs);
+0294             
+0295             sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+0296             sensEstCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+0297             
+0298             <span class="keyword">for</span> ts = 1:length(subsetVec_idx)
+0299                 
+0300                 <span class="comment">% Fill iDynTree joint vectors.</span>
+0301                 <span class="comment">% Warning!! iDynTree takes in input **radians** based units,</span>
+0302                 <span class="comment">% while the iCub port stream **degrees** based units.</span>
+0303                 qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_q0i(:,ts);
+0304                 dqisRobotDOF = zeros(obj.dofs,1);<span class="comment">% dqisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_dqi(:,ts);</span>
+0305                 d2qisRobotDOF = zeros(obj.dofs,1);<span class="comment">% d2qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_d2qi(:,ts);</span>
+0306                 <span class="comment">% Add Dq for the optimization function obj.calibJointsIdxFromModel</span>
+0307                 qisRobotDOF(obj.calibJointsIdxFromModel,1) = qisRobotDOF(obj.calibJointsIdxFromModel,1) + Dq;
+0308 
+0309                 obj.qi_idyn.fromMatlab(qisRobotDOF);
+0310                 obj.dqi_idyn.fromMatlab(dqisRobotDOF);
+0311                 obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
+0312                 
+0313                 <span class="comment">% DEBUG</span>
+0314                 modelJointsList = obj.ctrledJointsIdxFromModel;
+0315                 qiMat(ts,:) = qisRobotDOF';
+0316                 
+0317                 <span class="comment">% Update the kinematics information in the estimator</span>
+0318                 obj.estimator.updateKinematicsFromFixedBase(obj.qi_idyn,obj.dqi_idyn,obj.d2qi_idyn, <span class="keyword">...</span>
+0319                                                             obj.base_link_index,obj.grav_idyn);
+0320                 
+0321                 <span class="comment">% run the estimation</span>
+0322                 obj.estimator.computeExpectedFTSensorsMeasurements(obj.fullBodyUnknowns,obj.estMeasurements,obj.sink1,obj.sink2);
+0323                 
+0324                 <span class="comment">% Get predicted and measured sensor data for each sensor referenced in</span>
+0325                 <span class="comment">% 'sensorsIdxList' and build a single 'diff' vector for the whole data set.</span>
+0326                 <span class="keyword">for</span> acc_i = 1:length(obj.sensorsIdxListModel)
+0327                     <span class="comment">% get predicted measurement on sensor frame</span>
+0328                     obj.estMeasurements.getMeasurement(iDynTree.ACCELEROMETER,obj.sensorsIdxListModel(acc_i),obj.estimatedSensorLinAcc);
+0329                     sensEst = obj.estimatedSensorLinAcc.toMatlab;
+0330                     
+0331                     <span class="comment">% get measurement table ys_xxx_acc [3xnSamples] from captured data,</span>
+0332                     <span class="comment">% and then select the sample 's' (&lt;=&gt; timestamp).</span>
+0333                     ys   = [<span class="string">'ys_'</span> data.labels{obj.sensorsIdxListFile(acc_i)}];
+0334                     eval([<span class="string">'sensMeas = data.parsedParams.'</span> ys <span class="string">'(:,subsetVec_idx(ts));'</span>]);
+0335                     
+0336                     <span class="comment">% compute the cost for 1 sensor / 1 timestamp</span>
+0337                     costVec_ts{acc_i} = (sensMeas - sensEst);
+0338                     <span class="comment">%DEBUG</span>
+0339                     sensMeasNormMat(ts,acc_i) = norm(sensMeas,2);
+0340                     sensEstNormMat(ts,acc_i) = norm(sensEst,2);
+0341                     costNormMat(ts,acc_i) = norm(costVec_ts{acc_i},2);
+0342                     <span class="comment">% compute angle</span>
+0343                     sinAngle = norm(cross(sensEst,sensMeas),2)/(norm(sensEst,2)*norm(sensMeas,2));
+0344                     cosAngle = (sensEst'*sensMeas)/(norm(sensEst,2)*norm(sensMeas,2));
+0345                     angleMat(ts,acc_i) = atan2(sinAngle,cosAngle);
+0346                     sensMeasCell{ts,acc_i} = sensMeas';
+0347                     sensEstCell{ts,acc_i} = sensEst';
+0348                 <span class="keyword">end</span>
+0349                 
+0350                 costVec{ts} = cell2mat(costVec_ts);
+0351             <span class="keyword">end</span>
+0352             
+0353             
+0354             <span class="comment">% Final cost = norm of 'costVec'</span>
+0355             costVecMat = cell2mat(costVec);
+0356             optimFunctionProps = functions(optimFunction);
+0357             <span class="keyword">if</span> strcmp(optimFunctionProps.function,<span class="string">'lsqnonlin'</span>)
+0358                 e = costVecMat;
+0359             <span class="keyword">else</span>
+0360                 e = costVecMat'*costVecMat;
+0361             <span class="keyword">end</span>
+0362             
+0363             <span class="keyword">if</span> log
+0364                 <span class="comment">% log data</span>
+0365                 logFile = [<span class="string">'./data/logSensorMeasVsEst'</span> optimized <span class="string">'.mat'</span>];
+0366                 save(logFile,<span class="string">'modelJointsList'</span>,<span class="string">'qiMat'</span>,<span class="string">'sensMeasNormMat'</span>,<span class="string">'sensEstNormMat'</span>,<span class="string">'costNormMat'</span>,<span class="string">'angleMat'</span>,<span class="string">'sensMeasCell'</span>,<span class="string">'sensEstCell'</span>,<span class="string">'subsetVec_idx'</span>);
+0367             <span class="keyword">end</span>
+0368         <span class="keyword">end</span>
+0369         
+0370         <a name="_sub5" href="#_subfunctions" class="code">function e = costFunctionSigmaProjOnEachLink(obj,Dq,data,subsetVec_idx,optimFunction)</a>
+0371             <span class="comment">% We had defined in 'buildModelParams' a segment i as a link for which</span>
+0372             <span class="comment">% parent joint i and joint i+1 axis are not concurrent. For instance 'root_link',</span>
+0373             <span class="comment">% 'r_upper_leg', 'r_lower_leg', 'r_foot' are segments of the right leg. 'r_hip_1',</span>
+0374             <span class="comment">% 'r_hip2' and r_hip_3' are part of the 3 DoF hip joint.</span>
+0375             <span class="comment">% This function computes a sub-cost function e_k for each segment k. Each</span>
+0376             <span class="comment">% cost e_k is the sum of variances of all the sensor measurements projected</span>
+0377             <span class="comment">% on the link k frame F_k.</span>
+0378             <span class="comment">%</span>
+0379             <span class="comment">%% compute predicted measurements</span>
+0380             <span class="comment">% We compute here the final cost 'e'. As it is a sum of norms, we can also</span>
+0381             <span class="comment">% compute it as :   v^\top \dot v    , v being a vector concatenation of</span>
+0382             <span class="comment">% all the components of the sum. Refer to equation(1) in https://bitbucket.org/</span>
+0383             <span class="comment">% gnuno/jointoffsetcalibinertialdoc/src/6c2f99f3e1be59c8021e4fc5e522fa21bdd97037/</span>
+0384             <span class="comment">% Papers/PaperOnOffsetsCalibration.svg?at=fix/renderingMindmaps</span>
+0385             <span class="comment">%</span>
+0386             <span class="comment">% 'costVec_Lk_ts' is an array of costs for 1 frame projection, 1 timestamp</span>
+0387             <span class="comment">% and *per* sensor.</span>
+0388             <span class="comment">% 'costVec_Lk' is an array of costs for 1 frame projection, *per* timestamp</span>
+0389             <span class="comment">% and *per* sensor.</span>
+0390             <span class="comment">% 'costVec' is an array of costs for *per* frame projection, *per* timestamp</span>
+0391             <span class="comment">% and *per* sensor.</span>
+0392             costVec_Lk_ts = cell(length(obj.sensorsIdxListModel),1);
+0393             costVec_Lk = cell(length(subsetVec_idx),1);
+0394             costVec = cell(length(obj.segments),1);
+0395             
+0396             <span class="comment">%DEBUG</span>
+0397             <span class="comment">% sensMeasNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));</span>
+0398             <span class="comment">% sensEstNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));</span>
+0399             <span class="comment">% costNormMat = zeros(length(subsetVec_idx),length(obj.sensorsIdxListModel));</span>
+0400             <span class="comment">%</span>
+0401             <span class="comment">% sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));</span>
+0402             <span class="comment">% sensEstCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));</span>
+0403 
+0404             <span class="comment">%% Sum the costs projected on every link (we later might exclude the base</span>
+0405             <span class="comment">% link which doesn't have accelerometers and assume a theoretical g_0.</span>
+0406             <span class="comment">%</span>
+0407             <span class="comment">% Definition:</span>
+0408             <span class="comment">%</span>
+0409             <span class="comment">% $$e_T = \sum_{k=0}^{N} e_k$$</span>
+0410             <span class="comment">%</span>
+0411             <span class="keyword">for</span> segmentk = 1:length(obj.segments)
+0412                 <span class="comment">%% Compute the mean of measurements projected on link Lk</span>
+0413                 <span class="comment">%</span>
+0414                 <span class="comment">% Definition:</span>
+0415                 <span class="comment">%</span>
+0416                 <span class="comment">% $${}^k\mu_{g,k} = \frac{1}{PM} \sum_{p=1}^{P} \sum_{i=0}^{M} {{}^kR_{S_i}}(q_p,\Delta q) {}^{S_i}g_i(p)$$</span>
+0417                 <span class="comment">%</span>
+0418                 <span class="comment">%  Considering the following notation:</span>
+0419                 <span class="comment">%</span>
+0420                 <span class="comment">% $N$: number of links/joints in the chain, except link 0.</span>
+0421                 <span class="comment">% $M$: number of sensors. Each link can have several sensors attached</span>
+0422                 <span class="comment">% to it ($M \geq N$).</span>
+0423                 <span class="comment">% $S_i$: sensor $i$ frame.</span>
+0424                 <span class="comment">% ${}^{S_i}g_i(p)$: gravity measurement from sensor $i$, for a given</span>
+0425                 <span class="comment">% kinematic chain configuration $p$, expressed in the sensor $i$ frame.</span>
+0426                 <span class="comment">%  $G$: ground truth gravity vector.</span>
+0427                 <span class="comment">%  ${}^bR_a$: for any frame $a$ or $b$, rotation matrix transforming</span>
+0428                 <span class="comment">%  motion. vector coordinates from frame $a$ to frame $b$ (link root frames).</span>
+0429                 <span class="comment">%  $p$: static configuration of the kinematic chain, for a given set of</span>
+0430                 <span class="comment">%  measurements.</span>
+0431                 <span class="comment">%  $P$: number of static configurations used for capturing data.</span>
+0432                 <span class="comment">%  $q_p$: vector of all the joint angular positions (joint encoders reading) of the</span>
+0433                 <span class="comment">%  kinematic chain for a static configuration $p$.</span>
+0434                 <span class="comment">%  $\Delta q$: vector of encoder offsets.</span>
+0435                 <span class="comment">%</span>
+0436                 
+0437                 <span class="comment">% init the 2D array of measurements projected on link k, and their mean</span>
+0438                 Lk_sensMeasCell = cell(length(subsetVec_idx),length(obj.sensorsIdxListModel));
+0439                 mu_k = cell(length(subsetVec_idx),1);
+0440                 
+0441                 <span class="comment">% set 'Lk' as the traversal base to be used at current</span>
+0442                 <span class="comment">% iteration</span>
+0443                 Lk = obj.estimator.model.getLinkIndex(obj.segments{segmentk});
+0444                 obj.estimator.model.computeFullTreeTraversal(obj.traversal_Lk, Lk);
+0445                 
+0446                 
+0447                 <span class="keyword">for</span> ts = 1:length(subsetVec_idx)
+0448                     
+0449                     <span class="comment">% Complete the full floating base position configuration</span>
+0450                     <span class="comment">% by filling the joint positions.</span>
+0451                     <span class="comment">% Warning!! iDynTree takes in input **radians** based units,</span>
+0452                     <span class="comment">% while the iCub port stream **degrees** based units.</span>
+0453                     <span class="comment">% Also add joint offsets from a previous result.</span>
+0454                     qisRobotDOF = zeros(obj.dofs,1); qisRobotDOF(obj.ctrledJointsIdxFromModel,1) = obj.sub_q0i(:,ts);
+0455                     <span class="comment">% Add Dq for the optimization function obj.calibJointsIdxFromModel</span>
+0456                     qisRobotDOF(obj.calibJointsIdxFromModel,1) = qisRobotDOF(obj.calibJointsIdxFromModel,1) + Dq;
+0457                     <span class="comment">% obj.qi_idyn.fromMatlab(qisRobotDOF);</span>
+0458                     <span class="keyword">for</span> joint_i = 0:(obj.dofs-1)
+0459                         obj.fixedBasePos.jointPos.setVal(joint_i,qisRobotDOF(joint_i+1));
+0460                     <span class="keyword">end</span>
+0461                     
+0462                     <span class="comment">% Project on link frame Lk all measurements from each sensor referenced in</span>
+0463                     <span class="comment">% 'sensorsIdxList'and compute the mean.</span>
+0464                     <span class="keyword">for</span> acci = 1:length(obj.sensorsIdxListModel)
+0465                         <span class="comment">% get sensor handle</span>
+0466                         sensor = obj.estimator.sensors.getAccelerometerSensor(obj.sensorsIdxListModel(acci));
+0467                         <span class="comment">% get the sensor to link i transform Li_H_acci</span>
+0468                         Li_H_acci = sensor.getLinkSensorTransform().getRotation().toMatlab;
+0469                         <span class="comment">% get the projection link k to link i transform Lk_H_Li</span>
+0470                         iDynTree.ForwardPositionKinematics(obj.estimator.model, obj.traversal_Lk, <span class="keyword">...</span>
+0471                             obj.fixedBasePos, obj.linkPos);
+0472                         Li = sensor.getParentLinkIndex();
+0473                         Lk_H_Li_idyn = obj.linkPos(Li);
+0474                         Lk_H_Li = Lk_H_Li_idyn.getRotation().toMatlab;
+0475                         <span class="comment">% get measurement table ys_xxx_acc [3xnSamples] from captured data,</span>
+0476                         <span class="comment">% and then select the sample 's' (&lt;=&gt; timestamp).</span>
+0477                         ys   = [<span class="string">'ys_'</span> data.labels{obj.sensorsIdxListFile(acci)}];
+0478                         eval([<span class="string">'sensMeas = data.parsedParams.'</span> ys <span class="string">'(:,ts);'</span>]);
+0479                         <span class="comment">% project the measurement in link Lk frame and store it for</span>
+0480                         <span class="comment">% later computing the variances</span>
+0481                         Lk_sensMeasCell{ts,acci} = Lk_H_Li * (Li_H_acci * sensMeas);
+0482                     <span class="keyword">end</span>
+0483                     <span class="comment">% compute the mean</span>
+0484                     mu_k{ts} = mean(cell2mat(Lk_sensMeasCell(ts,:)),2);
+0485                 <span class="keyword">end</span>
+0486                 
+0487                 <span class="comment">%% Compute the variances of measurements projected on link Lk</span>
+0488                 <span class="comment">%</span>
+0489                 <span class="comment">% Definition:</span>
+0490                 <span class="comment">%</span>
+0491                 <span class="comment">% $$e_k = \sum_{p=1}^{P} \sum_{i=0}^{M} \Vert {}^kR_{S_i}(q_p,\Delta q) {}^{S_i}g_i(p) - {{}^k\mu_{g,k}} \Vert^2$$</span>
+0492                 <span class="comment">%</span>
+0493                 <span class="comment">% Considering the same previous notation, and the following additions:</span>
+0494                 <span class="comment">% $k$: link frame where we project the measurements</span>
+0495                 <span class="comment">% $N$: total number of links</span>
+0496                 <span class="comment">%</span>
+0497                 <span class="comment">% Compute the variances for each ts and acc_i. Formulate computation</span>
+0498                 <span class="comment">% as variance = diff' * diff.</span>
+0499                 <span class="keyword">for</span> ts = 1:length(subsetVec_idx)
+0500                     <span class="keyword">for</span> acci = 1:length(obj.sensorsIdxListModel)
+0501                         <span class="comment">% compute the cost for 1 sensor / 1 timestamp, using previously</span>
+0502                         <span class="comment">% computed measurement (ts,acci) and mean(ts), and previously</span>
+0503                         <span class="comment">% computed mean, all projected on frame link k.</span>
+0504                         costVec_Lk_ts{acci} = (Lk_sensMeasCell{ts,acci} - mu_k{ts});
+0505                         <span class="comment">%DEBUG</span>
+0506                         <span class="comment">%             sensMeasNormMat(ts,acci) = norm(sensMeas,2);</span>
+0507                         <span class="comment">%             sensEstNormMat(ts,acci) = norm(sensEst,2);</span>
+0508                         <span class="comment">%             costNormMat(ts,acci) = norm(costVec_Lk_ts{acci},2);</span>
+0509                         <span class="comment">%             sensMeasCell{ts,acci} = sensMeas';</span>
+0510                         <span class="comment">%             sensEstCell{ts,acci} = sensEst';</span>
+0511                     <span class="keyword">end</span>
+0512                     
+0513                     costVec_Lk{ts} = cell2mat(costVec_Lk_ts);
+0514                 <span class="keyword">end</span>
+0515                 costVec{segmentk} = cell2mat(costVec_Lk);
+0516             <span class="keyword">end</span>
+0517             
+0518             <span class="comment">% Final cost = norm of 'costVec'</span>
+0519             costVecMat = cell2mat(costVec);
+0520             optimFunctionProps = functions(optimFunction);
+0521             <span class="keyword">if</span> strcmp(optimFunctionProps.function,<span class="string">'lsqnonlin'</span>)
+0522                 e = costVecMat;
+0523             <span class="keyword">else</span>
+0524                 e = costVecMat'*costVecMat;
+0525             <span class="keyword">end</span>
+0526           
+0527         <span class="keyword">end</span>
+0528         
+0529         <a name="_sub6" href="#_subfunctions" class="code">function list_kHsens = getListTransforms(obj,refFrameName)</a>
+0530             <span class="comment">% Set joint positions to 0</span>
+0531             qisRobotDOF = zeros(obj.dofs,1);
+0532             dqisRobotDOF = zeros(obj.dofs,1);
+0533             d2qisRobotDOF = zeros(obj.dofs,1);
+0534             obj.qi_idyn.fromMatlab(qisRobotDOF);
+0535             obj.dqi_idyn.fromMatlab(dqisRobotDOF);
+0536             obj.d2qi_idyn.fromMatlab(d2qisRobotDOF);
+0537             
+0538             <span class="comment">% init list of transforms</span>
+0539             nbSensors = obj.estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER);
+0540             list_kHsens = cell(nbSensors,1);
+0541             
+0542             <span class="comment">% get link from ref frame and compute the traveral</span>
+0543             Lb = obj.estimator.model.getFrameLink(<span class="keyword">...</span>
+0544                 obj.estimator.model.getFrameIndex(refFrameName));
+0545             obj.estimator.model.computeFullTreeTraversal(obj.traversal_Lk, Lb);
+0546             
+0547             <span class="comment">% propagate kinematic parameters</span>
+0548             iDynTree.ForwardPositionKinematics(obj.estimator.model, obj.traversal_Lk,obj.fixedBasePos, obj.linkPos);
+0549             
+0550             <span class="comment">% get the transform for each sensor</span>
+0551             <span class="keyword">for</span> acci = 1:nbSensors
+0552                 <span class="comment">% get sensor handle</span>
+0553                 sensor = obj.estimator.sensors.getAccelerometerSensor(acci-1);
+0554                 <span class="comment">% get the sensor to link i transform Li_H_acci</span>
+0555                 Li_H_acci = sensor.getLinkSensorTransform().getRotation().toMatlab;
+0556                 <span class="comment">% get the projection link b to link i transform Lb_H_Li</span>
+0557                 iDynTree.ForwardPositionKinematics(obj.estimator.model, obj.traversal_Lk, <span class="keyword">...</span>
+0558                     obj.fixedBasePos, obj.linkPos);
+0559                 Li = sensor.getParentLinkIndex();
+0560                 Lb_H_Li_idyn = obj.linkPos(Li);
+0561                 Lb_H_Li = Lb_H_Li_idyn.getRotation().toMatlab;
+0562                 <span class="comment">% get the transform base link to sensor frame</span>
+0563                 Lb_H_acci = Lb_H_Li * Li_H_acci;
+0564                 <span class="comment">% print</span>
+0565                 fprintf(<span class="string">'Sensor %s :'</span>,sensor.getName());
+0566                 Lb_H_Li
+0567                 Li_H_acci
+0568                 Lb_H_acci
+0569                 <span class="comment">% export list</span>
+0570                 list_kHsens{acci,1} = Lb_H_acci;
+0571             <span class="keyword">end</span>
+0572         <span class="keyword">end</span>
+0573     <span class="keyword">end</span>
+0574 <span class="keyword">end</span>
+0575</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

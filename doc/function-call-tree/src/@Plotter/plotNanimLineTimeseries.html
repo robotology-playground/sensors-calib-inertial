@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotNanimLineTimeseries</title>
+  <meta name="keywords" content="plotNanimLineTimeseries">
+  <meta name="description" content="Plots y1(t), y2(t),...,yn(t) on the same axis.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Plotter -->
+<h1>plotNanimLineTimeseries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Plots y1(t), y2(t),...,yn(t) on the same axis.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ figH,animLinesList ] = plotNanimLineTimeseries(figuresHandler,aTitle,aLabel,yLabel,yLegends,lineStyles,lineWidths,colors,markerSymbols,markerSizes,markerEdgeColors,markerFaceColors) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Plots y1(t), y2(t),...,yn(t) on the same axis.
+   Plots several timeseries functions y(time) with a single y axis,
+   using a default set of colors.
+   figuresHandler: class object handling all the figures (figure list
+   tracking, saving figures,...)
+   aTitle: figure title
+   aLabel: figure label for the figures handler
+   yLabel: y axis units
+   yLegends: cell list 1xJ of legends for all the J animatedLine objects
+   lineStyles: cell list 1xJ of line styles: '-' (default) | '--' | ':' | '-.' | 'none'
+   lineWidths: cell list 1xJ of line widths: 0.5 (default) | positive value
+   colors: cell list 1xJ of line colors: [0 0 0] (default) | RGB triplet | 'r' | 'g' | 'b' | ...
+   markerSymbols:  cell list 1xJ of marker symbols: 'none' (default) | 'o' | '+' | '*' | '.' | ...
+   markerSizes: cell list 1xJ of marker sizes
+   markerEdgeColors: cell list 1xJ of colors: 'auto' (default) | RGB triplet | 'r' | 'g' | 'b' | ...
+   markerFaceColors: cell list 1xJ of colors: 'none' (default) | 'auto' | RGB triplet | 'r' | 'g' | 'b' | ...</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Plotter.html" class="code" title="">Plotter</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ figH,animLinesList ] = plotNanimLineTimeseries(</a><span class="keyword">...</span>
+0002     figuresHandler,aTitle,aLabel,yLabel,<span class="keyword">...</span>
+0003     yLegends,lineStyles,lineWidths,colors,<span class="keyword">...</span>
+0004     markerSymbols,markerSizes,markerEdgeColors,markerFaceColors)
+0005 <span class="comment">%Plots y1(t), y2(t),...,yn(t) on the same axis.</span>
+0006 <span class="comment">%   Plots several timeseries functions y(time) with a single y axis,</span>
+0007 <span class="comment">%   using a default set of colors.</span>
+0008 <span class="comment">%   figuresHandler: class object handling all the figures (figure list</span>
+0009 <span class="comment">%   tracking, saving figures,...)</span>
+0010 <span class="comment">%   aTitle: figure title</span>
+0011 <span class="comment">%   aLabel: figure label for the figures handler</span>
+0012 <span class="comment">%   yLabel: y axis units</span>
+0013 <span class="comment">%   yLegends: cell list 1xJ of legends for all the J animatedLine objects</span>
+0014 <span class="comment">%   lineStyles: cell list 1xJ of line styles: '-' (default) | '--' | ':' | '-.' | 'none'</span>
+0015 <span class="comment">%   lineWidths: cell list 1xJ of line widths: 0.5 (default) | positive value</span>
+0016 <span class="comment">%   colors: cell list 1xJ of line colors: [0 0 0] (default) | RGB triplet | 'r' | 'g' | 'b' | ...</span>
+0017 <span class="comment">%   markerSymbols:  cell list 1xJ of marker symbols: 'none' (default) | 'o' | '+' | '*' | '.' | ...</span>
+0018 <span class="comment">%   markerSizes: cell list 1xJ of marker sizes</span>
+0019 <span class="comment">%   markerEdgeColors: cell list 1xJ of colors: 'auto' (default) | RGB triplet | 'r' | 'g' | 'b' | ...</span>
+0020 <span class="comment">%   markerFaceColors: cell list 1xJ of colors: 'none' (default) | 'auto' | RGB triplet | 'r' | 'g' | 'b' | ...</span>
+0021 
+0022 <span class="comment">% default values</span>
+0023 <span class="keyword">if</span> isempty(colors), colors={}; colors(1:numel(yLegends))={[0 0 0]}; <span class="keyword">end</span>
+0024 <span class="keyword">if</span> isempty(markerSymbols), markerSymbols={}; markerSymbols(1:numel(yLegends))={<span class="string">'none'</span>}; <span class="keyword">end</span>
+0025 <span class="keyword">if</span> isempty(markerSizes),   markerSizes={}; markerSizes(1:numel(yLegends))={6}; <span class="keyword">end</span>
+0026 <span class="keyword">if</span> isempty(markerEdgeColors), markerEdgeColors={}; markerEdgeColors(1:numel(yLegends))={<span class="string">'auto'</span>}; <span class="keyword">end</span>
+0027 <span class="keyword">if</span> isempty(markerFaceColors), markerFaceColors={}; markerFaceColors(1:numel(yLegends))={<span class="string">'none'</span>}; <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% create figure</span>
+0030 figH = figure(<span class="string">'Name'</span>,aTitle,<span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0031 
+0032 <span class="keyword">if</span> ~isempty(figuresHandler)
+0033     figuresHandler.addFigure(figH,aLabel); <span class="comment">% Add figure to the figure handler</span>
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="comment">% If the figure is not docked, use the below command to display it full</span>
+0037 <span class="comment">% screen.</span>
+0038 <span class="comment">%set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);</span>
+0039 title(aTitle,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+0040 grid on;
+0041 xlabel(<span class="string">'Time (sec)'</span>);
+0042 ylabel(yLabel);
+0043 set(gca,<span class="string">'FontSize'</span>,24);
+0044 lg=legend(<span class="string">'Location'</span>,<span class="string">'BestOutside'</span>);
+0045 lg.set(<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+0046 
+0047 <span class="comment">% Define the animated lines</span>
+0048 animLinesList = cellfun(<span class="keyword">...</span>
+0049     @(lineStyle,lineWidth,color,markerSymbol,markerSize,markerEdgeColor,markerFaceColor,markerCycle) <span class="keyword">...</span>
+0050     animatedline(<span class="keyword">...</span>
+0051     <span class="string">'LineStyle'</span>,lineStyle,<span class="string">'LineWidth'</span>,lineWidth,<span class="string">'Color'</span>,color,<span class="string">'Marker'</span>,markerSymbol,<span class="keyword">...</span>
+0052     <span class="string">'MarkerSize'</span>,markerSize,<span class="string">'MarkerEdgeColor'</span>,markerEdgeColor,<span class="string">'MarkerFaceColor'</span>,markerFaceColor),<span class="keyword">...</span>
+0053     lineStyles,lineWidths,colors,markerSymbols,markerSizes,markerEdgeColors,markerFaceColors,<span class="keyword">...</span>
+0054     <span class="string">'UniformOutput'</span>,false);
+0055 
+0056 <span class="comment">% set the legends</span>
+0057 cellfun(@(an,lg) set(an,<span class="string">'DisplayName'</span>,lg),animLinesList,yLegends);
+0058 
+0059 <span class="keyword">end</span>
+0060</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

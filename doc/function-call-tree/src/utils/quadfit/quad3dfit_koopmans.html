@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad3dfit_koopmans</title>
+  <meta name="keywords" content="quad3dfit_koopmans">
+  <meta name="description" content="Fit a quadratic curve to data using the nonlinear Koopmans method.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad3dfit_koopmans
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit a quadratic curve to data using the nonlinear Koopmans method.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,mu] = quad3dfit_koopmans(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit a quadratic curve to data using the nonlinear Koopmans method.
+
+ Input arguments:
+ x, y, z:
+    vectors of data to fit
+ sigma_x, sigma_y, sigma_z:
+    noise parameter for x, y and z dimensions
+
+ References:
+ Istvan Vajk and Jeno Hetthessy, &quot;Identification of nonlinear errors-in-variables
+    models&quot;, Automatica 39, 2003, pp2099-2107.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>	Eigenvalues and eigenvectors for matrix polynomial.</li><li><a href="quad3dcovpoly.html" class="code" title="function C = quad3dcovpoly(sx, sy, sz, x, y, z)">quad3dcovpoly</a>	Theoretical noise covariance structure corresponding to a 3D quadratic function.</li><li><a href="quad3dfit_paramchk.html" class="code" title="function [x,y,z,sigma_x,sigma_y,sigma_z] = quad3dfit_paramchk(filename, varargin)">quad3dfit_paramchk</a>	Quadratic 2-D fitting parameter check.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,mu] = quad3dfit_koopmans(varargin)</a>
+0002 <span class="comment">% Fit a quadratic curve to data using the nonlinear Koopmans method.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y, z:</span>
+0006 <span class="comment">%    vectors of data to fit</span>
+0007 <span class="comment">% sigma_x, sigma_y, sigma_z:</span>
+0008 <span class="comment">%    noise parameter for x, y and z dimensions</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% References:</span>
+0011 <span class="comment">% Istvan Vajk and Jeno Hetthessy, &quot;Identification of nonlinear errors-in-variables</span>
+0012 <span class="comment">%    models&quot;, Automatica 39, 2003, pp2099-2107.</span>
+0013 
+0014 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0015 
+0016 [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,sigma_x,sigma_y,sigma_z] = <a href="quad3dfit_paramchk.html" class="code" title="function [x,y,z,sigma_x,sigma_y,sigma_z] = quad3dfit_paramchk(filename, varargin)">quad3dfit_paramchk</a>(mfilename, varargin{:});
+0017 
+0018 Z = [x.^2, y.^2, z.^2, x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>, x.*z, y.*z, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z, ones(numel(x),1)];
+0019 D = (Z'*Z) / size(Z,1);
+0020 C = <a href="quad3dcovpoly.html" class="code" title="function C = quad3dcovpoly(sx, sy, sz, x, y, z)">quad3dcovpoly</a>(sigma_x, sigma_y, sigma_z, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z);
+0021 T = -C;
+0022 T(:,:,1) = D;
+0023 
+0024 [V,e] = <a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>(T);
+0025 
+0026 <span class="comment">% find those eigenvalues whose eigenvector is real</span>
+0027 ix = all(imag(V) &lt; eps, 1);
+0028 e = e(ix);
+0029 V = V(:,ix);
+0030 
+0031 <span class="comment">% find eigenvalue with magnitude closest to 1</span>
+0032 [~,ix] = sort(abs(1-e));
+0033 mu = e(ix(1));
+0034 p = V(:,ix(1));</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

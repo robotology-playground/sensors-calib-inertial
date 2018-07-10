@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of DataBase</title>
+  <meta name="keywords" content="DataBase">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @DataBase -->
+<h1>DataBase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DataBase.html" class="code" title="">DataBase</a>	</li><li><a href="build.html" class="code" title="function success = build(obj)">build</a>	build Creates the mappings between properties and keys, as well as the</li><li><a href="getElemRowIdxList.html" class="code" title="function elemRowIdxList = getElemRowIdxList( obj,queryPropsStruct )">getElemRowIdxList</a>	getElemList Retrieve handles pointing to elements which properties match the</li><li><a href="getMultiPropList.html" class="code" title="function propList = getMultiPropList(obj,queryPropsStruct,outputPropNameList)">getMultiPropList</a>	Retrieve the 'outputPropNameList' properties of elements matching input</li><li><a href="getPropList.html" class="code" title="function propList = getPropList(obj,queryPropsStruct,outputPropName)">getPropList</a>	getPropList Retrieve the 'outputPropName' property of elements matching input</li><li><a href="setProp.html" class="code" title="function success = setProp( obj,queryPropsStruct,propNameToSet,propValueToSet )">setProp</a>	setProp     Set to 'propValueToSet' the 'propNameToSet' property of elements matching</li><li><a href="setPropList.html" class="code" title="function success = setPropList( obj,queryKeyName,queryKeyValues,propNameToSet,propValuesToSet )">setPropList</a>	setPropList Select elements which <inputKeyName> is among <inputKeyValues> and set</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DataBase.html" class="code" title="">DataBase</a>	</li><li><a href="../../src/@JointsDbase/JointsDbase.html" class="code" title="">JointsDbase</a>	</li><li><a href="../../src/@SensorsDbase/SensorsDbase.html" class="code" title="">SensorsDbase</a>	======================================================================</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = DataBase(varargin)</a></li><li><a href="#_sub2" class="code">function setPropNameList(obj,propNameList)</a></li><li><a href="#_sub3" class="code">function setPropNameNvalueList(obj,propList)</a></li><li><a href="#_sub4" class="code">function success = addEntry(obj,propList)</a></li><li><a href="#_sub5" class="code">function setPropKeyList(obj,propKeyList)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="DataBase.html" class="code" title="">DataBase</a> &lt; handle
+0002     <span class="comment">%DataBase This class implements a generic database</span>
+0003     <span class="comment">%   It can be used for instance for building a robot model with</span>
+0004     <span class="comment">%   multiple mappings between the model parameters.</span>
+0005     
+0006     properties(Access = protected)
+0007         <span class="comment">% mapping of the property names to column indexes</span>
+0008         name2colIdx@containers.Map;
+0009         <span class="comment">% list of func handles mapping the property value to the row idx</span>
+0010         name2rowIdxHandleList = {}; 
+0011     <span class="keyword">end</span>
+0012     
+0013     properties(GetAccess = public, SetAccess = protected)
+0014         propKeyList = {};
+0015         propNameList = {};
+0016         propValueList = {};
+0017         ready = false; <span class="comment">% initial database not built</span>
+0018         nbElems = 0;
+0019         nbNames = 0;
+0020     <span class="keyword">end</span>
+0021     
+0022     methods(Access = public)
+0023         <span class="comment">% Constructor</span>
+0024         <a name="_sub0" href="#_subfunctions" class="code">function obj = DataBase(varargin)</a>
+0025             <span class="comment">% parse input parameters.</span>
+0026             <span class="keyword">for</span> inputIdx = 1:2:length(varargin)
+0027                 <span class="comment">% get next parameter</span>
+0028                 paramName = varargin{inputIdx};
+0029                 paramValue = varargin{inputIdx+1};
+0030                 <span class="comment">% parse</span>
+0031                 <span class="keyword">switch</span> paramName
+0032                     <span class="keyword">case</span> <span class="string">'keys'</span>
+0033                         obj.propKeyList = paramValue;
+0034                     <span class="keyword">case</span> <span class="string">'names'</span>
+0035                         obj.propNameList = paramValue;
+0036                     <span class="keyword">case</span> <span class="string">'values'</span>
+0037                         obj.propValueList = paramValue;
+0038                     <span class="keyword">otherwise</span>
+0039                         error(<span class="string">'Unknown parameters label'</span>);
+0040                 <span class="keyword">end</span>
+0041             <span class="keyword">end</span>
+0042         <span class="keyword">end</span>
+0043         
+0044         <span class="comment">% Set a list of property names. After this operation, the</span>
+0045         <span class="comment">% database is not consistent until the respective property values</span>
+0046         <span class="comment">% are appended and the database rebuilt.</span>
+0047         <a name="_sub1" href="#_subfunctions" class="code">function setPropNameList(obj,propNameList)</a>
+0048             obj.propNameList = propNameList;
+0049             obj.ready = false;
+0050         <span class="keyword">end</span>
+0051         
+0052         <span class="comment">% Set a 2-D list of properties. The first line of the 2-D list</span>
+0053         <span class="comment">% is the list of property names, the following lines set the</span>
+0054         <span class="comment">% property values.</span>
+0055         <span class="comment">% After this operation, the database is not consistent until the</span>
+0056         <span class="comment">% database rebuilt.</span>
+0057         <a name="_sub2" href="#_subfunctions" class="code">function setPropNameNvalueList(obj,propList)</a>
+0058             obj.propNameList = propList(1,:);
+0059             obj.propValueList = propList(2:<span class="keyword">end</span>,:);
+0060             obj.ready = false;
+0061         <span class="keyword">end</span>
+0062         
+0063         <span class="comment">% Add an entry setting the provided property names. 'propList' has 1</span>
+0064         <span class="comment">% line list of property names (matching the property names existing</span>
+0065         <span class="comment">% in the database) followed by a line list of property values.</span>
+0066         <span class="comment">% The function returns true if the property names actually match</span>
+0067         <span class="comment">% the ones existing in the database.</span>
+0068         <a name="_sub3" href="#_subfunctions" class="code">function success = addEntry(obj,propList)</a>
+0069             success = true;
+0070         <span class="keyword">end</span>
+0071         
+0072         <span class="comment">% Reset list of keys among existing property names. After this operation, the</span>
+0073         <span class="comment">% database is not consistent until it is rebuilt.</span>
+0074         <a name="_sub4" href="#_subfunctions" class="code">function setPropKeyList(obj,propKeyList)</a>
+0075             obj.propKeyList = propKeyList;
+0076             obj.ready = false;
+0077         <span class="keyword">end</span>
+0078         
+0079         <span class="comment">% Build or rebuild database. If returned value is false, it means the</span>
+0080         <span class="comment">% database is not consistent (wrong element types, mismatch between</span>
+0081         <span class="comment">% properties list and values list sizes,...).</span>
+0082         success = <a href="build.html" class="code" title="function success = build(obj)">build</a>(obj);
+0083         
+0084         <span class="comment">% Retrieve the 'outputPropName' property of elements matching input</span>
+0085         <span class="comment">% properties specified in 'inputPropsStruct'.</span>
+0086         propList = <a href="getPropList.html" class="code" title="function propList = getPropList(obj,queryPropsStruct,outputPropName)">getPropList</a>(obj,queryPropsStruct,outputPropName);
+0087         
+0088         <span class="comment">% Retrieve the 'outputPropNameList' properties of elements matching input</span>
+0089         <span class="comment">% properties specified in 'inputPropsStruct'.</span>
+0090         propList = <a href="getMultiPropList.html" class="code" title="function propList = getMultiPropList(obj,queryPropsStruct,outputPropNameList)">getMultiPropList</a>(obj,queryPropsStruct,outputPropNameList);
+0091         
+0092         <span class="comment">% Set to 'propValueToSet' the 'propNameToSet' property of elements matching</span>
+0093         <span class="comment">% input properties specified in 'inputPropsStruct'.</span>
+0094         success = <a href="setProp.html" class="code" title="function success = setProp( obj,queryPropsStruct,propNameToSet,propValueToSet )">setProp</a>(obj,queryPropsStruct,propNameToSet,propValueToSet);
+0095         
+0096         <span class="comment">% Select the database elements through the set of key values</span>
+0097         <span class="comment">% 'queryKeyValues' of type 'queryKeyName'. For each selected</span>
+0098         <span class="comment">% element, set the property 'propNameToSet' to the respective value</span>
+0099         <span class="comment">% in the table 'propValuesToSet'.</span>
+0100         success = <a href="setPropList.html" class="code" title="function success = setPropList( obj,queryKeyName,queryKeyValues,propNameToSet,propValuesToSet )">setPropList</a>(obj,<span class="keyword">...</span>
+0101             queryKeyName,queryKeyValues,<span class="keyword">...</span>
+0102             propNameToSet,propValuesToSet);
+0103     <span class="keyword">end</span>
+0104     
+0105     methods(Access = protected)
+0106         <span class="comment">% Retrieve indexes of elements which properties match the input</span>
+0107         <span class="comment">% parameters 'inputPropsStruct'.</span>
+0108         elemRowIdxList = <a href="getElemRowIdxList.html" class="code" title="function elemRowIdxList = getElemRowIdxList( obj,queryPropsStruct )">getElemRowIdxList</a>(obj,queryPropsStruct);
+0109     <span class="keyword">end</span>
+0110     
+0111 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

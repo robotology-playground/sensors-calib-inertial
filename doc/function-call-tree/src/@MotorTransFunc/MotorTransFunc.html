@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MotorTransFunc</title>
+  <meta name="keywords" content="MotorTransFunc">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotorTransFunc -->
+<h1>MotorTransFunc
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorTransFunc.html" class="code" title="">MotorTransFunc</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorTransFunc.html" class="code" title="">MotorTransFunc</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = MotorTransFunc(motorName)</a></li><li><a href="#_sub2" class="code">function transFunc = GetMotorTransFunc(motorName,calibrationMap)</a></li><li><a href="#_sub3" class="code">function isEq = eq(aTransFunc,anotherTransFunc)</a></li><li><a href="#_sub4" class="code">function setKpwm(obj,Kpwm), obj.Kpwm = Kpwm; end</a></li><li><a href="#_sub5" class="code">function setFriction(obj, Kc, Kv)</a></li><li><a href="#_sub6" class="code">function setStiction(obj,stictionP, stictionN)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MotorTransFunc.html" class="code" title="">MotorTransFunc</a> &lt; handle
+0002     <span class="comment">%This class groups all the motor transfer function parameters</span>
+0003     <span class="comment">%   The transfer function parameters are:</span>
+0004     <span class="comment">%   - Kpwm</span>
+0005     <span class="comment">%   - KcP, KcN</span>
+0006     <span class="comment">%   - KvP, KvN</span>
+0007     <span class="comment">%   - stictionP, stictionN</span>
+0008     
+0009     properties(GetAccess=public, SetAccess=protected)
+0010         name@char;
+0011         Kpwm = 0;
+0012         Kc = 0;
+0013         Kv = 0;
+0014         stictionP = 0;
+0015         stictionN = 0;
+0016     <span class="keyword">end</span>
+0017     
+0018     methods(Access=protected)
+0019         <span class="comment">% Constructor</span>
+0020         <a name="_sub0" href="#_subfunctions" class="code">function obj = MotorTransFunc(motorName)</a>
+0021             obj.name = motorName;
+0022         <span class="keyword">end</span>
+0023     <span class="keyword">end</span>
+0024     
+0025     methods(Static=true, Access=public)
+0026         <a name="_sub1" href="#_subfunctions" class="code">function transFunc = GetMotorTransFunc(motorName,calibrationMap)</a>
+0027             <span class="keyword">if</span> ~isKey(calibrationMap,motorName)
+0028                 calibrationMap(motorName) = <a href="MotorTransFunc.html" class="code" title="">MotorTransFunc</a>(motorName);
+0029             <span class="keyword">end</span>
+0030             <span class="comment">% Return the handle on the newly created or already existing</span>
+0031             <span class="comment">% MotorTransFunc object.</span>
+0032             transFunc = calibrationMap(motorName);
+0033         <span class="keyword">end</span>
+0034         
+0035         <a name="_sub2" href="#_subfunctions" class="code">function isEq = eq(aTransFunc,anotherTransFunc)</a>
+0036             isEq = true;
+0037             <span class="keyword">for</span> field = fieldnames(aTransFunc)'
+0038                 <span class="keyword">if</span> ischar(aTransFunc.(field{1}))
+0039                     isEq = isEq &amp;&amp; strcmp(aTransFunc.(field{1}),anotherTransFunc.(field{1}));
+0040                 <span class="keyword">elseif</span> isnumeric(aTransFunc.(field{1}))
+0041                     isEq = isEq &amp;&amp; aTransFunc.(field{1}) == anotherTransFunc.(field{1});
+0042                 <span class="keyword">end</span>
+0043             <span class="keyword">end</span>
+0044         <span class="keyword">end</span>
+0045     <span class="keyword">end</span>
+0046     
+0047     methods(Access=public)
+0048         <a name="_sub3" href="#_subfunctions" class="code">function setKpwm(obj,Kpwm), obj.Kpwm = Kpwm; end</a>
+0049         
+0050         <a name="_sub4" href="#_subfunctions" class="code">function setFriction(obj, Kc, Kv)</a>
+0051             obj.Kc = Kc;
+0052             obj.Kv = Kv;
+0053         <span class="keyword">end</span>
+0054         
+0055         <a name="_sub5" href="#_subfunctions" class="code">function setStiction(obj,stictionP, stictionN)</a>
+0056             obj.stictionP = stictionP;
+0057             obj.stictionN = stictionN;
+0058         <span class="keyword">end</span>
+0059     <span class="keyword">end</span>
+0060     
+0061 <span class="keyword">end</span>
+0062</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dfit_cals</title>
+  <meta name="keywords" content="quad2dfit_cals">
+  <meta name="description" content="Fit a quadratic curve to data using consistent algebraic least squares.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dfit_cals
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit a quadratic curve to data using consistent algebraic least squares.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [theta,mu] = quad2dfit_cals(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit a quadratic curve to data using consistent algebraic least squares.
+ Fit a quadratic curve to data using the nonlinear Koopmans method.
+
+ Input arguments:
+ x, y:
+    vectors of data to fit
+ sigma_x, sigma_y:
+    noise parameter for x and y dimensions</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="gsvd_min.html" class="code" title="function [p, s] = gsvd_min(d, c)">gsvd_min</a>	Singular vector belonging to smallest singular value.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>	Eigenvalues and eigenvectors for matrix polynomial.</li><li><a href="quad2dcov.html" class="code" title="function C = quad2dcov(varargin)">quad2dcov</a>	Theoretical noise covariance structure corresponding to a 2D quadratic function.</li><li><a href="quad2dfit_paramchk.html" class="code" title="function [x,y,sigma_x,sigma_y] = quad2dfit_paramchk(filename, varargin)">quad2dfit_paramchk</a>	Quadratic 2-D fitting parameter check.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li><li><a href="example_ellipsefit2.html" class="code" title="function example_ellipsefit2">example_ellipsefit2</a>	Various ellipse fits to some data points.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [theta,mu] = quad2dfit_cals(varargin)</a>
+0002 <span class="comment">% Fit a quadratic curve to data using consistent algebraic least squares.</span>
+0003 <span class="comment">% Fit a quadratic curve to data using the nonlinear Koopmans method.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Input arguments:</span>
+0006 <span class="comment">% x, y:</span>
+0007 <span class="comment">%    vectors of data to fit</span>
+0008 <span class="comment">% sigma_x, sigma_y:</span>
+0009 <span class="comment">%    noise parameter for x and y dimensions</span>
+0010 
+0011 <span class="comment">% References:</span>
+0012 <span class="comment">% Istvan Vajk and Jeno Hetthessy, &quot;Identification of nonlinear errors-in-variables</span>
+0013 <span class="comment">%    models&quot;, Automatica 39, 2003, pp2099-2107.</span>
+0014 <span class="comment">% I. Markovsky, A. Kukush, and S. V. Huffel, &quot;Consistent least squares</span>
+0015 <span class="comment">%    fitting of ellipsoids&quot;, Numer. Math., vol. 98, no. 1, pp. 177--194, 2004</span>
+0016 <span class="comment">% A. Kukush, I. Markovsky, and S. V. Huffel, &quot;Consistent estimation in an</span>
+0017 <span class="comment">%    implicit quadratic measurement error model&quot;, Comput. Statist. Data Anal.,</span>
+0018 <span class="comment">%    vol. 47, no. 1, pp. 123--147, 2004.</span>
+0019 
+0020 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0021 
+0022 [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y] = <a href="quad2dfit_paramchk.html" class="code" title="function [x,y,sigma_x,sigma_y] = quad2dfit_paramchk(filename, varargin)">quad2dfit_paramchk</a>(mfilename, varargin{:});
+0023 
+0024 <span class="comment">% normalize data</span>
+0025 mx = mean(x);
+0026 my = mean(<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0027 sx = (max(x)-min(x))/2;  <span class="comment">% scaling for x</span>
+0028 sy = (max(<a href="../../../src/@y/y.html" class="code" title="">y</a>)-min(<a href="../../../src/@y/y.html" class="code" title="">y</a>))/2;  <span class="comment">% scaling for y</span>
+0029 dx = (x-mx)/sx;  <span class="comment">% normalized data point coordinates</span>
+0030 dy = (<a href="../../../src/@y/y.html" class="code" title="">y</a>-my)/sy;
+0031 sigma_x = sigma_x/sx;  <span class="comment">% scaling for sigma_x</span>
+0032 sigma_y = sigma_y/sy;  <span class="comment">% scaling for sigma_y</span>
+0033 
+0034 <span class="comment">% build sample data matrix</span>
+0035 angle = atan2(sigma_y, sigma_x);
+0036 Z = [dx.^2, dx.*dy, dy.^2, dx, dy];
+0037 mZ = mean(Z);  <span class="comment">% relative offset for hyperplane to pass through origin</span>
+0038 
+0039 <span class="comment">% build sample data covariance matrix</span>
+0040 DD = (Z'*Z) / size(Z,1);
+0041 D = [ DD mZ' ; mZ 1 ];
+0042 
+0043 <span class="comment">% build theoretical noise covariance matrix of reduced size</span>
+0044 <a href="../../../src/@S/S.html" class="code" title="">S</a> = <a href="quad2dcov.html" class="code" title="function C = quad2dcov(varargin)">quad2dcov</a>(angle, dx, dy);
+0045 T = zeros(5,5,3);
+0046 T(:,:,1) = -<a href="../../../src/@S/S.html" class="code" title="">S</a>(1:5,1:5,1) + D(1:5,1:5) - D(1:5,6)*D(6,1:5);
+0047 T(:,:,2) = -<a href="../../../src/@S/S.html" class="code" title="">S</a>(1:5,1:5,2) + D(1:5,6)*<a href="../../../src/@S/S.html" class="code" title="">S</a>(6,1:5,2) + <a href="../../../src/@S/S.html" class="code" title="">S</a>(1:5,6,2)*D(6,1:5);
+0048 T(:,:,3) = -<a href="../../../src/@S/S.html" class="code" title="">S</a>(1:5,1:5,3) - <a href="../../../src/@S/S.html" class="code" title="">S</a>(1:5,6,2) * <a href="../../../src/@S/S.html" class="code" title="">S</a>(6,1:5,2);
+0049 <span class="comment">% T(:,:,1) - mu*T(:,:,2) - mu^2*T(:,:,3) should be positive semi-definite</span>
+0050 
+0051 strategy = <span class="string">'linear_translate'</span>;
+0052 <span class="keyword">switch</span> strategy
+0053     <span class="keyword">case</span> <span class="string">'polynomial'</span>  <span class="comment">% use linear and quadratic components and full matrix size</span>
+0054         [V,e] = <a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>(T);
+0055 
+0056         <span class="comment">% find those eigenvalues whose eigenvector is real</span>
+0057         ix = all(imag(V) &lt; eps, 1);
+0058         e = e(ix);
+0059         V = V(:,ix);
+0060 
+0061         <span class="comment">% find eigenvalue with smallest magnitude that minimizes</span>
+0062         <span class="comment">% theta' * (T(:,:,1) - mu*T(:,:,2) - mu^2*T(:,:,3)) * theta</span>
+0063         [~,ix] = sort(abs(e));
+0064         mu = e(ix(1));
+0065         theta = V(:,ix(1));
+0066     <span class="keyword">case</span> <span class="string">'linear'</span>  <span class="comment">% use linear component only (simplified method)</span>
+0067         [V,E] = eig(T(:,:,1),-T(:,:,2));
+0068         e = diag(E);
+0069         [~,ix] = sort(abs(e));
+0070         mu = e(ix(1));
+0071         theta = V(:,ix(1));
+0072     <span class="keyword">case</span> <span class="string">'linear_translate'</span>  <span class="comment">% use linear component only with data translation</span>
+0073         Z = bsxfun(@minus, Z, mZ);  <span class="comment">% translate hyperplane to pass through origin</span>
+0074         [theta,mu] = <a href="gsvd_min.html" class="code" title="function [p, s] = gsvd_min(d, c)">gsvd_min</a>(Z, chol(-T(:,:,2)));
+0075 <span class="keyword">end</span>
+0076 
+0077 <span class="comment">% unnormalize noise magnitude</span>
+0078 mu = mu / (sigma_x^2 + sigma_y^2);  <span class="comment">% normalize to noise parameter variance magnitude</span>
+0079 
+0080 <span class="comment">% unnormalize model parameter vector</span>
+0081 theta = [ theta ; -mZ * theta ];
+0082 
+0083 theta = <span class="keyword">...</span>
+0084 [ theta(1)*sy*sy <span class="keyword">...</span>
+0085 ; theta(2)*sx*sy <span class="keyword">...</span>
+0086 ; theta(3)*sx*sx <span class="keyword">...</span>
+0087 ; -2*theta(1)*sy*sy*mx - theta(2)*sx*sy*my + theta(4)*sx*sy*sy <span class="keyword">...</span>
+0088 ; -theta(2)*sx*sy*mx - 2*theta(3)*sx*sx*my + theta(5)*sx*sx*sy <span class="keyword">...</span>
+0089 ; theta(1)*sy*sy*mx*mx + theta(2)*sx*sy*mx*my + theta(3)*sx*sx*my*my - theta(4)*sx*sy*sy*mx - theta(5)*sx*sx*sy*my + theta(6)*sx*sx*sy*sy <span class="keyword">...</span>
+0090 ];
+0091 
+0092 <span class="keyword">if</span> nargout &lt; 1
+0093     figure;
+0094     hold(<span class="string">'all'</span>);
+0095     plot(x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="string">'b.'</span>);
+0096     <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(theta);
+0097     hold(<span class="string">'off'</span>);
+0098 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

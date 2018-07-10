@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dconfit_koopmans</title>
+  <meta name="keywords" content="quad2dconfit_koopmans">
+  <meta name="description" content="Fit a constrained quadratic curve to data using the nonlinear Koopmans method.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dconfit_koopmans
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit a constrained quadratic curve to data using the nonlinear Koopmans method.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,p0,mu0] = quad2dconfit_koopmans(x, y, sigma_x, sigma_y, Q) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit a constrained quadratic curve to data using the nonlinear Koopmans method.
+
+ Input arguments:
+ x, y:
+    vectors of data to fit
+ sigma_x, sigma_y:
+    noise parameter for x and y dimensions
+ Q:
+    constraint matrix in parameters x^2, xy, y^2, x, y and 1.
+
+ Output arguments:
+ p:
+    estimated parameters (taking constraints into account)
+ p0:
+    estimated parameters (not taking constraints into account)
+ mu0:
+    noise magnitude (not taking constraints into account)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsefit_robust.html" class="code" title="function p = ellipsefit_robust(R, Q)">ellipsefit_robust</a>	Constrained ellipse fit by solving a modified eigenvalue problem.</li><li><a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>	Eigenvalues and eigenvectors for matrix polynomial.</li><li><a href="mpolyval.html" class="code" title="function M = mpolyval(T, s)">mpolyval</a>	Evaluates a matrix polynomial T(s) at the specified value of s.</li><li><a href="quad2dcov.html" class="code" title="function C = quad2dcov(varargin)">quad2dcov</a>	Theoretical noise covariance structure corresponding to a 2D quadratic function.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit_koopmans.html" class="code" title="function [theta,mu] = ellipsefit_koopmans(varargin)">ellipsefit_koopmans</a>	Fit an ellipse to data using the nonlinear Koopmans method.</li><li><a href="example_quad2dcon.html" class="code" title="function example_quad2dcon">example_quad2dcon</a>	Demonstration of constrained quadratic curve fitting.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function p = unnormalize(p, mx, my, sx, sy)</a></li><li><a href="#_sub2" class="code">function p = ellipsefit_eigen(R, Q)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,p0,mu0] = quad2dconfit_koopmans(x, y, sigma_x, sigma_y, Q)</a>
+0002 <span class="comment">% Fit a constrained quadratic curve to data using the nonlinear Koopmans method.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y:</span>
+0006 <span class="comment">%    vectors of data to fit</span>
+0007 <span class="comment">% sigma_x, sigma_y:</span>
+0008 <span class="comment">%    noise parameter for x and y dimensions</span>
+0009 <span class="comment">% Q:</span>
+0010 <span class="comment">%    constraint matrix in parameters x^2, xy, y^2, x, y and 1.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Output arguments:</span>
+0013 <span class="comment">% p:</span>
+0014 <span class="comment">%    estimated parameters (taking constraints into account)</span>
+0015 <span class="comment">% p0:</span>
+0016 <span class="comment">%    estimated parameters (not taking constraints into account)</span>
+0017 <span class="comment">% mu0:</span>
+0018 <span class="comment">%    noise magnitude (not taking constraints into account)</span>
+0019 
+0020 <span class="comment">% References:</span>
+0021 <span class="comment">% Istvan Vajk and Jeno Hetthessy, &quot;Identification of nonlinear errors-in-variables</span>
+0022 <span class="comment">%    models&quot;, Automatica 39, 2003, pp2099-2107.</span>
+0023 <span class="comment">% Radim Halir and Jan Flusser, &quot;Numerically stable direct least squares fitting of</span>
+0024 <span class="comment">%    ellipses&quot;, 1998</span>
+0025 
+0026 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0027 
+0028 narginchk(2,5);
+0029 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0030 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0031 x = x(:);
+0032 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0033 count = numel(x);
+0034 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[count,1]});
+0035 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[count,1]});
+0036 <span class="keyword">if</span> nargin &gt; 2
+0037     validateattributes(sigma_x, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0038     validateattributes(sigma_y, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0039 <span class="keyword">else</span>
+0040     sigma_x = 1;
+0041     sigma_y = 1;
+0042 <span class="keyword">end</span>
+0043 <span class="keyword">if</span> nargin &lt; 5  <span class="comment">% assume a constraint for fitting ellipses</span>
+0044     Q = <span class="string">'ellipse'</span>;
+0045 <span class="keyword">end</span>
+0046 <span class="keyword">if</span> ischar(Q)
+0047     <span class="keyword">switch</span> Q
+0048         <span class="keyword">case</span> <span class="string">'ellipse'</span>  <span class="comment">% a constraint for fitting ellipses</span>
+0049             Q1 = [ 0, 0, 2 ; 0, -1, 0 ; 2, 0, 0 ];
+0050         <span class="keyword">case</span> <span class="string">'hyperbola'</span>  <span class="comment">% a constraint for fitting hyperbolae</span>
+0051             Q1 = [ 0, 0, -2 ; 0, 1, 0 ; -2, 0, 0 ];
+0052     <span class="keyword">end</span>
+0053     Q = blkdiag(Q1, zeros(3,3));
+0054 <span class="keyword">else</span>
+0055     validateattributes(Q, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'2d'</span>,<span class="string">'size'</span>,[6,6]});
+0056 <span class="keyword">end</span>
+0057 x = x(:);
+0058 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0059 
+0060 <span class="comment">% normalize data</span>
+0061 mx = mean(x);
+0062 my = mean(<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0063 sx = (max(x)-min(x))/2;
+0064 sy = (max(<a href="../../../src/@y/y.html" class="code" title="">y</a>)-min(<a href="../../../src/@y/y.html" class="code" title="">y</a>))/2;
+0065 dx = (x-mx)/sx;  <span class="comment">% normalized data point coordinates</span>
+0066 dy = (<a href="../../../src/@y/y.html" class="code" title="">y</a>-my)/sy;
+0067 sigma_x = sigma_x/sx;
+0068 sigma_y = sigma_y/sy;
+0069 angle = atan2(sigma_y, sigma_x);
+0070 
+0071 <span class="comment">% build sample data covariance matrix</span>
+0072 Z = [dx.^2, dx.*dy, dy.^2, dx, dy, ones(numel(dx),1)];
+0073 D = (Z'*Z) / size(Z,1);
+0074 
+0075 <span class="comment">% build noise covariance matrix</span>
+0076 C = <a href="quad2dcov.html" class="code" title="function C = quad2dcov(varargin)">quad2dcov</a>(angle, dx, dy);
+0077 
+0078 <span class="comment">% build noise covariance matrix polynomial</span>
+0079 T = -C;
+0080 T(:,:,1) = D;
+0081 <span class="comment">% T(:,:,1) - mu*T(:,:,2) - mu^2*T(:,:,3) should be positive semi-definite</span>
+0082 
+0083 <span class="comment">% solve eigensystem for noise magnitude given no model constraints</span>
+0084 [V,e] = <a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>(T);
+0085 
+0086 <span class="comment">% find those eigenvalues whose eigenvector is real</span>
+0087 ix = all(imag(V) &lt; eps, 1);
+0088 e = e(ix);
+0089 V = V(:,ix);
+0090 
+0091 <span class="comment">% find eigenvalue with smallest magnitude</span>
+0092 <span class="comment">% that minimizes p' * (T(:,:,1) - mu*T(:,:,2) - mu^2*T(:,:,3)) * p</span>
+0093 [~,ix] = sort(abs(e));
+0094 mu0 = e(ix(1));
+0095 p0 = V(:,ix(1));  <span class="comment">% parameter estimates without taking constraints into account</span>
+0096 
+0097 <span class="comment">%R = D - quad2dcov(mu0*sigma_x, mu0*sigma_y, dx, dy);</span>
+0098 R = <a href="mpolyval.html" class="code" title="function M = mpolyval(T, s)">mpolyval</a>(T, mu0);
+0099 
+0100 <span class="comment">% enforce constraint</span>
+0101 p = <a href="ellipsefit_robust.html" class="code" title="function p = ellipsefit_robust(R, Q)">ellipsefit_robust</a>(R, Q);  <span class="comment">% parameter estimates taking constraints into account</span>
+0102 <span class="comment">%err = p'*R*p;</span>
+0103 
+0104 <span class="comment">% unnormalize</span>
+0105 p = <a href="#_sub1" class="code" title="subfunction p = unnormalize(p, mx, my, sx, sy)">unnormalize</a>(p, mx, my, sx, sy);
+0106 p0 = <a href="#_sub1" class="code" title="subfunction p = unnormalize(p, mx, my, sx, sy)">unnormalize</a>(p0, mx, my, sx, sy);
+0107 mu0 = mu0 / (sigma_x^2 + sigma_y^2);  <span class="comment">% normalize to noise parameter variance magnitude</span>
+0108 
+0109 <a name="_sub1" href="#_subfunctions" class="code">function p = unnormalize(p, mx, my, sx, sy)</a>
+0110 
+0111 p = <span class="keyword">...</span>
+0112 [ p(1)*sy*sy <span class="keyword">...</span>
+0113 ; p(2)*sx*sy <span class="keyword">...</span>
+0114 ; p(3)*sx*sx <span class="keyword">...</span>
+0115 ; -2*p(1)*sy*sy*mx - p(2)*sx*sy*my + p(4)*sx*sy*sy <span class="keyword">...</span>
+0116 ; -p(2)*sx*sy*mx - 2*p(3)*sx*sx*my + p(5)*sx*sx*sy <span class="keyword">...</span>
+0117 ; p(1)*sy*sy*mx*mx + p(2)*sx*sy*mx*my + p(3)*sx*sx*my*my - p(4)*sx*sy*sy*mx - p(5)*sx*sx*sy*my + p(6)*sx*sx*sy*sy <span class="keyword">...</span>
+0118 ];
+0119 
+0120 <a name="_sub2" href="#_subfunctions" class="code">function p = ellipsefit_eigen(R, Q)</a>
+0121 <span class="comment">% Constrained fit by solving an eigenvalue problem.</span>
+0122 <span class="comment">% A simple but numerically unstable way of finding best-fit parameters.</span>
+0123 <span class="comment">%</span>
+0124 <span class="comment">% See also: ellipsefit_robust</span>
+0125 
+0126 [V,E] = eig(R, Q);
+0127 e = diag(E);
+0128 
+0129 <span class="comment">% filter eigenvectors with imaginary components</span>
+0130 ix = all(imag(V) &lt; eps, 1);
+0131 e = e(ix);
+0132 V = V(:,ix);
+0133 ix = e &gt; 0;
+0134 e = e(ix);
+0135 V = V(:,ix);
+0136 
+0137 <span class="comment">% find eigenvector with smallest error</span>
+0138 [~,ix] = sort(abs(e));
+0139 p = V(:,ix(1));</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

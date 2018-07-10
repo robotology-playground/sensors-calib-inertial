@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Init</title>
+  <meta name="keywords" content="Init">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Init -->
+<h1>Init
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="Init.html" class="code" title="">Init</a>	</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Init.html" class="code" title="">Init</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function init = load(initScript)</a></li><li><a href="#_sub2" class="code">function wrap(variableNames,wrappedVars)</a></li><li><a href="#_sub3" class="code">function unWrap(aStruct)</a></li><li><a href="#_sub4" class="code">function unWrap_n(aStruct,n)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Init.html" class="code" title="">Init</a> &lt; handle
+0002     <span class="comment">%Init Wrap/unwrap init parameters</span>
+0003     <span class="comment">%   Build input structure init from a script, wrapping the</span>
+0004     <span class="comment">%   parameters in a structure 'init'.</span>
+0005     <span class="comment">%   Unwraps init structures to variables named as their fields</span>
+0006     
+0007     properties
+0008     <span class="keyword">end</span>
+0009     
+0010     methods(Static = true,Access = public)
+0011         <a name="_sub0" href="#_subfunctions" class="code">function init = load(initScript)</a>
+0012             <span class="comment">% Builds input structure init from a script, embedding</span>
+0013             <span class="comment">% the parameters from the script 'initScript' in the init</span>
+0014             <span class="comment">% structure 'init'. This is for a safer use running scripts</span>
+0015             <span class="comment">% inside other scripts, avoiding variable overrides.</span>
+0016             
+0017             <span class="comment">% run init script</span>
+0018             <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>(initScript);
+0019             
+0020             <span class="comment">% get created variables list (cell array of strings)</span>
+0021             clear initScript;
+0022             inputVars(1,:) = who;
+0023             
+0024             <span class="comment">% embed the vaiables in the 'init' structure</span>
+0025             Init.wrap(inputVars,<span class="string">'init'</span>);
+0026         <span class="keyword">end</span>
+0027         
+0028         <a name="_sub1" href="#_subfunctions" class="code">function wrap(variableNames,wrappedVars)</a>
+0029             <span class="comment">% embed the variables in a structure and return it</span>
+0030             <span class="keyword">for</span> cField = variableNames
+0031                 field = cell2mat(cField);            <span class="comment">% field string</span>
+0032                 evalin(<span class="string">'caller'</span>,[wrappedVars <span class="string">'.'</span> field <span class="string">'='</span> field <span class="string">';'</span>]); <span class="comment">% set field with respective variable</span>
+0033             <span class="keyword">end</span>
+0034         <span class="keyword">end</span>
+0035         
+0036         <a name="_sub2" href="#_subfunctions" class="code">function unWrap(aStruct)</a>
+0037             <span class="keyword">for</span> cField = fieldnames(aStruct)'
+0038                 field = cell2mat(cField);  <span class="comment">% field string</span>
+0039                 assignin(<span class="string">'caller'</span>,field,aStruct.(field));
+0040             <span class="keyword">end</span>
+0041         <span class="keyword">end</span>
+0042         
+0043         <a name="_sub3" href="#_subfunctions" class="code">function unWrap_n(aStruct,n)</a>
+0044             <span class="keyword">for</span> cField = fieldnames(aStruct)'
+0045                 field = cell2mat(cField);  <span class="comment">% field string</span>
+0046                 assignin(<span class="string">'caller'</span>,[field n],aStruct.(field));
+0047             <span class="keyword">end</span>
+0048         <span class="keyword">end</span>
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

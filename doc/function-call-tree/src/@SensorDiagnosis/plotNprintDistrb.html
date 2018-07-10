@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotNprintDistrb</title>
+  <meta name="keywords" content="plotNprintDistrb">
+  <meta name="description" content="Plots data in the active figure">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDiagnosis -->
+<h1>plotNprintDistrb
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Plots data in the active figure</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [h,ditribLogString] = plotNprintDistrb(dOrient,fitGaussian,color,alpha,prevh,axbc,axac) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plots data in the active figure</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [h,ditribLogString] = plotNprintDistrb(dOrient,fitGaussian,color,alpha,prevh,axbc,axac)</a>
+0002 <span class="comment">% Plots data in the active figure</span>
+0003 <span class="comment">%</span>
+0004 hold on
+0005 <span class="comment">%histogram(dOrient,200,'Normalization','probability');</span>
+0006 <span class="comment">%histogram(dOrient,'Normalization','probability','DisplayStyle','stairs','BinMethod','auto');</span>
+0007 <span class="comment">%histfit(dOrient,200,'kernel');</span>
+0008 h = histogram(dOrient,<span class="string">'Normalization'</span>,<span class="string">'pdf'</span>,<span class="string">'EdgeColor'</span>,<span class="string">'none'</span>,<span class="string">'FaceColor'</span>,color,<span class="string">'FaceAlpha'</span>,alpha);
+0009 
+0010 <span class="keyword">if</span> nargin==7
+0011     xmin = min([axbc.XLim(1) axac.XLim(1)]);
+0012     xmax = max([axbc.XLim(2) axac.XLim(2)]);
+0013     axbc.XLim = [xmin xmax];
+0014     axac.XLim = [xmin xmax];
+0015 <span class="keyword">else</span>
+0016     <span class="comment">% get the matrix of X limits from gca (current subplot).</span>
+0017     <span class="comment">% transform it to a list</span>
+0018     xLimits = num2cell(get(gca,<span class="string">'XLim'</span>));
+0019     [xmin,xmax] = xLimits{:}; <span class="comment">% split list</span>
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="comment">% Fit a gaussian distribution</span>
+0023 <span class="keyword">if</span> fitGaussian
+0024     x = linspace(xmin,xmax,1000)' ;
+0025     mu = mean(dOrient,1); sigma = std(dOrient,0,1);
+0026     x_pm_sigma = linspace(mu-sigma,mu+sigma,round(1000*2*sigma/(xmax-xmin)))';
+0027     <span class="keyword">if</span> ~isempty(x_pm_sigma)
+0028         f = @(t) exp(-(t-mu).^2/(2*sigma^2))/(sigma*sqrt(2*pi));
+0029         pfit = plot(x,f(x),<span class="string">'r-'</span>,<span class="string">'Linewidth'</span>,2);
+0030         parea = area(x_pm_sigma,f(x_pm_sigma),<span class="keyword">...</span>
+0031             <span class="string">'Linewidth'</span>,1,<span class="string">'EdgeColor'</span>,<span class="string">'red'</span>,<span class="string">'FaceColor'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0032             <span class="string">'LineStyle'</span>,<span class="string">':'</span>,<span class="string">'ShowBaseLine'</span>,<span class="string">'off'</span>);
+0033         xmean = repmat(mu,[100,1]);
+0034         fmean = linspace(0,f(mu),100);
+0035         pmean = plot(xmean,fmean,<span class="string">'r-'</span>,<span class="string">'Linewidth'</span>,1);
+0036         legend([prevh,h,pmean,parea],<span class="keyword">...</span>
+0037             <span class="string">'Before calibration'</span>,<span class="keyword">...</span>
+0038             <span class="string">'After calibration'</span>,<span class="keyword">...</span>
+0039             [<span class="string">'mean: '</span> num2str(mean(dOrient,1)) <span class="string">' m/s^2'</span>],<span class="keyword">...</span>
+0040             [<span class="string">'std: '</span> num2str(std(dOrient,1,1)) <span class="string">' m/s^2'</span>]);
+0041         <span class="comment">%     drawnow; pause(0.05);</span>
+0042         <span class="comment">%     parea.Face.ColorType = 'truecoloralpha';</span>
+0043         <span class="comment">%     parea.Face.ColorData(4) = 255 * 0.3;</span>
+0044     <span class="keyword">end</span>
+0045 <span class="keyword">end</span>
+0046 xlabel(<span class="string">'Oriented distance to surface (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0047 ylabel(<span class="string">'Normalized number of occurence'</span>,<span class="string">'Fontsize'</span>,12);
+0048 hold off
+0049 
+0050 <span class="comment">% Return string with the distribution parameters for logging purposes</span>
+0051 ditribLogString = sprintf(<span class="keyword">...</span>
+0052     [<span class="string">'distribution of distances to a centered sphere\n'</span><span class="keyword">...</span>
+0053     <span class="string">'mean:%d m/s^2\n'</span><span class="keyword">...</span>
+0054     <span class="string">'standard deviation:%d m/s^2\n'</span>],mean(dOrient,1),std(dOrient,0,1));
+0055 
+0056 <span class="keyword">end</span>
+0057</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

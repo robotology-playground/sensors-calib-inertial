@@ -1,0 +1,22 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SensorDiagnosis -> SensorDiagnosis;
+  SensorDiagnosis -> checkAccelerometersAnysotropy;
+  SensorDiagnosis -> checkSensorMeasVsEst;
+  SensorDiagnosis -> checkSensorMeasVsEstAngleImprovmt;
+  SensorDiagnosis -> ellipsoid_proj_distance_fromExp;
+  SensorDiagnosis -> plotFittingEllipse;
+  SensorDiagnosis -> plotJointTrajectories;
+  SensorDiagnosis -> plotNprintDistrb;
+  SensorDiagnosis -> runDiagnosis;
+
+  SensorDiagnosis [URL="SensorDiagnosis.html"];
+  checkAccelerometersAnysotropy [URL="checkAccelerometersAnysotropy.html"];
+  checkSensorMeasVsEst [URL="checkSensorMeasVsEst.html"];
+  checkSensorMeasVsEstAngleImprovmt [URL="checkSensorMeasVsEstAngleImprovmt.html"];
+  ellipsoid_proj_distance_fromExp [URL="ellipsoid_proj_distance_fromExp.html"];
+  plotFittingEllipse [URL="plotFittingEllipse.html"];
+  plotJointTrajectories [URL="plotJointTrajectories.html"];
+  plotNprintDistrb [URL="plotNprintDistrb.html"];
+  runDiagnosis [URL="runDiagnosis.html"];
+}

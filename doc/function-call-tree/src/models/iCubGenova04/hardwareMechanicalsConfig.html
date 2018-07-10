@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hardwareMechanicalsConfig</title>
+  <meta name="keywords" content="hardwareMechanicalsConfig">
+  <meta name="description" content="Model parameters for the low level joint torque control calibration">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- # models --><!-- menu.html iCubGenova04 -->
+<h1>hardwareMechanicalsConfig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Model parameters for the low level joint torque control calibration</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">
+ Model parameters for the low level joint torque control calibration
+ 
+ We can define here information relative to a subset of the axes retrieved
+ through the robot interface.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%</span>
+0002 <span class="comment">% Model parameters for the low level joint torque control calibration</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% We can define here information relative to a subset of the axes retrieved</span>
+0005 <span class="comment">% through the robot interface.</span>
+0006 <span class="comment">%</span>
+0007 
+0008 <span class="comment">% libraries</span>
+0009 import containers.Map;
+0010 
+0011 <span class="comment">% left arm parameters</span>
+0012 axisConfig = {<span class="keyword">...</span>
+0013     <span class="string">'l_shoulder_pitch'</span> <span class="string">'l_shoulder_roll'</span> <span class="string">'l_shoulder_yaw'</span> <span class="string">'l_elbow'</span>   <span class="comment">% AxisName</span>
+0014     <span class="string">'l_shoulder_m1'</span>    <span class="string">'l_shoulder_m2'</span>   <span class="string">'l_shoulder_m3'</span>  <span class="string">'l_elbow_m'</span> <span class="comment">% MotorName</span>
+0015     32000               32000            32000            32000       <span class="comment">% fullscalePWM</span>
+0016     100.00              100.00           100.00           100.00   }; <span class="comment">% Gearbox_M2J</span>
+0017 
+0018 left_arm.jointNames   = axisConfig(1,:);
+0019 left_arm.motorNames   = axisConfig(2,:);
+0020 left_arm.fullscalePWM = axisConfig(3,:);
+0021 left_arm.Gearbox_M2J  = axisConfig(4,:);
+0022 left_arm.matrixM2J = {<span class="keyword">...</span>
+0023    [1.000   0.000   0.000   0.000
+0024     1.000   0.615   0.000   0.000
+0025     0.000  -0.615   0.615   0.000
+0026     0.000   0.000   0.000   1.000]};
+0027 
+0028 <span class="comment">% right arm parameters</span>
+0029 axisConfig = {<span class="keyword">...</span>
+0030     <span class="string">'r_shoulder_pitch'</span> <span class="string">'r_shoulder_roll'</span> <span class="string">'r_shoulder_yaw'</span> <span class="string">'r_elbow'</span>   <span class="comment">% AxisName</span>
+0031     <span class="string">'r_shoulder_m1'</span>    <span class="string">'r_shoulder_m2'</span>   <span class="string">'r_shoulder_m3'</span>  <span class="string">'r_elbow_m'</span> <span class="comment">% MotorName</span>
+0032     32000              32000             32000            32000       <span class="comment">% fullscalePWM</span>
+0033     -100.00            -100.00           -100.00          -100.00  }; <span class="comment">% Gearbox_M2J</span>
+0034 
+0035 right_arm.jointNames   = axisConfig(1,:);
+0036 right_arm.motorNames   = axisConfig(2,:);
+0037 right_arm.fullscalePWM = axisConfig(3,:);
+0038 right_arm.Gearbox_M2J  = axisConfig(4,:);
+0039 right_arm.matrixM2J = {<span class="keyword">...</span>
+0040    [1.000   0.000   0.000   0.000
+0041     1.000   0.615   0.000   0.000
+0042     0.000  -0.615   0.615   0.000
+0043     0.000   0.000   0.000   1.000]};
+0044 
+0045 <span class="comment">% left leg parameters</span>
+0046 axisConfig = {<span class="keyword">...</span>
+0047     <span class="string">'l_hip_pitch'</span>   <span class="string">'l_hip_roll'</span>   <span class="string">'l_hip_yaw'</span>   <span class="string">'l_knee'</span>   <span class="string">'l_ankle_pitch'</span>   <span class="string">'l_ankle_roll'</span>   <span class="comment">% AxisName</span>
+0048     <span class="string">'l_hip_pitch_m'</span> <span class="string">'l_hip_roll_m'</span> <span class="string">'l_hip_yaw_m'</span> <span class="string">'l_knee_m'</span> <span class="string">'l_ankle_pitch_m'</span> <span class="string">'l_ankle_roll_m'</span> <span class="comment">% MotorName</span>
+0049     32000           32000          32000         32000      32000             32000            <span class="comment">% fullscalePWM</span>
+0050     -100.0          100.0          -100.0        -100.0     100.0             100.0         }; <span class="comment">% Gearbox_M2J</span>
+0051 
+0052 left_leg.jointNames   = axisConfig(1,:);
+0053 left_leg.motorNames   = axisConfig(2,:);
+0054 left_leg.fullscalePWM = axisConfig(3,:);
+0055 left_leg.Gearbox_M2J  = axisConfig(4,:);
+0056 left_leg.matrixM2J = {<span class="keyword">...</span>
+0057    [1.00    0.00    0.00    0.00
+0058     0.00    1.00    0.00    0.00
+0059     0.00    0.00    1.00    0.00
+0060     0.00    0.00    0.00    1.00],<span class="keyword">...</span>
+0061    [1.00    0.00
+0062     0.00    1.00]};
+0063 
+0064 <span class="comment">% right leg parameters</span>
+0065 axisConfig = {<span class="keyword">...</span>
+0066     <span class="string">'r_hip_pitch'</span>   <span class="string">'r_hip_roll'</span>   <span class="string">'r_hip_yaw'</span>   <span class="string">'r_knee'</span>   <span class="string">'r_ankle_pitch'</span>   <span class="string">'r_ankle_roll'</span>   <span class="comment">% AxisName</span>
+0067     <span class="string">'r_hip_pitch_m'</span> <span class="string">'r_hip_roll_m'</span> <span class="string">'r_hip_yaw_m'</span> <span class="string">'r_knee_m'</span> <span class="string">'r_ankle_pitch_m'</span> <span class="string">'r_ankle_roll_m'</span> <span class="comment">% MotorName</span>
+0068     32000           32000          32000         32000      32000             32000            <span class="comment">% fullscalePWM</span>
+0069     100.0           -100.0         100.0         100.0      -100.0            -100.0        }; <span class="comment">% Gearbox_M2J</span>
+0070 
+0071 right_leg.jointNames   = axisConfig(1,:);
+0072 right_leg.motorNames   = axisConfig(2,:);
+0073 right_leg.fullscalePWM = axisConfig(3,:);
+0074 right_leg.Gearbox_M2J  = axisConfig(4,:);
+0075 right_leg.matrixM2J = {<span class="keyword">...</span>
+0076    [1.00    0.00    0.00    0.00
+0077     0.00    1.00    0.00    0.00
+0078     0.00    0.00    1.00    0.00
+0079     0.00    0.00    0.00    1.00],<span class="keyword">...</span>
+0080    [1.00    0.00
+0081     0.00    1.00]};
+0082 
+0083 <span class="comment">% torso parameters</span>
+0084 axisConfig = {<span class="keyword">...</span>
+0085     <span class="string">'torso_yaw'</span> <span class="string">'torso_roll'</span> <span class="string">'torso_pitch'</span>   <span class="comment">% AxisName</span>
+0086     <span class="string">'torso_m1'</span>  <span class="string">'torso_m2'</span>   <span class="string">'torso_m3'</span>      <span class="comment">% MotorName</span>
+0087     32000       32000        32000           <span class="comment">% fullscalePWM</span>
+0088     -100.00     -100.00      -100.00      }; <span class="comment">% Gearbox_M2J</span>
+0089 
+0090 torso.jointNames   = axisConfig(1,:);
+0091 torso.motorNames   = axisConfig(2,:);
+0092 torso.fullscalePWM = axisConfig(3,:);
+0093 torso.Gearbox_M2J  = axisConfig(4,:);
+0094 torso.matrixM2J = {<span class="keyword">...</span>
+0095    [0.500    0.500    0.000
+0096    -0.500    0.500    0.000
+0097     0.275    0.275    0.550]};
+0098 
+0099 <span class="comment">% head parameters</span>
+0100 axisConfig = {<span class="keyword">...</span>
+0101     <span class="string">'neck_pitch'</span> <span class="string">'neck_roll'</span> <span class="string">'neck_yaw'</span>   <span class="comment">% AxisName</span>
+0102     <span class="string">'neck_m1'</span>    <span class="string">'neck_m2'</span>   <span class="string">'neck_yaw_m'</span> <span class="comment">% MotorName</span>
+0103     3360         3360        3360         <span class="comment">% fullscalePWM</span>
+0104     161.68       161.68      100       }; <span class="comment">% Gearbox_M2J</span>
+0105 
+0106 head.jointNames   = axisConfig(1,:);
+0107 head.motorNames   = axisConfig(2,:);
+0108 head.fullscalePWM = axisConfig(3,:);
+0109 head.Gearbox_M2J  = axisConfig(4,:);
+0110 head.matrixM2J = {<span class="keyword">...</span>
+0111    [0.500  -0.500
+0112     0.500   0.500],<span class="keyword">...</span>
+0113    [1.000]};
+0114</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ctrllerThreadStartFcn</title>
+  <meta name="keywords" content="ctrllerThreadStartFcn">
+  <meta name="description" content="safeguard, update state">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotorPWMcontroller -->
+<h1>ctrllerThreadStartFcn
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>safeguard, update state</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ ok ] = ctrllerThreadStartFcn( obj,PIDCtrller ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> safeguard, update state</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ ok ] = ctrllerThreadStartFcn( obj,PIDCtrller )</a>
+0002 
+0003 <span class="comment">% safeguard, update state</span>
+0004 obj.running = true;
+0005 
+0006 <span class="comment">% For the motors in emulated pos control...</span>
+0007 <span class="comment">% Save the last position as the reference position to keep</span>
+0008 [obj.lastMotorsPosInPrevMode,~] = obj.remCtrlBoardRemap.getMotorEncoders(obj.posCtrledMotors.idx);
+0009 <span class="comment">% Save the last PWM as the init value for the PID integration term</span>
+0010 obj.lastMotorsPwmInPrevMode = obj.remCtrlBoardRemap.getMotorsPWM(obj.posCtrledMotors.idx);
+0011 
+0012 <span class="comment">% Set the transition PWM of the PWM controlled motor</span>
+0013 obj.pwmCtrledMotor.pwm = obj.remCtrlBoardRemap.getMotorsPWM(obj.pwmCtrledMotor.idx);
+0014 
+0015 <span class="comment">% Set all coupled motors to PWM control mode.</span>
+0016 ok = obj.remCtrlBoardRemap.setJointsControlMode(obj.couplingMotorIdxes,<span class="string">'pwmctrl'</span>);
+0017 
+0018 <span class="comment">% Reset PID controller</span>
+0019 PIDCtrller.reset(obj.lastMotorsPwmInPrevMode(:));
+0020 
+0021 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

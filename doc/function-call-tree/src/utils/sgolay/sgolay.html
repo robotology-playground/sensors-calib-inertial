@@ -1,0 +1,133 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sgolay</title>
+  <meta name="keywords" content="sgolay">
+  <meta name="description" content="SGOLAY Savitzky-Golay Filter Design.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html sgolay -->
+<h1>sgolay
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>SGOLAY Savitzky-Golay Filter Design.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [B,G] = sgolay(k,F,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">SGOLAY Savitzky-Golay Filter Design.
+   B = SGOLAY(K,F) designs a Savitzky-Golay (polynomial) FIR smoothing
+   filter B.  The polynomial order, K, must be less than the frame size,
+   F, and F must be odd.  
+
+   Note that if the polynomial order K equals F-1, no smoothing
+   will occur.
+
+   SGOLAY(K,F,W) specifies a weighting vector W with length F
+   containing real, positive valued weights employed during the
+   least-squares minimization.
+
+   [B,G] = SGOLAY(...) returns the matrix G of differentiation filters.
+   Each column of G is a differentiation filter for derivatives of order
+   P-1 where P is the column index.  Given a length F signal X, an
+   estimate of the P-th order derivative of its middle value can be found
+   from:
+
+                     ^(P)
+                     X((F+1)/2) = P!*G(:,P+1)'*X
+
+   See also <a href="sgolayfilt.html" class="code" title="function y=sgolayfilt(x,k,F,W,DIM)">SGOLAYFILT</a>, FIR1, FIRLS, FILTER</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="sgolayfilt.html" class="code" title="function y=sgolayfilt(x,k,F,W,DIM)">sgolayfilt</a>	SGOLAYFILT Savitzky-Golay Filtering.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [B,G] = sgolay(k,F,varargin)</a>
+0002 <span class="comment">%SGOLAY Savitzky-Golay Filter Design.</span>
+0003 <span class="comment">%   B = SGOLAY(K,F) designs a Savitzky-Golay (polynomial) FIR smoothing</span>
+0004 <span class="comment">%   filter B.  The polynomial order, K, must be less than the frame size,</span>
+0005 <span class="comment">%   F, and F must be odd.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Note that if the polynomial order K equals F-1, no smoothing</span>
+0008 <span class="comment">%   will occur.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   SGOLAY(K,F,W) specifies a weighting vector W with length F</span>
+0011 <span class="comment">%   containing real, positive valued weights employed during the</span>
+0012 <span class="comment">%   least-squares minimization.</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">%   [B,G] = SGOLAY(...) returns the matrix G of differentiation filters.</span>
+0015 <span class="comment">%   Each column of G is a differentiation filter for derivatives of order</span>
+0016 <span class="comment">%   P-1 where P is the column index.  Given a length F signal X, an</span>
+0017 <span class="comment">%   estimate of the P-th order derivative of its middle value can be found</span>
+0018 <span class="comment">%   from:</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%                     ^(P)</span>
+0021 <span class="comment">%                     X((F+1)/2) = P!*G(:,P+1)'*X</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%   See also SGOLAYFILT, FIR1, FIRLS, FILTER</span>
+0024  
+0025 <span class="comment">%   References:</span>
+0026 <span class="comment">%     [1] Sophocles J. Orfanidis, INTRODUCTION TO SIGNAL PROCESSING,</span>
+0027 <span class="comment">%              Prentice-Hall, 1995, Chapter 8</span>
+0028  
+0029 <span class="comment">%   Author(s): R. Losada</span>
+0030 <span class="comment">%   Copyright 1988-2011 The MathWorks, Inc.</span>
+0031 <span class="comment">%</span>
+0032  
+0033 narginchk(2,3);
+0034  
+0035 <span class="comment">% Check if the input arguments are valid</span>
+0036 <span class="keyword">if</span> round(F) ~= F, error(message(<span class="string">'signal:sgolay:FrameMustBeInteger'</span>)), <span class="keyword">end</span>
+0037 <span class="keyword">if</span> rem(F,2) ~= 1, error(message(<span class="string">'signal:sgolay:InvalidDimensions'</span>)), <span class="keyword">end</span>
+0038 <span class="keyword">if</span> round(k) ~= k, error(message(<span class="string">'signal:sgolay:DegreeMustBeInteger'</span>)), <span class="keyword">end</span>
+0039 <span class="keyword">if</span> k &gt; F-1, error(message(<span class="string">'signal:sgolay:DegreeGeLength'</span>)), <span class="keyword">end</span>
+0040 <span class="keyword">if</span> nargin &lt; 3,
+0041    <span class="comment">% No weighting matrix, make W an identity</span>
+0042    W = eye(F);
+0043 <span class="keyword">else</span>
+0044    W = varargin{1};
+0045    <span class="comment">% Check W is real.</span>
+0046    <span class="keyword">if</span> ~isreal(W), error(message(<span class="string">'signal:sgolay:NotReal'</span>)),<span class="keyword">end</span>
+0047    <span class="comment">% Check for right length of W</span>
+0048    <span class="keyword">if</span> length(W) ~= F, error(message(<span class="string">'signal:sgolay:MismatchedDimensions'</span>)),<span class="keyword">end</span>
+0049    <span class="comment">% Check to see if all elements are positive</span>
+0050    <span class="keyword">if</span> min(W) &lt;= 0, error(message(<span class="string">'signal:sgolay:WVMustBePos'</span>)), <span class="keyword">end</span>
+0051    <span class="comment">% Diagonalize the vector to form the weighting matrix</span>
+0052    W = diag(W);
+0053 <span class="keyword">end</span>
+0054  
+0055 <span class="comment">% Compute the projection matrix B</span>
+0056 s = fliplr(vander(-(F-1)/2:(F-1)/2));
+0057 <a href="../../../src/@S/S.html" class="code" title="">S</a> = s(:,1:k+1);   <span class="comment">% Compute the Vandermonde matrix</span>
+0058  
+0059 [Q,R] = qr(sqrt(W)*<a href="../../../src/@S/S.html" class="code" title="">S</a>,0); <span class="comment">%#ok</span>
+0060  
+0061 G = <a href="../../../src/@S/S.html" class="code" title="">S</a>*inv(R)*inv(R)'; <span class="comment">% Find the matrix of differentiators</span>
+0062  
+0063 B = G*<a href="../../../src/@S/S.html" class="code" title="">S</a>'*W; 
+0064  
+0065  
+0066 <span class="comment">% [EOF] - sgolay.m</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

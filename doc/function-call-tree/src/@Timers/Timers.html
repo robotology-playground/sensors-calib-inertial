@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Timers</title>
+  <meta name="keywords" content="Timers">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Timers -->
+<h1>Timers
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>	Inits the state machine</li><li><a href="../../src/@MotorPWMcontroller/start.html" class="code" title="function [ ok ] = start( obj )">start</a>	Set the controlled motor obj.ctrledMotor in PWM control mode.</li><li><a href="Timers.html" class="code" title="">Timers</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>	</li><li><a href="Timers.html" class="code" title="">Timers</a>	</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function aTimer = staticTimer(varargin)</a></li><li><a href="#_sub2" class="code">function wait(delay)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Timers.html" class="code" title="">Timers</a> &lt; handle
+0002     <span class="comment">%Handler of timers</span>
+0003     <span class="comment">%   This class provides services related to timers handling:</span>
+0004     <span class="comment">%   - it can create a timer for handling blocking delays</span>
+0005     <span class="comment">%     (the used timer is a static attribute)</span>
+0006     
+0007     properties(Constant = true, GetAccess = public)
+0008         waitTimer = Timers.staticTimer();
+0009     <span class="keyword">end</span>
+0010     
+0011     methods(Static = true)
+0012         <span class="comment">% Create static timer for delay handling</span>
+0013         <a name="_sub0" href="#_subfunctions" class="code">function aTimer = staticTimer(varargin)</a>
+0014             aTimer = timer(<span class="string">'ExecutionMode'</span>,<span class="string">'singleShot'</span>,<span class="string">'TimerFcn'</span>,@(~,~){});
+0015         <span class="keyword">end</span>
+0016         
+0017         <span class="comment">% Wait for a delay in seconds (blocking)</span>
+0018         <a name="_sub1" href="#_subfunctions" class="code">function wait(delay)</a>
+0019             set(Timers.waitTimer,<span class="string">'StartDelay'</span>,delay);
+0020             <a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>(Timers.waitTimer);
+0021             <a href="#_sub2" class="code" title="subfunction wait(delay)">wait</a>(Timers.waitTimer);
+0022         <span class="keyword">end</span>
+0023     <span class="keyword">end</span>
+0024     
+0025 <span class="keyword">end</span>
+0026</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

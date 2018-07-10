@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsefit_koopmans</title>
+  <meta name="keywords" content="ellipsefit_koopmans">
+  <meta name="description" content="Fit an ellipse to data using the nonlinear Koopmans method.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsefit_koopmans
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit an ellipse to data using the nonlinear Koopmans method.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [theta,mu] = ellipsefit_koopmans(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit an ellipse to data using the nonlinear Koopmans method.
+
+ Input arguments:
+ x, y:
+    vectors of data to fit
+ sigma_x, sigma_y:
+    noise parameter for x and y dimensions</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="quad2dconfit_koopmans.html" class="code" title="function [p,p0,mu0] = quad2dconfit_koopmans(x, y, sigma_x, sigma_y, Q)">quad2dconfit_koopmans</a>	Fit a constrained quadratic curve to data using the nonlinear Koopmans method.</li><li><a href="quad2dfit_paramchk.html" class="code" title="function [x,y,sigma_x,sigma_y] = quad2dfit_paramchk(filename, varargin)">quad2dfit_paramchk</a>	Quadratic 2-D fitting parameter check.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li><li><a href="example_ellipsefitsector.html" class="code" title="function example_ellipsefitsector">example_ellipsefitsector</a>	Ellipse fitting to data from a limited sector.</li><li><a href="example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li><li><a href="example_quad2dcomp.html" class="code" title="function example_quad2dcomp">example_quad2dcomp</a>	Comparison of various ellipse (and general quadratic curve) fits.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [theta,mu] = ellipsefit_koopmans(varargin)</a>
+0002 <span class="comment">% Fit an ellipse to data using the nonlinear Koopmans method.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y:</span>
+0006 <span class="comment">%    vectors of data to fit</span>
+0007 <span class="comment">% sigma_x, sigma_y:</span>
+0008 <span class="comment">%    noise parameter for x and y dimensions</span>
+0009 
+0010 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0011 
+0012 [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y] = <a href="quad2dfit_paramchk.html" class="code" title="function [x,y,sigma_x,sigma_y] = quad2dfit_paramchk(filename, varargin)">quad2dfit_paramchk</a>(mfilename, varargin{:});
+0013 
+0014 [theta,~,mu] = <a href="quad2dconfit_koopmans.html" class="code" title="function [p,p0,mu0] = quad2dconfit_koopmans(x, y, sigma_x, sigma_y, Q)">quad2dconfit_koopmans</a>(x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, sigma_x, sigma_y, <span class="string">'ellipse'</span>);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

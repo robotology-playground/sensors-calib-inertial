@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ctrllerThreadUpdateFcn</title>
+  <meta name="keywords" content="ctrllerThreadUpdateFcn">
+  <meta name="description" content="Run the PID controller and set the computed PWM values">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotorPWMcontroller -->
+<h1>ctrllerThreadUpdateFcn
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Run the PID controller and set the computed PWM values</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ ok ] = ctrllerThreadUpdateFcn( obj,ctrllerThreadStop,rateThreadPeriod,PIDCtrller ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Run the PID controller and set the computed PWM values
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ ok ] = ctrllerThreadUpdateFcn( obj,ctrllerThreadStop,rateThreadPeriod,PIDCtrller )</a>
+0002 <span class="comment">%Run the PID controller and set the computed PWM values</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% Get the positions and velocities of the emulated pos controlled motors</span>
+0006 [currentMotorsPos,currentMotorsTime] = obj.remCtrlBoardRemap.getMotorEncoders(obj.posCtrledMotors.idx);
+0007 currentMotorsVel = obj.remCtrlBoardRemap.getMotorEncoderSpeeds(obj.posCtrledMotors.idx);
+0008 
+0009 <span class="comment">% compute ellapsed time</span>
+0010 <span class="keyword">if</span> any(isnan(obj.prevMotorsTime))
+0011     timeStep = ones(size(currentMotorsTime))*rateThreadPeriod;
+0012 <span class="keyword">else</span>
+0013     timeStep = currentMotorsTime - obj.prevMotorsTime;
+0014 <span class="keyword">end</span>
+0015 obj.prevMotorsTime = currentMotorsTime;
+0016 
+0017 <span class="comment">% Run the PID controller.</span>
+0018 <span class="comment">% We apply the PID control to the variables measured at the gearbox output,</span>
+0019 <span class="comment">% i.e. we consider the block [motor+gearbox] as a black box.</span>
+0020 gearboxRatios = obj.normOfgearboxDqM2Jratios(~obj.pwmCtrledMotorBitmapInCoupling);
+0021 [intSat,outSat,posPwmVec] = PIDCtrller.step(<span class="keyword">...</span>
+0022     timeStep(:),<span class="keyword">...</span>
+0023     obj.lastMotorsPosInPrevMode(:).*gearboxRatios(:),<span class="keyword">...</span>
+0024     currentMotorsPos(:).*gearboxRatios(:),<span class="keyword">...</span>
+0025     currentMotorsVel(:).*gearboxRatios(:));
+0026 
+0027 <span class="keyword">if</span> any([intSat,outSat])
+0028     <span class="comment">% throw warning</span>
+0029     warning([<span class="string">'PID produced a saturated value (intSat='</span> num2str(intSat) <span class="string">',outSat='</span> num2str(outSat) <span class="string">') during position control emulation !!'</span>]);
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="comment">% Set the computed PWM values</span>
+0033 obj.posCtrledMotors.pwm = posPwmVec;
+0034 ok = obj.remCtrlBoardRemap.setMotorsPWM(obj.posCtrledMotors.idx,posPwmVec);
+0035 ok = ok &amp;&amp; obj.remCtrlBoardRemap.setMotorsPWM(obj.pwmCtrledMotor.idx,obj.pwmCtrledMotor.pwm);
+0036 
+0037 <span class="keyword">if</span> ~ok
+0038     <span class="comment">% stop the timer with an error</span>
+0039     ctrllerThreadStop(false);
+0040     <span class="comment">% throw error</span>
+0041     warning(<span class="string">'PWM setting failed during position control emulation !!'</span>);
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

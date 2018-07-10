@@ -1,0 +1,395 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of loadData</title>
+  <meta name="keywords" content="loadData">
+  <meta name="description" content="LOADDATA Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsData -->
+<h1>loadData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>LOADDATA Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function loadData(obj) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">LOADDATA Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="../../src/utils/sgolay/sgolayfilt.html" class="code" title="function y=sgolayfilt(x,k,F,W,DIM)">sgolayfilt</a>	SGOLAYFILT Savitzky-Golay Filtering.</li><li><a href="../../src/utils/yarp/readDataDumper.html" class="code" title="function [data, time] = readDataDumper(s)">readDataDumper</a>	</li><li><a href="../../src/utils/yarp/readStateExt.html" class="code" title="function [q, dq, d2q, dqM, tau, pwm, time] = readStateExt(n, filename)">readStateExt</a>	n is the number of joints in the limb (6 for a leg, 7? for the arm, ...)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function loadData(obj)</a>
+0002 <span class="comment">%LOADDATA Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% define filter</span>
+0006 <span class="keyword">switch</span> obj.filtParams.type
+0007     <span class="keyword">case</span> <span class="string">'sgolay'</span>
+0008         filt = @<a href="../../src/utils/sgolay/sgolayfilt.html" class="code" title="function y=sgolayfilt(x,k,F,W,DIM)">sgolayfilt</a>;
+0009         filtParams = {obj.filtParams.sgolayK,obj.filtParams.sgolayF};
+0010     <span class="keyword">case</span> <span class="string">'none'</span>
+0011         filt = @(x) x;
+0012         filtParams = {};
+0013     <span class="keyword">otherwise</span>
+0014         error(<span class="string">'Unknown filter type !!'</span>);
+0015 <span class="keyword">end</span>
+0016 
+0017 <span class="comment">% length(obj.parts) is the lists (parts, labels, ndof) length in 'data'</span>
+0018 <span class="comment">% structure. list length = number of sensors (ex: 11 acc + &quot;leg_position&quot;).</span>
+0019 <span class="comment">% For instance, for the leg, q_1 to q_6 are seen like a single sensor of 6</span>
+0020 <span class="comment">% dof (&quot;leg_position&quot;), and that's the way it is read from stateExt:o.</span>
+0021 
+0022 <span class="comment">% Create function handles for assigning variables :</span>
+0023 <span class="comment">%   q_&lt;labels{i}&gt;, dq_&lt;labels{i}&gt;, d2q_&lt;labels{i}&gt;</span>
+0024 <span class="comment">%   qs_&lt;labels{i}&gt;, dqs_&lt;labels{i}&gt;, d2qs_&lt;labels{i}&gt;</span>
+0025 <span class="comment">%   qsRad_&lt;labels{i}&gt;, dqsRad_&lt;labels{i}&gt;, d2qsRad_&lt;labels{i}&gt;</span>
+0026 <span class="comment">%   y_&lt;labels{i}&gt;</span>
+0027 <span class="comment">%   ys_&lt;labels{i}&gt;</span>
+0028 
+0029 <span class="comment">% meas = {};</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% for i = 1 : length(obj.parts)</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">%     eval(['meas{i}.t = @(x) obj.t_' obj.labels{i} ' = x;']);</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%     if strcmp(obj.type{i}, 'stateExt:o');</span>
+0036 <span class="comment">%         eval(['meas{i}.q = @(x) obj.q_' obj.labels{i} ' = x;']);</span>
+0037 <span class="comment">%         eval(['meas{i}.dq = @(x) obj.dq_' obj.labels{i} ' = x;']);</span>
+0038 <span class="comment">%         eval(['meas{i}.d2q = @(x) obj.d2q_' obj.labels{i} ' = x;']);</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">%         eval(['meas{i}.qs = @(x) obj.qs_' obj.labels{i} ' = x;']);</span>
+0041 <span class="comment">%         eval(['meas{i}.dqs = @(x) obj.dqs_' obj.labels{i} ' = x;']);</span>
+0042 <span class="comment">%         eval(['meas{i}.d2qs = @(x) obj.d2qs_' obj.labels{i} ' = x;']);</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">%         eval(['meas{i}.qsRad = @(x) obj.qsRad_' obj.labels{i} ' = x;']);</span>
+0045 <span class="comment">%         eval(['meas{i}.dqsRad = @(x) obj.dqsRad_' obj.labels{i} ' = x;']);</span>
+0046 <span class="comment">%         eval(['meas{i}.d2qsRad = @(x) obj.d2qsRad_' obj.labels{i} ' = x;']);</span>
+0047 <span class="comment">%    else</span>
+0048 <span class="comment">%         eval(['meas{i}.y = @(x) obj.y_' obj.labels{i} ' = x;']);</span>
+0049 <span class="comment">%         eval(['meas{i}.ys = @(x) obj.ys_' obj.labels{i} ' = x;']);</span>
+0050 <span class="comment">%    end</span>
+0051 <span class="comment">% end</span>
+0052 
+0053 <span class="comment">% init buffers</span>
+0054 qBuff = []; dqBuff = []; d2qBuff = []; dqMBuff = []; tauBuff = []; pwmBuff = []; tStateBuff = [];
+0055 <span class="keyword">for</span> i = 1 : length(obj.parts)
+0056     bufferId = [<span class="string">'buffer_'</span> obj.parts{i} <span class="string">'_'</span> obj.type{i}(1:end-2)];
+0057     eval([<span class="string">'readFile_'</span> bufferId <span class="string">' = []'</span>]);
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="comment">% Load data from dump files</span>
+0061 <span class="keyword">for</span> i = 1 : length(obj.parts)
+0062     file = [obj.path <span class="string">'/'</span> obj.parts{i} <span class="string">'/'</span> obj.type{i} <span class="string">'/data.log'</span>];
+0063     <span class="comment">% this buffer Id avoids reading the same file twice</span>
+0064     bufferId = [<span class="string">'buffer_'</span> obj.parts{i} <span class="string">'_'</span> obj.type{i}(1:end-2)];
+0065     
+0066     <span class="comment">% select sensor data parser</span>
+0067     <span class="keyword">switch</span> obj.type{i}
+0068         <span class="keyword">case</span> <span class="string">'inertialMTB'</span>
+0069             initParser = @(dataBuffer) obj.parseMTBdata(dataBuffer);
+0070             getSensorDataPosition = @(sensorLabel) obj.mapMTBlabel2position(sensorLabel);
+0071         <span class="keyword">case</span> <span class="string">'inertial'</span>
+0072             initParser = @(dataBuffer) obj.parseIMUdata(dataBuffer);
+0073             getSensorDataPosition = @(sensorLabel) obj.mapIMUlabel2position(sensorLabel);
+0074         <span class="keyword">otherwise</span>
+0075     <span class="keyword">end</span>
+0076     
+0077     <span class="comment">% read the file and parse the data</span>
+0078     <span class="keyword">switch</span> obj.type{i}
+0079         <span class="keyword">case</span> <span class="string">'stateExt:o'</span>
+0080             q    = [<span class="string">'q_'</span> obj.labels{i}];
+0081             dq   = [<span class="string">'dq_'</span> obj.labels{i}];
+0082             d2q  = [<span class="string">'d2q_'</span> obj.labels{i}];
+0083             dqM  = [<span class="string">'dqM_'</span> obj.labels{i}];
+0084             tau  = [<span class="string">'tau_'</span> obj.labels{i}];
+0085             pwm  = [<span class="string">'pwm_'</span> obj.labels{i}];
+0086             t    = [<span class="string">'time_'</span> obj.labels{i}];
+0087             <span class="comment">% trigger and register the unique read of the file</span>
+0088             eval([<span class="string">'readFile_'</span> bufferId <span class="string">' = isempty(readFile_'</span> bufferId <span class="string">');'</span>]);
+0089             eval([<span class="string">'readFile = readFile_'</span> bufferId]);
+0090             <span class="comment">% Read file.</span>
+0091             <span class="keyword">if</span> readFile
+0092                 [qBuff,dqBuff,d2qBuff,dqMBuff,tauBuff,pwmBuff,tStateBuff] = <a href="../../src/utils/yarp/readStateExt.html" class="code" title="function [q, dq, d2q, dqM, tau, pwm, time] = readStateExt(n, filename)">readStateExt</a>(obj.ndof{i},file);
+0093                 qBuff = qBuff + obj.calib{i};
+0094             <span class="keyword">end</span>
+0095             <span class="comment">% Parse file content.</span>
+0096             <span class="comment">% (dynamicaly create new fields of &quot;data&quot;)</span>
+0097             eval([<span class="string">'obj.parsedParams.'</span> t <span class="string">' = tStateBuff;'</span>]);
+0098             eval([<span class="string">'obj.parsedParams.'</span>  q  <span class="string">'= qBuff('</span> mat2str(obj.index{i}) <span class="string">',:);'</span>]);
+0099             eval([<span class="string">'obj.parsedParams.'</span> dq  <span class="string">'= dqBuff('</span> mat2str(obj.index{i}) <span class="string">',:);'</span>]);
+0100             eval([<span class="string">'obj.parsedParams.'</span> d2q <span class="string">'= d2qBuff('</span> mat2str(obj.index{i}) <span class="string">',:);'</span>]);
+0101             eval([<span class="string">'obj.parsedParams.'</span> dqM <span class="string">'= dqMBuff('</span> mat2str(obj.index{i}) <span class="string">',:);'</span>]);
+0102             eval([<span class="string">'obj.parsedParams.'</span> tau <span class="string">'= tauBuff('</span> mat2str(obj.index{i}) <span class="string">',:);'</span>]);
+0103             eval([<span class="string">'obj.parsedParams.'</span> pwm <span class="string">'= pwmBuff('</span> mat2str(obj.index{i}) <span class="string">',:);'</span>]);
+0104             
+0105             <span class="keyword">if</span> obj.diff_q
+0106                 eval([<span class="string">'obj.parsedParams.'</span>   q <span class="string">'(:, :   )= filt(obj.parsedParams.'</span>   q <span class="string">''',filtParams{:})'' ;'</span>])
+0107                 eval([<span class="string">'obj.parsedParams.'</span>  dq <span class="string">'(:,2:end)= 1/mean(diff(obj.parsedParams.'</span> t <span class="string">')).*diff(obj.parsedParams.'</span>  q <span class="string">''')'' ;'</span>])
+0108                 eval([<span class="string">'obj.parsedParams.'</span>   dq <span class="string">'(:, :   )= filt(obj.parsedParams.'</span>   dq <span class="string">''',filtParams{:})'' ;'</span>])
+0109                 eval([<span class="string">'obj.parsedParams.'</span> d2q <span class="string">'(:,2:end)= 1/mean(diff(obj.parsedParams.'</span> t <span class="string">')).*diff(obj.parsedParams.'</span> dq <span class="string">''')'' ;'</span>])
+0110             <span class="keyword">end</span>
+0111             
+0112         <span class="keyword">case</span> {<span class="string">'inertialMTB'</span>,<span class="string">'inertial'</span>}
+0113             <a href="../../src/@y/y.html" class="code" title="">y</a>    = [<span class="string">'y_'</span> obj.labels{i}];
+0114             t    = [<span class="string">'time_'</span> obj.labels{i}];
+0115             <span class="comment">% trigger and register the unique read of the file</span>
+0116             eval([<span class="string">'readFile_'</span> bufferId <span class="string">' = isempty(readFile_'</span> bufferId <span class="string">');'</span>]);
+0117             eval([<span class="string">'readFile = readFile_'</span> bufferId]);
+0118             <span class="comment">% Read file.</span>
+0119             <span class="keyword">if</span> readFile
+0120                 <span class="comment">% extract time and MTB sensor data</span>
+0121                 [yBuff,tAccBuff] = <a href="../../src/utils/yarp/readDataDumper.html" class="code" title="function [data, time] = readDataDumper(s)">readDataDumper</a>(file);
+0122                 <span class="comment">% parse the MTB sensor metadata and build the sensor mapping</span>
+0123                 initParser(yBuff);
+0124             <span class="keyword">end</span>
+0125             <span class="comment">% Parse file content.</span>
+0126             fprintf(<span class="string">'Loaded sensor %s\n'</span>,obj.labels{i})
+0127             eval([<span class="string">'obj.parsedParams.'</span> t <span class="string">' = tAccBuff;'</span>]);
+0128             <span class="comment">% retrieve the correct offsets to index 'yBuff[]'. The offsets are retrieved</span>
+0129             <span class="comment">% using the sensor mapping built from the metadata parsing.</span>
+0130             eval([<span class="string">'obj.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">'= yBuff(:,'</span> getSensorDataPosition(obj.labels{i}) <span class="string">');'</span>]);
+0131             
+0132             <span class="keyword">if</span>(strcmp(<a href="../../src/@y/y.html" class="code" title="">y</a>(end-2:end), <span class="string">'imu'</span>) &amp;&amp; obj.diff_imu)
+0133                 eval([<span class="string">'obj.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">'(2:end,4:6)= 1/mean(diff(obj.parsedParams.'</span> t <span class="string">')).*diff(filt(obj.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">'(:,4:6),filtParams{:}));'</span>])
+0134             <span class="keyword">end</span>
+0135             eval([<span class="string">'obj.parsedParams.'</span> t <span class="string">' = obj.parsedParams.'</span> t <span class="string">''';'</span>]);
+0136             eval([<span class="string">'obj.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">'= obj.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">''';'</span>]);
+0137             
+0138             <span class="comment">% add filtering</span>
+0139             eval([<span class="string">'obj.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">'=filt(obj.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">''',filtParams{:})'';'</span>]);
+0140             
+0141     <span class="keyword">end</span>
+0142 <span class="keyword">end</span>
+0143 
+0144 min_times = [];
+0145 max_times = [];
+0146 <span class="keyword">for</span> i = 1 : length(obj.labels)
+0147    max_time  = [<span class="string">'max_time_'</span>, obj.labels{i}];
+0148    min_time  = [<span class="string">'min_time_'</span>, obj.labels{i}];
+0149    t         = [<span class="string">'obj.parsedParams.time_'</span> obj.labels{i}];
+0150    eval([max_time <span class="string">' = max('</span> t <span class="string">');'</span>]);
+0151    eval([min_time <span class="string">' = min('</span> t <span class="string">');'</span>]);
+0152    
+0153    min_times = [min_times eval(min_time)];
+0154    max_times = [max_times eval(max_time)];
+0155 <span class="keyword">end</span>
+0156 
+0157 time_i = max(min_times);
+0158 time_f = min(max_times);
+0159 
+0160 <span class="keyword">for</span> i = 1 : length(obj.labels)
+0161    tf  = eval([<span class="string">'max_time_'</span>, obj.labels{i}]);
+0162    ti  = eval([<span class="string">'min_time_'</span>, obj.labels{i}]);
+0163    
+0164    <span class="keyword">if</span> abs(tf - time_f) &gt; 1 || abs(ti - time_i) &gt; 1
+0165       fprintf([<span class="string">'[WARNING] There is some lag in the '</span> obj.parts{i} <span class="string">' data: %f, %f\n'</span>], abs(tf - time_f) ,abs(ti - time_i))
+0166    <span class="keyword">end</span>
+0167    
+0168 <span class="keyword">end</span>
+0169 
+0170 <span class="comment">% if we specified an invalid tEnd, overwrite it with the end time from data log</span>
+0171 <span class="keyword">if</span> obj.tEnd == -1
+0172     obj.tEnd = time_f - time_i;
+0173 <span class="keyword">end</span>
+0174 
+0175 time   = linspace(time_i+obj.tInit, time_i+obj.tEnd, obj.nSamples);
+0176 
+0177 <span class="comment">%%</span>
+0178 
+0179 dtime   = time(1);
+0180 <span class="keyword">for</span> i = 1 : length(obj.parts)
+0181    
+0182    <span class="keyword">if</span> strcmp(obj.type{i}, <span class="string">'stateExt:o'</span>)
+0183       q    = [<span class="string">'obj.parsedParams.q_'</span> obj.labels{i}];
+0184       dq   = [<span class="string">'obj.parsedParams.dq_'</span> obj.labels{i}];
+0185       d2q  = [<span class="string">'obj.parsedParams.d2q_'</span> obj.labels{i}];
+0186       dqM  = [<span class="string">'obj.parsedParams.dqM_'</span> obj.labels{i}];
+0187       tau  = [<span class="string">'obj.parsedParams.tau_'</span> obj.labels{i}];
+0188       pwm  = [<span class="string">'obj.parsedParams.pwm_'</span> obj.labels{i}];
+0189       t    = [<span class="string">'obj.parsedParams.time_'</span> obj.labels{i}];
+0190       
+0191       qs   = [<span class="string">'qs_'</span> obj.labels{i}];
+0192       dqs  = [<span class="string">'dqs_'</span> obj.labels{i}];
+0193       d2qs = [<span class="string">'d2qs_'</span> obj.labels{i}];
+0194       dqMs = [<span class="string">'dqMs_'</span> obj.labels{i}];
+0195       taus = [<span class="string">'taus_'</span> obj.labels{i}];
+0196       pwms = [<span class="string">'pwms_'</span> obj.labels{i}];
+0197       
+0198       <span class="comment">% [qs_la, dqs_la, d2qs_la] = resampleState(time, time_la, q_la, dq_la, d2q_la);</span>
+0199       eval([<span class="string">'[obj.parsedParams.'</span> qs <span class="string">', obj.parsedParams.'</span> dqs <span class="string">', obj.parsedParams.'</span> d2qs <span class="string">', obj.parsedParams.'</span> dqMs <span class="string">', obj.parsedParams.'</span> taus <span class="string">', obj.parsedParams.'</span> pwms <span class="string">'] = resampleState(time,'</span> t <span class="string">','</span> q <span class="string">','</span> dq <span class="string">','</span> d2q <span class="string">','</span> dqM <span class="string">','</span> tau <span class="string">','</span> pwm <span class="string">');'</span>]);
+0200    <span class="keyword">else</span>
+0201       <a href="../../src/@y/y.html" class="code" title="">y</a>    = [<span class="string">'obj.parsedParams.y_'</span>  obj.labels{i}];
+0202       t    = [<span class="string">'obj.parsedParams.time_'</span> obj.labels{i}];
+0203       ys   = [<span class="string">'ys_'</span> obj.labels{i}];
+0204       eval([<span class="string">'obj.parsedParams.'</span> ys <span class="string">' = interp1('</span> t <span class="string">','</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">''', time)'';'</span>]);
+0205    <span class="keyword">end</span>
+0206    <span class="comment">% time_h  = time_h  - dtime;</span>
+0207    eval([t <span class="string">'='</span> t <span class="string">'- dtime;'</span>]);
+0208 <span class="keyword">end</span>
+0209 obj.parsedParams.time = time    - dtime;
+0210 
+0211 <span class="keyword">for</span> i = 1 : length(obj.parts)
+0212    <span class="keyword">if</span> obj.visualize{i} &amp;&amp; strcmp(obj.type{i}, <span class="string">'stateExt:o'</span>)
+0213       q    = [<span class="string">'obj.parsedParams.q_'</span> obj.labels{i}];
+0214       dq   = [<span class="string">'obj.parsedParams.dq_'</span> obj.labels{i}];
+0215       d2q  = [<span class="string">'obj.parsedParams.d2q_'</span> obj.labels{i}];
+0216       t    = [<span class="string">'obj.parsedParams.time_'</span> obj.labels{i}];
+0217       
+0218       qs   = [<span class="string">'qs_'</span> obj.labels{i}];
+0219       dqs  = [<span class="string">'dqs_'</span> obj.labels{i}];
+0220       d2qs = [<span class="string">'d2qs_'</span> obj.labels{i}];
+0221       
+0222       figure
+0223       subplot(311)
+0224       eval([<span class="string">'plot('</span> t <span class="string">','</span> q <span class="string">')'</span>])
+0225       hold on
+0226       eval([<span class="string">'plot(obj.time,obj.parsedParams.'</span> qs <span class="string">', ''--'' )'</span> ]);
+0227       title([<span class="string">' q_{'</span> obj.labels{i} <span class="string">'}'</span>])
+0228       subplot(312)
+0229       eval([<span class="string">'plot('</span> t <span class="string">','</span> dq <span class="string">')'</span>])
+0230       hold on
+0231       eval([<span class="string">'plot(obj.time,obj.parsedParams.'</span> dqs <span class="string">', ''--'' )'</span> ]);
+0232       title([<span class="string">'dq_{'</span> obj.labels{i} <span class="string">'}'</span>])
+0233       subplot(313)
+0234       eval([<span class="string">'plot('</span> t <span class="string">','</span> d2q <span class="string">')'</span>])
+0235       hold on
+0236       eval([<span class="string">'plot(obj.time,obj.parsedParams.'</span> d2qs <span class="string">', ''--'' )'</span> ]);
+0237       title([<span class="string">'d2q_{'</span> obj.labels{i} <span class="string">'}'</span>])
+0238    <span class="keyword">elseif</span> obj.visualize{i}
+0239       <a href="../../src/@y/y.html" class="code" title="">y</a>    = [<span class="string">'obj.parsedParams.y_'</span>  obj.labels{i}];
+0240       t    = [<span class="string">'obj.parsedParams.time_'</span> obj.labels{i}];
+0241       ys   = [<span class="string">'ys_'</span> obj.labels{i}];
+0242       
+0243       figure
+0244       J = obj.ndof{i};
+0245       <span class="keyword">for</span> j = 1 : J/3
+0246          subplot([num2str(J/3) <span class="string">'1'</span> num2str(j)])
+0247          I = 1+(j-1)*3 : 3*j;
+0248          eval([<span class="string">'plot('</span> t <span class="string">','</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">'(I,:))'</span>])
+0249          hold on
+0250          eval([<span class="string">'plot(obj.time,obj.parsedParams.'</span> ys <span class="string">'(I,:), ''--'' )'</span> ]);
+0251          title([<span class="string">'y_{'</span> obj.labels{i} <span class="string">'}'</span>])
+0252       <span class="keyword">end</span>
+0253    <span class="keyword">end</span>
+0254 <span class="keyword">end</span>
+0255 
+0256 
+0257 <span class="comment">%% Process raw sensor data</span>
+0258 deg_to_rad = pi/180.0;
+0259 gyro_gain = deg_to_rad*7.6274e-03;
+0260 <span class="keyword">for</span> i = 1 : length(obj.parts)
+0261     <span class="comment">% gain for the processed sensor</span>
+0262     <span class="comment">% acc_gain must be applied before the calibration matrix</span>
+0263     <span class="comment">% since the calibration procedure is done after acc_gain</span>
+0264     <span class="comment">% is set.</span>
+0265     <span class="keyword">if</span> ~strcmp(obj.type{i}, <span class="string">'stateExt:o'</span>)
+0266         acc_gain = obj.calib{i}.gain;
+0267         centre = obj.calib{i}.centre;
+0268         C = obj.calib{i}.C;
+0269     <span class="keyword">end</span>
+0270 
+0271     <span class="comment">% convert raw data</span>
+0272     t    = [<span class="string">'time_'</span> obj.labels{i}];
+0273     ys   = [<span class="string">'ys_'</span> obj.labels{i}];
+0274     <span class="keyword">if</span>( strcmp(obj.labels{i},<span class="string">'lh_imu'</span>) || <span class="keyword">...</span>
+0275             strcmp(obj.labels{i},<span class="string">'rh_imu'</span>) )
+0276         eval([<span class="string">'obj.parsedParams.'</span> ys <span class="string">'(1:3,:) = '</span> <span class="keyword">...</span>
+0277             <span class="string">'C*(obj.parsedParams.'</span> ys <span class="string">'(1:3,:)*acc_gain-repmat(centre,1,nbSamples));'</span>]);
+0278         eval([<span class="string">'obj.parsedParams.'</span> ys <span class="string">'(4:6,:) = '</span> <span class="keyword">...</span>
+0279             <span class="string">'gyro_gain*obj.parsedParams.'</span> ys <span class="string">'(4:6,:);'</span>]);
+0280     <span class="keyword">end</span>
+0281     <span class="keyword">if</span>( strcmp(obj.labels{i},<span class="string">'imu'</span>) )
+0282         eval([<span class="string">'obj.parsedParams.'</span> ys <span class="string">'(4:6,:) = '</span> <span class="keyword">...</span>
+0283             <span class="string">'deg_to_rad*obj.parsedParams.'</span> ys <span class="string">'(4:6,:);'</span>]);
+0284     <span class="keyword">end</span>
+0285     <span class="keyword">if</span>( ~isempty(regexp(obj.labels{i},<span class="string">'mtb_acc|ems_acc|imu_acc'</span>,<span class="string">'match'</span>)) )
+0286         eval([<span class="string">'nbSamples = size(obj.parsedParams.'</span> ys <span class="string">'(1:3,:),2);'</span>]);
+0287         eval([<span class="string">'obj.parsedParams.'</span> ys <span class="string">'(1:3,:) = '</span> <span class="keyword">...</span>
+0288             <span class="string">'C*(obj.parsedParams.'</span> ys <span class="string">'(1:3,:)*acc_gain-repmat(centre,1,nbSamples));'</span>]);        
+0289     <span class="keyword">end</span>
+0290 <span class="keyword">end</span>
+0291 
+0292 fprintf(<span class="string">'Processed raw sensors\n'</span>)
+0293 
+0294 
+0295 <span class="comment">%%</span>
+0296 <span class="comment">% Convert qs_xxx, dqs_xxx, d2qs_xxx variables from degrees to radians</span>
+0297 <span class="comment">%</span>
+0298 <span class="comment">% % Convert qs_xxx, dqs_xxx, d2qs_xxx variables from degrees to radians</span>
+0299 <span class="comment">% for i = 1 : length(obj.parts)</span>
+0300 <span class="comment">%     if strcmp(obj.type{i}, 'stateExt:o');</span>
+0301 <span class="comment">%         meas{i}.qsRad([obj.qs_rleg].*pi/180);</span>
+0302 <span class="comment">%         meas{i}.dqsRad([obj.dqs_rleg].*pi/180);</span>
+0303 <span class="comment">%         meas{i}.d2qsRad([obj.d2qs_rleg].*pi/180);</span>
+0304 <span class="comment">%     end</span>
+0305 <span class="comment">% end</span>
+0306 <span class="comment">%</span>
+0307 <span class="comment">% obj.q - meas{12}.qsRad_rleg</span>
+0308 <span class="comment">% obj.dq - meas{12}.dqsRad_rleg</span>
+0309 <span class="comment">% obj.d2q - meas{12}.d2qsRad_rleg</span>
+0310 
+0311 
+0312 <span class="keyword">for</span> i = 1 : length(obj.parts)
+0313     <span class="keyword">if</span> strcmp(obj.type{i}, <span class="string">'stateExt:o'</span>)
+0314         q    = [<span class="string">'q_'</span> obj.labels{i}];
+0315         dq   = [<span class="string">'dq_'</span> obj.labels{i}];
+0316         d2q  = [<span class="string">'d2q_'</span> obj.labels{i}];
+0317         dqM  = [<span class="string">'dqM_'</span> obj.labels{i}];
+0318         
+0319         qRad    = [<span class="string">'qRad_'</span> obj.labels{i}];
+0320         dqRad   = [<span class="string">'dqRad_'</span> obj.labels{i}];
+0321         d2qRad  = [<span class="string">'d2qRad_'</span> obj.labels{i}];
+0322         dqMRad  = [<span class="string">'dqMRad_'</span> obj.labels{i}];
+0323         
+0324         eval([<span class="string">'obj.parsedParams.'</span> qRad <span class="string">' = obj.parsedParams.'</span> q <span class="string">'*pi/180;'</span>]);
+0325         eval([<span class="string">'obj.parsedParams.'</span> dqRad <span class="string">' = obj.parsedParams.'</span> dq <span class="string">'*pi/180;'</span>]);
+0326         eval([<span class="string">'obj.parsedParams.'</span> d2qRad <span class="string">' = obj.parsedParams.'</span> d2q <span class="string">'*pi/180;'</span>]);
+0327         eval([<span class="string">'obj.parsedParams.'</span> dqMRad <span class="string">' = obj.parsedParams.'</span> dqM <span class="string">'*pi/180;'</span>]);
+0328         
+0329         qs    = [<span class="string">'qs_'</span> obj.labels{i}];
+0330         dqs   = [<span class="string">'dqs_'</span> obj.labels{i}];
+0331         d2qs  = [<span class="string">'d2qs_'</span> obj.labels{i}];
+0332         dqMs  = [<span class="string">'dqMs_'</span> obj.labels{i}];
+0333         
+0334         qsRad    = [<span class="string">'qsRad_'</span> obj.labels{i}];
+0335         dqsRad   = [<span class="string">'dqsRad_'</span> obj.labels{i}];
+0336         d2qsRad  = [<span class="string">'d2qsRad_'</span> obj.labels{i}];
+0337         dqMsRad  = [<span class="string">'dqMsRad_'</span> obj.labels{i}];
+0338         
+0339         eval([<span class="string">'obj.parsedParams.'</span> qsRad <span class="string">' = obj.parsedParams.'</span> qs <span class="string">'*pi/180;'</span>]);
+0340         eval([<span class="string">'obj.parsedParams.'</span> dqsRad <span class="string">' = obj.parsedParams.'</span> dqs <span class="string">'*pi/180;'</span>]);
+0341         eval([<span class="string">'obj.parsedParams.'</span> d2qsRad <span class="string">' = obj.parsedParams.'</span> d2qs <span class="string">'*pi/180;'</span>]);
+0342         eval([<span class="string">'obj.parsedParams.'</span> dqMsRad <span class="string">' = obj.parsedParams.'</span> dqMs <span class="string">'*pi/180;'</span>]);
+0343     <span class="keyword">end</span>
+0344 <span class="keyword">end</span>
+0345 
+0346 
+0347 
+0348 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

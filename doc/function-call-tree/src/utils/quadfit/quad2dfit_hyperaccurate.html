@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dfit_hyperaccurate</title>
+  <meta name="keywords" content="quad2dfit_hyperaccurate">
+  <meta name="description" content="General quadratic curve fit with Kanatani's hyperaccurate fit method.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dfit_hyperaccurate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>General quadratic curve fit with Kanatani's hyperaccurate fit method.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = quad2dfit_hyperaccurate(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> General quadratic curve fit with Kanatani's hyperaccurate fit method.
+
+ Input arguments:
+ x,y;
+    x and y coodinates of 2D points
+
+ Output arguments:
+ p:
+    a 6-parameter vector of the algebraic quadratic curve fit with
+    p(1)*x^2 + p(2)*x*y + p(3)*y^2 + p(4)*x + p(5)*y + p(6) = 0
+
+ References:
+ Kenichi Kanatani and Prasanna Rangarajan, &quot;Hyperaccurate Ellipse Fitting without
+    Iterations&quot;, Memoirs of the Faculty of Engineering, Okayama University, Vol. 44,
+    pp. 42-49, January 2010.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsefitsector.html" class="code" title="function example_ellipsefitsector">example_ellipsefitsector</a>	Ellipse fitting to data from a limited sector.</li><li><a href="example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li><li><a href="example_quad2dcomp.html" class="code" title="function example_quad2dcomp">example_quad2dcomp</a>	Comparison of various ellipse (and general quadratic curve) fits.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = quad2dfit_hyperaccurate(x,y)</a>
+0002 <span class="comment">% General quadratic curve fit with Kanatani's hyperaccurate fit method.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x,y;</span>
+0006 <span class="comment">%    x and y coodinates of 2D points</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Output arguments:</span>
+0009 <span class="comment">% p:</span>
+0010 <span class="comment">%    a 6-parameter vector of the algebraic quadratic curve fit with</span>
+0011 <span class="comment">%    p(1)*x^2 + p(2)*x*y + p(3)*y^2 + p(4)*x + p(5)*y + p(6) = 0</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% References:</span>
+0014 <span class="comment">% Kenichi Kanatani and Prasanna Rangarajan, &quot;Hyperaccurate Ellipse Fitting without</span>
+0015 <span class="comment">%    Iterations&quot;, Memoirs of the Faculty of Engineering, Okayama University, Vol. 44,</span>
+0016 <span class="comment">%    pp. 42-49, January 2010.</span>
+0017 
+0018 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0019 
+0020 <span class="comment">% normalize data</span>
+0021 mx = mean(x);
+0022 my = mean(<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0023 sx = (max(x)-min(x))/2;
+0024 sy = (max(<a href="../../../src/@y/y.html" class="code" title="">y</a>)-min(<a href="../../../src/@y/y.html" class="code" title="">y</a>))/2;
+0025 smax = max(sx,sy);
+0026 sx = smax;
+0027 sy = smax;
+0028 x = (x-mx)/sx;  <span class="comment">% normalized data point coordinates</span>
+0029 <a href="../../../src/@y/y.html" class="code" title="">y</a> = (<a href="../../../src/@y/y.html" class="code" title="">y</a>-my)/sy;
+0030 
+0031 <span class="comment">% sample mean and sample covariance matrix</span>
+0032 epsilon_c = zeros(6,1);
+0033 M = zeros(6,6);
+0034 <span class="keyword">for</span> k = 1 : numel(x)
+0035     epsilon = [ x(k)^2 ; 2*x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k) ; <a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2 ; 2*x(k) ; 2*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k) ; 1 ];
+0036     epsilon_c = epsilon_c + epsilon;
+0037     M = M + (epsilon * epsilon');
+0038 <span class="keyword">end</span>
+0039 epsilon_c = epsilon_c / numel(x);
+0040 M = M / numel(x);
+0041 Mi = pinv(M);
+0042 
+0043 <span class="comment">% Taubin method N</span>
+0044 N_T = zeros(6,6);
+0045 <span class="keyword">for</span> k = 1 : numel(x)
+0046     V_0 = 4 * <span class="keyword">...</span>
+0047         [    x(k)^2,     x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),         0, x(k),    0, 0 <span class="keyword">...</span>
+0048         ; x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k), x(k)^2+<a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2, x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k), <a href="../../../src/@y/y.html" class="code" title="">y</a>(k), x(k), 0 <span class="keyword">...</span>
+0049         ;         0,     x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),    <a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2,    0, <a href="../../../src/@y/y.html" class="code" title="">y</a>(k), 0 <span class="keyword">...</span>
+0050         ;      x(k),          <a href="../../../src/@y/y.html" class="code" title="">y</a>(k),         0,    1,    0, 0 <span class="keyword">...</span>
+0051         ;         0,          x(k),      <a href="../../../src/@y/y.html" class="code" title="">y</a>(k),    0,    1, 0 <span class="keyword">...</span>
+0052         ;         0,             0,         0,    0,    0, 0 ];
+0053     N_T = N_T + V_0;
+0054 <span class="keyword">end</span>
+0055 N_T = N_T / numel(x);
+0056 
+0057 <span class="comment">% first-order terms</span>
+0058 e = [ 1 ; 0 ; 1 ; 0 ; 0 ; 0 ];
+0059 O_1 = (epsilon_c * e') + (e * epsilon_c');
+0060 
+0061 <span class="comment">% second-order terms</span>
+0062 O_2 = zeros(6,6);
+0063 <span class="keyword">for</span> k = 1 : numel(x)
+0064     epsilon = [ x(k)^2 ; 2*x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k) ; <a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2 ; 2*x(k) ; 2*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k) ; 1 ];
+0065     V_0 = 4 * <span class="keyword">...</span>
+0066         [    x(k)^2,     x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),         0, x(k),    0, 0 <span class="keyword">...</span>
+0067         ; x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k), x(k)^2+<a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2, x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k), <a href="../../../src/@y/y.html" class="code" title="">y</a>(k), x(k), 0 <span class="keyword">...</span>
+0068         ;         0,     x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),    <a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2,    0, <a href="../../../src/@y/y.html" class="code" title="">y</a>(k), 0 <span class="keyword">...</span>
+0069         ;      x(k),          <a href="../../../src/@y/y.html" class="code" title="">y</a>(k),         0,    1,    0, 0 <span class="keyword">...</span>
+0070         ;         0,          x(k),      <a href="../../../src/@y/y.html" class="code" title="">y</a>(k),    0,    1, 0 <span class="keyword">...</span>
+0071         ;         0,             0,         0,    0,    0, 0 ];
+0072 
+0073     <span class="comment">% second-order terms</span>
+0074     E = (epsilon * epsilon');
+0075     
+0076     <span class="comment">%O_2 = O_2 + trace(Mi * V_0) * E + (epsilon' * Mi * epsilon) * V_0 + (V_0 * Mi * E) + (V_0 * Mi * E)';</span>
+0077     VME = V_0 * Mi * E;
+0078     O_2 = O_2 + trace(Mi * V_0) * E + (epsilon' * Mi * epsilon) * V_0 + VME + VME';
+0079 <span class="keyword">end</span>
+0080 O_2 = O_2 / numel(x)^2;
+0081 
+0082 <span class="comment">% compute weight N</span>
+0083 N = N_T + O_1 - O_2;
+0084 
+0085 <span class="comment">% eigenvector belonging to eigenvalue with smallest absolute value</span>
+0086 [V,D] = eig(M,N);
+0087 [~,ix] = sort(abs(diag(D)));
+0088 p = V(:,ix(1));
+0089 
+0090 p(:) = [ p(1) ; 2*p(2) ; p(3) ; 2*p(4) ; 2*p(5) ; p(6) ];
+0091 
+0092 p = <span class="keyword">...</span>
+0093 [ p(1)*sy*sy <span class="keyword">...</span>
+0094 ; p(2)*sx*sy <span class="keyword">...</span>
+0095 ; p(3)*sx*sx <span class="keyword">...</span>
+0096 ; -2*p(1)*sy*sy*mx - p(2)*sx*sy*my + p(4)*sx*sy*sy <span class="keyword">...</span>
+0097 ; -p(2)*sx*sy*mx - 2*p(3)*sx*sx*my + p(5)*sx*sx*sy <span class="keyword">...</span>
+0098 ; p(1)*sy*sy*mx*mx + p(2)*sx*sy*mx*my + p(3)*sx*sx*my*my - p(4)*sx*sy*sy*mx - p(5)*sx*sx*sy*my + p(6)*sx*sx*sy*sy <span class="keyword">...</span>
+0099 ];</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of imconicisect</title>
+  <meta name="keywords" content="imconicisect">
+  <meta name="description" content="Intersections of conic with window bounds.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>imconicisect
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Intersections of conic with window bounds.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function zx = imconicisect(p, w, t, R) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Intersections of conic with window bounds.
+
+ Input arguments:
+ p:
+    the parameter vector p = [a b c d f g]
+ w:
+    the window w = [x_min x_max y_min y_max]
+ t:
+    the translation applied to the points
+ R:
+    the rotation applied to the points
+
+ zx:
+    points of intersection with window bounds in the standard coordinate
+    system (no rotation or translation applied)
+
+ See also: <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="invtransrot.html" class="code" title="function ztr = invtransrot(z, t, R)">invtransrot</a>	Apply translation and inverse rotation to a set of points.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function z = imconicinterx(p, x, y_min, y_max)</a></li><li><a href="#_sub2" class="code">function z = imconicintery(p, y, x_min, x_max)</a></li><li><a href="#_sub3" class="code">function y = quadeqrange(eq, y_min, y_max)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function zx = imconicisect(p, w, t, R)</a>
+0002 <span class="comment">% Intersections of conic with window bounds.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% p:</span>
+0006 <span class="comment">%    the parameter vector p = [a b c d f g]</span>
+0007 <span class="comment">% w:</span>
+0008 <span class="comment">%    the window w = [x_min x_max y_min y_max]</span>
+0009 <span class="comment">% t:</span>
+0010 <span class="comment">%    the translation applied to the points</span>
+0011 <span class="comment">% R:</span>
+0012 <span class="comment">%    the rotation applied to the points</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% zx:</span>
+0015 <span class="comment">%    points of intersection with window bounds in the standard coordinate</span>
+0016 <span class="comment">%    system (no rotation or translation applied)</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also: imconic</span>
+0019 
+0020 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0021 
+0022 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0023 assert(length(p) == 6, <span class="string">'imconicisect:DimensionMismatch'</span>, <span class="keyword">...</span>
+0024     <span class="string">'A parameter vector of length 6 expected for a to g in a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0.'</span>);
+0025 <span class="keyword">if</span> nargin &lt; 2 || isempty(w)
+0026     w = [];
+0027 <span class="keyword">else</span>
+0028     validateattributes(w, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0029     assert(numel(w) == 4, <span class="string">'imconicisect:DimensionMismatch'</span>, <span class="keyword">...</span>
+0030         <span class="string">'A parameter vector of length 4 expected for x_min, x_max, y_min and y_max.'</span>);
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">if</span> nargin &lt; 4
+0033     R = [];
+0034     <span class="keyword">if</span> nargin &lt; 3
+0035         t = [];
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">if</span> ~isempty(w)
+0040     x_min = w(1); x_max = w(2);
+0041     y_min = w(3); y_max = w(4);
+0042 
+0043     <span class="comment">% calculate intersections with window bounds</span>
+0044     zx = [ <span class="keyword">...</span>
+0045         <a href="#_sub1" class="code" title="subfunction z = imconicinterx(p, x, y_min, y_max)">imconicinterx</a>(p, x_min, y_min, y_max) <span class="keyword">...</span>
+0046         <a href="#_sub1" class="code" title="subfunction z = imconicinterx(p, x, y_min, y_max)">imconicinterx</a>(p, x_max, y_min, y_max) <span class="keyword">...</span>
+0047         <a href="#_sub2" class="code" title="subfunction z = imconicintery(p, y, x_min, x_max)">imconicintery</a>(p, y_min, x_min, x_max) <span class="keyword">...</span>
+0048         <a href="#_sub2" class="code" title="subfunction z = imconicintery(p, y, x_min, x_max)">imconicintery</a>(p, y_max, x_min, x_max) ];
+0049     <span class="comment">%plot(zx(1,:),zx(2,:), 'ko');</span>
+0050     zx = <a href="invtransrot.html" class="code" title="function ztr = invtransrot(z, t, R)">invtransrot</a>(zx,t,R);
+0051 <span class="keyword">else</span>
+0052     zx = zeros(2,0);
+0053 <span class="keyword">end</span>
+0054 
+0055 <a name="_sub1" href="#_subfunctions" class="code">function z = imconicinterx(p, x, y_min, y_max)</a>
+0056 <span class="comment">% Intersection of conic section and straight line parallel to x-axis.</span>
+0057 
+0058 a = p(1); b = p(2); c = p(3); d = p(4); f = p(5); g = p(6);
+0059 eq = [c, b*x+f, a*x^2+d*x+g];  <span class="comment">% equation for free variable y</span>
+0060 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="#_sub3" class="code" title="subfunction y = quadeqrange(eq, y_min, y_max)">quadeqrange</a>(eq, y_min, y_max);
+0061 z = [ repmat(x, 1, numel(<a href="../../../src/@y/y.html" class="code" title="">y</a>)) ; <a href="../../../src/@y/y.html" class="code" title="">y</a> ];
+0062 
+0063 <a name="_sub2" href="#_subfunctions" class="code">function z = imconicintery(p, y, x_min, x_max)</a>
+0064 <span class="comment">% Intersection of conic section and straight line parallel to y-axis.</span>
+0065 
+0066 a = p(1); b = p(2); c = p(3); d = p(4); f = p(5); g = p(6);
+0067 eq = [a, b*<a href="../../../src/@y/y.html" class="code" title="">y</a>+d, c*y^2+f*<a href="../../../src/@y/y.html" class="code" title="">y</a>+g];  <span class="comment">% equation for free variable x</span>
+0068 x = <a href="#_sub3" class="code" title="subfunction y = quadeqrange(eq, y_min, y_max)">quadeqrange</a>(eq, x_min, x_max);
+0069 z = [ x ; repmat(<a href="../../../src/@y/y.html" class="code" title="">y</a>, 1, numel(x)) ];
+0070 
+0071 <a name="_sub3" href="#_subfunctions" class="code">function y = quadeqrange(eq, y_min, y_max)</a>
+0072 <span class="comment">% Compute solutions of quadratic equation in given range.</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">% Input arguments:</span>
+0075 <span class="comment">% eq:</span>
+0076 <span class="comment">%    the coefficients quadratic equations in descending order of powers</span>
+0077 <span class="comment">% y_min, y_max:</span>
+0078 <span class="comment">%    the range lower and upper bound</span>
+0079 
+0080 validateattributes(eq, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0081 validateattributes(y_min, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0082 validateattributes(y_max, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0083 
+0084 a = eq(1); b = eq(2); c = eq(3);
+0085 <span class="keyword">if</span> abs(a) &lt; 1e-12  <span class="comment">% a linear equation</span>
+0086     <a href="../../../src/@y/y.html" class="code" title="">y</a> = -c/b;
+0087 <span class="keyword">else</span>  <span class="comment">% a truely quadratic equation</span>
+0088     D = b^2-4*a*c;  <span class="comment">% discriminant</span>
+0089     <span class="keyword">if</span> D &gt; 0
+0090         sD = realsqrt(D);
+0091         <a href="../../../src/@y/y.html" class="code" title="">y</a> = [(-b-sD) (-b+sD)]/(2*a);
+0092     <span class="keyword">elseif</span> D == 0
+0093         <a href="../../../src/@y/y.html" class="code" title="">y</a> = (-b)/(2*a);
+0094     <span class="keyword">else</span>
+0095         <a href="../../../src/@y/y.html" class="code" title="">y</a> = zeros(1,0);
+0096     <span class="keyword">end</span>
+0097 <span class="keyword">end</span>
+0098 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(<a href="../../../src/@y/y.html" class="code" title="">y</a> &gt;= y_min &amp; <a href="../../../src/@y/y.html" class="code" title="">y</a> &lt;= y_max);  <span class="comment">% filter roots out of bounds</span>
+0099 
+0100 <span class="comment">% y = roots(eq);</span>
+0101 <span class="comment">% y = reshape(y, 1, numel(y));  % row vector</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

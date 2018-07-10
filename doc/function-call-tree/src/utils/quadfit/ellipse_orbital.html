@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipse_orbital</title>
+  <meta name="keywords" content="ellipse_orbital">
+  <meta name="description" content="Generates points along an ellipse using Kepler's parameters.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipse_orbital
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Generates points along an ellipse using Kepler's parameters.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [x, y] = ellipse_orbital(N, e, p, cx, cy, phi) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Generates points along an ellipse using Kepler's parameters.
+
+ Input arguments:
+ N:
+    number of points to generate
+ e:
+    eccentricity of the ellipse
+ p:
+    semi-latus rectum of the ellipse.
+ cx, cy:
+    coordinates of the center of the ellipse
+ phi:
+    rotation of the aligned ellipse w.r.t. x-axis</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [rx, ry] = aligned_ellipse(N, e, p)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x, y] = ellipse_orbital(N, e, p, cx, cy, phi)</a>
+0002 <span class="comment">% Generates points along an ellipse using Kepler's parameters.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% N:</span>
+0006 <span class="comment">%    number of points to generate</span>
+0007 <span class="comment">% e:</span>
+0008 <span class="comment">%    eccentricity of the ellipse</span>
+0009 <span class="comment">% p:</span>
+0010 <span class="comment">%    semi-latus rectum of the ellipse.</span>
+0011 <span class="comment">% cx, cy:</span>
+0012 <span class="comment">%    coordinates of the center of the ellipse</span>
+0013 <span class="comment">% phi:</span>
+0014 <span class="comment">%    rotation of the aligned ellipse w.r.t. x-axis</span>
+0015 
+0016 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0017 
+0018 <span class="keyword">if</span> nargin &lt; 2  <span class="comment">% eccentricity of ellipse</span>
+0019     e = 0;
+0020 <span class="keyword">else</span>
+0021     validateattributes(e, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0022 <span class="keyword">end</span>
+0023 <span class="keyword">if</span> nargin &lt; 3  <span class="comment">% semi-latus rectum</span>
+0024     p = 1;
+0025 <span class="keyword">else</span>
+0026     validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0027 <span class="keyword">end</span>
+0028 <span class="keyword">if</span> nargin &lt; 4
+0029     cx = 0;
+0030 <span class="keyword">else</span>
+0031     validateattributes(cx, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin &lt; 5
+0034     cy = 0;
+0035 <span class="keyword">else</span>
+0036     validateattributes(cy, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0037 <span class="keyword">end</span>
+0038 <span class="keyword">if</span> nargin &lt; 6
+0039     phi = 0;
+0040 <span class="keyword">else</span>
+0041     validateattributes(phi, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">% X(t) = X_c + a cos(t) cos(phi) - b sin(t) sin(phi)</span>
+0045 <span class="comment">% Y(t) = Y_c + a cos(t) sin(phi) + b sin(t) cos(phi)</span>
+0046 [ax, ay] = <a href="#_sub1" class="code" title="subfunction [rx, ry] = aligned_ellipse(N, e, p)">aligned_ellipse</a>(N, e, p);
+0047 rx = ax*cos(phi) + ay*sin(phi);
+0048 ry = ay*cos(phi) - ax*sin(phi);
+0049 x = rx + cx;
+0050 <a href="../../../src/@y/y.html" class="code" title="">y</a> = ry + cy;
+0051 <span class="keyword">if</span> nargout &lt; 2
+0052     plot(x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="string">'.'</span>);
+0053 <span class="keyword">end</span>
+0054 
+0055 <a name="_sub1" href="#_subfunctions" class="code">function [rx, ry] = aligned_ellipse(N, e, p)</a>
+0056 
+0057 <span class="keyword">if</span> nargin &lt; 2  <span class="comment">% eccentricity of ellipse</span>
+0058     e = 0;
+0059 <span class="keyword">end</span>
+0060 <span class="keyword">if</span> nargin &lt; 3  <span class="comment">% semi-latus rectum</span>
+0061     p = 1;
+0062 <span class="keyword">end</span>
+0063 
+0064 theta = 2*pi * rand(N,1);
+0065 r = p ./ (1 + e .* cos(theta));
+0066 ry = r .* sin(theta);
+0067 rx = r .* cos(theta);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

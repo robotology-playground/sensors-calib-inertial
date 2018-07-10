@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getJMcouplings</title>
+  <meta name="keywords" content="getJMcouplings">
+  <meta name="description" content="Get the list of joint/motor couplings connected to the joints or motors in 'jointOrMotorNameList'">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointsDbase -->
+<h1>getJMcouplings
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Get the list of joint/motor couplings connected to the joints or motors in 'jointOrMotorNameList'</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function jmCouplings = getJMcouplings( obj,inputType,jointOrMotorNameList ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Get the list of joint/motor couplings connected to the joints or motors in 'jointOrMotorNameList'
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointsDbase.html" class="code" title="">JointsDbase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function jmCouplings = getJMcouplings( obj,inputType,jointOrMotorNameList )</a>
+0002 <span class="comment">%Get the list of joint/motor couplings connected to the joints or motors in 'jointOrMotorNameList'</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="keyword">switch</span> inputType
+0006     <span class="keyword">case</span> <span class="string">'joints'</span>
+0007         inputData = {<span class="string">'jointName'</span>,jointOrMotorNameList};
+0008     <span class="keyword">case</span> <span class="string">'motors'</span>
+0009         inputData = {<span class="string">'cpldMotorSharingIdx'</span>,jointOrMotorNameList};
+0010     <span class="keyword">otherwise</span>
+0011         error(<span class="string">'getJMcouplings: inputType should be ''joints'' or ''motors !!'''</span>);
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="comment">% build query (input properties to match)</span>
+0015 inputProp.format = 2;
+0016 inputProp.data = inputData;
+0017 
+0018 <span class="comment">% query data</span>
+0019 jmCouplings = obj.getPropList(inputProp,<span class="string">'jmCoupling'</span>);
+0020 
+0021 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

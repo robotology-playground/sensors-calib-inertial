@@ -1,0 +1,20 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  Plotter -> Plotter;
+  Plotter -> plot2dDataNfittedModel;
+  Plotter -> plot2funcTimeseries;
+  Plotter -> plot2funcTimeseriesYY;
+  Plotter -> plotFuncTimeseries;
+  Plotter -> plotFuncTimeseriesNderivative;
+  Plotter -> plotNFuncTimeseries;
+  Plotter -> plotNanimLineTimeseries;
+
+  Plotter [URL="Plotter.html"];
+  plot2dDataNfittedModel [URL="plot2dDataNfittedModel.html"];
+  plot2funcTimeseries [URL="plot2funcTimeseries.html"];
+  plot2funcTimeseriesYY [URL="plot2funcTimeseriesYY.html"];
+  plotFuncTimeseries [URL="plotFuncTimeseries.html"];
+  plotFuncTimeseriesNderivative [URL="plotFuncTimeseriesNderivative.html"];
+  plotNFuncTimeseries [URL="plotNFuncTimeseries.html"];
+  plotNanimLineTimeseries [URL="plotNanimLineTimeseries.html"];
+}

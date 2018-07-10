@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoid_ex2im</title>
+  <meta name="keywords" content="ellipsoid_ex2im">
+  <meta name="description" content="Cast ellipsoid defined with explicit parameters to implicit vector form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsoid_ex2im
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Cast ellipsoid defined with explicit parameters to implicit vector form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = ellipsoid_ex2im(center, radii, R) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Cast ellipsoid defined with explicit parameters to implicit vector form.
+
+ Examples:
+    p = ellipse_ex2im([xc,yc,zc],[xr,yr,zr],eye(3,3));</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="sympoly.html" class="code" title="">sympoly</a>	</li><li><a href="sympolys.html" class="code" title="function sympolys(varargin)">sympolys</a>	Create multiple symbolic polynomials in the caller workspace.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = ellipsoid_ex2im(center, radii, R)</a>
+0002 <span class="comment">% Cast ellipsoid defined with explicit parameters to implicit vector form.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Examples:</span>
+0005 <span class="comment">%    p = ellipse_ex2im([xc,yc,zc],[xr,yr,zr],eye(3,3));</span>
+0006 
+0007 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0008 
+0009 <span class="keyword">if</span> nargin &gt; 0
+0010     xc = center(1);
+0011     yc = center(2);
+0012     zc = center(3);
+0013     
+0014     xrr = 1/radii(1);
+0015     yrr = 1/radii(2);
+0016     zrr = 1/radii(3);
+0017     
+0018     r11 = R(1);
+0019     r21 = R(2);
+0020     r31 = R(3);
+0021     r12 = R(4);
+0022     r22 = R(5);
+0023     r32 = R(6);
+0024     r13 = R(7);
+0025     r23 = R(8);
+0026     r33 = R(9);
+0027 
+0028     x = 1;
+0029     <a href="../../../src/@y/y.html" class="code" title="">y</a> = 1;
+0030     z = 1;
+0031     
+0032     <span class="comment">% terms collected from symbolic expression</span>
+0033     p = [ <span class="keyword">...</span>
+0034         ; r11^2*x^2*xrr^2 + r21^2*x^2*yrr^2 + r31^2*x^2*zrr^2 <span class="keyword">...</span><span class="comment"> % x^2</span>
+0035         ; r12^2*xrr^2*y^2 + r22^2*y^2*yrr^2 + r32^2*y^2*zrr^2 <span class="keyword">...</span><span class="comment"> % y^2</span>
+0036         ; r13^2*xrr^2*z^2 + r23^2*yrr^2*z^2 + r33^2*z^2*zrr^2 <span class="keyword">...</span><span class="comment"> % z^2</span>
+0037         ; 2*r11*r12*x*xrr^2*<a href="../../../src/@y/y.html" class="code" title="">y</a> + 2*r21*r22*x*<a href="../../../src/@y/y.html" class="code" title="">y</a>*yrr^2 + 2*r31*r32*x*<a href="../../../src/@y/y.html" class="code" title="">y</a>*zrr^2 <span class="keyword">...</span><span class="comment"> % x*y</span>
+0038         ; 2*r11*r13*x*xrr^2*z + 2*r21*r23*x*yrr^2*z + 2*r31*r33*x*z*zrr^2 <span class="keyword">...</span><span class="comment"> % x*z</span>
+0039         ; 2*r12*r13*xrr^2*<a href="../../../src/@y/y.html" class="code" title="">y</a>*z + 2*r22*r23*<a href="../../../src/@y/y.html" class="code" title="">y</a>*yrr^2*z + 2*r32*r33*<a href="../../../src/@y/y.html" class="code" title="">y</a>*z*zrr^2 <span class="keyword">...</span><span class="comment"> % y*z</span>
+0040         ; (-2)*x*(r11^2*xc*xrr^2 + r21^2*xc*yrr^2 + r31^2*xc*zrr^2 + r11*r12*xrr^2*yc + r11*r13*xrr^2*zc + r21*r22*yc*yrr^2 + r21*r23*yrr^2*zc + r31*r32*yc*zrr^2 + r31*r33*zc*zrr^2) <span class="keyword">...</span><span class="comment"> % x</span>
+0041         ; (-2)*<a href="../../../src/@y/y.html" class="code" title="">y</a>*(r12^2*xrr^2*yc + r22^2*yc*yrr^2 + r32^2*yc*zrr^2 + r11*r12*xc*xrr^2 + r21*r22*xc*yrr^2 + r12*r13*xrr^2*zc + r31*r32*xc*zrr^2 + r22*r23*yrr^2*zc + r32*r33*zc*zrr^2) <span class="keyword">...</span><span class="comment"> % y</span>
+0042         ; (-2)*z*(r13^2*xrr^2*zc + r23^2*yrr^2*zc + r33^2*zc*zrr^2 + r11*r13*xc*xrr^2 + r12*r13*xrr^2*yc + r21*r23*xc*yrr^2 + r22*r23*yc*yrr^2 + r31*r33*xc*zrr^2 + r32*r33*yc*zrr^2) <span class="keyword">...</span><span class="comment"> % z</span>
+0043         ; r11^2*xc^2*xrr^2 + 2*r11*r12*xc*xrr^2*yc + 2*r11*r13*xc*xrr^2*zc + r12^2*xrr^2*yc^2 + 2*r12*r13*xrr^2*yc*zc + r13^2*xrr^2*zc^2 + r21^2*xc^2*yrr^2 + 2*r21*r22*xc*yc*yrr^2 + 2*r21*r23*xc*yrr^2*zc + r22^2*yc^2*yrr^2 + 2*r22*r23*yc*yrr^2*zc + r23^2*yrr^2*zc^2 + r31^2*xc^2*zrr^2 + 2*r31*r32*xc*yc*zrr^2 + 2*r31*r33*xc*zc*zrr^2 + r32^2*yc^2*zrr^2 + 2*r32*r33*yc*zc*zrr^2 + r33^2*zc^2*zrr^2 - 1 <span class="keyword">...</span>
+0044     ];
+0045 <span class="keyword">else</span>
+0046     <a href="sympolys.html" class="code" title="function sympolys(varargin)">sympolys</a> x <a href="../../../src/@y/y.html" class="code" title="">y</a> z xc yc zc xrr yrr zrr r11 r12 r13 r21 r22 r23 r31 r32 r33;
+0047     
+0048     <span class="comment">% scaling</span>
+0049     <a href="../../../src/@S/S.html" class="code" title="">S</a> = diag([xrr yrr zrr].^2); <span class="comment">%#ok&lt;NODEF&gt; % reciprocal of axes lengths</span>
+0050     
+0051     <span class="comment">% rotation</span>
+0052     R = [ r11 r12 r13 <span class="keyword">...</span>
+0053         ; r21 r22 r23 <span class="keyword">...</span>
+0054         ; r31 r32 r33 ]; <span class="comment">%#ok&lt;NODEF&gt;</span>
+0055     
+0056     <span class="comment">% translation</span>
+0057     T = <a href="sympoly.html" class="code" title="">sympoly</a>(eye(4,4));
+0058     T(1:3, 4) = -[xc yc zc]; <span class="comment">%#ok&lt;NODEF&gt;</span>
+0059     
+0060     <span class="comment">% scale and rotate</span>
+0061     RSR = <a href="sympoly.html" class="code" title="">sympoly</a>(zeros(4,4));
+0062     RSR(1:3,1:3) = R' * <a href="../../../src/@S/S.html" class="code" title="">S</a> * R;
+0063     RSR(4,4) = -1;
+0064 
+0065     <span class="comment">% translate to the center</span>
+0066     Q = T' * RSR * T;
+0067     
+0068     <span class="comment">% build quadratic form</span>
+0069     p = [x <a href="../../../src/@y/y.html" class="code" title="">y</a> z 1] * Q * [x;<a href="../../../src/@y/y.html" class="code" title="">y</a>;z;1]; <span class="comment">%#ok&lt;NODEF&gt;</span>
+0070 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

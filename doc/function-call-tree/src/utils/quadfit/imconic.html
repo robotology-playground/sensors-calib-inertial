@@ -1,0 +1,584 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of imconic</title>
+  <meta name="keywords" content="imconic">
+  <meta name="description" content="Compute parameters of or plot conic section given in implicit form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>imconic
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Compute parameters of or plot conic section given in implicit form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [kind,a,b,R,t] = imconic(p, w, figax, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Compute parameters of or plot conic section given in implicit form.
+ The conic section is assumed to be given as
+ a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0
+ where [a,b,c,d,f,g] are stacked into the parameter vector p.
+ If given, only those points of the conic are plotted that fall within
+ the specified window.
+
+ Input arguments:
+ p:
+    the parameter vector p = [a b c d f g]
+ w:
+    the window w = [x_min x_max y_min y_max], or 0 to suppress plotting
+    even for call with single output argument
+ figax:
+    axes to use for plotting the conic section
+
+ Output arguments:
+ h:
+    handle of the graphics object created
+ -- OR --
+ kind:
+    the type of the conic section: circle, ellipse, parabola, hyperbola
+ a, b:
+    explicit parameters (semi-axes) of conic section
+ R:
+    rotation from standard alignment
+ t:
+    offset from origin
+
+ Examples:
+ h = imconic([4 0 4 4 -36 -16])
+    plots the conic section in the current axes, returning its handle h
+ h = imconic([4 0 4 4 -36 -16], [], a)
+    plots the conic section in axes a, returning its handle h
+ [kind,a,b,R,t] = imconic([1 0 0 0 1 0])
+    computes parameters for the conic section
+ kind = imconic([4 0 4 4 -36 -16], 0)
+    identifies but does not plot the conic section</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="imconicdiscr.html" class="code" title="function D = imconicdiscr(p)">imconicdiscr</a>	Discriminant for conic section.</li><li><a href="imconicisect.html" class="code" title="function zx = imconicisect(p, w, t, R)">imconicisect</a>	Intersections of conic with window bounds.</li><li><a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>	Rotates a conic section given as an implicit equation.</li><li><a href="imconicrotation.html" class="code" title="function [R,phi] = imconicrotation(p)">imconicrotation</a>	Rotation matrix of a conic section given as an implicit equation.</li><li><a href="imconictranslate.html" class="code" title="function pt = imconictranslate(p, t)">imconictranslate</a>	Translates a conic section given as an implicit equation.</li><li><a href="imconictranslation.html" class="code" title="function t = imconictranslation(p)">imconictranslation</a>	Translation vector of a conic section given as an implicit equation.</li><li><a href="intfilter.html" class="code" title="function [z,ix] = intfilter(x, bnd)">intfilter</a>	Filters those elements of x that are outside a set of intervals.</li><li><a href="transrot.html" class="code" title="function zrt = transrot(z, t, R)">transrot</a>	Apply translation and rotation to a set of points.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>	Maximum likelihood ellipse fit with foot points.</li><li><a href="ellipsoid_projections.html" class="code" title="function ellipsoid_projections(x,y,z,varargin)">ellipsoid_projections</a>	Plots ellipsoid projections on the xy, xz and yz planes.</li><li><a href="example_conic.html" class="code" title="function example_conic">example_conic</a>	Demonstrates plotting conic sections given as an implicit equation.</li><li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li><li><a href="example_ellipsefit2.html" class="code" title="function example_ellipsefit2">example_ellipsefit2</a>	Various ellipse fits to some data points.</li><li><a href="example_ellipsefitnoise.html" class="code" title="function example_ellipsefitnoise">example_ellipsefitnoise</a>	Comparing ellipse fits under various noise conditions.</li><li><a href="example_ellipsefitsector.html" class="code" title="function example_ellipsefitsector">example_ellipsefitsector</a>	Ellipse fitting to data from a limited sector.</li><li><a href="example_ellipsenormfit.html" class="code" title="function example_ellipsenormfit">example_ellipsenormfit</a>	Comparing the accuracy of various ellipse fits with and without normals.</li><li><a href="example_ellipseproj.html" class="code" title="function example_ellipseproj">example_ellipseproj</a>	Demonstration of projecting points to an ellipse.</li><li><a href="example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li><li><a href="example_pqdist.html" class="code" title="function example_pqdist">example_pqdist</a>	Sample code for distance of quadratic curve and point.</li><li><a href="example_quad2dcomp.html" class="code" title="function example_quad2dcomp">example_quad2dcomp</a>	Comparison of various ellipse (and general quadratic curve) fits.</li><li><a href="example_quad2dcon.html" class="code" title="function example_quad2dcon">example_quad2dcon</a>	Demonstration of constrained quadratic curve fitting.</li><li><a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>	Fit a quadratic curve to data using consistent algebraic least squares.</li><li><a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function Delta = imconicdelta(p)</a></li><li><a href="#_sub2" class="code">function h = implotconic(figax, z, grp, R, t, varargin)</a></li><li><a href="#_sub3" class="code">function r = imcircle(p)</a></li><li><a href="#_sub4" class="code">function [z,grp] = imcirclepoints(r, t, zx, w)</a></li><li><a href="#_sub5" class="code">function [semi_a,semi_b] = imellipse(p)</a></li><li><a href="#_sub6" class="code">function [z,grp] = imellipsepoints(a, b, R, t, zx, w)</a></li><li><a href="#_sub7" class="code">function [a,b] = imhyperbola(p)</a></li><li><a href="#_sub8" class="code">function [z,grp] = imhyperbolapoints(a, b, R, t, zx, w)</a></li><li><a href="#_sub9" class="code">function a = imparabola(p)</a></li><li><a href="#_sub10" class="code">function [z,grp] = imparabolapoints(a, R, t0, zx, w)</a></li><li><a href="#_sub11" class="code">function tf = isinrect(z, w, t, R)</a></li><li><a href="#_sub12" class="code">function [alpha,grp] = implotangles(alphax, beta, z, w, t, R)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [kind,a,b,R,t] = imconic(p, w, figax, varargin)</a>
+0002 <span class="comment">% Compute parameters of or plot conic section given in implicit form.</span>
+0003 <span class="comment">% The conic section is assumed to be given as</span>
+0004 <span class="comment">% a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0</span>
+0005 <span class="comment">% where [a,b,c,d,f,g] are stacked into the parameter vector p.</span>
+0006 <span class="comment">% If given, only those points of the conic are plotted that fall within</span>
+0007 <span class="comment">% the specified window.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Input arguments:</span>
+0010 <span class="comment">% p:</span>
+0011 <span class="comment">%    the parameter vector p = [a b c d f g]</span>
+0012 <span class="comment">% w:</span>
+0013 <span class="comment">%    the window w = [x_min x_max y_min y_max], or 0 to suppress plotting</span>
+0014 <span class="comment">%    even for call with single output argument</span>
+0015 <span class="comment">% figax:</span>
+0016 <span class="comment">%    axes to use for plotting the conic section</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% Output arguments:</span>
+0019 <span class="comment">% h:</span>
+0020 <span class="comment">%    handle of the graphics object created</span>
+0021 <span class="comment">% -- OR --</span>
+0022 <span class="comment">% kind:</span>
+0023 <span class="comment">%    the type of the conic section: circle, ellipse, parabola, hyperbola</span>
+0024 <span class="comment">% a, b:</span>
+0025 <span class="comment">%    explicit parameters (semi-axes) of conic section</span>
+0026 <span class="comment">% R:</span>
+0027 <span class="comment">%    rotation from standard alignment</span>
+0028 <span class="comment">% t:</span>
+0029 <span class="comment">%    offset from origin</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% Examples:</span>
+0032 <span class="comment">% h = imconic([4 0 4 4 -36 -16])</span>
+0033 <span class="comment">%    plots the conic section in the current axes, returning its handle h</span>
+0034 <span class="comment">% h = imconic([4 0 4 4 -36 -16], [], a)</span>
+0035 <span class="comment">%    plots the conic section in axes a, returning its handle h</span>
+0036 <span class="comment">% [kind,a,b,R,t] = imconic([1 0 0 0 1 0])</span>
+0037 <span class="comment">%    computes parameters for the conic section</span>
+0038 <span class="comment">% kind = imconic([4 0 4 4 -36 -16], 0)</span>
+0039 <span class="comment">%    identifies but does not plot the conic section</span>
+0040 
+0041 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0042 
+0043 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0044 assert(length(p) == 6, <span class="string">'imconic:DimensionMismatch'</span>, <span class="keyword">...</span>
+0045     <span class="string">'A parameter vector of length 6 expected for a to g in a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0.'</span>);
+0046 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~isempty(w)
+0047     <span class="keyword">if</span> isscalar(w)
+0048         assert(w == 0, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0049             <span class="string">'A parameter vector of length 4 expected as window, or use 0 to suppress plotting.'</span>);
+0050     <span class="keyword">else</span>
+0051         validateattributes(w, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0052         assert(numel(w) == 4, <span class="string">'imconic:DimensionMismatch'</span>, <span class="keyword">...</span>
+0053             <span class="string">'A parameter vector of length 4 expected for x_min, x_max, y_min and y_max.'</span>);
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">else</span>
+0056     w = [];
+0057 <span class="keyword">end</span>
+0058 <span class="keyword">if</span> nargin &gt; 2 &amp;&amp; ~isempty(figax)
+0059     validateattributes(figax, {<span class="string">'numeric'</span>}, {<span class="string">'scalar'</span>});
+0060     assert(ishandle(figax), <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0061         <span class="string">'The figure axes parameter is expected to be a valid graphics handle.'</span>);
+0062 <span class="keyword">else</span>
+0063     figax = [];
+0064 <span class="keyword">end</span>
+0065 
+0066 <span class="comment">% conic section discriminants</span>
+0067 J = <a href="imconicdiscr.html" class="code" title="function D = imconicdiscr(p)">imconicdiscr</a>(p);
+0068 Delta = <a href="#_sub1" class="code" title="subfunction Delta = imconicdelta(p)">imconicdelta</a>(p);
+0069 
+0070 <span class="keyword">if</span> nargout &gt; 1 || isempty(w) || ~isscalar(w) || w ~= 0  <span class="comment">% 2 or more output arguments, or plot conic section</span>
+0071     <span class="comment">% choose kind of conic section</span>
+0072     <span class="keyword">if</span> J &gt; 1e-12  <span class="comment">% equation represents an ellipse</span>
+0073         a = p(1);
+0074         b = 0.5 * p(2);
+0075         c = p(3);
+0076         assert(abs(Delta) &gt; 1e-12, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0077             <span class="string">'Parameters define a degenerate conic: imaginary intersecting lines.'</span>);
+0078         assert(Delta / (a+c) &lt; 0, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0079             <span class="string">'Parameters define an imaginary ellipse.'</span>);
+0080         <span class="keyword">if</span> a == c &amp;&amp; b == 0  <span class="comment">% equation represents a circle</span>
+0081             kind = <span class="string">'circle'</span>;
+0082             a = <a href="#_sub3" class="code" title="subfunction r = imcircle(p)">imcircle</a>(p);
+0083             b = a;  <span class="comment">% circle radius</span>
+0084         <span class="keyword">else</span>
+0085             kind = <span class="string">'ellipse'</span>;
+0086             [a,b] = <a href="#_sub5" class="code" title="subfunction [semi_a,semi_b] = imellipse(p)">imellipse</a>(p);
+0087         <span class="keyword">end</span>
+0088     <span class="keyword">elseif</span> J &lt; -1e-12  <span class="comment">% equation represents a hyperbola</span>
+0089         assert(abs(Delta) &gt; 1e-12, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0090             <span class="string">'Parameters define a degenerate conic: real intersecting lines.'</span>);
+0091         kind = <span class="string">'hyperbola'</span>;
+0092         [a,b] = <a href="#_sub7" class="code" title="subfunction [a,b] = imhyperbola(p)">imhyperbola</a>(p);
+0093     <span class="keyword">else</span>  <span class="comment">% equation represents a parabola</span>
+0094         <span class="keyword">if</span> abs(Delta) &lt; 1e-12;
+0095             a = p(1);
+0096             c = p(3);
+0097             d = 0.5 * p(4);
+0098             f = 0.5 * p(5);
+0099             g = p(6);
+0100             K = det([a d ; d g]) + det([c f ; f g]);
+0101             <span class="keyword">if</span> K &gt; 0
+0102                 error(<span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0103                     <span class="string">'Parameters define a degenerate conic: imaginary parallel lines.'</span>);
+0104             <span class="keyword">elseif</span> K &lt; 0
+0105                 error(<span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0106                     <span class="string">'Parameters define a degenerate conic: real parallel lines.'</span>);
+0107             <span class="keyword">else</span>
+0108                 error(<span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0109                     <span class="string">'Parameters define a degenerate conic: coincident lines.'</span>);
+0110             <span class="keyword">end</span>
+0111         <span class="keyword">end</span>
+0112         kind = <span class="string">'parabola'</span>;
+0113         a = <a href="#_sub9" class="code" title="subfunction a = imparabola(p)">imparabola</a>(p);
+0114         b = NaN;  <span class="comment">% meaningless for parabola</span>
+0115     <span class="keyword">end</span>
+0116 
+0117     t = <a href="imconictranslation.html" class="code" title="function t = imconictranslation(p)">imconictranslation</a>(p);
+0118     R = <a href="imconicrotation.html" class="code" title="function [R,phi] = imconicrotation(p)">imconicrotation</a>(<a href="imconictranslate.html" class="code" title="function pt = imconictranslate(p, t)">imconictranslate</a>(p, -t));
+0119 
+0120     <span class="keyword">if</span> nargout &lt; 2  <span class="comment">% h = imconic(p)</span>
+0121         zx = <a href="imconicisect.html" class="code" title="function zx = imconicisect(p, w, t, R)">imconicisect</a>(p,w,t,R);
+0122 
+0123         <span class="keyword">switch</span> kind
+0124             <span class="keyword">case</span> <span class="string">'circle'</span>
+0125                 [z,grp] = <a href="#_sub4" class="code" title="subfunction [z,grp] = imcirclepoints(r, t, zx, w)">imcirclepoints</a>(a,t,zx,w);
+0126             <span class="keyword">case</span> <span class="string">'ellipse'</span>
+0127                 [z,grp] = <a href="#_sub6" class="code" title="subfunction [z,grp] = imellipsepoints(a, b, R, t, zx, w)">imellipsepoints</a>(a,b,R,t,zx,w);
+0128             <span class="keyword">case</span> <span class="string">'parabola'</span>
+0129                 [z,grp] = <a href="#_sub10" class="code" title="subfunction [z,grp] = imparabolapoints(a, R, t0, zx, w)">imparabolapoints</a>(a,R,t,zx,w);
+0130             <span class="keyword">case</span> <span class="string">'hyperbola'</span>
+0131                 [z,grp] = <a href="#_sub8" class="code" title="subfunction [z,grp] = imhyperbolapoints(a, b, R, t, zx, w)">imhyperbolapoints</a>(a,b,R,t,zx,w);
+0132         <span class="keyword">end</span>
+0133         kind = <a href="#_sub2" class="code" title="subfunction h = implotconic(figax, z, grp, R, t, varargin)">implotconic</a>(figax,z,grp,R,t,varargin{:});
+0134     <span class="keyword">end</span>
+0135 <span class="keyword">else</span>  <span class="comment">% kind = imconic(p,0)</span>
+0136     <span class="comment">% choose kind of conic section</span>
+0137     <span class="keyword">if</span> J &gt; 1e-12  <span class="comment">% equation represents an ellipse</span>
+0138         a = p(1);
+0139         b = 0.5 * p(2);
+0140         c = p(3);
+0141         <span class="keyword">if</span> abs(Delta) &lt; 1e-12
+0142             kind = <span class="string">'imaginary_intersecting_lines'</span>;
+0143         <span class="keyword">elseif</span> Delta / (a+c) &gt;= 0
+0144             kind = <span class="string">'imaginary_ellipse'</span>;
+0145         <span class="keyword">elseif</span> a == c &amp;&amp; b == 0
+0146             kind = <span class="string">'circle'</span>;
+0147         <span class="keyword">else</span>
+0148             kind = <span class="string">'ellipse'</span>;
+0149         <span class="keyword">end</span>
+0150     <span class="keyword">elseif</span> J &lt; -1e-12  <span class="comment">% equation represents a hyperbola</span>
+0151         <span class="keyword">if</span> abs(Delta) &lt; 1e-12;
+0152             kind = <span class="string">'real_intersecting_lines'</span>;
+0153         <span class="keyword">else</span>
+0154             kind = <span class="string">'hyperbola'</span>;
+0155         <span class="keyword">end</span>
+0156     <span class="keyword">else</span>  <span class="comment">% equation represents a parabola</span>
+0157         <span class="keyword">if</span> abs(Delta) &gt; 1e-12;
+0158             kind = <span class="string">'parabola'</span>;
+0159         <span class="keyword">else</span>
+0160             a = p(1);
+0161             c = p(3);
+0162             d = 0.5 * p(4);
+0163             f = 0.5 * p(5);
+0164             g = p(6);
+0165             K = det([a d ; d g]) + det([c f ; f g]);
+0166             <span class="keyword">if</span> K &gt; 0
+0167                 kind = <span class="string">'imaginary_parallel_lines'</span>;
+0168             <span class="keyword">elseif</span> K &lt; 0
+0169                 kind = <span class="string">'real_parallel_lines'</span>;
+0170             <span class="keyword">else</span>
+0171                 kind = <span class="string">'coincident_lines'</span>;
+0172             <span class="keyword">end</span>
+0173         <span class="keyword">end</span>
+0174     <span class="keyword">end</span>
+0175 <span class="keyword">end</span>
+0176 
+0177 <a name="_sub1" href="#_subfunctions" class="code">function Delta = imconicdelta(p)</a>
+0178 
+0179 A_xx = p(1);
+0180 A_xy = 0.5*p(2);
+0181 A_yy = p(3);
+0182 B_x  = 0.5*p(4);
+0183 B_y  = 0.5*p(5);
+0184 C    = p(6);
+0185 Delta = det([ A_xx A_xy B_x ; A_xy A_yy B_y ; B_x B_y C ]);
+0186 
+0187 <a name="_sub2" href="#_subfunctions" class="code">function h = implotconic(figax, z, grp, R, t, varargin)</a>
+0188 <span class="comment">% Plot conic section.</span>
+0189 <span class="comment">% Points are passed in groups, each of whose points are connected with lines,</span>
+0190 <span class="comment">% but the same color and marker is used for plotting the conic section.</span>
+0191 <span class="comment">%</span>
+0192 <span class="comment">% Input arguments:</span>
+0193 <span class="comment">% figax:</span>
+0194 <span class="comment">%   the graphics handle of the axes to use for plotting</span>
+0195 <span class="comment">% z:</span>
+0196 <span class="comment">%    a 2-by-n matrix of points to plot</span>
+0197 <span class="comment">% grp:</span>
+0198 <span class="comment">%    a vector of group indices for each point in z</span>
+0199 <span class="comment">% R:</span>
+0200 <span class="comment">%    the rotation matrix</span>
+0201 <span class="comment">% t:</span>
+0202 <span class="comment">%    the translation vector</span>
+0203 <span class="comment">%</span>
+0204 <span class="comment">% Output arguments:</span>
+0205 <span class="comment">% h:</span>
+0206 <span class="comment">%    handle of the graphics object created</span>
+0207 
+0208 <span class="keyword">if</span> isempty(z)
+0209     <span class="keyword">return</span>;  <span class="comment">% nothing to plot</span>
+0210 <span class="keyword">end</span>
+0211 <span class="keyword">if</span> isempty(figax)
+0212     figax = gca;
+0213 <span class="keyword">end</span>
+0214 
+0215 z = <a href="transrot.html" class="code" title="function zrt = transrot(z, t, R)">transrot</a>(z, t, R);
+0216 x = z(1,:);
+0217 <a href="../../../src/@y/y.html" class="code" title="">y</a> = z(2,:);
+0218 
+0219 fig = ancestor(figax, <span class="string">'figure'</span>);
+0220 fignextplot = get(fig, <span class="string">'NextPlot'</span>);   <span class="comment">% save setting for figure</span>
+0221 axnextplot = get(figax, <span class="string">'NextPlot'</span>);  <span class="comment">% save setting for axes</span>
+0222 set([fig,figax], <span class="string">'NextPlot'</span>, <span class="string">'add'</span>);  <span class="comment">% re-use same figure</span>
+0223 
+0224 <span class="comment">% save limits</span>
+0225 xlimmode = get(figax, <span class="string">'XLimMode'</span>);
+0226 xlimbounds = get(figax, <span class="string">'XLim'</span>);
+0227 ylimmode = get(figax, <span class="string">'YLimMode'</span>);
+0228 ylimbounds = get(figax, <span class="string">'YLim'</span>);
+0229 
+0230 <span class="comment">% get color and line style of first segment</span>
+0231 grpcount = max(grp);
+0232 <span class="keyword">if</span> grpcount &gt; 1
+0233     h = hggroup(<span class="string">'Parent'</span>, figax);
+0234 
+0235     lineseries = plot(figax, x(grp==1), <a href="../../../src/@y/y.html" class="code" title="">y</a>(grp==1), <span class="string">'Parent'</span>, h, varargin{:});
+0236     color = get(lineseries, <span class="string">'Color'</span>);
+0237     linestyle = get(lineseries, <span class="string">'LineStyle'</span>);
+0238     marker = get(lineseries, <span class="string">'Marker'</span>);
+0239     
+0240     <span class="keyword">for</span> k = 2 : grpcount
+0241         plot(figax, x(k==grp), <a href="../../../src/@y/y.html" class="code" title="">y</a>(k==grp), <span class="keyword">...</span>
+0242             <span class="string">'Parent'</span>, h, <span class="keyword">...</span>
+0243             <span class="string">'Color'</span>, color, <span class="keyword">...</span><span class="comment">  % re-use color and line style for other line segments</span>
+0244             <span class="string">'LineStyle'</span>, linestyle, <span class="keyword">...</span>
+0245             <span class="string">'Marker'</span>, marker, <span class="keyword">...</span>
+0246             varargin{:});
+0247     <span class="keyword">end</span>
+0248 <span class="keyword">else</span>
+0249     h = plot(figax, x(grp==1), <a href="../../../src/@y/y.html" class="code" title="">y</a>(grp==1), varargin{:});
+0250 <span class="keyword">end</span>
+0251 
+0252 set(fig, <span class="string">'NextPlot'</span>, fignextplot);   <span class="comment">% reset figure re-use</span>
+0253 set(figax, <span class="string">'NextPlot'</span>, axnextplot);  <span class="comment">% reset axes re-use</span>
+0254 
+0255 <span class="comment">% restore limits</span>
+0256 <span class="keyword">switch</span> xlimmode
+0257     <span class="keyword">case</span> <span class="string">'manual'</span>
+0258         set(figax, <span class="string">'XLim'</span>, xlimbounds);
+0259 <span class="keyword">end</span>
+0260 <span class="keyword">switch</span> ylimmode
+0261     <span class="keyword">case</span> <span class="string">'manual'</span>
+0262         set(figax, <span class="string">'YLim'</span>, ylimbounds);
+0263 <span class="keyword">end</span>
+0264 
+0265 <a name="_sub3" href="#_subfunctions" class="code">function r = imcircle(p)</a>
+0266 <span class="comment">% Compute explicit parameters for a circle from its implicit equation.</span>
+0267 <span class="comment">% This function uses the implicit circle equation</span>
+0268 <span class="comment">% a*x^2 + a*y^2 + 2*d*x + 2*f*y + g = 0</span>
+0269 <span class="comment">% where p = [a 0 c 2*d 2*f g].</span>
+0270 <span class="comment">%</span>
+0271 <span class="comment">% Output arguments:</span>
+0272 <span class="comment">% t:</span>
+0273 <span class="comment">%    translation vector</span>
+0274 <span class="comment">% r:</span>
+0275 <span class="comment">%    circle radius</span>
+0276 
+0277 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0278 assert(length(p) == 6, <span class="string">'imconic:DimensionMismatch'</span>, <span class="keyword">...</span>
+0279     <span class="string">'A parameter vector of length 6 expected for a to g in a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0.'</span>);
+0280 assert(p(2) == 0 &amp;&amp; p(1) == p(3), <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0281     <span class="string">'Invalid parameter vector for a circle, expected b == 0 and a == c.'</span>);
+0282 
+0283 <span class="comment">% extract parameters from vector form</span>
+0284 a = p(1);
+0285 d = p(4);
+0286 e = p(5);
+0287 f = p(6);
+0288 
+0289 <span class="comment">% use implicit equation to compute circle radius</span>
+0290 r = realsqrt((d^2+e^2)/(4*a^2)-f/a);
+0291 
+0292 <a name="_sub4" href="#_subfunctions" class="code">function [z,grp] = imcirclepoints(r, t, zx, w)</a>
+0293 <span class="comment">% Plot a circle given its explicit parameters.</span>
+0294 <span class="comment">%</span>
+0295 <span class="comment">% Input arguments:</span>
+0296 <span class="comment">% t:</span>
+0297 <span class="comment">%    translation vector</span>
+0298 <span class="comment">% r:</span>
+0299 <span class="comment">%    circle radius</span>
+0300 
+0301 [alpha,grp] = <a href="#_sub12" class="code" title="subfunction [alpha,grp] = implotangles(alphax, beta, z, w, t, R)">implotangles</a>(atan2(zx(2,:), zx(1,:)), -pi, [-r;0], w, t, eye(2,2));
+0302 x = r .* cos(alpha);
+0303 <a href="../../../src/@y/y.html" class="code" title="">y</a> = r .* sin(alpha);
+0304 z = [ x ; <a href="../../../src/@y/y.html" class="code" title="">y</a> ];
+0305 
+0306 <a name="_sub5" href="#_subfunctions" class="code">function [semi_a,semi_b] = imellipse(p)</a>
+0307 <span class="comment">% Compute explicit parameters for an ellipse from its implicit equation.</span>
+0308 <span class="comment">% The function uses the implicit ellipse equation:</span>
+0309 <span class="comment">% a*x^2 + 2*b*x*y + c*y^2 + 2*d*x + 2*f*y + g = 0</span>
+0310 <span class="comment">% where p = [a 2*b c 2*d 2*f g].</span>
+0311 
+0312 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0313 assert(length(p) == 6, <span class="string">'imconic:DimensionMismatch'</span>, <span class="keyword">...</span>
+0314     <span class="string">'A parameter vector of length 6 expected for a to g in a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0.'</span>);
+0315 assert(<a href="imconicdiscr.html" class="code" title="function D = imconicdiscr(p)">imconicdiscr</a>(p) &gt; 0, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0316     <span class="string">'Invalid parameter vector for an ellipse, expected b^2 - 4*a*c &lt; 0.'</span>);
+0317 assert(<a href="#_sub1" class="code" title="subfunction Delta = imconicdelta(p)">imconicdelta</a>(p) ~= 0, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0318     <span class="string">'Parameters define a degenerate ellipse: imaginary intersecting lines.'</span>);
+0319 
+0320 <span class="comment">% extract parameters from vector form</span>
+0321 a = p(1);
+0322 b = 0.5 * p(2);
+0323 c = p(3);
+0324 d = 0.5 * p(4);
+0325 f = 0.5 * p(5);
+0326 g = p(6);
+0327 
+0328 <span class="comment">% use implicit equation to compute ellipse semi-axes length</span>
+0329 q = 2*(a*f^2+c*d^2+g*b^2-2*b*d*f-a*c*g)/(b^2-a*c);
+0330 r = realsqrt((a-c)^2+4*b^2);
+0331 semi_a = realsqrt(q/(r-(a+c)));   <span class="comment">% major axis</span>
+0332 semi_b = realsqrt(q/(-r-(a+c)));  <span class="comment">% minor axis</span>
+0333 
+0334 <a name="_sub6" href="#_subfunctions" class="code">function [z,grp] = imellipsepoints(a, b, R, t, zx, w)</a>
+0335 <span class="comment">% Plot an ellipse given its explicit parameters.</span>
+0336 <span class="comment">%</span>
+0337 <span class="comment">% Input arguments:</span>
+0338 <span class="comment">% R:</span>
+0339 <span class="comment">%    rotation matrix to transform the ellipse in the standard coordinate</span>
+0340 <span class="comment">%    system into the target system</span>
+0341 <span class="comment">% t:</span>
+0342 <span class="comment">%    translation vector to transform the ellipse in the standard coordinate</span>
+0343 <span class="comment">%    system into the target system</span>
+0344 <span class="comment">% zx:</span>
+0345 <span class="comment">%    coordinates of points in the standard system where the conic and the</span>
+0346 <span class="comment">%    window intersect</span>
+0347 <span class="comment">% w:</span>
+0348 <span class="comment">%    window boundaries in the standard coordinate system</span>
+0349 
+0350 [alpha,grp] = <a href="#_sub12" class="code" title="subfunction [alpha,grp] = implotangles(alphax, beta, z, w, t, R)">implotangles</a>(atan2(a/b .* zx(2,:), zx(1,:)), -pi, [-a;0], w, t, R);
+0351 x = a.*cos(alpha);
+0352 <a href="../../../src/@y/y.html" class="code" title="">y</a> = b.*sin(alpha);
+0353 z = [ x ; <a href="../../../src/@y/y.html" class="code" title="">y</a> ];
+0354 
+0355 <a name="_sub7" href="#_subfunctions" class="code">function [a,b] = imhyperbola(p)</a>
+0356 <span class="comment">% Compute explicit parameters for a hyperbola from its implicit equation.</span>
+0357 <span class="comment">% The function uses the implicit hyperbola equation:</span>
+0358 <span class="comment">% A_xx*x^2 + 2*A_xy*x*y + A_yy*y^2 + 2*B_x*x + 2*B_y*y + C = 0</span>
+0359 <span class="comment">% where p = [A_xx 2*A_xy A_yy 2*B_x 2*B_y C].</span>
+0360 
+0361 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0362 assert(length(p) == 6, <span class="string">'imconic:DimensionMismatch'</span>, <span class="keyword">...</span>
+0363     <span class="string">'A parameter vector of length 6 expected for a to g in a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0.'</span>);
+0364 D = <a href="imconicdiscr.html" class="code" title="function D = imconicdiscr(p)">imconicdiscr</a>(p);
+0365 assert(D &lt; 0, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0366     <span class="string">'Invalid parameter vector for a hyperbola, expected b^2 - 4*a*c &gt; 0.'</span>);
+0367 Delta = <a href="#_sub1" class="code" title="subfunction Delta = imconicdelta(p)">imconicdelta</a>(p);
+0368 assert(abs(Delta) &gt; 1e-12, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0369     <span class="string">'Parameters define a degenerate hyperbola: real intersecting lines.'</span>);
+0370 
+0371 A_xx = p(1);
+0372 A_yy = p(3);
+0373 
+0374 <span class="comment">% major and minor semi-axes</span>
+0375 lambda = roots([1, -(A_xx+A_yy), D]);  <span class="comment">% lambda^2 - (A_xx + A_yy)*lambda + D = 0</span>
+0376 a = realsqrt(abs(Delta/(lambda(1)*D)));
+0377 b = realsqrt(abs(Delta/(lambda(2)*D)));
+0378 
+0379 <a name="_sub8" href="#_subfunctions" class="code">function [z,grp] = imhyperbolapoints(a, b, R, t, zx, w)</a>
+0380 <span class="comment">% Plot a hyperbola given its explicit parameters.</span>
+0381 
+0382 r = a/b .* (zx(2,:) ./ zx(1,:));
+0383 r(r &gt; 1 | r &lt; -1) = NaN;
+0384 alphax = atanh(r);
+0385 
+0386 <span class="comment">% left branch</span>
+0387 xlx = -a.*cosh(alphax);
+0388 ylx = -b.*sinh(alphax);
+0389 f = abs(zx(1,:) - xlx) &lt; 1e-12 &amp; abs(zx(2,:) - ylx) &lt; 1e-12;  <span class="comment">% find points that are on left branch</span>
+0390 [alpha,grpl] = <a href="#_sub12" class="code" title="subfunction [alpha,grp] = implotangles(alphax, beta, z, w, t, R)">implotangles</a>(alphax(f), 0, [-a;0], w, t, R);
+0391 xl = -a.*cosh(alpha);
+0392 yl = -b.*sinh(alpha);
+0393 
+0394 <span class="comment">% right branch</span>
+0395 xrx = a.*cosh(alphax);
+0396 yrx = b.*sinh(alphax);
+0397 f = abs(zx(1,:) - xrx) &lt; 1e-12 &amp; abs(zx(2,:) - yrx) &lt; 1e-12;  <span class="comment">% find points that are on right branch</span>
+0398 [alpha,grpr] = <a href="#_sub12" class="code" title="subfunction [alpha,grp] = implotangles(alphax, beta, z, w, t, R)">implotangles</a>(alphax(f), 0, [a;0], w, t, R);
+0399 xr = a.*cosh(alpha);
+0400 yr = b.*sinh(alpha);
+0401 
+0402 x = [ xl, xr ];
+0403 <a href="../../../src/@y/y.html" class="code" title="">y</a> = [ yl, yr ];
+0404 z = [ x ; <a href="../../../src/@y/y.html" class="code" title="">y</a> ];
+0405 
+0406 <span class="keyword">if</span> ~isempty(grpl) &amp;&amp; ~isempty(grpr)
+0407     grp = [ grpl, max(grpl)+grpr ];
+0408 <span class="keyword">elseif</span> ~isempty(grpl)
+0409     grp = grpl;
+0410 <span class="keyword">elseif</span> ~isempty(grpr)
+0411     grp = grpr;
+0412 <span class="keyword">else</span>
+0413     grp = [];
+0414 <span class="keyword">end</span>
+0415 
+0416 <span class="comment">% both branches</span>
+0417 <span class="comment">% x = a.*sec(alpha);</span>
+0418 <span class="comment">% y = b.*tan(alpha);</span>
+0419 
+0420 <a name="_sub9" href="#_subfunctions" class="code">function a = imparabola(p)</a>
+0421 
+0422 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0423 assert(length(p) == 6, <span class="string">'imconic:DimensionMismatch'</span>, <span class="keyword">...</span>
+0424     <span class="string">'A parameter vector of length 6 expected for a to g in a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0.'</span>);
+0425 D = <a href="imconicdiscr.html" class="code" title="function D = imconicdiscr(p)">imconicdiscr</a>(p);
+0426 assert(abs(D) &lt; 1e-12, <span class="string">'imconic:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0427     <span class="string">'Invalid parameter vector for a parabola, expected b^2 = 4*a*c.'</span>);
+0428 
+0429 [~,theta] = <a href="imconicrotation.html" class="code" title="function [R,phi] = imconicrotation(p)">imconicrotation</a>(p);
+0430 p = <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>(p, -theta);
+0431 
+0432 <span class="keyword">if</span> abs(p(3)) &gt; abs(p(1))
+0433     <span class="comment">% x = a*y^2 + b*y + c, p = [0 0 a 1 b c]</span>
+0434     a = -p(3) / p(4);
+0435 <span class="keyword">else</span>
+0436     <span class="comment">% y = a*x^2 + b*x + c, p = [a 0 0 b 1 c]</span>
+0437     a = -p(1) / p(5);
+0438 <span class="keyword">end</span>
+0439 
+0440 <a name="_sub10" href="#_subfunctions" class="code">function [z,grp] = imparabolapoints(a, R, t0, zx, w)</a>
+0441 
+0442 [t,grp] = <a href="#_sub12" class="code" title="subfunction [alpha,grp] = implotangles(alphax, beta, z, w, t, R)">implotangles</a>(2*zx(1,:) ./ zx(2,:), 0, [0;0], w, t0, R);
+0443 x = a.*t.^2;
+0444 <a href="../../../src/@y/y.html" class="code" title="">y</a> = a.*t;
+0445 z = [ x ; <a href="../../../src/@y/y.html" class="code" title="">y</a> ];
+0446 
+0447 <a name="_sub11" href="#_subfunctions" class="code">function tf = isinrect(z, w, t, R)</a>
+0448 <span class="comment">% Points that are inside a window.</span>
+0449 <span class="comment">%</span>
+0450 <span class="comment">% Input arguments:</span>
+0451 <span class="comment">% z:</span>
+0452 <span class="comment">%    a 2-by-n matrix of points</span>
+0453 <span class="comment">% w:</span>
+0454 <span class="comment">%    window boundaries as [x_min x_max y_min y_max]</span>
+0455 <span class="comment">% t:</span>
+0456 <span class="comment">%    the translation vector applied to the points</span>
+0457 <span class="comment">% R:</span>
+0458 <span class="comment">%    the rotation matrix applied to the points</span>
+0459 
+0460 <span class="keyword">if</span> nargin &gt; 3
+0461     z = <a href="transrot.html" class="code" title="function zrt = transrot(z, t, R)">transrot</a>(z, t, R);
+0462 <span class="keyword">elseif</span> nargin &gt; 2
+0463     z = <a href="transrot.html" class="code" title="function zrt = transrot(z, t, R)">transrot</a>(z, t);
+0464 <span class="keyword">end</span>
+0465 
+0466 x = z(1,:); <a href="../../../src/@y/y.html" class="code" title="">y</a> = z(2,:);
+0467 x_min = w(1); x_max = w(2);
+0468 y_min = w(3); y_max = w(4);
+0469 
+0470 tf = x &gt;= x_min &amp; x_max &gt;= x &amp; <a href="../../../src/@y/y.html" class="code" title="">y</a> &gt;= y_min &amp; y_max &gt;= <a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0471 
+0472 <a name="_sub12" href="#_subfunctions" class="code">function [alpha,grp] = implotangles(alphax, beta, z, w, t, R)</a>
+0473 <span class="comment">% Input arguments:</span>
+0474 <span class="comment">% alphax:</span>
+0475 <span class="comment">%    polar coordinate angles of intersections with bounds window [rad]</span>
+0476 <span class="comment">% z:</span>
+0477 <span class="comment">%    a point that is part of the conic</span>
+0478 <span class="comment">% beta:</span>
+0479 <span class="comment">%    polar coordinate angle of point z in the standard coordinate system</span>
+0480 <span class="comment">%</span>
+0481 <span class="comment">% Output arguments:</span>
+0482 <span class="comment">% alpha:</span>
+0483 <span class="comment">%    polar coordinate angles to plot [rad]</span>
+0484 <span class="comment">% bnd:</span>
+0485 <span class="comment">%    angle bounds [rad]</span>
+0486 
+0487 alpha = linspace(-pi, pi, 200);
+0488 <span class="keyword">if</span> ~isempty(w)
+0489     alpha = sort([ alphax-1e-12 alphax+1e-12 alpha ]);
+0490     alphax = sort(alphax);
+0491     bnd = reshape(alphax, 2, numel(alphax)/2);
+0492     <span class="keyword">if</span> <a href="#_sub11" class="code" title="subfunction tf = isinrect(z, w, t, R)">isinrect</a>(z, w, t, R) == isempty(<a href="intfilter.html" class="code" title="function [z,ix] = intfilter(x, bnd)">intfilter</a>(beta, bnd))  <span class="comment">% point of conic is inside window but discarded by filter or vice versa</span>
+0493         alphax = [-pi alphax pi];  <span class="comment">% swap inside and outside</span>
+0494         bnd = reshape(alphax, 2, numel(alphax)/2);
+0495     <span class="keyword">end</span>
+0496     [alpha,grp] = <a href="intfilter.html" class="code" title="function [z,ix] = intfilter(x, bnd)">intfilter</a>(alpha, bnd);
+0497 <span class="keyword">else</span>
+0498     grp = ones(1,numel(alpha));
+0499 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

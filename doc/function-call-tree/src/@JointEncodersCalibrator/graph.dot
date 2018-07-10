@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  JointEncodersCalibrator -> JointEncodersCalibrator;
+  JointEncodersCalibrator -> calibrateSensors;
+  JointEncodersCalibrator -> getOptimConfig;
+  JointEncodersCalibrator -> plotJointsOffsets;
+
+  JointEncodersCalibrator [URL="JointEncodersCalibrator.html"];
+  calibrateSensors [URL="calibrateSensors.html"];
+  getOptimConfig [URL="getOptimConfig.html"];
+  plotJointsOffsets [URL="plotJointsOffsets.html"];
+}

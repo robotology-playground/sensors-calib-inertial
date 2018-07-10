@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getSensorlabels</title>
+  <meta name="keywords" content="getSensorlabels">
+  <meta name="description" content="getSensorlabels Get sensor labels identified by the set &lt;part,sensorUiIDlist&gt;.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsDbase -->
+<h1>getSensorlabels
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>getSensorlabels Get sensor labels identified by the set &lt;part,sensorUiIDlist&gt;.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function sensorLabelList = getSensorlabels( obj,part,sensorUiIDlist ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getSensorlabels Get sensor labels identified by the set &lt;part,sensorUiIDlist&gt;.
+   'sensorUiIDlist', along with part, is the UI set of parameters
+   identifying a unique sensor.
+   ex of returned sensor label: [11b3_acc]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorsDbase.html" class="code" title="">SensorsDbase</a>	======================================================================</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function sensorLabelList = getSensorlabels( obj,part,sensorUiIDlist )</a>
+0002 <span class="comment">%getSensorlabels Get sensor labels identified by the set &lt;part,sensorUiIDlist&gt;.</span>
+0003 <span class="comment">%   'sensorUiIDlist', along with part, is the UI set of parameters</span>
+0004 <span class="comment">%   identifying a unique sensor.</span>
+0005 <span class="comment">%   ex of returned sensor label: [11b3_acc]</span>
+0006 <span class="comment">%</span>
+0007 
+0008 <span class="keyword">persistent</span> part2mtbNum;
+0009 
+0010 part2mtbNum = containers.Map(<span class="keyword">...</span>
+0011     {<span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="string">'torso'</span>,<span class="string">'head'</span>},<span class="keyword">...</span>
+0012     {<span class="string">'1b'</span>,<span class="string">'2b'</span>,<span class="string">'10b'</span>,<span class="string">'11b'</span>,<span class="string">'0b'</span>,<span class="string">'1x'</span>});
+0013 
+0014 hwIds = arrayfun(<span class="keyword">...</span>
+0015     @(shortCode) [part2mtbNum(part) num2str(shortCode)],<span class="keyword">...</span>
+0016     sensorUiIDlist,<span class="keyword">...</span>
+0017     <span class="string">'UniformOutput'</span>,false);
+0018 
+0019 <span class="comment">% build query (input properties to match)</span>
+0020 inputProp.format = 2;
+0021 inputProp.data = {<span class="string">'sensorHwId'</span>,hwIds};
+0022 
+0023 <span class="comment">% query data</span>
+0024 labelList = obj.getPropList(inputProp,<span class="string">'sensorLabel'</span>);
+0025 sensorLabelList = labelList(:)';
+0026 
+0027 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

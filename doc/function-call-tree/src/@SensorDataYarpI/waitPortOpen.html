@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of waitPortOpen</title>
+  <meta name="keywords" content="waitPortOpen">
+  <meta name="description" content="Waits for specified port to open.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDataYarpI -->
+<h1>waitPortOpen
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Waits for specified port to open.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ ok ] = waitPortOpen( port,timeout ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Waits for specified port to open.
+   Every 100 ms, we check specified port is open.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>	Inits the state machine</li><li><a href="../../src/@MotorPWMcontroller/start.html" class="code" title="function [ ok ] = start( obj )">start</a>	Set the controlled motor obj.ctrledMotor in PWM control mode.</li><li><a href="../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>	Stop the PWM controller.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function checkPortIsOpen(obj,port)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ ok ] = waitPortOpen( port,timeout )</a>
+0002 <span class="comment">%Waits for specified port to open.</span>
+0003 <span class="comment">%   Every 100 ms, we check specified port is open.</span>
+0004 
+0005 <span class="comment">% define polling function (timer callback)</span>
+0006 timerFcn = @(timerObj,~) <a href="#_sub1" class="code" title="subfunction checkPortIsOpen(obj,port)">checkPortIsOpen</a>(timerObj,port);
+0007 
+0008 <span class="comment">% create timeout timer</span>
+0009 poller = timer(<span class="keyword">...</span>
+0010     <span class="string">'ExecutionMode'</span>,<span class="string">'fixedRate'</span>,<span class="keyword">...</span>
+0011     <span class="string">'Period'</span>,0.1,<span class="keyword">...</span>
+0012     <span class="string">'TasksToExecute'</span>,timeout/0.1,<span class="keyword">...</span>
+0013     <span class="string">'TimerFcn'</span>,timerFcn,<span class="keyword">...</span>
+0014     <span class="string">'UserData'</span>,false);
+0015 
+0016 <span class="comment">% start timer and wait</span>
+0017 <a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>(poller);
+0018 wait(poller);
+0019 
+0020 <span class="comment">% return motion done success or failure</span>
+0021 ok = get(poller,<span class="string">'UserData'</span>);
+0022 
+0023 <span class="keyword">end</span>
+0024 
+0025 <span class="comment">% polling function</span>
+0026 <a name="_sub1" href="#_subfunctions" class="code">function checkPortIsOpen(obj,port)</a>
+0027 
+0028 <span class="comment">% check if port is open</span>
+0029 <span class="keyword">if</span> yarp.Network.exists(port)
+0030     <span class="comment">% port is open. Set the completion flag to true</span>
+0031     set(obj,<span class="string">'UserData'</span>,true);
+0032     <span class="comment">% stop the timer</span>
+0033     <a href="../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>(obj);
+0034 <span class="keyword">end</span>
+0035 
+0036 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

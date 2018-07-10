@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotNFuncTimeseries</title>
+  <meta name="keywords" content="plotNFuncTimeseries">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Plotter -->
+<h1>plotNFuncTimeseries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function figH = plotNFuncTimeseries(figuresHandler,aTitle,aLabel,yLabel,...    % params irrelevant if figH is not empty </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Plotter.html" class="code" title="">Plotter</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function figH = plotNFuncTimeseries(</a><span class="keyword">...</span>
+0002     figuresHandler,aTitle,aLabel,yLabel,<span class="keyword">...</span><span class="comment">    % params irrelevant if figH is not empty</span>
+0003     time,Y,yLegends,<span class="keyword">...</span><span class="comment">                               % params always required</span>
+0004     lineStyles,lineWidth,markerCycle,figH,resetPlot) <span class="comment">% params always required</span>
+0005 <span class="comment">%Plots y1(t), y2(t),...,yn(t) on the same axis.</span>
+0006 <span class="comment">%   Plots several timeseries functions y(time) with a single y axis,</span>
+0007 <span class="comment">%   using a default set of colors.</span>
+0008 <span class="comment">%   figuresHandler: class object handling all the figures (figure list</span>
+0009 <span class="comment">%   tracking, saving figures,...)</span>
+0010 <span class="comment">%   aTitle: figure title</span>
+0011 <span class="comment">%   aLabel: figure label for the figures handler</span>
+0012 <span class="comment">%   yLabel: y axis units</span>
+0013 <span class="comment">%   time: time vector of size N (Nx1 or 1xN)</span>
+0014 <span class="comment">%   Y: matrix NxJ. Each column j defines all the N samples of a function yj(t)</span>
+0015 <span class="comment">%   yLegends: legends for all the functions</span>
+0016 <span class="comment">%   lineStyles: list 1xJ of line styles. for instance {'b.','g.','r.','cx','mx','yx','k-','w-'};</span>
+0017 <span class="comment">%   lineWidth: plot line thickness</span>
+0018 <span class="comment">%   markerCycle: distance, in number of samples, between two markers on the plotted data</span>
+0019 <span class="comment">%   figH: existing figure handler where to plot in</span>
+0020 <span class="comment">%   resetPlot: erase previous plot (true), or not (false).</span>
+0021 
+0022 <span class="comment">% create figure if no valid figure ref is given</span>
+0023 <span class="keyword">if</span> isempty(figH)
+0024     figH = figure(<span class="string">'Name'</span>,aTitle,<span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0025     
+0026     <span class="keyword">if</span> ~isempty(figuresHandler)
+0027         figuresHandler.addFigure(figH,aLabel); <span class="comment">% Add figure to the figure handler</span>
+0028     <span class="keyword">end</span>
+0029     
+0030     <span class="comment">% If the figure is not docked, use the below command to display it full</span>
+0031     <span class="comment">% screen.</span>
+0032     <span class="comment">%set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);</span>
+0033     title(aTitle,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0034     grid on;
+0035     xlabel(<span class="string">'Time (sec)'</span>);
+0036     ylabel(yLabel);
+0037     set(gca,<span class="string">'FontSize'</span>,24);
+0038     lg=legend(<span class="string">'Location'</span>,<span class="string">'BestOutside'</span>);
+0039     lg.set(<span class="string">'Interpreter'</span>,<span class="string">'latex'</span>);
+0040 <span class="keyword">else</span>
+0041     figure(figH);
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="comment">% reset existing plot line if required</span>
+0045 hold on <span class="comment">% keep by default all axes properties</span>
+0046 <span class="keyword">if</span> (isempty(resetPlot) || resetPlot)
+0047     <span class="comment">% clear plot line and reset the ColorOrderIndex and LineStyleOrderIndex</span>
+0048     <span class="comment">% axes properties to 1.</span>
+0049     set(gca,<span class="string">'Nextplot'</span>,<span class="string">'replacechildren'</span>);
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">% Define the line colors</span>
+0053 timeYnColorsRaw(1,1:size(Y,2)) = {time};
+0054 timeYnColorsRaw(2,:) = num2cell(Y,1); <span class="comment">% Y is supposed to have the format NsamplesXnFunctions</span>
+0055 timeYnColorsRaw(3,:) = lineStyles;
+0056 timeYnColors = timeYnColorsRaw(:)';
+0057 yLegends = yLegends(1:size(Y,2));
+0058 
+0059 <span class="comment">% plot(X1,Y1,S1,X2,Y2,S2,X3,Y3,S3,...) combines the plots defined by</span>
+0060 <span class="comment">% the (X,Y,S) triples, where the X's and Y's are vectors or matrices</span>
+0061 <span class="comment">% and the S's are strings.</span>
+0062 p = plot(timeYnColors{:},<span class="string">'MarkerIndices'</span>,1:markerCycle:numel(time),<span class="string">'lineWidth'</span>,lineWidth);
+0063 
+0064 [p.DisplayName]=deal(yLegends{:});
+0065 
+0066 hold off
+0067 
+0068 <span class="keyword">end</span>
+0069</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

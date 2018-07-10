@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkAccelerometersAnysotropy</title>
+  <meta name="keywords" content="checkAccelerometersAnysotropy">
+  <meta name="description" content="measurements before and after calibration">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDiagnosis -->
+<h1>checkAccelerometersAnysotropy
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>measurements before and after calibration</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function checkAccelerometersAnysotropy(data_bc,data_ac,sensorsIdxListFile,sensMeasCell_bc,sensMeasCell_ac,figuresHandler) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> measurements before and after calibration</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/+UI/cellArrayOfStr2str.html" class="code" title="function str = cellArrayOfStr2str( separator,aCellArrayOfStr )">cellArrayOfStr2str</a>	cellArrayOfStr2str Convert a cell array of vector chars into a single</li><li><a href="../../src/utils/cellArrayOfStr2str.html" class="code" title="function str = cellArrayOfStr2str( separator,aCellArrayOfStr )">cellArrayOfStr2str</a>	cellArrayOfStr2str Convert a cell array of vector chars into a single</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function checkAccelerometersAnysotropy(</a><span class="keyword">...</span>
+0002     data_bc,data_ac,sensorsIdxListFile,<span class="keyword">...</span>
+0003     sensMeasCell_bc,sensMeasCell_ac,<span class="keyword">...</span>
+0004     figuresHandler)
+0005 
+0006 <span class="comment">% measurements before and after calibration</span>
+0007 [data.bc,data.ac] = deal(data_bc,data_ac);
+0008 [sensMeasCell.bc,sensMeasCell.ac] = deal(sensMeasCell_bc,sensMeasCell_ac);
+0009 
+0010 <span class="comment">% number of measurement samples</span>
+0011 subSamplingSize = length(sensMeasCell.ac{1,1});
+0012 
+0013 <span class="comment">% select accelerometers to check and plot</span>
+0014 accIter = 1:length(sensorsIdxListFile);
+0015 
+0016 <span class="comment">%% Check distance to 9.807 sphere manifold</span>
+0017 <span class="comment">%</span>
+0018 
+0019 <span class="comment">% Common result buckets</span>
+0020 dOrientList = cell(1,length(sensorsIdxListFile));
+0021 dOrientListBC = cell(1,length(sensorsIdxListFile));
+0022 dOrientListAC = cell(1,length(sensorsIdxListFile));
+0023 
+0024 <span class="keyword">for</span> acc_i = accIter
+0025     <span class="comment">%% distance to a sphere (R=9.807) centered on 0, before calibration</span>
+0026     [~,~,dOrient.bc,~] = SensorDiagnosis.ellipsoid_proj_distance_fromExp(<span class="keyword">...</span>
+0027         sensMeasCell.bc{1,acc_i}(:,1),<span class="keyword">...</span>
+0028         sensMeasCell.bc{1,acc_i}(:,2),<span class="keyword">...</span>
+0029         sensMeasCell.bc{1,acc_i}(:,3),<span class="keyword">...</span>
+0030         [0 0 0]',[9.807 9.807 9.807]',eye(3,3));
+0031     
+0032     <span class="comment">%% distance to a sphere (R=9.807) centered on 0, after calibration</span>
+0033     [~,~,dOrient.ac,~] = SensorDiagnosis.ellipsoid_proj_distance_fromExp(<span class="keyword">...</span>
+0034         sensMeasCell.ac{1,acc_i}(:,1),<span class="keyword">...</span>
+0035         sensMeasCell.ac{1,acc_i}(:,2),<span class="keyword">...</span>
+0036         sensMeasCell.ac{1,acc_i}(:,3),<span class="keyword">...</span>
+0037         [0 0 0]',[9.807 9.807 9.807]',eye(3,3));
+0038     
+0039     dOrientList{1,acc_i} = dOrient;
+0040     
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">%% Plot figures</span>
+0044 <span class="comment">%</span>
+0045 
+0046 time = data.ac.tInit + data.ac.parsedParams.time(:);
+0047 
+0048 <span class="keyword">for</span> acc_i = accIter
+0049     <span class="comment">%% Plot distributions</span>
+0050     
+0051     figH = figure(<span class="keyword">...</span>
+0052         <span class="string">'Name'</span>,[<span class="string">'calibration of MTB sensor '</span> data.ac.labels{sensorsIdxListFile(acc_i)}],<span class="keyword">...</span>
+0053         <span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0054     
+0055     <span class="comment">% Add figure to the figure handler</span>
+0056     figLabel = [<span class="string">'figs_'</span> data.ac.labels{sensorsIdxListFile(acc_i)}];
+0057     figuresHandler.addFigure(figH,figLabel);
+0058     
+0059     <span class="comment">% If the figure is not docked, use the below command to display it full</span>
+0060     <span class="comment">% screen.</span>
+0061     <span class="comment">%set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);</span>
+0062     
+0063     <span class="comment">% distr of signed distances before calibration</span>
+0064     subplot(1,3,1);
+0065     title(<span class="string">'distribution of distances to a centered \newline sphere (R=9.807)'</span>,<span class="keyword">...</span>
+0066         <span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0067     [prevh,ditribLogStringBC]=SensorDiagnosis.plotNprintDistrb(dOrientList{1,acc_i}.bc,false,<span class="string">'auto'</span>,1);
+0068     [~    ,ditribLogStringAC]=SensorDiagnosis.plotNprintDistrb(dOrientList{1,acc_i}.ac,true,[7/255 100/255 26/255],0.6,prevh);
+0069     
+0070     <span class="comment">% Add log string with the distribution parameters to the figure handler</span>
+0071     distribLogLabel = [<span class="string">'distrib_'</span> data.ac.labels{sensorsIdxListFile(acc_i)}];
+0072     figuresHandler.addDistribLog([ditribLogStringBC <span class="string">'\n'</span> ditribLogStringAC],distribLogLabel);
+0073     
+0074     <span class="comment">%% Plot norm uniformity improvement</span>
+0075     subplot(1,3,2);
+0076     title(<span class="string">'Norm of sensor measurements'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0077     <span class="keyword">for</span> iter = 1:subSamplingSize
+0078         normMeas(iter) = norm(sensMeasCell.bc{1,acc_i}(iter,:));
+0079     <span class="keyword">end</span>
+0080     hold on;
+0081     grid ON;
+0082     normbc = plot(time,normMeas,<span class="string">':b'</span>,<span class="string">'lineWidth'</span>,2.0);
+0083     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0084     ylabel(<span class="string">'Acc norm (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0085     hold off;
+0086     
+0087     <span class="keyword">for</span> iter = 1:subSamplingSize
+0088         normMeas(iter) = norm(sensMeasCell.ac{1,acc_i}(iter,:));
+0089     <span class="keyword">end</span>
+0090     hold on;
+0091     grid ON;
+0092     normac = plot(time,normMeas,<span class="string">'r'</span>,<span class="string">'lineWidth'</span>,2.0);
+0093     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0094     ylabel(<span class="string">'Acc norm (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0095     hold off;
+0096     set(gca,<span class="string">'FontSize'</span>,12);
+0097     
+0098     legend([normbc,normac],<span class="string">'Before calibration'</span>,<span class="string">'After calibration'</span>)
+0099     <span class="comment">%% plot fitting</span>
+0100     subplot(1,3,3);
+0101     title(<span class="string">'Projection on ground truth \newline sphere manifold after calibration'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0102     SensorDiagnosis.plotFittingEllipse([0 0 0]',[9.807 9.807 9.807]',eye(3,3),sensMeasCell.ac{1,acc_i});
+0103 <span class="keyword">end</span>
+0104 
+0105 <span class="comment">%% Plot bar graph of all accelerometers distributions before and after calibration</span>
+0106 
+0107 <span class="comment">% build matrix of distances</span>
+0108 <span class="keyword">for</span> acc_i = accIter 
+0109     dOrientListBC{1,acc_i} = dOrientList{1,acc_i}.bc;
+0110     dOrientListAC{1,acc_i} = dOrientList{1,acc_i}.ac;
+0111 <span class="keyword">end</span>
+0112 
+0113 dOrientListBC=dOrientListBC(1,accIter);
+0114 dOrientListAC=dOrientListAC(1,accIter);
+0115 dOrientListBCmat = cell2mat(dOrientListBC);
+0116 dOrientListACmat = cell2mat(dOrientListAC);
+0117 
+0118 <span class="comment">% Plot</span>
+0119 figH = figure(<span class="keyword">...</span>
+0120     <span class="string">'Name'</span>,[<span class="string">'calibration of MTB sensor '</span> <span class="keyword">...</span>
+0121     <a href="../../src/+UI/cellArrayOfStr2str.html" class="code" title="function str = cellArrayOfStr2str( separator,aCellArrayOfStr )">cellArrayOfStr2str</a>(<span class="string">','</span>,data.ac.labels(sensorsIdxListFile(accIter)))],<span class="keyword">...</span>
+0122     <span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0123 
+0124 <span class="comment">% Add figure to the figure handler</span>
+0125 figuresHandler.addFigure(figH,<span class="string">'AllDistribBefNaft'</span>);
+0126 
+0127 bar([mean(dOrientListBCmat,1)' mean(dOrientListACmat,1)']);
+0128 
+0129 set(gca,<span class="string">'XTick'</span>,1:length(sensorsIdxListFile(accIter)),<span class="string">'XTickLabel'</span>,data.ac.labels(sensorsIdxListFile(accIter)));
+0130 xlabel(<span class="string">'MTB board labels'</span>,<span class="string">'Fontsize'</span>,20);
+0131 ylabel(<span class="string">'distance (m/s^2)'</span>,<span class="string">'Fontsize'</span>,20);
+0132 grid on;
+0133 
+0134 hold on;
+0135 errorbar((1:length(accIter))-0.15,mean(dOrientListBCmat,1)',<span class="keyword">...</span>
+0136     std(dOrientListBCmat,0,1)',<span class="keyword">...</span>
+0137     <span class="string">'r*'</span>,<span class="string">'lineWidth'</span>,2.5);
+0138 errorbar((1:length(accIter))+0.15,mean(dOrientListACmat,1)',<span class="keyword">...</span>
+0139     std(dOrientListACmat,0,1)',<span class="keyword">...</span>
+0140     <span class="string">'b*'</span>,<span class="string">'lineWidth'</span>,2.5);
+0141 hold off
+0142 
+0143 legend(<span class="string">'mean before calibration'</span>,<span class="string">'mean after calibration'</span>,<span class="keyword">...</span>
+0144     <span class="string">'\sigma before calibration'</span>,<span class="string">'\sigma after calibration'</span>);
+0145 
+0146 <span class="keyword">end</span>
+0147 
+0148</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

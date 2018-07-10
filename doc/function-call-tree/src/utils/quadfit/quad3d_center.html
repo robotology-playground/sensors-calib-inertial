@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad3d_center</title>
+  <meta name="keywords" content="quad3d_center">
+  <meta name="description" content="Center of a central quadric (quadratic surface).">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad3d_center
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Center of a central quadric (quadratic surface).</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [x,y,z] = quad3d_center(u) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Center of a central quadric (quadratic surface).
+ When reducing the surface to its canonical form, a translation of the coordinate
+ system as given by the coordinates of the center must be made.
+
+ 0 = f(x,y,z) = a*x^2 + b*y^2 + c*z^2
+              + 2*f*y*z + 2*g*x*z + 2*h*x*y
+              + 2*p*x + 2*q*y + 2*r*z + d
+
+ A center of a quadric surface is a point P with the property that any line through P
+ * determines a chord of the surface whose midpoint is P, or
+ * has no point in common with the surface, or
+ * lies entirely in the surface.
+
+ Input arguments:
+ u:
+    parameters of quadric as [x.^2, y.^2, z.^2, x.*y, x.*z, y.*z, x, y, z, 1]
+
+ Output arguments:
+ x, y, z:
+    coordinates of center</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoid_projections.html" class="code" title="function ellipsoid_projections(x,y,z,varargin)">ellipsoid_projections</a>	Plots ellipsoid projections on the xy, xz and yz planes.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,y,z] = quad3d_center(u)</a>
+0002 <span class="comment">% Center of a central quadric (quadratic surface).</span>
+0003 <span class="comment">% When reducing the surface to its canonical form, a translation of the coordinate</span>
+0004 <span class="comment">% system as given by the coordinates of the center must be made.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% 0 = f(x,y,z) = a*x^2 + b*y^2 + c*z^2</span>
+0007 <span class="comment">%              + 2*f*y*z + 2*g*x*z + 2*h*x*y</span>
+0008 <span class="comment">%              + 2*p*x + 2*q*y + 2*r*z + d</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% A center of a quadric surface is a point P with the property that any line through P</span>
+0011 <span class="comment">% * determines a chord of the surface whose midpoint is P, or</span>
+0012 <span class="comment">% * has no point in common with the surface, or</span>
+0013 <span class="comment">% * lies entirely in the surface.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Input arguments:</span>
+0016 <span class="comment">% u:</span>
+0017 <span class="comment">%    parameters of quadric as [x.^2, y.^2, z.^2, x.*y, x.*z, y.*z, x, y, z, 1]</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Output arguments:</span>
+0020 <span class="comment">% x, y, z:</span>
+0021 <span class="comment">%    coordinates of center</span>
+0022 
+0023 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0024 
+0025 a = u(1);
+0026 b = u(2);
+0027 c = u(3);
+0028 h = 0.5*u(4);
+0029 g = 0.5*u(5);
+0030 f = 0.5*u(6);
+0031 p = 0.5*u(7);
+0032 q = 0.5*u(8);
+0033 r = 0.5*u(9);
+0034 <span class="comment">% d = u(10);  % parameter not used</span>
+0035 
+0036 <span class="comment">% E = ...</span>
+0037 <span class="comment">%   [ a, h, g, p ...</span>
+0038 <span class="comment">%   ; h, b, f, q ...</span>
+0039 <span class="comment">%   ; g, f, c, r ...</span>
+0040 <span class="comment">%   ; p, q, r, d ...</span>
+0041 <span class="comment">%   ];</span>
+0042 
+0043 P = <span class="keyword">...</span><span class="comment">  % minor of E belonging to p</span>
+0044     [ h, g, p <span class="keyword">...</span>
+0045     ; b, f, q <span class="keyword">...</span>
+0046     ; f, c, r <span class="keyword">...</span>
+0047     ];
+0048 
+0049 Q = <span class="keyword">...</span><span class="comment">  % minor of E belonging to q</span>
+0050     [ a, g, p <span class="keyword">...</span>
+0051     ; h, f, q <span class="keyword">...</span>
+0052     ; g, c, r <span class="keyword">...</span>
+0053     ];
+0054 
+0055 R = <span class="keyword">...</span><span class="comment">  % minor of E belonging to r</span>
+0056     [ a, h, p <span class="keyword">...</span>
+0057     ; h, b, q <span class="keyword">...</span>
+0058     ; g, f, r <span class="keyword">...</span>
+0059     ];
+0060 
+0061 D = <span class="keyword">...</span><span class="comment">  % minor of E belonging to d</span>
+0062     [ a, h, g <span class="keyword">...</span>
+0063     ; h, b, f <span class="keyword">...</span>
+0064     ; g, f, c <span class="keyword">...</span>
+0065     ];
+0066 
+0067 d = det(D);
+0068 x = -det(P) / d;
+0069 <a href="../../../src/@y/y.html" class="code" title="">y</a> =  det(Q) / d;
+0070 z = -det(R) / d;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dfit_koopmans</title>
+  <meta name="keywords" content="quad2dfit_koopmans">
+  <meta name="description" content="Fit a quadratic curve to data using the nonlinear Koopmans method.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dfit_koopmans
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit a quadratic curve to data using the nonlinear Koopmans method.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [theta,mu] = quad2dfit_koopmans(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit a quadratic curve to data using the nonlinear Koopmans method.
+
+ Input arguments:
+ x, y:
+    vectors of data to fit
+ sigma_x, sigma_y:
+    noise parameter for x and y dimensions</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>	Eigenvalues and eigenvectors for matrix polynomial.</li><li><a href="quad2dcov.html" class="code" title="function C = quad2dcov(varargin)">quad2dcov</a>	Theoretical noise covariance structure corresponding to a 2D quadratic function.</li><li><a href="quad2dfit_paramchk.html" class="code" title="function [x,y,sigma_x,sigma_y] = quad2dfit_paramchk(filename, varargin)">quad2dfit_paramchk</a>	Quadratic 2-D fitting parameter check.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsefit2.html" class="code" title="function example_ellipsefit2">example_ellipsefit2</a>	Various ellipse fits to some data points.</li><li><a href="example_ellipsefitnoise.html" class="code" title="function example_ellipsefitnoise">example_ellipsefitnoise</a>	Comparing ellipse fits under various noise conditions.</li><li><a href="example_ellipsenormfit.html" class="code" title="function example_ellipsenormfit">example_ellipsenormfit</a>	Comparing the accuracy of various ellipse fits with and without normals.</li><li><a href="example_quad2dcomp.html" class="code" title="function example_quad2dcomp">example_quad2dcomp</a>	Comparison of various ellipse (and general quadratic curve) fits.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [theta,mu] = quad2dfit_koopmans(varargin)</a>
+0002 <span class="comment">% Fit a quadratic curve to data using the nonlinear Koopmans method.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y:</span>
+0006 <span class="comment">%    vectors of data to fit</span>
+0007 <span class="comment">% sigma_x, sigma_y:</span>
+0008 <span class="comment">%    noise parameter for x and y dimensions</span>
+0009 
+0010 <span class="comment">% References:</span>
+0011 <span class="comment">% Istvan Vajk and Jeno Hetthessy, &quot;Identification of nonlinear errors-in-variables</span>
+0012 <span class="comment">%    models&quot;, Automatica 39, 2003, pp2099-2107.</span>
+0013 
+0014 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0015 
+0016 [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y] = <a href="quad2dfit_paramchk.html" class="code" title="function [x,y,sigma_x,sigma_y] = quad2dfit_paramchk(filename, varargin)">quad2dfit_paramchk</a>(mfilename, varargin{:});
+0017 
+0018 <span class="comment">% normalize data</span>
+0019 mx = mean(x);
+0020 my = mean(<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0021 sx = (max(x)-min(x))/2;
+0022 sy = (max(<a href="../../../src/@y/y.html" class="code" title="">y</a>)-min(<a href="../../../src/@y/y.html" class="code" title="">y</a>))/2;
+0023 dx = (x-mx)/sx;  <span class="comment">% normalized data point coordinates</span>
+0024 dy = (<a href="../../../src/@y/y.html" class="code" title="">y</a>-my)/sy;
+0025 sigma_x = sigma_x/sx;
+0026 sigma_y = sigma_y/sy;
+0027 
+0028 angle = atan2(sigma_y, sigma_x);
+0029 Z = [dx.^2, dx.*dy, dy.^2, dx, dy, ones(numel(x),1)];
+0030 D = (Z'*Z) / size(Z,1);
+0031 C = <a href="quad2dcov.html" class="code" title="function C = quad2dcov(varargin)">quad2dcov</a>(angle, dx, dy);
+0032 T = -C;
+0033 T(:,:,1) = D;
+0034 <span class="comment">% T(:,:,1) - mu*T(:,:,2) - mu^2*T(:,:,3) should be positive semi-definite</span>
+0035 
+0036 [V,e] = <a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>(T);
+0037 
+0038 <span class="comment">% find those eigenvalues whose eigenvector is real</span>
+0039 ix = abs(imag(e)) &lt; eps &amp; isfinite(e);
+0040 e = e(ix);
+0041 V = V(:,ix);
+0042 
+0043 <span class="comment">% find eigenvalue with smallest magnitude that minimizes</span>
+0044 <span class="comment">% theta' * (T(:,:,1) - mu*T(:,:,2) - mu^2*T(:,:,3)) * theta</span>
+0045 [~,ix] = min(abs(e));
+0046 mu = e(ix);
+0047 theta = V(:,ix);
+0048 
+0049 mu = mu / (sigma_x^2 + sigma_y^2);  <span class="comment">% normalize to noise parameter variance magnitude</span>
+0050 
+0051 <span class="comment">% unnormalize</span>
+0052 theta = <span class="keyword">...</span>
+0053 [ theta(1)*sy*sy <span class="keyword">...</span>
+0054 ; theta(2)*sx*sy <span class="keyword">...</span>
+0055 ; theta(3)*sx*sx <span class="keyword">...</span>
+0056 ; -2*theta(1)*sy*sy*mx - theta(2)*sx*sy*my + theta(4)*sx*sy*sy <span class="keyword">...</span>
+0057 ; -theta(2)*sx*sy*mx - 2*theta(3)*sx*sx*my + theta(5)*sx*sx*sy <span class="keyword">...</span>
+0058 ; theta(1)*sy*sy*mx*mx + theta(2)*sx*sy*mx*my + theta(3)*sx*sx*my*my - theta(4)*sx*sy*sy*mx - theta(5)*sx*sx*sy*my + theta(6)*sx*sx*sy*sy <span class="keyword">...</span>
+0059 ];
+0060 
+0061 <span class="keyword">if</span> nargout &lt; 1
+0062     figure;
+0063     hold(<span class="string">'all'</span>);
+0064     plot(x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="string">'b.'</span>);
+0065     <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(theta);
+0066     hold(<span class="string">'off'</span>);
+0067 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

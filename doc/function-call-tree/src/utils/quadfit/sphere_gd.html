@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sphere_gd</title>
+  <meta name="keywords" content="sphere_gd">
+  <meta name="description" content="Construct a geodesic sphere.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>sphere_gd
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Construct a geodesic sphere.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function F = sphere_gd(n, radius, center) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Construct a geodesic sphere.
+
+ Input arguments:
+ n:
+    the number of segments along the side of triangles to subdivide into
+ radius:
+    radius of the sphere
+ center:
+    center of the sphere
+
+ Output arguments:
+ F:
+    a 3x3xn array of (x,y,z) coordinates of 3 points of n triangles
+
+ References:
+ &quot;Geodesic sphere&quot;, http://en.wikipedia.org/wiki/Geodesic_sphere</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="plot_ellipsoid_part.html" class="code" title="function plot_ellipsoid_part(cx,cy,cz,ap,bp,cp,R,x,y,z,varargin)">plot_ellipsoid_part</a>	Plot ellipsoid specified with center, radii and rotation matrix.</li><li><a href="plot_sphere_part.html" class="code" title="function plot_sphere_part(n, radius, center, x, y, z)">plot_sphere_part</a>	Partial sphere surface.</li><li><a href="spherefit.html" class="code" title="function [center,radius,residuals] = spherefit(x,y,z)">spherefit</a>	Fit a sphere to data using the least squares approach.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function faces = subdivide_face(vertices, n)</a></li><li><a href="#_sub2" class="code">function triangles = convert_triangles(faces, vertices)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function F = sphere_gd(n, radius, center)</a>
+0002 <span class="comment">% Construct a geodesic sphere.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% n:</span>
+0006 <span class="comment">%    the number of segments along the side of triangles to subdivide into</span>
+0007 <span class="comment">% radius:</span>
+0008 <span class="comment">%    radius of the sphere</span>
+0009 <span class="comment">% center:</span>
+0010 <span class="comment">%    center of the sphere</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Output arguments:</span>
+0013 <span class="comment">% F:</span>
+0014 <span class="comment">%    a 3x3xn array of (x,y,z) coordinates of 3 points of n triangles</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% References:</span>
+0017 <span class="comment">% &quot;Geodesic sphere&quot;, http://en.wikipedia.org/wiki/Geodesic_sphere</span>
+0018 
+0019 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0020 
+0021 <span class="keyword">if</span> nargin &lt; 1
+0022     n = 6;
+0023 <span class="keyword">else</span>
+0024     validateattributes(n, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'integer'</span>,<span class="string">'scalar'</span>,<span class="string">'&gt;='</span>,2});
+0025 <span class="keyword">end</span>
+0026 
+0027 <span class="keyword">if</span> nargin &lt; 2
+0028     radius = 1;
+0029 <span class="keyword">else</span>
+0030     validateattributes(radius, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="keyword">if</span> nargin &lt; 3
+0034     center = zeros(3,1);
+0035 <span class="keyword">else</span>
+0036     validateattributes(center, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0037     center = center(:);
+0038     validateattributes(center, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[3,1]});
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="comment">% icosahedron (at origin) as Platonic solid to initialize construction</span>
+0042 tao = 1.61803399;  <span class="comment">% Golden ratio</span>
+0043 icosavertices = <span class="keyword">...</span>
+0044     [ 1,tao,0;-1,tao,0;1,-tao,0;-1,-tao,0 <span class="keyword">...</span>
+0045     ; 0,1,tao;0,-1,tao;0,1,-tao;0,-1,-tao <span class="keyword">...</span>
+0046     ; tao,0,1;-tao,0,1;tao,0,-1;-tao,0,-1 <span class="keyword">...</span>
+0047     ];
+0048 icosavertices = transpose(icosavertices);
+0049 icosafaces = <span class="keyword">...</span>
+0050     [ 0,1,4 <span class="keyword">...</span>
+0051     ; 1,9,4 <span class="keyword">...</span>
+0052     ; 4,9,5 <span class="keyword">...</span>
+0053     ; 5,9,3 <span class="keyword">...</span>
+0054     ; 2,3,7 <span class="keyword">...</span>
+0055     ; 3,2,5 <span class="keyword">...</span>
+0056     ; 7,10,2 <span class="keyword">...</span>
+0057     ; 0,8,10 <span class="keyword">...</span>
+0058     ; 0,4,8 <span class="keyword">...</span>
+0059     ; 8,2,10 <span class="keyword">...</span>
+0060     ; 8,4,5 <span class="keyword">...</span>
+0061     ; 8,5,2 <span class="keyword">...</span>
+0062     ; 1,0,6 <span class="keyword">...</span>
+0063     ; 11,1,6 <span class="keyword">...</span>
+0064     ; 3,9,11 <span class="keyword">...</span>
+0065     ; 6,10,7 <span class="keyword">...</span>
+0066     ; 3,11,7 <span class="keyword">...</span>
+0067     ; 11,6,7 <span class="keyword">...</span>
+0068     ; 6,0,10 <span class="keyword">...</span>
+0069     ; 9,1,11 <span class="keyword">...</span>
+0070     ];
+0071 icosafaces = transpose(icosafaces + 1);  <span class="comment">% migrate from zero-based to one-based indexing</span>
+0072 <span class="comment">%trimesh(transpose(icosafaces), icosavertices(1,:), icosavertices(2,:), icosavertices(3,:)); return;</span>
+0073 
+0074 <span class="comment">% subdivide icosahedron faces</span>
+0075 F = zeros(3,3,size(icosafaces,2)*n*n);
+0076 <span class="keyword">for</span> k = 1 : size(icosafaces,2);
+0077     sf = <a href="#_sub1" class="code" title="subfunction faces = subdivide_face(vertices, n)">subdivide_face</a>(icosavertices(:,icosafaces(:,k)), n);
+0078     F(:,:,(k-1)*n*n+1:k*n*n) = sf;
+0079 <span class="keyword">end</span>
+0080 
+0081 <span class="comment">% project each point to the sphere</span>
+0082 <span class="keyword">for</span> k = 1 : size(F,2)*size(F,3)
+0083     <span class="comment">% get the point's magnitude</span>
+0084     m = norm(F(:,k));
+0085     <span class="comment">% make its magnitude a unit vector then scale it to the radius in one step</span>
+0086     F(:,k) = radius * F(:,k) / m;
+0087 <span class="keyword">end</span>
+0088 
+0089 F = bsxfun(@plus, center, F);
+0090 x = F(1,:,:);
+0091 <a href="../../../src/@y/y.html" class="code" title="">y</a> = F(2,:,:);
+0092 z = F(3,:,:);
+0093 
+0094 <span class="keyword">if</span> nargout &lt; 1
+0095     trimesh(reshape(1:numel(x),3,numel(x)/3)',x(:),<a href="../../../src/@y/y.html" class="code" title="">y</a>(:),z(:),zeros(size(x)));
+0096 <span class="keyword">end</span>
+0097 
+0098 <a name="_sub1" href="#_subfunctions" class="code">function faces = subdivide_face(vertices, n)</a>
+0099 <span class="comment">% Subdivide a face into triangles.</span>
+0100 <span class="comment">%</span>
+0101 <span class="comment">% Input arguments:</span>
+0102 <span class="comment">% vertices:</span>
+0103 <span class="comment">%    triangle vertices, each row is a dimension x, y or z, and each column</span>
+0104 <span class="comment">%    is a different triangle</span>
+0105 <span class="comment">% n:</span>
+0106 <span class="comment">%    the number of segments along the side of the triangle to subdivide to</span>
+0107 <span class="comment">%</span>
+0108 <span class="comment">% Output arguments:</span>
+0109 <span class="comment">% faces:</span>
+0110 <span class="comment">%    an array of face vertex coordinates of size [3,3,n*n]</span>
+0111 <span class="comment">%</span>
+0112 <span class="comment">% See also:</span>
+0113 <span class="comment">% http://www.donhavey.com/blog/tutorials/tutorial-3-the-icosahedron-sphere/</span>
+0114 
+0115 [dim,count] = size(vertices);
+0116 validateattributes(vertices, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'size'</span>,[3,count]});  <span class="comment">% dimensionality must be 3</span>
+0117 validateattributes(n, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'integer'</span>,<span class="string">'scalar'</span>,<span class="string">'&gt;='</span>,2});
+0118 
+0119 p1 = vertices(:,1);
+0120 p2 = vertices(:,2);
+0121 p3 = vertices(:,3);
+0122 
+0123 <span class="comment">% triangle sides</span>
+0124 side12 = zeros(dim,n+1);
+0125 side12(:,1) = p1;
+0126 side12(:,n+1) = p2;
+0127 side13 = zeros(dim,n+1);
+0128 side13(:,1) = p1;
+0129 side13(:,n+1) = p3;
+0130 
+0131 <span class="comment">% subdivision points</span>
+0132 <span class="keyword">for</span> i = 2 : n
+0133     r = (i-1)/n;
+0134     side12(:,i) = p1 + r*(p2-p1);
+0135     side13(:,i) = p1 + r*(p3-p1);
+0136 <span class="keyword">end</span>
+0137 
+0138 <span class="comment">% span points</span>
+0139 span = zeros(dim,n-1,n);
+0140 <span class="keyword">for</span> i = 0 : n
+0141     <span class="keyword">for</span> j = 1 : n-i-1
+0142         k = n-i;
+0143         r = j/k;
+0144         span(:,i+1,j+1) = side12(:,k+1) + r*(side13(:,k+1) - side12(:,k+1));
+0145     <span class="keyword">end</span>
+0146 <span class="keyword">end</span>
+0147 
+0148 faces = zeros(dim, 3, n*n);
+0149 
+0150 <span class="comment">% top four subfaces</span>
+0151 k = 0;
+0152 k = k + 1;
+0153 faces(:,:,k) = [ side12(:,1) side13(:,2) side12(:,2) ];
+0154 k = k + 1;
+0155 faces(:,:,k) = [ side12(:,2) side12(:,3) span(:,n-1,2) ];
+0156 k = k + 1;
+0157 faces(:,:,k) = [ side12(:,2) span(:,n-1,2) side13(:,2) ];
+0158 k = k + 1;
+0159 faces(:,:,k) = [ side13(:,2) side13(:,3) span(:,n-1,2) ];
+0160 
+0161 <span class="comment">% rest of the subfaces</span>
+0162 <span class="keyword">for</span> i = 3 : n
+0163     k = k + 1;
+0164     faces(:,:,k) = [ side12(:,i) side12(:,i+1) span(:,n-i+1,2) ];
+0165     k = k + 1;
+0166     faces(:,:,k) = [ side12(:,i) span(:,n-i+2,2) span(:,n-i+1,2) ];
+0167 
+0168     <span class="keyword">for</span> j = 2 : n-i+2
+0169         k = k + 1;
+0170         faces(:,:,k) = [ span(:,i-2,j+1) span(:,i-2,j) span(:,i-1,j) ];
+0171         <span class="keyword">if</span> i &gt; 3
+0172             k = k + 1;
+0173             faces(:,:,k) = [ span(:,i-2,j+1) span(:,i-2,j) span(:,i-3,j+1) ];
+0174         <span class="keyword">end</span>
+0175     <span class="keyword">end</span>
+0176     k = k + 1;
+0177     faces(:,:,k) = [ side13(:,i) side13(:,i+1) span(:,n-i+1,i) ];
+0178     k = k + 1;
+0179     faces(:,:,k) = [ side13(:,i) span(:,n-i+2,i-1) span(:,n-i+1,i) ];
+0180 <span class="keyword">end</span>
+0181 
+0182 <span class="keyword">if</span> nargout &lt; 1  <span class="comment">% plot the subdivided mesh if there are no output arguments</span>
+0183     hold on;
+0184     p = side12(:);
+0185     plot3(p(1:3:end),p(2:3:end),p(3:3:end),<span class="string">'ro'</span>);
+0186     p = side13(:);
+0187     plot3(p(1:3:end),p(2:3:end),p(3:3:end),<span class="string">'bo'</span>);
+0188     x = faces(1,:,:);
+0189     <a href="../../../src/@y/y.html" class="code" title="">y</a> = faces(2,:,:);
+0190     z = faces(3,:,:);
+0191     trimesh(reshape(1:3*n*n,3,n*n)',x(:),<a href="../../../src/@y/y.html" class="code" title="">y</a>(:),z(:));
+0192     hold off;
+0193 <span class="keyword">end</span>
+0194 
+0195 <a name="_sub2" href="#_subfunctions" class="code">function triangles = convert_triangles(faces, vertices) </a><span class="comment">%#ok&lt;DEFNU&gt;</span>
+0196 <span class="comment">% Convert representation of face index and vertices to triangle vertices.</span>
+0197 
+0198 [dim,count] = size(faces);
+0199 validateattributes(faces, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'integer'</span>,<span class="string">'size'</span>,[3,count]});  <span class="comment">% a face must consist of three points</span>
+0200 validateattributes(vertices, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'size'</span>,[3,size(vertices,2)]});  <span class="comment">% dimensionality must be 3</span>
+0201 
+0202 triangles = zeros(dim, 3, count);
+0203 <span class="keyword">for</span> k = 1 : count
+0204     t = vertices(:,faces(:,k));
+0205     triangles(:,:,k) = t;
+0206 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,22 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  Regressors -> Regressors;
+  Regressors -> frictionModel1Sym;
+  Regressors -> frictionModel2;
+  Regressors -> normalEquationAsym;
+  Regressors -> pwmModel1Sym;
+  Regressors -> resampleDataAsym;
+  Regressors -> resampleDataModel;
+  Regressors -> resampleDataSym;
+  Regressors -> residuals;
+
+  Regressors [URL="Regressors.html"];
+  frictionModel1Sym [URL="frictionModel1Sym.html"];
+  frictionModel2 [URL="frictionModel2.html"];
+  normalEquationAsym [URL="normalEquationAsym.html"];
+  pwmModel1Sym [URL="pwmModel1Sym.html"];
+  resampleDataAsym [URL="resampleDataAsym.html"];
+  resampleDataModel [URL="resampleDataModel.html"];
+  resampleDataSym [URL="resampleDataSym.html"];
+  residuals [URL="residuals.html"];
+}

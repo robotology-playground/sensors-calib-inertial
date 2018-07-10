@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RemoteControlBoardRemapper</title>
+  <meta name="keywords" content="RemoteControlBoardRemapper">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoardRemapper -->
+<h1>RemoteControlBoardRemapper
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@MotorPWMcontroller/setMotorPWM.html" class="code" title="function [ ok ] = setMotorPWM( obj,pwm )">setMotorPWM</a>	Set the desired PWM level (Duty cycle) for the currently controlled motor</li><li><a href="../../src/@RemoteControlBoard/getJointsMappedIdxes.html" class="code" title="function [ jointsIdxList,matchingBitmap ] = getJointsMappedIdxes( obj,jointNameList )">getJointsMappedIdxes</a>	UNTITLED7 Summary of this function goes here</li><li><a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li><li><a href="getAxes.html" class="code" title="function [ nbAxes ] = getAxes( obj )">getAxes</a>	UNTITLED Summary of this function goes here</li><li><a href="getEncoders.html" class="code" title="function [readEncs] = getEncoders(obj)">getEncoders</a>	Get the encoders values</li><li><a href="getJointTorques.html" class="code" title="function [ torqVecMat ] = getJointTorques( obj,jointsIdxList )">getJointTorques</a>	UNTITLED Summary of this function goes here</li><li><a href="getJointsControlMode.html" class="code" title="function [ ok,modes ] = getJointsControlMode( obj,jointsIdxList )">getJointsControlMode</a>	Set control mode for a set of joint indexes</li><li><a href="getJointsMappedIdxes.html" class="code" title="function [jointsIdxList,matchingBitmap] = getJointsMappedIdxes( obj,jointNameList )">getJointsMappedIdxes</a>	Get joints indexes as per the control board remapper mapping</li><li><a href="getJointsNames.html" class="code" title="function [ jointsNames ] = getJointsNames( obj,jointIdxList )">getJointsNames</a>	UNTITLED Summary of this function goes here</li><li><a href="getMotorEncoderSpeeds.html" class="code" title="function [readEncSpeeds] = getMotorEncoderSpeeds(obj,motorsIdxList)">getMotorEncoderSpeeds</a>	Get all the encoders values</li><li><a href="getMotorEncoders.html" class="code" title="function [readEncs,timeEncs] = getMotorEncoders(obj,motorsIdxList)">getMotorEncoders</a>	getMotorEncodersTimed() NOT WORKING FOR NOW !!!</li><li><a href="getMotorsMappedIdxes.html" class="code" title="function [motorsIdxList,matchingBitmap] = getMotorsMappedIdxes( obj,motorNameList )">getMotorsMappedIdxes</a>	Get motors indexes as per the control board remapper mapping</li><li><a href="getMotorsNames.html" class="code" title="function [ motorsNames ] = getMotorsNames( obj,motorIdxList )">getMotorsNames</a>	UNTITLED2 Summary of this function goes here</li><li><a href="getMotorsPWM.html" class="code" title="function [ pwmVecMat ] = getMotorsPWM( obj,motorsIdxList )">getMotorsPWM</a>	Get the PWM values (0-100%) for a set of motor indexes</li><li><a href="getMotorsPids.html" class="code" title="function [readPids,readPidsMatArray] = getMotorsPids(obj,pidCtrlType,motorsIdxList)">getMotorsPids</a>	Get the encoders values</li><li><a href="open.html" class="code" title="function open(obj,partList,jointsList)">open</a>	</li><li><a href="setEncoders.html" class="code" title="function [ ok ] = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)">setEncoders</a>	refType: 'refVel','refAcc'</li><li><a href="setJointsControlMode.html" class="code" title="function [ ok ] = setJointsControlMode( obj,jointsIdxList,mode )">setJointsControlMode</a>	Set control mode for a set of joint indexes</li><li><a href="setMotorPWM.html" class="code" title="function [ ok ] = setMotorPWM( obj,motorName,pwm )">setMotorPWM</a>	Set the desired PWM value (0-100%) for the named motor</li><li><a href="setMotorsPWM.html" class="code" title="function [ ok ] = setMotorsPWM( obj,motorsIdxList,pwmVec )">setMotorsPWM</a>	Set the desired PWM values (0-100%) for a set of motor indexes</li><li><a href="waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a>	Waits for last programmed joint position to be reached.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@MotionSequencer/MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li><li><a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li><li><a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = RemoteControlBoardRemapper(robotModel,portsPrefix)</a></li><li><a href="#_sub2" class="code">function delete(obj)</a></li><li><a href="#_sub3" class="code">function close(obj)</a></li><li><a href="#_sub4" class="code">function matArray = toMatlab(self)</a></li><li><a href="#_sub5" class="code">function fromMatlab(self,matArray)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a> &lt; handle
+0002     <span class="comment">% This class creates a YARP network device and a remote controlboard</span>
+0003     <span class="comment">% remapper device for controlling any desired joint through the YARP</span>
+0004     <span class="comment">% ports.</span>
+0005     <span class="comment">%</span>
+0006     <span class="comment">% robotname : [string] 'icub' or 'icubSim'</span>
+0007     <span class="comment">% jointsList: [list of strings] for instance {'l_hip_pitch','l_hip_roll','l_knee'}</span>
+0008     <span class="comment">%</span>
+0009     
+0010     properties(Constant)
+0011         defaultSpeed = 10; <span class="comment">% m/s</span>
+0012         defaultAcc   = 2;  <span class="comment">% m/s^2</span>
+0013         
+0014         ctrlModeVocabDef = {<span class="keyword">...</span>
+0015             <span class="string">'idlectrl'</span>  , y.VOCAB_CM_IDLE     ;
+0016             <span class="string">'torqctrl'</span>  , y.VOCAB_CM_TORQUE   ;
+0017             <span class="string">'ctrl'</span>      , y.VOCAB_CM_POSITION ;
+0018             <span class="string">'ctrldir'</span>   , y.VOCAB_CM_POSITION_DIRECT ;
+0019             <span class="string">'velctrl'</span>   , y.VOCAB_CM_VELOCITY ;
+0020             <span class="string">'curctrl'</span>   , y.VOCAB_CM_CURRENT  ;
+0021             <span class="string">'pwmctrl'</span>   , y.VOCAB_CM_PWM
+0022             };
+0023         
+0024         ctrlMode2vocab = containers.Map(<span class="keyword">...</span>
+0025             RemoteControlBoardRemapper.ctrlModeVocabDef(:,1),<span class="keyword">...</span>
+0026             RemoteControlBoardRemapper.ctrlModeVocabDef(:,2));
+0027         
+0028         vocab2ctrlMode = containers.Map(<span class="keyword">...</span>
+0029             RemoteControlBoardRemapper.ctrlModeVocabDef(:,2),<span class="keyword">...</span>
+0030             RemoteControlBoardRemapper.ctrlModeVocabDef(:,1));
+0031         
+0032         pidTypeVocabDef = {<span class="keyword">...</span>
+0033             <span class="string">'posPID'</span> , y.VOCAB_PIDTYPE_POSITION;
+0034             <span class="string">'velPID'</span> , y.VOCAB_PIDTYPE_VELOCITY;
+0035             <span class="string">'torqPID'</span>, y.VOCAB_PIDTYPE_TORQUE  ;
+0036             <span class="string">'currPID'</span>, y.VOCAB_PIDTYPE_CURRENT
+0037             };
+0038         
+0039         pidType2vocab = containers.Map(<span class="keyword">...</span>
+0040             RemoteControlBoardRemapper.pidTypeVocabDef(:,1),<span class="keyword">...</span>
+0041             RemoteControlBoardRemapper.pidTypeVocabDef(:,2));
+0042         
+0043         vocab2pidType = containers.Map(<span class="keyword">...</span>
+0044             RemoteControlBoardRemapper.pidTypeVocabDef(:,1),<span class="keyword">...</span>
+0045             RemoteControlBoardRemapper.pidTypeVocabDef(:,2));
+0046     <span class="keyword">end</span>
+0047     
+0048     properties(SetAccess = protected, GetAccess = public)
+0049         robotModel;
+0050         jointsList={};
+0051         motorsList={};
+0052         <span class="comment">% YARP objects</span>
+0053         axesNames; axesList; remoteControlBoards; remoteControlBoardsList;
+0054         options;
+0055         driver;
+0056     <span class="keyword">end</span>
+0057     
+0058     methods
+0059         <span class="comment">% Constructor</span>
+0060         <a name="_sub0" href="#_subfunctions" class="code">function obj = RemoteControlBoardRemapper(robotModel,portsPrefix)</a>
+0061             <span class="comment">% Create YARP Network device, to initialize YARP classes for communication</span>
+0062             <span class="keyword">if</span> ~yarp.Network.initialized
+0063                 yarp.Network.init();
+0064             <span class="keyword">end</span>
+0065             
+0066             <span class="comment">% Save robot model</span>
+0067             obj.robotModel = robotModel;
+0068             
+0069             <span class="comment">% Create a RemoteControlBoardRemapper device</span>
+0070             <span class="comment">% for controlling just the torso+head chain</span>
+0071             <span class="comment">% (see http://www.yarp.it/classyarp_1_1dev_1_1remoteControlBoardRemapper.html)</span>
+0072             obj.options = yarp.Property(<span class="string">'(device remotecontrolboardremapper)'</span>);
+0073             
+0074             <span class="comment">% Add port prefix</span>
+0075             obj.options.put(<span class="string">'localPortPrefix'</span>,[<span class="string">'/'</span> portsPrefix]);
+0076             
+0077             <span class="comment">% Create a bottle with a list of the axis names</span>
+0078             obj.axesNames = yarp.Bottle();
+0079             obj.axesList = obj.axesNames.addList();
+0080             
+0081             <span class="comment">% Create a bottle with a list of the axis control boards</span>
+0082             obj.remoteControlBoards = yarp.Bottle();
+0083             obj.remoteControlBoardsList = obj.remoteControlBoards.addList();
+0084         <span class="keyword">end</span>
+0085         
+0086         <span class="comment">% Destructor</span>
+0087         <a name="_sub1" href="#_subfunctions" class="code">function delete(obj)</a>
+0088             obj.close();
+0089         <span class="keyword">end</span>
+0090         
+0091         <span class="comment">% Open ports</span>
+0092         <a href="open.html" class="code" title="function open(obj,partList,jointsList)">open</a>(obj,partList)
+0093         
+0094         <span class="comment">% Close ports</span>
+0095         <a name="_sub2" href="#_subfunctions" class="code">function close(obj)</a>
+0096             obj.driver.close();
+0097         <span class="keyword">end</span>
+0098         
+0099         <span class="comment">% Read joint encoders</span>
+0100         [readEncs] = <a href="getEncoders.html" class="code" title="function [readEncs] = getEncoders(obj)">getEncoders</a>(obj);
+0101         
+0102         <span class="comment">% Read motor encoders</span>
+0103         [readEncs,timeEncs] = <a href="getMotorEncoders.html" class="code" title="function [readEncs,timeEncs] = getMotorEncoders(obj,motorsIdxList)">getMotorEncoders</a>(obj,motorsIdxList);
+0104         
+0105         <span class="comment">% Read motor encoder speeds</span>
+0106         [readEncSpeeds] = <a href="getMotorEncoderSpeeds.html" class="code" title="function [readEncSpeeds] = getMotorEncoderSpeeds(obj,motorsIdxList)">getMotorEncoderSpeeds</a>(obj,motorsIdxList);
+0107         
+0108         <span class="comment">% Write joint encoders</span>
+0109         ok = <a href="setEncoders.html" class="code" title="function [ ok ] = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin)">setEncoders</a>(obj,desiredPosMat,refType,refParamsMat,wait,varargin);
+0110         
+0111         <span class="comment">% Wait for motion to be completed</span>
+0112         ok = <a href="waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a>(obj,timeout);
+0113         
+0114         <span class="comment">% Get joints indexes as per the control board remapper mapping</span>
+0115         [jointsIdxList,matchingBitmap] = <a href="getJointsMappedIdxes.html" class="code" title="function [jointsIdxList,matchingBitmap] = getJointsMappedIdxes( obj,jointNameList )">getJointsMappedIdxes</a>(obj,jointNameList);
+0116         
+0117         <span class="comment">% Get number of axes (joints or motors)</span>
+0118         [nbAxes] = <a href="getAxes.html" class="code" title="function [ nbAxes ] = getAxes( obj )">getAxes</a>(obj);
+0119         
+0120         <span class="comment">% Get joint names from mapped indexes</span>
+0121         [jointsNames] = <a href="getJointsNames.html" class="code" title="function [ jointsNames ] = getJointsNames( obj,jointIdxList )">getJointsNames</a>(obj,jointIdxList);
+0122         
+0123         <span class="comment">% Get motor names from mapped indexes</span>
+0124         [motorsNames] = <a href="getMotorsNames.html" class="code" title="function [ motorsNames ] = getMotorsNames( obj,motorIdxList )">getMotorsNames</a>(obj,motorIdxList);
+0125         
+0126         <span class="comment">% Get motors indexes as per the control board remapper mapping</span>
+0127         [motorsIdxList,matchingBitmap] = <a href="getMotorsMappedIdxes.html" class="code" title="function [motorsIdxList,matchingBitmap] = getMotorsMappedIdxes( obj,motorNameList )">getMotorsMappedIdxes</a>(obj,motorNameList);
+0128         
+0129         <span class="comment">% Set/Get control mode for a set of joint indexes. Supported modes are:</span>
+0130         <span class="comment">% Position, Open loop (applicable for PWM, torque, current).</span>
+0131         ok = <a href="setJointsControlMode.html" class="code" title="function [ ok ] = setJointsControlMode( obj,jointsIdxList,mode )">setJointsControlMode</a>(obj,jointsIdxList,mode);
+0132         [ok, modes] = <a href="getJointsControlMode.html" class="code" title="function [ ok,modes ] = getJointsControlMode( obj,jointsIdxList )">getJointsControlMode</a>(obj,jointsIdxList);
+0133         
+0134         <span class="comment">% Get motor PIDs</span>
+0135         [readPids,readPidsMat] = <a href="getMotorsPids.html" class="code" title="function [readPids,readPidsMatArray] = getMotorsPids(obj,pidCtrlType,motorsIdxList)">getMotorsPids</a>(obj,pidCtrlMode,motorsIdxList);
+0136         
+0137         <span class="comment">% Set the desired PWM values for a set of motor indexes (for</span>
+0138         <span class="comment">% calibration purpose). The motor indexes are the same as for the</span>
+0139         <span class="comment">% joints. There is no concept of coupled motors in the control board</span>
+0140         <span class="comment">% remapper. But if a coupled motor is set to a given control mode,</span>
+0141         <span class="comment">% then all the motors in the coupling are set to the same mode.</span>
+0142         ok = <a href="setMotorsPWM.html" class="code" title="function [ ok ] = setMotorsPWM( obj,motorsIdxList,pwmVec )">setMotorsPWM</a>(obj,motorsIdxList,pwmVec);
+0143         
+0144         <span class="comment">% Get the PWM values (0-100%) for a set of motor indexes</span>
+0145         [pwmVec] = <a href="getMotorsPWM.html" class="code" title="function [ pwmVecMat ] = getMotorsPWM( obj,motorsIdxList )">getMotorsPWM</a>(obj,motorsIdxList);
+0146         
+0147         <span class="comment">% Set the desired PWM value (0-100%) for the named motor</span>
+0148         ok = <a href="setMotorPWM.html" class="code" title="function [ ok ] = setMotorPWM( obj,motorName,pwm )">setMotorPWM</a>(obj,motorName,pwm);
+0149         
+0150         <span class="comment">% Get the torque values for a set of joint indexes</span>
+0151         [torqVecMat] = <a href="getJointTorques.html" class="code" title="function [ torqVecMat ] = getJointTorques( obj,jointsIdxList )">getJointTorques</a>(obj,jointsIdxList);
+0152     <span class="keyword">end</span>
+0153     
+0154     methods(Static = true)
+0155         <span class="comment">% matlab &lt;-&gt; yarp c++ map functions</span>
+0156         <a name="_sub3" href="#_subfunctions" class="code">function matArray = toMatlab(self)</a>
+0157             matArray = str2num(self.toString_c());
+0158         <span class="keyword">end</span>
+0159         
+0160         <a name="_sub4" href="#_subfunctions" class="code">function fromMatlab(self,matArray)</a>
+0161             <span class="keyword">for</span> iter = 1:length(matArray)
+0162                 self.set(iter-1,matArray(iter));
+0163             <span class="keyword">end</span>
+0164         <span class="keyword">end</span>
+0165     <span class="keyword">end</span>
+0166     
+0167 <span class="keyword">end</span>
+0168</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

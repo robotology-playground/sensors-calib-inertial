@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SensorsDbase</title>
+  <meta name="keywords" content="SensorsDbase">
+  <meta name="description" content="======================================================================">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsDbase -->
+<h1>SensorsDbase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>======================================================================</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ======================================================================
+&gt; @brief SensorsDbase Implements a database with sensors parameters.
+
+&gt; (inertial sensors,gyroscopes, FT sensors)
+ ======================================================================</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@DataBase/DataBase.html" class="code" title="">DataBase</a>	</li><li><a href="SensorsDbase.html" class="code" title="">SensorsDbase</a>	======================================================================</li><li><a href="frame2cadType.html" class="code" title="function cadType = frame2cadType( sensorFrameName )">frame2cadType</a>	pattern to extract the sensor type</li><li><a href="frame2hwId.html" class="code" title="function sensorHwId = frame2hwId( sensorFrameName )">frame2hwId</a>	match the string chunk after the last '_' of <sensorFrameName></li><li><a href="getSensorCadTypes.html" class="code" title="function sensorTypeList = getSensorCadTypes( obj,sensorLabelList )">getSensorCadTypes</a>	getSensorCadTypes Get the sensor type from a given sensor unique label.</li><li><a href="getSensorFrames.html" class="code" title="function sensorFrameList = getSensorFrames( obj,sensorLabelList )">getSensorFrames</a>	getSensorFrames Get the sensor frame from a given sensor unique label.</li><li><a href="getSensorFullscaleGains.html" class="code" title="function fullscaleGainList = getSensorFullscaleGains( obj,sensorLabelList )">getSensorFullscaleGains</a>	getSensorFullscaleGains Get the sensor gain from a given sensor unique label.</li><li><a href="getSensorProps.html" class="code" title="function [iDynObject,sensorFrameName,parentLink,parentLinkIdx,sensorFramePose] =getSensorProps( iDynTreeSensorsFromURDF,sensorType,sensorIndex )">getSensorProps</a>	getSensorProps Get the sensor properties from iDynTree sensors object</li><li><a href="getSensorlabels.html" class="code" title="function sensorLabelList = getSensorlabels( obj,part,sensorUiIDlist )">getSensorlabels</a>	getSensorlabels Get sensor labels identified by the set <part,sensorUiIDlist>.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>	</li><li><a href="SensorsDbase.html" class="code" title="">SensorsDbase</a>	======================================================================</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = SensorsDbase(iDynTreeSensorsFromURDF,link2partH)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% ======================================================================</span>
+0002 <span class="comment">%&gt; @brief SensorsDbase Implements a database with sensors parameters.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">%&gt; (inertial sensors,gyroscopes, FT sensors)</span>
+0005 <span class="comment">% ======================================================================</span>
+0006 classdef <a href="SensorsDbase.html" class="code" title="">SensorsDbase</a> &lt; <a href="../../src/@DataBase/DataBase.html" class="code" title="">DataBase</a>
+0007     
+0008     properties(Constant = true, Access = protected)
+0009         <span class="comment">%&gt; Types that appear as a substring of the CAD/URDF sensor names</span>
+0010         sensorCADtypes  = <span class="keyword">...</span>
+0011             {<span class="string">'mtb_acc'</span>,<span class="string">'mtb_gyro'</span>,<span class="keyword">...</span>
+0012             <span class="string">'ems_acc'</span>,<span class="string">'ems_gyro'</span>,<span class="keyword">...</span>
+0013             <span class="string">'acc'</span>,<span class="string">'gyro'</span>,<span class="keyword">...</span>
+0014             <span class="string">'imu_acc'</span>,<span class="string">'ft_sensor'</span>};
+0015         <span class="comment">%&gt; Mapping from CAD types to iDynTree sensors types</span>
+0016         cadType2idyn = containers.Map(SensorsDbase.sensorCADtypes,<span class="keyword">...</span>
+0017             {iDynTree.ACCELEROMETER,iDynTree.GYROSCOPE,<span class="keyword">...</span>
+0018             iDynTree.ACCELEROMETER,iDynTree.GYROSCOPE,<span class="keyword">...</span>
+0019             iDynTree.ACCELEROMETER,iDynTree.GYROSCOPE,<span class="keyword">...</span>
+0020             iDynTree.ACCELEROMETER,iDynTree.SIX_AXIS_FORCE_TORQUE});
+0021         <span class="comment">%&gt; Accelerometer (raw fullscale to m/s^2 conversion):</span>
+0022         <span class="comment">%&gt; (fullscale in m/s^2)/(fullscale in raw) = (2*g)/(2^15) ~= 5.9855e-04</span>
+0023         <span class="comment">%&gt; Gyroscope (raw fullscale to deg/s conversion):</span>
+0024         <span class="comment">%&gt; (fullscale in dps)/(fullscale in raw) = (250)/(2^15) ~= 7.6274e-03</span>
+0025         <span class="comment">%&gt;</span>
+0026         <span class="comment">%&gt; refer to http://wiki.icub.org/wiki/Distributed_Inertial_sensing</span>
+0027         cadType2gain = containers.Map(SensorsDbase.sensorCADtypes,<span class="keyword">...</span>
+0028             {5.9855e-04,7.6274e-03,<span class="keyword">...</span>
+0029             5.9855e-04,7.6274e-03,<span class="keyword">...</span><span class="comment"> % TO BE REVIEWED</span>
+0030             1,1,<span class="keyword">...</span>
+0031             1,1});                    <span class="comment">% TO BE REVIEWED</span>
+0032     <span class="keyword">end</span>
+0033     
+0034     properties(Access = protected)
+0035         iDynTreeSensors;
+0036     <span class="keyword">end</span>
+0037     
+0038     methods(Access = public)        <span class="comment">% Constructor</span>
+0039         <a name="_sub0" href="#_subfunctions" class="code">function obj = SensorsDbase(iDynTreeSensorsFromURDF,link2partH)</a>
+0040             <span class="comment">% create database</span>
+0041             propKeyList = {<span class="string">'sensorLabel'</span>,<span class="string">'sensorHwId'</span>,<span class="string">'sensorFrameName'</span>};
+0042             propNameList = {<span class="keyword">...</span>
+0043                 <span class="string">'sensorLabel'</span>,<span class="string">'sensorHwId'</span>,<span class="string">'sensorFrameName'</span>,<span class="keyword">...</span>
+0044                 <span class="string">'iDynObject'</span>,<span class="string">'cadType'</span>,<span class="string">'parentLink'</span>,<span class="string">'parentLinkIdx'</span>,<span class="string">'sensorFramePose'</span>,<span class="string">'part'</span>,<span class="string">'fullscaleGain'</span>};
+0045             nbAccs = iDynTreeSensorsFromURDF.getNrOfSensors(iDynTree.ACCELEROMETER);
+0046             nbGyros = iDynTreeSensorsFromURDF.getNrOfSensors(iDynTree.GYROSCOPE);
+0047             propValueList = cell(nbAccs+nbGyros,length(propNameList));
+0048             
+0049             <span class="comment">% Set 'propValueList' with the properties from the iDynTree model</span>
+0050             propValueLineIdx = 1;
+0051             <span class="keyword">for</span> sensorTypeC = {iDynTree.ACCELEROMETER,iDynTree.GYROSCOPE}
+0052                 <span class="comment">% Get type, number of sensors, and init list</span>
+0053                 sensorType = cell2mat(sensorTypeC);
+0054                 nbSensors = iDynTreeSensorsFromURDF.getNrOfSensors(sensorType);
+0055                 <span class="comment">% loop over sensors of same type</span>
+0056                 <span class="keyword">for</span> sensorIdx = 0:nbSensors-1
+0057                     <span class="comment">% get native parameters</span>
+0058                     [iDynObject,sensorFrameName,parentLink,parentLinkIdx,sensorFramePose] = <span class="keyword">...</span>
+0059                         SensorsDbase.getSensorProps(iDynTreeSensorsFromURDF,sensorType,sensorIdx);
+0060                     
+0061                     <span class="comment">% post-process parameters</span>
+0062                     sensorHwId = SensorsDbase.frame2hwId(sensorFrameName);
+0063                     cadType = SensorsDbase.frame2cadType(sensorFrameName);
+0064                     sensorLabel = [cadType <span class="string">'_'</span> sensorHwId];
+0065                     fullscaleGain = SensorsDbase.cadType2gain(cadType);
+0066                     part = link2partH(parentLink); <span class="comment">% part to witch the parent link is attached</span>
+0067                     
+0068                     <span class="comment">% fill the properties list</span>
+0069                     propValueList(propValueLineIdx,:) = {<span class="keyword">...</span>
+0070                         sensorLabel,sensorHwId,sensorFrameName,<span class="keyword">...</span>
+0071                         iDynObject,cadType,parentLink,parentLinkIdx,sensorFramePose,part,fullscaleGain};
+0072                     
+0073                     <span class="comment">% increment pointer</span>
+0074                     propValueLineIdx = propValueLineIdx+1;
+0075                 <span class="keyword">end</span>
+0076             <span class="keyword">end</span>
+0077             clear propValueLineIdx; <span class="comment">% clear counter</span>
+0078             
+0079             <span class="comment">% create and build database</span>
+0080             obj = obj@<a href="../../src/@DataBase/DataBase.html" class="code" title="">DataBase</a>(<span class="string">'keys'</span>,propKeyList,<span class="string">'names'</span>,propNameList,<span class="string">'values'</span>,propValueList);
+0081             obj.build();
+0082             
+0083             <span class="comment">% save iDynTree sensors object</span>
+0084             obj.iDynTreeSensors = iDynTreeSensorsFromURDF;
+0085         <span class="keyword">end</span>
+0086         
+0087         <span class="comment">% Get sensor labels identified by the set &lt;part,sensorUiIDlist&gt;.</span>
+0088         <span class="comment">% 'sensorUiIDlist', along with part, is the UI set of parameters</span>
+0089         <span class="comment">% identifying a unique sensor.</span>
+0090         <span class="comment">% ex of returned sensor label: [11b3_acc]</span>
+0091         sensorLabelList = <a href="getSensorlabels.html" class="code" title="function sensorLabelList = getSensorlabels( obj,part,sensorUiIDlist )">getSensorlabels</a>(obj,part,sensorUiIDlist);
+0092         
+0093         <span class="comment">% Get the sensor frame (sensor ID within iDynTree context) from a</span>
+0094         <span class="comment">% given sensor unique label.</span>
+0095         <span class="comment">% ex of returned sensor frame: 'r_upper_leg_mtb_acc_11b3'</span>
+0096         sensorFrameList = <a href="getSensorFrames.html" class="code" title="function sensorFrameList = getSensorFrames( obj,sensorLabelList )">getSensorFrames</a>(obj,sensorLabelList);
+0097         
+0098         <span class="comment">% Get the sensor type from a given sensor unique label.</span>
+0099         <span class="comment">% Known returned sensor types:</span>
+0100         <span class="comment">% 'mtb_acc','imu_acc','ems_acc','mtb_gyro','ems_gyro'.</span>
+0101         sensorTypeList = <a href="getSensorCadTypes.html" class="code" title="function sensorTypeList = getSensorCadTypes( obj,sensorLabelList )">getSensorCadTypes</a>(obj,sensorLabelList);
+0102         
+0103         <span class="comment">% Get the sensor gain from a given sensor unique label. Even if we</span>
+0104         <span class="comment">% usually get the same gain for all sensors of a given type, we</span>
+0105         <span class="comment">% consider the possibiity to have  specific gain for each sensor</span>
+0106         <span class="comment">% (for instance each IMU).</span>
+0107         fullscaleGainList = <a href="getSensorFullscaleGains.html" class="code" title="function fullscaleGainList = getSensorFullscaleGains( obj,sensorLabelList )">getSensorFullscaleGains</a>(obj,sensorLabelList);
+0108     <span class="keyword">end</span>
+0109     
+0110     methods(Static = true, Access = protected)
+0111         [iDynObject,sensorFrameName,parentLink,sensorFramePose,fullscaleGain] = <span class="keyword">...</span>
+0112             <a href="getSensorProps.html" class="code" title="function [iDynObject,sensorFrameName,parentLink,parentLinkIdx,sensorFramePose] =getSensorProps( iDynTreeSensorsFromURDF,sensorType,sensorIndex )">getSensorProps</a>(iDynTreeSensorsFromURDF,sensorType,sensorIndex);
+0113         
+0114         sensorHwId = <a href="frame2hwId.html" class="code" title="function sensorHwId = frame2hwId( sensorFrameName )">frame2hwId</a>(sensorFrameName);
+0115         
+0116         cadType = <a href="frame2cadType.html" class="code" title="function cadType = frame2cadType( sensorFrameName )">frame2cadType</a>(sensorFrameName);
+0117     <span class="keyword">end</span>
+0118 <span class="keyword">end</span>
+0119</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mergeMapSequences</title>
+  <meta name="keywords" content="mergeMapSequences">
+  <meta name="description" content="mergeMapSequences Merges all maps into macro maps (1 macro map per sequence)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SequenceParams -->
+<h1>mergeMapSequences
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>mergeMapSequences Merges all maps into macro maps (1 macro map per sequence)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function seqParamsMapMerged = mergeMapSequences( obj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">mergeMapSequences Merges all maps into macro maps (1 macro map per sequence)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SequenceParams.html" class="code" title="">SequenceParams</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function seqParamsMapMerged = mergeMapSequences( obj )</a>
+0002 <span class="comment">%mergeMapSequences Merges all maps into macro maps (1 macro map per sequence)</span>
+0003 
+0004 <span class="comment">% - first, init seqParamsMapMerged (empty macro maps)</span>
+0005 seqParamsMapMerged(1,1:max(cell2mat(obj.filteredSelector.setIdx)))={containers.Map()};
+0006 <span class="comment">% - merge sequence with next map in the list</span>
+0007 <span class="keyword">for</span> idx = 1:numel(obj.filteredSelector.seqParamsMap)
+0008     <span class="comment">% select both current sequence and next map to be merged</span>
+0009     sequence = seqParamsMapMerged{obj.filteredSelector.setIdx{idx}};
+0010     seqParamsMap = obj.filteredSelector.seqParamsMap{idx};
+0011     
+0012     <span class="comment">% merge in both orders:</span>
+0013     mergedSeqA = [sequence;seqParamsMap]; <span class="comment">% 'seqParamsMap' elements overwrites common ones in 'sequence'</span>
+0014     mergedSeqB = [seqParamsMap;sequence]; <span class="comment">% 'sequence' elements overwrites common ones in 'seqParamsMap'</span>
+0015     
+0016     <span class="comment">% list elements holding 'meas' label (potencially conflicting)</span>
+0017     ctrlOrMeasLabels = cellfun(@(aStruct) aStruct.labels{1},mergedSeqA.values,<span class="string">'UniformOutput'</span>,false);
+0018     keys = mergedSeqA.keys;
+0019     measElemsKeys = keys(ismember(ctrlOrMeasLabels,<span class="string">'meas'</span>));
+0020     
+0021     <span class="comment">% fine merge those conflicting elements</span>
+0022     orLogicLists = @(a,b) num2cell(cell2mat(a) | cell2mat(b),2);
+0023     mergedValue = @(a,b) struct(<span class="string">'labels'</span>,{a.labels},<span class="string">'val'</span>,{orLogicLists(a.val,b.val)});
+0024     measElemsValues = cellfun(<span class="keyword">...</span>
+0025         @(key) mergedValue(mergedSeqA(key),mergedSeqB(key)),<span class="keyword">...</span>
+0026         measElemsKeys,<span class="keyword">...</span>
+0027         <span class="string">'UniformOutput'</span>,false);
+0028     
+0029     <span class="comment">% update sequence</span>
+0030     seqParamsMapMerged{obj.filteredSelector.setIdx{idx}} = <span class="keyword">...</span>
+0031         [mergedSeqA;containers.Map(measElemsKeys,measElemsValues)];
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

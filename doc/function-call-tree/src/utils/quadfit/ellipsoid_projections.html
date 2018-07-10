@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoid_projections</title>
+  <meta name="keywords" content="ellipsoid_projections">
+  <meta name="description" content="Plots ellipsoid projections on the xy, xz and yz planes.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsoid_projections
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Plots ellipsoid projections on the xy, xz and yz planes.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function ellipsoid_projections(x,y,z,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plots ellipsoid projections on the xy, xz and yz planes.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="quad2d_translate.html" class="code" title="function p = quad2d_translate(p,xt,yt)">quad2d_translate</a>	Translates a quadratic curve in implicit form by the given coordinates.</li><li><a href="quad3d_center.html" class="code" title="function [x,y,z] = quad3d_center(u)">quad3d_center</a>	Center of a central quadric (quadratic surface).</li><li><a href="quad3d_translate.html" class="code" title="function p = quad3d_translate(p,xt,yt,zt)">quad3d_translate</a>	Translates a quadratic surface in implicit form by the given coordinates.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsoidfit1.html" class="code" title="function example_ellipsoidfit1">example_ellipsoidfit1</a>	Demonstration of various ellipsoid fits.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function ellipsoid_project_plane(x, y, varargin)</a></li><li><a href="#_sub2" class="code">function p = ellipsoid_project_xy(p)</a></li><li><a href="#_sub3" class="code">function p = ellipsoid_project_xz(p)</a></li><li><a href="#_sub4" class="code">function p = ellipsoid_project_yz(p)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function ellipsoid_projections(x,y,z,varargin)</a>
+0002 <span class="comment">% Plots ellipsoid projections on the xy, xz and yz planes.</span>
+0003 
+0004 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0005 
+0006 <a href="#_sub1" class="code" title="subfunction ellipsoid_project_plane(x, y, varargin)">ellipsoid_project_plane</a>(x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, varargin{:});
+0007 <a href="#_sub1" class="code" title="subfunction ellipsoid_project_plane(x, y, varargin)">ellipsoid_project_plane</a>(x, z, varargin{:});
+0008 <a href="#_sub1" class="code" title="subfunction ellipsoid_project_plane(x, y, varargin)">ellipsoid_project_plane</a>(<a href="../../../src/@y/y.html" class="code" title="">y</a>, z, varargin{:});
+0009 
+0010 <a name="_sub1" href="#_subfunctions" class="code">function ellipsoid_project_plane(x, y, varargin)</a>
+0011 
+0012 fig = figure;
+0013 ax = axes(<span class="string">'Parent'</span>, fig);
+0014 linestyle = {<span class="string">'-'</span>,<span class="string">'--'</span>,<span class="string">'-.'</span>,<span class="string">':'</span>};
+0015 plot(ax,x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>);
+0016 xlabel(ax,inputname(1));
+0017 ylabel(ax,inputname(2));
+0018 <span class="keyword">for</span> k = 1 : numel(varargin)
+0019     <span class="keyword">switch</span> sprintf(<span class="string">'%s%s'</span>, inputname(1), inputname(2))
+0020         <span class="keyword">case</span> <span class="string">'xy'</span>
+0021             fun = @<a href="#_sub2" class="code" title="subfunction p = ellipsoid_project_xy(p)">ellipsoid_project_xy</a>;
+0022         <span class="keyword">case</span> <span class="string">'xz'</span>
+0023             fun = @<a href="#_sub3" class="code" title="subfunction p = ellipsoid_project_xz(p)">ellipsoid_project_xz</a>;
+0024         <span class="keyword">case</span> <span class="string">'yz'</span>
+0025             fun = @<a href="#_sub4" class="code" title="subfunction p = ellipsoid_project_yz(p)">ellipsoid_project_yz</a>;
+0026     <span class="keyword">end</span>
+0027     <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(fun(varargin{k}), [], ax, <span class="string">'LineStyle'</span>, linestyle{mod(k-1, numel(linestyle)) + 1}, <span class="string">'LineWidth'</span>, 2);
+0028 <span class="keyword">end</span>
+0029 
+0030 <a name="_sub2" href="#_subfunctions" class="code">function p = ellipsoid_project_xy(p)</a>
+0031 <span class="comment">% Project parameters of an ellipsoid to an ellipse in the xy plane.</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% Ellipsoid parameter structure:</span>
+0034 <span class="comment">% Z = [x.^2, y.^2, z.^2, x.*y, x.*z, y.*z, x, y, z, 1];</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% Ellipse parameter structure:</span>
+0037 <span class="comment">% Z = [x.^2, x.*y, y.^2, x, y, 1];</span>
+0038 
+0039 [xt,yt,zt] = <a href="quad3d_center.html" class="code" title="function [x,y,z] = quad3d_center(u)">quad3d_center</a>(p);
+0040 p = <a href="quad3d_translate.html" class="code" title="function p = quad3d_translate(p,xt,yt,zt)">quad3d_translate</a>(p,-xt,-yt,-zt);
+0041 p = [p(1) ; p(4) ; p(2) ; p(7) ; p(8) ; p(10)];
+0042 p = <a href="quad2d_translate.html" class="code" title="function p = quad2d_translate(p,xt,yt)">quad2d_translate</a>(p,xt,yt);
+0043 
+0044 <a name="_sub3" href="#_subfunctions" class="code">function p = ellipsoid_project_xz(p)</a>
+0045 <span class="comment">% Project parameters of an ellipsoid to an ellipse in the xz plane.</span>
+0046 <span class="comment">%</span>
+0047 <span class="comment">% Ellipsoid parameter structure:</span>
+0048 <span class="comment">% Z = [x.^2, y.^2, z.^2, x.*y, x.*z, y.*z, x, y, z, 1];</span>
+0049 <span class="comment">%</span>
+0050 <span class="comment">% Ellipse parameter structure:</span>
+0051 <span class="comment">% Z = [x.^2, x.*z, z.^2, x, z, 1];</span>
+0052 
+0053 [xt,yt,zt] = <a href="quad3d_center.html" class="code" title="function [x,y,z] = quad3d_center(u)">quad3d_center</a>(p);
+0054 p = <a href="quad3d_translate.html" class="code" title="function p = quad3d_translate(p,xt,yt,zt)">quad3d_translate</a>(p,-xt,-yt,-zt);
+0055 p = [p(1) ; p(5) ; p(3) ; p(7) ; p(9) ; p(10)];
+0056 p = <a href="quad2d_translate.html" class="code" title="function p = quad2d_translate(p,xt,yt)">quad2d_translate</a>(p,xt,zt);
+0057 
+0058 <a name="_sub4" href="#_subfunctions" class="code">function p = ellipsoid_project_yz(p)</a>
+0059 <span class="comment">% Project parameters of an ellipsoid to an ellipse in the yz plane.</span>
+0060 <span class="comment">%</span>
+0061 <span class="comment">% Ellipsoid parameter structure:</span>
+0062 <span class="comment">% Z = [x.^2, y.^2, z.^2, x.*y, x.*z, y.*z, x, y, z, 1];</span>
+0063 <span class="comment">%</span>
+0064 <span class="comment">% Ellipse parameter structure:</span>
+0065 <span class="comment">% Z = [y.^2, y.*z, z.^2, y, z, 1];</span>
+0066 
+0067 [xt,yt,zt] = <a href="quad3d_center.html" class="code" title="function [x,y,z] = quad3d_center(u)">quad3d_center</a>(p);
+0068 p = <a href="quad3d_translate.html" class="code" title="function p = quad3d_translate(p,xt,yt,zt)">quad3d_translate</a>(p,-xt,-yt,-zt);
+0069 p = [p(2) ; p(6) ; p(3) ; p(8) ; p(9) ; p(10)];
+0070 p = <a href="quad2d_translate.html" class="code" title="function p = quad2d_translate(p,xt,yt)">quad2d_translate</a>(p,yt,zt);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

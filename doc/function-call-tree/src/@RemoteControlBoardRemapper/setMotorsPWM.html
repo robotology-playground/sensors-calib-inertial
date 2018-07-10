@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of setMotorsPWM</title>
+  <meta name="keywords" content="setMotorsPWM">
+  <meta name="description" content="Set the desired PWM values (0-100%) for a set of motor indexes">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoardRemapper -->
+<h1>setMotorsPWM
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Set the desired PWM values (0-100%) for a set of motor indexes</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ ok ] = setMotorsPWM( obj,motorsIdxList,pwmVec ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Set the desired PWM values (0-100%) for a set of motor indexes
+   (for calibration purpose).
+   The motor indexes are the same as for the joints.
+   There is no concept of coupled motors in the control board
+   remapper.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ ok ] = setMotorsPWM( obj,motorsIdxList,pwmVec )</a>
+0002 <span class="comment">%Set the desired PWM values (0-100%) for a set of motor indexes</span>
+0003 <span class="comment">%   (for calibration purpose).</span>
+0004 <span class="comment">%   The motor indexes are the same as for the joints.</span>
+0005 <span class="comment">%   There is no concept of coupled motors in the control board</span>
+0006 <span class="comment">%   remapper.</span>
+0007 
+0008 <span class="comment">% map a PWM controller</span>
+0009 ipwm = obj.driver.viewIPWMControl();
+0010 
+0011 <span class="comment">% convert parameters to types handled by the bindings API</span>
+0012 motorsVec = motorsIdxList-1; <span class="comment">% C++ like indexes</span>
+0013 
+0014 <span class="comment">% configure mode for specified joints</span>
+0015 <span class="keyword">for</span> idx = 1:numel(motorsVec)
+0016     ok = ipwm.setRefDutyCycle(motorsVec(idx),pwmVec(idx));
+0017     <span class="keyword">if</span> ~ok
+0018         error([<span class="string">'Couldn''t set the PWM value for joint '</span> num2str(motorsVec(idx)') <span class="string">'!!'</span>]);
+0019     <span class="keyword">end</span>
+0020 <span class="keyword">end</span>
+0021 
+0022 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SequenceParams</title>
+  <meta name="keywords" content="SequenceParams">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SequenceParams -->
+<h1>SequenceParams
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SequenceParams.html" class="code" title="">SequenceParams</a>	</li><li><a href="buildMapSequences.html" class="code" title="function sequences = buildMapSequences(obj)">buildMapSequences</a>	buildMapSequences: Build sequences in the MotionSequencer format</li><li><a href="mergeMapSequences.html" class="code" title="function seqParamsMapMerged = mergeMapSequences( obj )">mergeMapSequences</a>	mergeMapSequences Merges all maps into macro maps (1 macro map per sequence)</li><li><a href="seqParams2map.html" class="code" title="function seqMap = seqParams2map( calibedPart,calibedSensors,seqParams )">seqParams2map</a>	seqParams2map Convert the sequence from input format to map</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@SensorDataAcquisition/acquireSensorData.html" class="code" title="function acqSensorDataAccessor = acquireSensorData(task,taskSpecificParams,robotModel,dataPath,calibedParts)">acquireSensorData</a>	task:      this selects the motion sequence parameters</li><li><a href="SequenceParams.html" class="code" title="">SequenceParams</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = SequenceParams(calibedParts,selector,seqHomeParams,seqEndParams)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SequenceParams.html" class="code" title="">SequenceParams</a> &lt; handle
+0002     <span class="comment">%MotionSequencer input sequence parameters</span>
+0003     <span class="comment">%   This class shapes parameters from a calibrator (part calibration</span>
+0004     <span class="comment">%   motion and measurement parameters, calibration sequences</span>
+0005     <span class="comment">%   definitions) into the format used by the MotionSequencer class.</span>
+0006     
+0007     properties(Constant)
+0008         <span class="comment">% Dictionary translating any part sequence key to a set of labels</span>
+0009         <span class="comment">% &lt;calib|ctrl|meas&gt;.&lt;joint|acc|imu&gt;.&lt;part&gt;</span>
+0010         <span class="comment">% (Static property accessible from any object of the class)</span>
+0011         labelKeys2ActSensPart = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0012     <span class="keyword">end</span>
+0013     
+0014     properties(SetAccess = protected, GetAccess = public)
+0015         filteredSelector = struct();
+0016         seqHomeParams = {};
+0017         seqEndParams = struct();
+0018         sequences = {};
+0019     <span class="keyword">end</span>
+0020     
+0021     methods(Access = public)
+0022         <a name="_sub0" href="#_subfunctions" class="code">function obj = SequenceParams(calibedParts,selector,seqHomeParams,seqEndParams)</a>
+0023             
+0024             <span class="comment">% Check that requested calibrated parts are handled</span>
+0025             <span class="keyword">if</span> sum(~ismember(calibedParts,selector.calibedParts))&gt;0
+0026                 error(<span class="string">'...the part list is empty or at least one part in the list is not handled!'</span>);
+0027             <span class="keyword">end</span>
+0028             
+0029             <span class="comment">% ==== Use selector for filtering sequence parameters of requested parts:</span>
+0030             <span class="comment">% Filter selector tables keeping only parts requested for calibration</span>
+0031             filter = ismember(selector.calibedParts,calibedParts);
+0032             filteredSelector = structfun(@(list) list(filter),selector,<span class="string">'UniformOutput'</span>,false);
+0033             filteredSelector.seqParamsMap = cell(size(filteredSelector.seqParams));
+0034             
+0035             <span class="comment">% From this point on, the list of parts to be calibrated is irrelevant. We</span>
+0036             <span class="comment">% will index parameters by pos/part,vel/part and sensor/part keys, actually</span>
+0037             <span class="comment">% required for feeding the control board driver and opening the right yarp</span>
+0038             <span class="comment">% ports for dumping the sensor data (joints, accelerometers, gyros,</span>
+0039             <span class="comment">% etc...).</span>
+0040 
+0041             <span class="comment">% save input parameters</span>
+0042             obj.filteredSelector = filteredSelector;
+0043             obj.seqHomeParams = seqHomeParams;
+0044             obj.seqEndParams = seqEndParams;
+0045         <span class="keyword">end</span>
+0046         
+0047         <span class="comment">% Builds sequences in the MotionSequencer format</span>
+0048         sequences = <a href="buildMapSequences.html" class="code" title="function sequences = buildMapSequences(obj)">buildMapSequences</a>(obj);
+0049     <span class="keyword">end</span>
+0050     
+0051     methods(Access = protected)
+0052         <span class="comment">% Merges all maps into macro maps (1 macro map per sequence)</span>
+0053         seqParamsMapMerged = <a href="mergeMapSequences.html" class="code" title="function seqParamsMapMerged = mergeMapSequences( obj )">mergeMapSequences</a>(obj);
+0054     <span class="keyword">end</span>
+0055     
+0056     methods(Static = true, Access = protected)
+0057         seqMap = <a href="seqParams2map.html" class="code" title="function seqMap = seqParams2map( calibedPart,calibedSensors,seqParams )">seqParams2map</a>(calibedPart,calibedSensors,seqParams);
+0058     <span class="keyword">end</span>
+0059     
+0060 <span class="keyword">end</span>
+0061</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

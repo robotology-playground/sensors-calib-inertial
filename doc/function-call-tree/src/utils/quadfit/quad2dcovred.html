@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dcovred</title>
+  <meta name="keywords" content="quad2dcovred">
+  <meta name="description" content="Reduced-size noise covariance structure corresponding to a 2D quadratic function.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dcovred
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Reduced-size noise covariance structure corresponding to a 2D quadratic function.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function C = quad2dcovred(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Reduced-size noise covariance structure corresponding to a 2D quadratic function.
+
+ Input arguments:
+ sigma_x, sigma_y:
+    vector of noise covariance components
+ -- OR --
+ phi:
+    the noise direction in the range [0, 1/2 \pi]
+
+ x, y:
+    vector of observed data
+
+ Example:
+ Z = [x.^2, x.*y, y.^2, x, y];
+ mZ = mean(Z);
+ Z = bsxfun(@minus, Z, mZ);  % translate hyperplane to pass through origin
+ D = (Z'*Z) / size(Z,1);
+ C = quad2dcovred(angle, x, y);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="parabolafit_cals.html" class="code" title="function [p,mu] = parabolafit_cals(varargin)">parabolafit_cals</a>	Fit a parabola using consistent algebraic least squares.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [x,y,mx2,mxy,my2] = quad2dcovred_data(x,y)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C = quad2dcovred(varargin)</a>
+0002 <span class="comment">% Reduced-size noise covariance structure corresponding to a 2D quadratic function.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% sigma_x, sigma_y:</span>
+0006 <span class="comment">%    vector of noise covariance components</span>
+0007 <span class="comment">% -- OR --</span>
+0008 <span class="comment">% phi:</span>
+0009 <span class="comment">%    the noise direction in the range [0, 1/2 \pi]</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% x, y:</span>
+0012 <span class="comment">%    vector of observed data</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Example:</span>
+0015 <span class="comment">% Z = [x.^2, x.*y, y.^2, x, y];</span>
+0016 <span class="comment">% mZ = mean(Z);</span>
+0017 <span class="comment">% Z = bsxfun(@minus, Z, mZ);  % translate hyperplane to pass through origin</span>
+0018 <span class="comment">% D = (Z'*Z) / size(Z,1);</span>
+0019 <span class="comment">% C = quad2dcovred(angle, x, y);</span>
+0020 
+0021 <span class="comment">% Copyright 2008-2013 Levente Hunyadi</span>
+0022 
+0023 narginchk(3,4);
+0024 <span class="keyword">switch</span> nargin
+0025     <span class="keyword">case</span> 3
+0026         phi = varargin{1};
+0027         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,mx2,mxy,my2] = <a href="#_sub1" class="code" title="subfunction [x,y,mx2,mxy,my2] = quad2dcovred_data(x,y)">quad2dcovred_data</a>(varargin{2:3});
+0028         
+0029         sx = cos(phi);
+0030         sy = sin(phi);
+0031         Ce = zeros(6,6,3);
+0032         Ce(:,:,1) = <span class="keyword">...</span>
+0033         [ mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0034         ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0035         ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0036         ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0037         ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0038         ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0039         ];
+0040         Ce(:,:,2) = <span class="keyword">...</span>
+0041         [                      mean(-2.*mx2.*sx.^2 + 6.*sx.^2.*x.^2), mean(-mxy.*sx.^2 + 3.*sx.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(-mx2.*sy.^2 - my2.*sx.^2 + sx.^2.*y.^2 + sy.^2.*x.^2), mean(3.*sx.^2.*x),    mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sx.^2) <span class="keyword">...</span>
+0042         ;                         mean(-mxy.*sx.^2 + 3.*sx.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sx.^2.*y.^2 + sy.^2.*x.^2),                         mean(-mxy.*sy.^2 + 3.*sy.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sy.^2.*x),     mean(0) <span class="keyword">...</span>
+0043         ; mean(-mx2.*sy.^2 - my2.*sx.^2 + sx.^2.*y.^2 + sy.^2.*x.^2), mean(-mxy.*sy.^2 + 3.*sy.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                      mean(-2.*my2.*sy.^2 + 6.*sy.^2.*y.^2),    mean(sy.^2.*x), mean(3.*sy.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sy.^2) <span class="keyword">...</span>
+0044         ;                                          mean(3.*sx.^2.*x),                     mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                                             mean(sy.^2.*x),       mean(sx.^2),           mean(0),     mean(0) <span class="keyword">...</span>
+0045         ;                                             mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                     mean(sy.^2.*x),                                          mean(3.*sy.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),           mean(0),       mean(sy.^2),     mean(0) <span class="keyword">...</span>
+0046         ;                                                mean(sx.^2),                            mean(0),                                                mean(sy.^2),           mean(0),           mean(0),     mean(0) <span class="keyword">...</span>
+0047         ];
+0048         Ce(:,:,3) = <span class="keyword">...</span>
+0049         [       mean(-sx.^4),             mean(0), mean(sx.^2.*sy.^2), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0050         ;            mean(0), mean(-sx.^2.*sy.^2),            mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0051         ; mean(sx.^2.*sy.^2),             mean(0),       mean(-sy.^4), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0052         ;            mean(0),             mean(0),            mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0053         ;            mean(0),             mean(0),            mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0054         ;            mean(0),             mean(0),            mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0055         ];
+0056 
+0057         <span class="comment">%m = mean([x.^2, x.*y, y.^2, x, y], 1);</span>
+0058         C = Ce(1:5,1:5,:);
+0059         C(:,:,3) = C(:,:,3) + Ce(1:5,6,2) * Ce(6,1:5,2);
+0060     <span class="keyword">case</span> 4
+0061         sigma_x = varargin{1};
+0062         sigma_y = varargin{2};
+0063         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,mx2,mxy,my2] = <a href="#_sub1" class="code" title="subfunction [x,y,mx2,mxy,my2] = quad2dcovred_data(x,y)">quad2dcovred_data</a>(varargin{3:4});
+0064 
+0065         Ce = <span class="keyword">...</span>
+0066         [                                            mean(-2.*mx2.*sigma_x.^2 - sigma_x.^4 + 6.*sigma_x.^2.*x.^2),                        mean(-mxy.*sigma_x.^2 + 3.*sigma_x.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(-mx2.*sigma_y.^2 - my2.*sigma_x.^2 + sigma_x.^2.*sigma_y.^2 + sigma_x.^2.*y.^2 + sigma_y.^2.*x.^2), mean(3.*sigma_x.^2.*x),    mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sigma_x.^2) <span class="keyword">...</span>
+0067         ;                                                            mean(-mxy.*sigma_x.^2 + 3.*sigma_x.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(-sigma_x.^2.*sigma_y.^2 + sigma_x.^2.*y.^2 + sigma_y.^2.*x.^2),                                                            mean(-mxy.*sigma_y.^2 + 3.*sigma_y.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sigma_y.^2.*x),          mean(0) <span class="keyword">...</span>
+0068         ; mean(-mx2.*sigma_y.^2 - my2.*sigma_x.^2 + sigma_x.^2.*sigma_y.^2 + sigma_x.^2.*y.^2 + sigma_y.^2.*x.^2),                        mean(-mxy.*sigma_y.^2 + 3.*sigma_y.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                                            mean(-2.*my2.*sigma_y.^2 - sigma_y.^4 + 6.*sigma_y.^2.*y.^2),    mean(sigma_y.^2.*x), mean(3.*sigma_y.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sigma_y.^2) <span class="keyword">...</span>
+0069         ;                                                                                  mean(3.*sigma_x.^2.*x),                                                 mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                                                                                     mean(sigma_y.^2.*x),       mean(sigma_x.^2),                mean(0),          mean(0) <span class="keyword">...</span>
+0070         ;                                                                                     mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                                                 mean(sigma_y.^2.*x),                                                                                  mean(3.*sigma_y.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                mean(0),       mean(sigma_y.^2),          mean(0) <span class="keyword">...</span>
+0071         ;                                                                                        mean(sigma_x.^2),                                                             mean(0),                                                                                        mean(sigma_y.^2),                mean(0),                mean(0),          mean(0) <span class="keyword">...</span>
+0072         ];
+0073     
+0074         C = Ce(1:5,1:5) - Ce(1:5,6,3) * Ce(6,1:5,3);
+0075 <span class="keyword">end</span>
+0076 
+0077 <a name="_sub1" href="#_subfunctions" class="code">function [x,y,mx2,mxy,my2] = quad2dcovred_data(x,y)</a>
+0078 
+0079 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0080 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0081 x = x(:);
+0082 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0083 n = numel(x);
+0084 
+0085 <span class="comment">% data vectors x and y must have the same number of elements</span>
+0086 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[n,1]});
+0087 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[n,1]});
+0088 
+0089 mx2 = mean(x.^2);
+0090 mxy = mean(x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0091 my2 = mean(y.^2);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

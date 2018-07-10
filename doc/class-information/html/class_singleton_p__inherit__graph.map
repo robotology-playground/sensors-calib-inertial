@@ -1,0 +1,6 @@
+<map id="SingletonP" name="SingletonP">
+<area shape="rect" id="node3" href="$class_calibrator.html" title="Calibrator" alt="" coords="148,152,227,177"/>
+<area shape="rect" id="node2" href="$classhandle.html" title="handle" alt="" coords="157,5,218,31"/>
+<area shape="rect" id="node4" href="$class_accelerometers_calibrator.html" title="AccelerometersCalibrator" alt="" coords="5,225,177,251"/>
+<area shape="rect" id="node5" href="$class_joint_encoders_calibrator.html" title="JointEncodersCalibrator" alt="" coords="201,225,365,251"/>
+</map>

@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dcov</title>
+  <meta name="keywords" content="quad2dcov">
+  <meta name="description" content="Theoretical noise covariance structure corresponding to a 2D quadratic function.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dcov
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Theoretical noise covariance structure corresponding to a 2D quadratic function.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function C = quad2dcov(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Theoretical noise covariance structure corresponding to a 2D quadratic function.
+
+ Input arguments:
+ sigma_x, sigma_y:
+    vector of noise covariance components
+ -- OR --
+ phi:
+    the noise direction in the range [0, 1/2 \pi]
+
+ x, y:
+    vector of observed data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="quad2dconfit_koopmans.html" class="code" title="function [p,p0,mu0] = quad2dconfit_koopmans(x, y, sigma_x, sigma_y, Q)">quad2dconfit_koopmans</a>	Fit a constrained quadratic curve to data using the nonlinear Koopmans method.</li><li><a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>	Fit a quadratic curve to data using consistent algebraic least squares.</li><li><a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [x,y] = quad2dcov_data(x,y)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C = quad2dcov(varargin)</a>
+0002 <span class="comment">% Theoretical noise covariance structure corresponding to a 2D quadratic function.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% sigma_x, sigma_y:</span>
+0006 <span class="comment">%    vector of noise covariance components</span>
+0007 <span class="comment">% -- OR --</span>
+0008 <span class="comment">% phi:</span>
+0009 <span class="comment">%    the noise direction in the range [0, 1/2 \pi]</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% x, y:</span>
+0012 <span class="comment">%    vector of observed data</span>
+0013 
+0014 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0015 
+0016 narginchk(3,4);
+0017 <span class="keyword">switch</span> nargin
+0018     <span class="keyword">case</span> 3
+0019         phi = varargin{1};
+0020         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>] = <a href="#_sub1" class="code" title="subfunction [x,y] = quad2dcov_data(x,y)">quad2dcov_data</a>(varargin{2:3});
+0021         
+0022         sx = cos(phi);
+0023         sy = sin(phi);
+0024         C = zeros(6,6,3);
+0025         C(:,:,1) = <span class="keyword">...</span>
+0026         [ 0, 0, 0, 0, 0, 0 <span class="keyword">...</span>
+0027         ; 0, 0, 0, 0, 0, 0 <span class="keyword">...</span>
+0028         ; 0, 0, 0, 0, 0, 0 <span class="keyword">...</span>
+0029         ; 0, 0, 0, 0, 0, 0 <span class="keyword">...</span>
+0030         ; 0, 0, 0, 0, 0, 0 <span class="keyword">...</span>
+0031         ; 0, 0, 0, 0, 0, 0 <span class="keyword">...</span>
+0032         ];
+0033         C(:,:,2) = <span class="keyword">...</span>
+0034         [            mean(6.*sx.^2.*x.^2),            mean(3.*sx.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sx.^2.*y.^2 + sy.^2.*x.^2), mean(3.*sx.^2.*x),    mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sx.^2) <span class="keyword">...</span>
+0035         ;            mean(3.*sx.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sx.^2.*y.^2 + sy.^2.*x.^2),            mean(3.*sy.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sy.^2.*x),           0 <span class="keyword">...</span>
+0036         ; mean(sx.^2.*y.^2 + sy.^2.*x.^2),            mean(3.*sy.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),            mean(6.*sy.^2.*y.^2),    mean(sy.^2.*x), mean(3.*sy.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sy.^2) <span class="keyword">...</span>
+0037         ;               mean(3.*sx.^2.*x),                  mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                  mean(sy.^2.*x),       mean(sx.^2),                 0,           0 <span class="keyword">...</span>
+0038         ;                  mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                  mean(sy.^2.*x),               mean(3.*sy.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                 0,       mean(sy.^2),           0 <span class="keyword">...</span>
+0039         ;                     mean(sx.^2),                               0,                     mean(sy.^2),                 0,                 0,           0 <span class="keyword">...</span>
+0040         ];
+0041         C(:,:,3) = <span class="keyword">...</span>
+0042         [     mean(-3.*sx.^4),                   0, mean(-sx.^2.*sy.^2), 0, 0, 0 <span class="keyword">...</span>
+0043         ;                   0, mean(-sx.^2.*sy.^2),                   0, 0, 0, 0 <span class="keyword">...</span>
+0044         ; mean(-sx.^2.*sy.^2),                   0,     mean(-3.*sy.^4), 0, 0, 0 <span class="keyword">...</span>
+0045         ;                   0,                   0,                   0, 0, 0, 0 <span class="keyword">...</span>
+0046         ;                   0,                   0,                   0, 0, 0, 0 <span class="keyword">...</span>
+0047         ;                   0,                   0,                   0, 0, 0, 0 <span class="keyword">...</span>
+0048         ];
+0049     <span class="keyword">case</span> 4
+0050         sigma_x = varargin{1};
+0051         sigma_y = varargin{2};
+0052         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>] = <a href="#_sub1" class="code" title="subfunction [x,y] = quad2dcov_data(x,y)">quad2dcov_data</a>(varargin{3:4});
+0053 
+0054         C = <span class="keyword">...</span>
+0055         [                          mean(-3.*sigma_x.^4 + 6.*sigma_x.^2.*x.^2),                                           mean(3.*sigma_x.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(-sigma_x.^2.*sigma_y.^2 + sigma_x.^2.*y.^2 + sigma_y.^2.*x.^2), mean(3.*sigma_x.^2.*x),    mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sigma_x.^2) <span class="keyword">...</span>
+0056         ;                                           mean(3.*sigma_x.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(-sigma_x.^2.*sigma_y.^2 + sigma_x.^2.*y.^2 + sigma_y.^2.*x.^2),                                           mean(3.*sigma_y.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sigma_y.^2.*x),                0 <span class="keyword">...</span>
+0057         ; mean(-sigma_x.^2.*sigma_y.^2 + sigma_x.^2.*y.^2 + sigma_y.^2.*x.^2),                                           mean(3.*sigma_y.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                          mean(-3.*sigma_y.^4 + 6.*sigma_y.^2.*y.^2),    mean(sigma_y.^2.*x), mean(3.*sigma_y.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sigma_y.^2) <span class="keyword">...</span>
+0058         ;                                              mean(3.*sigma_x.^2.*x),                                                 mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                                                 mean(sigma_y.^2.*x),       mean(sigma_x.^2),                      0,                0 <span class="keyword">...</span>
+0059         ;                                                 mean(sigma_x.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                                                 mean(sigma_y.^2.*x),                                              mean(3.*sigma_y.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                      0,       mean(sigma_y.^2),                0 <span class="keyword">...</span>
+0060         ;                                                    mean(sigma_x.^2),                                                                   0,                                                    mean(sigma_y.^2),                      0,                      0,                0 <span class="keyword">...</span>
+0061         ];
+0062 <span class="keyword">end</span>
+0063 
+0064 <a name="_sub1" href="#_subfunctions" class="code">function [x,y] = quad2dcov_data(x,y)</a>
+0065 
+0066 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0067 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0068 assert(numel(x) == numel(<a href="../../../src/@y/y.html" class="code" title="">y</a>), <span class="keyword">...</span>
+0069     <span class="string">'quad2dcov:DimensionMismatch'</span>, <span class="string">'Data vectors x and y must have the same number of elements.'</span>);
+0070 x = x(:);
+0071 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

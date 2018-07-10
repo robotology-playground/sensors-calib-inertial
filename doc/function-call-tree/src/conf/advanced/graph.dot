@@ -1,0 +1,16 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  accelerometersCalibratorDevConfig [URL="accelerometersCalibratorDevConfig.html"];
+  accelerometersCalibratorSequenceProfile [URL="accelerometersCalibratorSequenceProfile.html"];
+  accelerometersCalibratorSequenceProfileWOsuspend [URL="accelerometersCalibratorSequenceProfileWOsuspend.html"];
+  gyroscopesCalibratorSequenceProfile1checkAlgo [URL="gyroscopesCalibratorSequenceProfile1checkAlgo.html"];
+  gyroscopesCalibratorSequenceProfile2checkCalib [URL="gyroscopesCalibratorSequenceProfile2checkCalib.html"];
+  jointEncodersCalibratorDevConfig [URL="jointEncodersCalibratorDevConfig.html"];
+  jointsCalibratorSequenceProfile [URL="jointsCalibratorSequenceProfile.html"];
+  jointsCalibratorSequenceProfileWOsuspend [URL="jointsCalibratorSequenceProfileWOsuspend.html"];
+  lowLevTauCtrlCalibratorDevConfig [URL="lowLevTauCtrlCalibratorDevConfig.html"];
+  lowLevTauCtrlCalibratorSequenceProfile1 [URL="lowLevTauCtrlCalibratorSequenceProfile1.html"];
+  lowLevTauCtrlCalibratorSequenceProfile2 [URL="lowLevTauCtrlCalibratorSequenceProfile2.html"];
+  sensorDiagnosisDevConfig [URL="sensorDiagnosisDevConfig.html"];
+}

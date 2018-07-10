@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of acquireSensorData</title>
+  <meta name="keywords" content="acquireSensorData">
+  <meta name="description" content="task:      this selects the motion sequence parameters">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDataAcquisition -->
+<h1>acquireSensorData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>task:      this selects the motion sequence parameters</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function acqSensorDataAccessor = acquireSensorData(task,taskSpecificParams,robotModel,dataPath,calibedParts) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> task:      this selects the motion sequence parameters
+            (controlled parts, measured sensors)
+ robotModel: robot model
+ dataPath: main data folder path where the logger will store the sensor data
+ calibedParts: parts to be calibrated. This will select which parts to
+               move and which yarp port to collect data from</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@MotionSequencer/MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li><li><a href="../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li><li><a href="../../src/@SequenceParams/SequenceParams.html" class="code" title="">SequenceParams</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDataAcquisition.html" class="code" title="">SensorDataAcquisition</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function acqSensorDataAccessor = acquireSensorData(</a><span class="keyword">...</span>
+0002     task,taskSpecificParams,robotModel,dataPath,calibedParts)
+0003 
+0004 <span class="comment">% task:      this selects the motion sequence parameters</span>
+0005 <span class="comment">%            (controlled parts, measured sensors)</span>
+0006 <span class="comment">% robotModel: robot model</span>
+0007 <span class="comment">% dataPath: main data folder path where the logger will store the sensor data</span>
+0008 <span class="comment">% calibedParts: parts to be calibrated. This will select which parts to</span>
+0009 <span class="comment">%               move and which yarp port to collect data from</span>
+0010 
+0011 <span class="comment">% Load sequence profile parameters</span>
+0012 [seqHomeParams,seqEndParams,selector] = <span class="keyword">...</span>
+0013     SensorDataAcquisition.getSeqProfile(task,taskSpecificParams);
+0014 
+0015             
+0016 <span class="comment">%% Build the Map sequences from input parameters</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%  - build the homing sequences 'seqHomeParamsMap'</span>
+0019 <span class="comment">%  - use selector for filtering sequence parameters of requested parts</span>
+0020 <span class="comment">%  - build the calibrating sequences 'seqParamsMap'</span>
+0021 <span class="comment">%  - merge the calibrating sequences 'seqParamsMapMerged'</span>
+0022 
+0023 <span class="comment">% ==== Build the homing sequences 'seqHomeParamsMap' and the end sequence:</span>
+0024 
+0025 <span class="comment">% First, init MotionSequencer static data, clean YARP ports</span>
+0026 clear <a href="../../src/@SequenceParams/SequenceParams.html" class="code" title="">SequenceParams</a>;
+0027 SensorDataYarpI.clean();
+0028 
+0029 <span class="comment">% Init sequence parameters from data acquisition input configuration</span>
+0030 sequenceParams = <a href="../../src/@SequenceParams/SequenceParams.html" class="code" title="">SequenceParams</a>(calibedParts,selector,seqHomeParams,seqEndParams);
+0031 
+0032 <span class="comment">% Build sequences for the motion runner</span>
+0033 sequences = sequenceParams.buildMapSequences();
+0034 
+0035 
+0036 <span class="comment">%% Training data acquisition</span>
+0037 
+0038 <span class="comment">% Create Yarp data interface. It can create the necessary yarp ports</span>
+0039 <span class="comment">% for logging the data and holds a method for connecting or disconnecting</span>
+0040 <span class="comment">% the ports. It also access data previously logged.</span>
+0041 logger = <a href="../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>(robotModel.robotEnvNames,dataPath);
+0042 <span class="comment">% Configure callback logger commands</span>
+0043 logCmd.sched = @logger.scheduleNewAcquisition;
+0044 logCmd.new   = @logger.newLog;
+0045 logCmd.close = @logger.closeLog;
+0046 logCmd.start = @logger.connect;
+0047 logCmd.stop  = @logger.disconnect;
+0048 
+0049 <span class="comment">% create motion sequencer with defined sequences</span>
+0050 sequencer = <a href="../../src/@MotionSequencer/MotionSequencer.html" class="code" title="">MotionSequencer</a>(task,robotModel,sequences,logCmd);
+0051 
+0052 <span class="comment">% run sequencer until all data is acquired</span>
+0053 acqSensorDataAccessor = sequencer.run();
+0054 
+0055 <span class="comment">% The data acquisition is complete. The sequencer has sent a stop request</span>
+0056 <span class="comment">% to the logger through 'logCmd' callback.</span>
+0057 <span class="comment">% The control board device is removed and the yarp devices and objects</span>
+0058 <span class="comment">% are deleted along with the objects in this context.</span>
+0059 
+0060 <span class="comment">% print the sensor data log files info</span>
+0061 logger.print();
+0062 
+0063 <span class="comment">% Acquisition complete!</span>
+0064 disp(<span class="string">'Sensor data acquisition complete !!!'</span>);
+0065 
+0066 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

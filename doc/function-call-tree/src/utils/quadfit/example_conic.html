@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_conic</title>
+  <meta name="keywords" content="example_conic">
+  <meta name="description" content="Demonstrates plotting conic sections given as an implicit equation.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_conic
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstrates plotting conic sections given as an implicit equation.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_conic </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstrates plotting conic sections given as an implicit equation.
+
+ See also: <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>	Rotates a conic section given as an implicit equation.</li><li><a href="imconictranslate.html" class="code" title="function pt = imconictranslate(p, t)">imconictranslate</a>	Translates a conic section given as an implicit equation.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function line = example_conic_draw(a, p, w)</a></li><li><a href="#_sub2" class="code">function example_conic_onselection(src, evt)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_conic</a>
+0002 <span class="comment">% Demonstrates plotting conic sections given as an implicit equation.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also: imconic</span>
+0005 
+0006 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0007 
+0008 <span class="comment">% w = [-4 6 -4 6];</span>
+0009 w = [];  <span class="comment">% determine window bounds automatically</span>
+0010 
+0011 f = figure(<span class="string">'Visible'</span>, <span class="string">'off'</span>);
+0012 list = uicontrol(f, <span class="keyword">...</span>
+0013     <span class="string">'Style'</span>, <span class="string">'listbox'</span>, <span class="keyword">...</span>
+0014     <span class="string">'Max'</span>, 2, <span class="keyword">...</span><span class="comment">  % multiple selections</span>
+0015     <span class="string">'Min'</span>, 0, <span class="keyword">...</span>
+0016     <span class="string">'Units'</span>, <span class="string">'normalized'</span>, <span class="keyword">...</span>
+0017     <span class="string">'Position'</span>, [0 0 0.3 1], <span class="keyword">...</span>
+0018     <span class="string">'Callback'</span>, @<a href="#_sub2" class="code" title="subfunction example_conic_onselection(src, evt) ">example_conic_onselection</a>);
+0019 a = axes( <span class="keyword">...</span>
+0020     <span class="string">'Parent'</span>, f, <span class="keyword">...</span>
+0021     <span class="string">'Units'</span>, <span class="string">'normalized'</span>, <span class="keyword">...</span>
+0022     <span class="string">'OuterPosition'</span>, [0.3 0 0.7 1]);
+0023 hold(<span class="string">'all'</span>);
+0024 
+0025 lines = [ <span class="keyword">...</span>
+0026     <span class="keyword">...</span><span class="comment"> % circle</span>
+0027     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, [4 0 4 4 -36 -16], w) <span class="keyword">...</span>
+0028     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([4 0 4 4 -36 -16], pi/4), w) <span class="keyword">...</span>
+0029     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconictranslate.html" class="code" title="function pt = imconictranslate(p, t)">imconictranslate</a>([4 0 4 4 -36 -16], [2 1]), w) <span class="keyword">...</span>
+0030 <span class="keyword">...</span>
+0031     <span class="keyword">...</span><span class="comment"> % ellipse</span>
+0032     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, [1/25 0 1/9 0 0 -1], w) <span class="keyword">...</span><span class="comment">  % centered in origin, aligned with axis</span>
+0033     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1/25 0 1/9 0 0 -1], pi/4), w) <span class="keyword">...</span><span class="comment">  % center in origin but rotated</span>
+0034     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconictranslate.html" class="code" title="function pt = imconictranslate(p, t)">imconictranslate</a>([1/25 0 1/9 0 0 -1], [2,1]), w) <span class="keyword">...</span><span class="comment">  % aligned with axis but translated</span>
+0035     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, [1/49 0 1/25 -2*3/49 2/25 9/49+1/25-1], w) <span class="keyword">...</span><span class="comment">  % (x-3)^2/49 + (y+1)^2/25 - 1 = 0  % aligned with axes but translated</span>
+0036     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, [1 0 4 -6 8 9], w) <span class="keyword">...</span><span class="comment">  % aligned with axes but translated</span>
+0037     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, [9 0 16 90 -64 145], w) <span class="keyword">...</span>
+0038     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([9 0 16 90 -64 145], pi/6), w) <span class="keyword">...</span><span class="comment">  % translated &amp; rotated</span>
+0039     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([9 0 16 90 -64 145], pi/5), w) <span class="keyword">...</span>
+0040     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([9 0 16 90 -64 145], pi/4), w) <span class="keyword">...</span>
+0041     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1/49 0 1/25 -2*3/49 2/26 9/49+1/25-1], 0.25*pi), w) <span class="keyword">...</span><span class="comment">  % (x-3)^2/49 + (y+1)^2/25 - 1 = 0</span>
+0042 <span class="keyword">...</span>
+0043     <span class="keyword">...</span><span class="comment"> % hyperbola centered in origin, rotated around the origin</span>
+0044     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, [1 0 -1 0 0 -1], w) <span class="keyword">...</span>
+0045     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], pi/8), w) <span class="keyword">...</span>
+0046     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], pi/4), w) <span class="keyword">...</span>
+0047     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], 3*pi/8), w) <span class="keyword">...</span>
+0048     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], pi/2), w) <span class="keyword">...</span>
+0049     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], 5*pi/8), w) <span class="keyword">...</span>
+0050     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], 3*pi/4), w) <span class="keyword">...</span>
+0051     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], 7*pi/8), w) <span class="keyword">...</span>
+0052 <span class="keyword">...</span>
+0053     <span class="keyword">...</span><span class="comment"> % parabola</span>
+0054     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, [1 0 0 0 1 0], w) <span class="keyword">...</span>
+0055     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 0 0 1 0], pi/8), w) <span class="keyword">...</span>
+0056     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 0 0 1 0], pi/4), w) <span class="keyword">...</span>
+0057     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 0 0 1 0], 3*pi/8), w) <span class="keyword">...</span>
+0058     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 0 0 1 0], pi/2), w) <span class="keyword">...</span>
+0059     <a href="#_sub1" class="code" title="subfunction line = example_conic_draw(a, p, w)">example_conic_draw</a>(a, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 0 0 1 0], pi), w) <span class="keyword">...</span>
+0060 ];
+0061     
+0062 hold(<span class="string">'off'</span>);
+0063 set(lines, <span class="string">'Visible'</span>, <span class="string">'off'</span>);
+0064 set(list, <span class="string">'String'</span>, get(lines, <span class="string">'Tag'</span>));
+0065 set(f, <span class="string">'Visible'</span>, <span class="string">'on'</span>);
+0066 
+0067 <a name="_sub1" href="#_subfunctions" class="code">function line = example_conic_draw(a, p, w)</a>
+0068 
+0069 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p, w, a);
+0070 p(abs(p) &lt; 1e-15) = 0;
+0071 set(line, <span class="string">'Tag'</span>, mat2str(p, 3));
+0072 
+0073 <a name="_sub2" href="#_subfunctions" class="code">function example_conic_onselection(src, evt) </a><span class="comment">%#ok&lt;INUSD&gt;</span>
+0074 
+0075 items = get(src, <span class="string">'String'</span>);
+0076 selection = get(src, <span class="string">'Value'</span>);
+0077 f = ancestor(src, <span class="string">'figure'</span>);
+0078 a = findobj(f, <span class="string">'Type'</span>, <span class="string">'axes'</span>);
+0079 
+0080 <span class="comment">% curves either consist of a single part (e.g. ellipses) or multiple parts (e.g. hyperbolas)</span>
+0081 lines = findobj(a, <span class="string">'-depth'</span>, 1, <span class="string">'Type'</span>, <span class="string">'line'</span>, <span class="string">'-or'</span>, <span class="string">'Type'</span>, <span class="string">'hggroup'</span>);
+0082 
+0083 <span class="comment">% hide curves not selected</span>
+0084 set(lines, <span class="string">'Visible'</span>, <span class="string">'off'</span>);
+0085 
+0086 <span class="comment">% show curves selected</span>
+0087 <span class="keyword">for</span> k = 1 : numel(selection)
+0088     set(findobj(lines, <span class="string">'flat'</span>, <span class="string">'Tag'</span>, items{selection(k)}), <span class="string">'Visible'</span>, <span class="string">'on'</span>);
+0089 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

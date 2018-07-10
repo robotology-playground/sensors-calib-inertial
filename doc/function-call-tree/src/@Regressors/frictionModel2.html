@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of frictionModel2</title>
+  <meta name="keywords" content="frictionModel2">
+  <meta name="description" content="frictionModel2 Computes the closed-form solution to linear regression">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Regressors -->
+<h1>frictionModel2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>frictionModel2 Computes the closed-form solution to linear regression</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function model = frictionModel2( x,y ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">frictionModel2 Computes the closed-form solution to linear regression 
+   using the normal equations.
+   \in x: column vector (function inputs)
+   \in y: column vector (measurements)
+   model.theta: fitted parametters (Kc, Kv, KsPos, KsNeg)
+   model.h: function handle, takes a column vector X as input</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Regressors.html" class="code" title="">Regressors</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function signVec = signExc0(aX)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function model = frictionModel2( x,y )</a>
+0002 <span class="comment">%frictionModel2 Computes the closed-form solution to linear regression</span>
+0003 <span class="comment">%   using the normal equations.</span>
+0004 <span class="comment">%   \in x: column vector (function inputs)</span>
+0005 <span class="comment">%   \in y: column vector (measurements)</span>
+0006 <span class="comment">%   model.theta: fitted parametters (Kc, Kv, KsPos, KsNeg)</span>
+0007 <span class="comment">%   model.h: function handle, takes a column vector X as input</span>
+0008 
+0009 <span class="comment">% checks...</span>
+0010 <span class="keyword">if</span> ~iscolumn(x) || ~iscolumn(<a href="../../src/@y/y.html" class="code" title="">y</a>) || all(size(x)~=size(<a href="../../src/@y/y.html" class="code" title="">y</a>))
+0011     error(<span class="string">'Badly formatted data!!'</span>);
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="comment">% remove velocities too close to 0</span>
+0015 filtIdxes = abs(x)&gt;abs(max(x)/100);
+0016 <a href="../../src/@y/y.html" class="code" title="">y</a> = <a href="../../src/@y/y.html" class="code" title="">y</a>(filtIdxes);
+0017 x = x(filtIdxes);
+0018 tunedAlpha = 1;
+0019 
+0020 <span class="keyword">for</span> iter = 1:10
+0021     <span class="comment">% define the model function for dq&gt;0</span>
+0022     Mpos = @(dq,sgn,alpha) repmat(1/2*(1+sgn(dq)),[1 4]).*[1-exp(-alpha*dq) dq exp(-alpha*dq) zeros(size(dq))];
+0023     <span class="comment">% define the model function for dq&lt;0</span>
+0024     Mneg = @(dq,sgn,alpha) repmat(1/2*(1+sgn(dq)),[1 4]).*[1-exp(-alpha*dq) dq zeros(size(dq)) exp(-alpha*dq)];
+0025     <span class="comment">% define the model function for the full range of dq [-inf,+inf]</span>
+0026     fullRangeM = @(dq) Mpos(dq,@sign,tunedAlpha) - Mneg(-dq,@sign,tunedAlpha);
+0027     X = fullRangeM(x);
+0028     
+0029     <span class="comment">% fit the model with a least-square linear and constrained optimization</span>
+0030     model.theta = pinv(X)*<a href="../../src/@y/y.html" class="code" title="">y</a>;
+0031 <span class="comment">%     model.theta = lsqlin(X,y,eye(4),zeros(4,1));</span>
+0032     <span class="comment">% re-evaluate alpha</span>
+0033     prevTunedAlpha = tunedAlpha;
+0034     <span class="keyword">if</span>((model.theta(1)-model.theta(3))~=0)
+0035         <span class="comment">% compute alpha such that dy/dx=0 at x=0</span>
+0036         tunedAlpha = -model.theta(2)/(model.theta(1)-model.theta(3));
+0037     <span class="keyword">end</span>
+0038     <span class="comment">% stop condition: tunedAlpha converged</span>
+0039     <span class="keyword">if</span>(abs(tunedAlpha-prevTunedAlpha)&lt;abs(tunedAlpha)/10)
+0040         <span class="keyword">break</span>;
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 
+0044 model.h = @(vecX) fullRangeM(vecX) * model.theta;
+0045 model.alpha = prevTunedAlpha;
+0046 model.iterConverge = iter;
+0047 
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">%% Local functions</span>
+0051 
+0052 <a name="_sub1" href="#_subfunctions" class="code">function signVec = signExc0(aX)</a>
+0053 <span class="comment">% sign(x)=1 if x==0</span>
+0054 signVec = sign(aX);
+0055 signVec(aX==0) = -1;
+0056 
+0057 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

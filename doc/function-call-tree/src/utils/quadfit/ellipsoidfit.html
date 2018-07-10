@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoidfit</title>
+  <meta name="keywords" content="ellipsoidfit">
+  <meta name="description" content="Fit an ellipsoid to data by minimizing point-to-surface distance.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsoidfit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit an ellipsoid to data by minimizing point-to-surface distance.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,e,d] = ellipsoidfit(x,y,z,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit an ellipsoid to data by minimizing point-to-surface distance.
+
+ This function uses an iterative procedure. For a non-iterative approach, use
+ a direct least squares fit.
+
+ Output arguments:
+ p:
+    parameters of ellipsoid expressed in implicit form
+ e:
+    mean square distance
+ d:
+    distance from data points to fitted ellipsoid
+
+ See also: <a href="ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>, <a href="ellipsoidfit_leastsquares.html" class="code" title="function p = ellipsoidfit_leastsquares(x,y,z)">ellipsoidfit_leastsquares</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsoid_ex2im.html" class="code" title="function p = ellipsoid_ex2im(center, radii, R)">ellipsoid_ex2im</a>	Cast ellipsoid defined with explicit parameters to implicit vector form.</li><li><a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>	Cast ellipsoid defined with implicit parameter vector to explicit form.</li><li><a href="ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>	Finds the distance of the point (x,y,z) to the nearest point on the ellipsoid.</li><li><a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>	Simple iterative least squares fitting of ellipsoids under the constraint k*J - I^2 > 0.</li><li><a href="example_ellipsoid.html" class="code" title="function [x,y,z,x0,y0,z0] = example_ellipsoid">example_ellipsoid</a>	A sample ellipsoid.</li><li><a href="plot_ellipsoid.html" class="code" title="function plot_ellipsoid(cx,cy,cz,ap,bp,cp,R,varargin)">plot_ellipsoid</a>	Plot ellipsoid specified with center, radii and rotation matrix.</li><li><a href="quat2rot.html" class="code" title="function A = quat2rot(q)">quat2rot</a>	Convert quaternion to rotation matrix.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@AccelerometersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot</li><li><a href="example_ellipsoid.html" class="code" title="function [x,y,z,x0,y0,z0] = example_ellipsoid">example_ellipsoid</a>	A sample ellipsoid.</li><li><a href="example_ellipsoidcomp.html" class="code" title="function example_ellipsoidcomp">example_ellipsoidcomp</a>	Comparative demonstration of fits to random ellipsoids.</li><li><a href="example_ellipsoidfit1.html" class="code" title="function example_ellipsoidfit1">example_ellipsoidfit1</a>	Demonstration of various ellipsoid fits.</li><li><a href="example_ellipsoidfit2.html" class="code" title="function example_ellipsoidfit2">example_ellipsoidfit2</a>	Demonstration of fits to various special ellipsoids.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = ellipsoid_deal(p)</a></li><li><a href="#_sub2" class="code">function [d,ddp] = ellipsoidfit_distance(x,y,z,p)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,e,d] = ellipsoidfit(x,y,z,varargin)</a>
+0002 <span class="comment">% Fit an ellipsoid to data by minimizing point-to-surface distance.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function uses an iterative procedure. For a non-iterative approach, use</span>
+0005 <span class="comment">% a direct least squares fit.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Output arguments:</span>
+0008 <span class="comment">% p:</span>
+0009 <span class="comment">%    parameters of ellipsoid expressed in implicit form</span>
+0010 <span class="comment">% e:</span>
+0011 <span class="comment">%    mean square distance</span>
+0012 <span class="comment">% d:</span>
+0013 <span class="comment">%    distance from data points to fitted ellipsoid</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also: ellipsoidfit_direct, ellipsoidfit_leastsquares</span>
+0016 
+0017 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0018 
+0019 <span class="keyword">if</span> ~exist(<span class="string">'lsqnonlin'</span>,<span class="string">'file'</span>)
+0020     error(<span class="string">'quadfit:DependencyMissing'</span>, <span class="string">'This function requires the Optimization Toolbox.\nFor a least-squares fit, try the function &quot;ellipsoidfit_leastsquares&quot;.'</span>);
+0021 <span class="keyword">end</span>
+0022 
+0023 <span class="keyword">if</span> nargin &gt; 0
+0024     narginchk(3,Inf);
+0025     validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0026     validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0027     validateattributes(z, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0028     x = x(:);
+0029     <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0030     z = z(:);
+0031 <span class="keyword">else</span>
+0032     <span class="keyword">if</span> exist(<span class="string">'example_ellipsoid.mat'</span>,<span class="string">'file'</span>) &gt; 0
+0033         <a href="../../../src/@S/S.html" class="code" title="">S</a> = load(<span class="string">'example_ellipsoid.mat'</span>, <span class="string">'ellipsoid'</span>);
+0034     <span class="keyword">else</span>
+0035         <a href="../../../src/@S/S.html" class="code" title="">S</a> = struct;
+0036     <span class="keyword">end</span>
+0037     <span class="keyword">if</span> isfield(<a href="../../../src/@S/S.html" class="code" title="">S</a>,<span class="string">'ellipsoid'</span>)
+0038         x = S.ellipsoid(:,1); <a href="../../../src/@y/y.html" class="code" title="">y</a> = S.ellipsoid(:,2); z = S.ellipsoid(:,3);
+0039     <span class="keyword">else</span>
+0040         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z] = <a href="example_ellipsoid.html" class="code" title="function [x,y,z,x0,y0,z0] = example_ellipsoid">example_ellipsoid</a>;
+0041     <span class="keyword">end</span>
+0042     <span class="comment">%plot3(x,y,z,'b.');  % observed noisy data points</span>
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="comment">% compute a close-enough initial least-squares fit</span>
+0046 <span class="comment">%p_im = ellipsoidfit_direct(x,y,z);  % always fits an ellipsoid</span>
+0047 p_im = <a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);  <span class="comment">% always fits an ellipsoid, closer to maximum likelihood</span>
+0048 [center,radii,quat] = <a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>(p_im);
+0049 pinit = [center;radii;quat];
+0050 
+0051 opts = optimset( <span class="keyword">...</span>
+0052     <span class="keyword">...</span><span class="comment"> %'Algorithm', 'levenberg-marquardt', ...</span>
+0053     <span class="string">'DerivativeCheck'</span>, <span class="string">'on'</span>, <span class="keyword">...</span>
+0054     <span class="string">'Display'</span>, <span class="string">'off'</span>, <span class="keyword">...</span>
+0055     <span class="string">'Jacobian'</span>, <span class="string">'off'</span>);
+0056 
+0057 lb_center = [-Inf,-Inf,-Inf];
+0058 ub_center = [Inf,Inf,Inf];
+0059 lb_radii = [0,0,0];
+0060 ub_radii = [Inf,Inf,Inf];
+0061 lb_quat = [0,-1,-1,-1];  <span class="comment">% resolve sign ambiguity in quaternion representation</span>
+0062 ub_quat = [1,1,1,1];
+0063 lb = [lb_center,lb_radii,lb_quat];
+0064 ub = [ub_center,ub_radii,ub_quat];
+0065 
+0066 fun = @(p) <a href="#_sub2" class="code" title="subfunction [d,ddp] = ellipsoidfit_distance(x,y,z,p)">ellipsoidfit_distance</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,p);
+0067 [pe,e] = lsqnonlin(fun, pinit, lb, ub, opts);
+0068 
+0069 <span class="keyword">if</span> nargout &gt;= 1
+0070     [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = <a href="#_sub1" class="code" title="subfunction [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = ellipsoid_deal(p)">ellipsoid_deal</a>(pe);
+0071     R = <a href="quat2rot.html" class="code" title="function A = quat2rot(q)">quat2rot</a>([q1,q2,q3,q4]);
+0072     p = <a href="ellipsoid_ex2im.html" class="code" title="function p = ellipsoid_ex2im(center, radii, R)">ellipsoid_ex2im</a>([cx,cy,cz],[ap,bp,cp],R);
+0073     e = e / numel(x);
+0074     <span class="keyword">if</span> nargout &gt; 2
+0075         d = <a href="#_sub2" class="code" title="subfunction [d,ddp] = ellipsoidfit_distance(x,y,z,p)">ellipsoidfit_distance</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,pe);
+0076     <span class="keyword">end</span>
+0077 <span class="keyword">else</span>
+0078     hold all;
+0079 
+0080     <span class="comment">%[cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = ellipsoid_deal(pinit);</span>
+0081     <span class="comment">%R = quat2rot([q1,q2,q3,q4]);</span>
+0082     <span class="comment">%plot_ellipsoid(cx,cy,cz,ap,bp,cp,R);  % plot initial fit</span>
+0083 
+0084     plot3(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,<span class="string">'b.'</span>);  <span class="comment">% observed noisy data points</span>
+0085     
+0086     [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = <a href="#_sub1" class="code" title="subfunction [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = ellipsoid_deal(p)">ellipsoid_deal</a>(pe);
+0087     R = <a href="quat2rot.html" class="code" title="function A = quat2rot(q)">quat2rot</a>([q1,q2,q3,q4]);
+0088     [xf,yf,zf] = <a href="ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z, [cx,cy,cz], [ap,bp,cp], R);
+0089     plot3(xf,yf,zf,<span class="string">'r.'</span>);  <span class="comment">% noise-free counterparts of noisy data points</span>
+0090     <a href="plot_ellipsoid.html" class="code" title="function plot_ellipsoid(cx,cy,cz,ap,bp,cp,R,varargin)">plot_ellipsoid</a>(cx,cy,cz,ap,bp,cp,R);  <span class="comment">% plot maximum likelihood fit of ellipse</span>
+0091     
+0092     hold off;
+0093 <span class="keyword">end</span>
+0094 
+0095 <a name="_sub1" href="#_subfunctions" class="code">function [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = ellipsoid_deal(p)</a>
+0096 
+0097 pcl = num2cell(p);
+0098 [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = pcl{:};
+0099 
+0100 <a name="_sub2" href="#_subfunctions" class="code">function [d,ddp] = ellipsoidfit_distance(x,y,z,p)</a>
+0101 <span class="comment">% Distance of points to ellipsoid defined with parameters center, axes and rotation.</span>
+0102 
+0103 [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = <a href="#_sub1" class="code" title="subfunction [cx,cy,cz,ap,bp,cp,q1,q2,q3,q4] = ellipsoid_deal(p)">ellipsoid_deal</a>(p);
+0104 R = <a href="quat2rot.html" class="code" title="function A = quat2rot(q)">quat2rot</a>([q1,q2,q3,q4]);
+0105 
+0106 <span class="comment">% get foot points</span>
+0107 [xf,yf,zf] = <a href="ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z, [cx,cy,cz], [ap,bp,cp], R);
+0108 
+0109 <span class="comment">% calculate distance from foot points</span>
+0110 d = realsqrt((x-xf).^2 + (<a href="../../../src/@y/y.html" class="code" title="">y</a>-yf).^2 + (z-zf).^2);
+0111 
+0112 <span class="comment">% use ellipse equation P = 0 for computing derivatives</span>
+0113 <span class="keyword">if</span> nargout &gt; 1  <span class="comment">% FIXME derivatives</span>
+0114     <span class="comment">% Jacobian matrix, i.e. derivatives w.r.t. parameters</span>
+0115     dPdp = [ <span class="keyword">...</span><span class="comment">  % Jacobian J is m-by-n, where m = numel(x) and n = numel(p)</span>
+0116     ];
+0117     dPdx = 0;
+0118     dPdy = 0;
+0119     
+0120     <span class="comment">% derivative of distance to foot point w.r.t. parameters</span>
+0121     ddp = bsxfun(@rdivide, dPdp, realsqrt(dPdx.^2 + dPdy.^2));
+0122 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

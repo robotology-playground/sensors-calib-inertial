@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pwmModel1Sym</title>
+  <meta name="keywords" content="pwmModel1Sym">
+  <meta name="description" content="pwmModel1Sym Computes the closed-form solution to linear regression">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Regressors -->
+<h1>pwmModel1Sym
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>pwmModel1Sym Computes the closed-form solution to linear regression</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function model = pwmModel1Sym( x,y ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">pwmModel1Sym Computes the closed-form solution to linear regression 
+   using the normal equations.
+   
+   \in x: column vector (function inputs)
+   \in y: column vector (measurements)
+   model.theta: fitted parametters
+   model.h: function handle, takes a column vector X as input</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Regressors.html" class="code" title="">Regressors</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function model = pwmModel1Sym( x,y )</a>
+0002 <span class="comment">%pwmModel1Sym Computes the closed-form solution to linear regression</span>
+0003 <span class="comment">%   using the normal equations.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   \in x: column vector (function inputs)</span>
+0006 <span class="comment">%   \in y: column vector (measurements)</span>
+0007 <span class="comment">%   model.theta: fitted parametters</span>
+0008 <span class="comment">%   model.h: function handle, takes a column vector X as input</span>
+0009 
+0010 <span class="comment">% checks...</span>
+0011 <span class="keyword">if</span> size(x,1) ~= size(<a href="../../src/@y/y.html" class="code" title="">y</a>,1) || ~iscolumn(<a href="../../src/@y/y.html" class="code" title="">y</a>)
+0012     error(<span class="string">'Badly formatted data!!'</span>);
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">% remove velocities too close to 0</span>
+0016 filtIdxes = abs(x)&gt;abs(max(x)/100);
+0017 <a href="../../src/@y/y.html" class="code" title="">y</a> = <a href="../../src/@y/y.html" class="code" title="">y</a>(filtIdxes);
+0018 x = x(filtIdxes);
+0019 
+0020 <span class="comment">% format X adding the column of ones</span>
+0021 M = @(dq) [ones(size(dq)) dq]
+0022 X = M(x);
+0023 
+0024 <span class="comment">% process positive velocities model</span>
+0025 model.theta = pinv(X'*X)*X'*<a href="../../src/@y/y.html" class="code" title="">y</a>;
+0026 model.h = @(vecX) M(vecX(:)) * model.theta;
+0027 
+0028 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

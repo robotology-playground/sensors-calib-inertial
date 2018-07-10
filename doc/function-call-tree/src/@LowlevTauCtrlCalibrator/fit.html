@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fit</title>
+  <meta name="keywords" content="fit">
+  <meta name="description" content="PHASE-2a/2b Fitting the model and plotting">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @LowlevTauCtrlCalibrator -->
+<h1>fit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PHASE-2a/2b Fitting the model and plotting</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function fit( obj,frictionOrKtau ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PHASE-2a/2b Fitting the model and plotting</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function fit( obj,frictionOrKtau )</a>
+0002 <span class="comment">%PHASE-2a/2b Fitting the model and plotting</span>
+0003 <span class="comment">%</span>
+0004 
+0005 <span class="comment">% select group of joints and respective part</span>
+0006 motorName = obj.expddMotorList{obj.state.currentMotorIdx};
+0007 part = obj.model.jointsDbase.getPartFromMotors(motorName);
+0008 
+0009 <span class="comment">% set init for the selected group of joints and respective part</span>
+0010 obj.init.(obj.initSection).taskSpecificParams.motorName = motorName;
+0011 obj.init.(obj.initSection).taskSpecificParams.frictionOrKtau = frictionOrKtau;
+0012 obj.init.(obj.initSection).calibedParts = part;
+0013 
+0014 <span class="comment">% 4/5 - Fit and plot the friction or Ktau model (depending on 'frictionOrKtau'</span>
+0015 <span class="comment">% parameter). The selection of the calibrated part - joint/motor group -</span>
+0016 <span class="comment">% friction vs ktau parameters is already set in the task specific</span>
+0017 <span class="comment">% parameters.</span>
+0018 obj.runCalibratorOrDiagnosis(obj.init,obj.model,@obj.calibrateSensors,obj.calibedSensorType);
+0019 
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

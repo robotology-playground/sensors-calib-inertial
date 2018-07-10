@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipse_im2kepler</title>
+  <meta name="keywords" content="ellipse_im2kepler">
+  <meta name="description" content="Cast ellipse defined with standard parameter vector to Kepler form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipse_im2kepler
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Cast ellipse defined with standard parameter vector to Kepler form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function varargout = ellipse_im2kepler(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Cast ellipse defined with standard parameter vector to Kepler form.
+ The general quadratic equation is a*x^2 + 2*b*x*y + c*y^2 + 2*d*x + 2*f*y + g = 0
+ where the standard parameter vector is [a 2*b c 2*d 2*f g].
+ In Kepler's form, the foci of an ellipse are (p1;p2) and (q1;q2) and 2*a is the major
+ axis such that the parameter vector is [p1 p2 q1 q2 a] and the ellipse is expressed
+ by the equation P = sqrt((x-p1)^2+(y-p2)^2) + sqrt((x-q1)^2+(y-q2)^2) - 2*a = 0.
+
+ See also: <a href="ellipse_kepler2im.html" class="code" title="function p = ellipse_kepler2im(varargin)">ellipse_kepler2im</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [p1,p2,q1,q2,semia] = ellipse_kepler(a,b,c,d,f,g)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = ellipse_im2kepler(varargin)</a>
+0002 <span class="comment">% Cast ellipse defined with standard parameter vector to Kepler form.</span>
+0003 <span class="comment">% The general quadratic equation is a*x^2 + 2*b*x*y + c*y^2 + 2*d*x + 2*f*y + g = 0</span>
+0004 <span class="comment">% where the standard parameter vector is [a 2*b c 2*d 2*f g].</span>
+0005 <span class="comment">% In Kepler's form, the foci of an ellipse are (p1;p2) and (q1;q2) and 2*a is the major</span>
+0006 <span class="comment">% axis such that the parameter vector is [p1 p2 q1 q2 a] and the ellipse is expressed</span>
+0007 <span class="comment">% by the equation P = sqrt((x-p1)^2+(y-p2)^2) + sqrt((x-q1)^2+(y-q2)^2) - 2*a = 0.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% See also: ellipse_kepler2im</span>
+0010 
+0011 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0012 
+0013 <span class="keyword">if</span> nargin &gt; 1
+0014     narginchk(6,6);
+0015     <span class="keyword">for</span> k = 1 : 6
+0016         validateattributes(varargin{k}, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0017     <span class="keyword">end</span>
+0018     [p1,p2,q1,q2,semia] = <a href="#_sub1" class="code" title="subfunction [p1,p2,q1,q2,semia] = ellipse_kepler(a,b,c,d,f,g)">ellipse_kepler</a>(varargin{:});
+0019     varargout = num2cell([p1,p2,q1,q2,semia]);
+0020 <span class="keyword">else</span>
+0021     narginchk(1,1);
+0022     p = varargin{1};
+0023     validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0024     p = p(:);
+0025     validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[6 1]});
+0026     [p1,p2,q1,q2,semia] = <a href="#_sub1" class="code" title="subfunction [p1,p2,q1,q2,semia] = ellipse_kepler(a,b,c,d,f,g)">ellipse_kepler</a>(p(1), 0.5*p(2), p(3), 0.5*p(4), 0.5*p(5), p(6));
+0027     varargout{1} = [p1,p2,q1,q2,semia];
+0028 <span class="keyword">end</span>
+0029 
+0030 <a name="_sub1" href="#_subfunctions" class="code">function [p1,p2,q1,q2,semia] = ellipse_kepler(a,b,c,d,f,g)</a>
+0031 <span class="comment">% Cast ellipse defined with standard parameter vector to Kepler form.</span>
+0032 
+0033 <span class="comment">% helper quantities</span>
+0034 N = 2*(a*f^2+c*d^2+g*b^2-2*b*d*f-a*c*g);
+0035 D = b^2-a*c;
+0036 <a href="../../../src/@S/S.html" class="code" title="">S</a> = realsqrt((a-c)^2+4*b^2);
+0037 
+0038 <span class="comment">% semi-axes</span>
+0039 ap = realsqrt( N/(D*(<a href="../../../src/@S/S.html" class="code" title="">S</a>-(a+c))) );
+0040 bp = realsqrt( N/(D*(-<a href="../../../src/@S/S.html" class="code" title="">S</a>-(a+c))) );
+0041 semia = max(ap,bp);
+0042 semib = min(ap,bp);
+0043 
+0044 <span class="comment">% center</span>
+0045 c1 = (c*d-b*f)/D;
+0046 c2 = (a*f-b*d)/D;
+0047 
+0048 <span class="comment">% angle of tilt</span>
+0049 <span class="keyword">if</span> b ~= 0
+0050     <span class="keyword">if</span> abs(a) &lt; abs(c)
+0051         phi = 0.5*acot((a-c)/(2*b));
+0052     <span class="keyword">else</span>
+0053         phi = 0.5*pi+0.5*acot((a-c)/(2*b));
+0054     <span class="keyword">end</span>
+0055 <span class="keyword">else</span>
+0056     <span class="keyword">if</span> abs(a) &lt; abs(c)
+0057         phi = 0;
+0058     <span class="keyword">else</span>  <span class="comment">% a &gt; c</span>
+0059         phi = 0.5*pi;
+0060     <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="comment">% distance of foci from center</span>
+0064 semic = realsqrt(semia^2-semib^2);
+0065 
+0066 <span class="comment">% coordinates of foci</span>
+0067 p1 = c1 + semic*cos(phi);
+0068 p2 = c2 + semic*sin(phi);
+0069 q1 = c1 - semic*cos(phi);
+0070 q2 = c2 - semic*sin(phi);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

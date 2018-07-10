@@ -1,0 +1,18 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  DataBase -> DataBase;
+  DataBase -> build;
+  DataBase -> getElemRowIdxList;
+  DataBase -> getMultiPropList;
+  DataBase -> getPropList;
+  DataBase -> setProp;
+  DataBase -> setPropList;
+
+  DataBase [URL="DataBase.html"];
+  build [URL="build.html"];
+  getElemRowIdxList [URL="getElemRowIdxList.html"];
+  getMultiPropList [URL="getMultiPropList.html"];
+  getPropList [URL="getPropList.html"];
+  setProp [URL="setProp.html"];
+  setPropList [URL="setPropList.html"];
+}

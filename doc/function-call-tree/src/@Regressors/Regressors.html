@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Regressors</title>
+  <meta name="keywords" content="Regressors">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Regressors -->
+<h1>Regressors
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Regressors.html" class="code" title="">Regressors</a>	</li><li><a href="frictionModel1Sym.html" class="code" title="function model = frictionModel1Sym( x,y )">frictionModel1Sym</a>	frictionModel1Sym Computes the closed-form solution to linear regression</li><li><a href="frictionModel2.html" class="code" title="function model = frictionModel2( x,y )">frictionModel2</a>	frictionModel2 Computes the closed-form solution to linear regression</li><li><a href="normalEquationAsym.html" class="code" title="function [ thetaPos,thetaNeg ] = normalEquationAsym( x,y )">normalEquationAsym</a>	NORMALEQUATION Computes the closed-form solution to linear regression</li><li><a href="pwmModel1Sym.html" class="code" title="function model = pwmModel1Sym( x,y )">pwmModel1Sym</a>	pwmModel1Sym Computes the closed-form solution to linear regression</li><li><a href="resampleDataAsym.html" class="code" title="function [ xs,ys ] = resampleDataAsym( thetaPos,thetaNeg,x,nSamples )">resampleDataAsym</a>	UNTITLED Summary of this function goes here</li><li><a href="resampleDataModel.html" class="code" title="function [ xs,ys ] = resampleDataModel( model,x,nSamples )">resampleDataModel</a>	UNTITLED Summary of this function goes here</li><li><a href="resampleDataSym.html" class="code" title="function [ xs,ys ] = resampleDataSym( theta,x,nSamples )">resampleDataSym</a>	UNTITLED Summary of this function goes here</li><li><a href="residuals.html" class="code" title="function resVec = residuals(thetaPos,thetaNeg,x,y)">residuals</a>	UNTITLED Summary of this function goes here</li><li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Regressors.html" class="code" title="">Regressors</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Regressors.html" class="code" title="">Regressors</a> &lt; handle
+0002     <span class="comment">%UNTITLED8 Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006     <span class="keyword">end</span>
+0007     
+0008     methods (Static=true)
+0009         [thetaPos,thetaNeg] = <a href="normalEquationAsym.html" class="code" title="function [ thetaPos,thetaNeg ] = normalEquationAsym( x,y )">normalEquationAsym</a>(x,<a href="../../src/@y/y.html" class="code" title="">y</a>);
+0010         
+0011         model = <a href="pwmModel1Sym.html" class="code" title="function model = pwmModel1Sym( x,y )">pwmModel1Sym</a>(x,<a href="../../src/@y/y.html" class="code" title="">y</a>);
+0012         
+0013         model = <a href="frictionModel1Sym.html" class="code" title="function model = frictionModel1Sym( x,y )">frictionModel1Sym</a>(x,<a href="../../src/@y/y.html" class="code" title="">y</a>);
+0014         
+0015         model = <a href="frictionModel2.html" class="code" title="function model = frictionModel2( x,y )">frictionModel2</a>(x,<a href="../../src/@y/y.html" class="code" title="">y</a>);
+0016         
+0017         [xs,ys] = <a href="resampleDataAsym.html" class="code" title="function [ xs,ys ] = resampleDataAsym( thetaPos,thetaNeg,x,nSamples )">resampleDataAsym</a>(thetaPos,thetaNeg,x,nSamples);
+0018         
+0019         [xs,ys] = <a href="resampleDataSym.html" class="code" title="function [ xs,ys ] = resampleDataSym( theta,x,nSamples )">resampleDataSym</a>(theta,x,nSamples);
+0020         
+0021         [xs,ys] = <a href="resampleDataModel.html" class="code" title="function [ xs,ys ] = resampleDataModel( model,x,nSamples )">resampleDataModel</a>(model,x,nSamples);
+0022         
+0023         resVec = <a href="residuals.html" class="code" title="function resVec = residuals(thetaPos,thetaNeg,x,y)">residuals</a>(thetaPos,thetaNeg,x,<a href="../../src/@y/y.html" class="code" title="">y</a>);
+0024     <span class="keyword">end</span>
+0025     
+0026 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

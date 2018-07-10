@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_ellipsoid_part</title>
+  <meta name="keywords" content="plot_ellipsoid_part">
+  <meta name="description" content="Plot ellipsoid specified with center, radii and rotation matrix.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>plot_ellipsoid_part
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Plot ellipsoid specified with center, radii and rotation matrix.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function plot_ellipsoid_part(cx,cy,cz,ap,bp,cp,R,x,y,z,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plot ellipsoid specified with center, radii and rotation matrix.
+
+ Input arguments:
+ cx,cy,cz;
+    x, y and z coodinate of ellipsoid center
+ ap,bp,cp;
+    ellipsoid radii
+ R:
+    rotation matrix
+ varargin:
+    additional parameters as name-value pairs:
+    * EdgeColor: color
+    * AxesColor ['none'|color]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="nntrifaces.html" class="code" title="function f = nntrifaces(F, nn, x, y, z)">nntrifaces</a>	Nearest-neighbor triangle face vertex indices.</li><li><a href="sphere_gd.html" class="code" title="function F = sphere_gd(n, radius, center)">sphere_gd</a>	Construct a geodesic sphere.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>	Plot ellipsoid specified with implicit parameters.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plot_ellipsoid_part(cx,cy,cz,ap,bp,cp,R,x,y,z,varargin)</a>
+0002 <span class="comment">% Plot ellipsoid specified with center, radii and rotation matrix.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% cx,cy,cz;</span>
+0006 <span class="comment">%    x, y and z coodinate of ellipsoid center</span>
+0007 <span class="comment">% ap,bp,cp;</span>
+0008 <span class="comment">%    ellipsoid radii</span>
+0009 <span class="comment">% R:</span>
+0010 <span class="comment">%    rotation matrix</span>
+0011 <span class="comment">% varargin:</span>
+0012 <span class="comment">%    additional parameters as name-value pairs:</span>
+0013 <span class="comment">%    * EdgeColor: color</span>
+0014 <span class="comment">%    * AxesColor ['none'|color]</span>
+0015 
+0016 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0017 
+0018 <span class="comment">% generate surface mesh for sphere</span>
+0019 F = <a href="sphere_gd.html" class="code" title="function F = sphere_gd(n, radius, center)">sphere_gd</a>(6,1);
+0020 X = reshape(F, 3, numel(F)/3);
+0021 
+0022 <span class="comment">% scale surface mesh</span>
+0023 X = diag([ap,bp,cp])*X;
+0024 
+0025 <span class="comment">% rotate surface mesh</span>
+0026 X = R'*X;
+0027 
+0028 <span class="comment">% add center offset</span>
+0029 X = bsxfun(@plus, X, [cx;cy;cz]);
+0030 
+0031 <span class="comment">% find nearest neighbor face vertices on sphere surface</span>
+0032 F = reshape(X, 3, 3, size(F,3));
+0033 nn = 12;
+0034 f = <a href="nntrifaces.html" class="code" title="function f = nntrifaces(F, nn, x, y, z)">nntrifaces</a>(F, nn, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z);
+0035 
+0036 <span class="comment">% drop unused triangles</span>
+0037 vertices = reshape(1:3*size(F,3),3,size(F,3));  <span class="comment">% 3xn matrix of face indices</span>
+0038 vertices = vertices(:,f);
+0039 
+0040 <span class="comment">% draw surface</span>
+0041 set(gcf,<span class="string">'NextPlot'</span>,<span class="string">'add'</span>);
+0042 set(gca,<span class="string">'NextPlot'</span>,<span class="string">'add'</span>);
+0043 trisurf(transpose(vertices),X(1,:),X(2,:),X(3,:),zeros(1,size(X,2)), <span class="keyword">...</span>
+0044     <span class="string">'BackFaceLighting'</span>, <span class="string">'unlit'</span>);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

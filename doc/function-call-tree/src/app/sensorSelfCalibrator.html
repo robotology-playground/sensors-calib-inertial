@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sensorSelfCalibrator</title>
+  <meta name="keywords" content="sensorSelfCalibrator">
+  <meta name="description" content="Calibrates accelerometers, joint encoders using only self sensors">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html app -->
+<h1>sensorSelfCalibrator
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Calibrates accelerometers, joint encoders using only self sensors</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calibrates accelerometers, joint encoders using only self sensors
+ measurements. this application calibrates:
+ - accelerometers offsets/gains (full matrix 3x3)
+ - joint encoders offsets
+ - head IMU embedded accelerometers</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Calibrates accelerometers, joint encoders using only self sensors</span>
+0002 <span class="comment">% measurements. this application calibrates:</span>
+0003 <span class="comment">% - accelerometers offsets/gains (full matrix 3x3)</span>
+0004 <span class="comment">% - joint encoders offsets</span>
+0005 <span class="comment">% - head IMU embedded accelerometers</span>
+0006 <span class="comment">%</span>
+0007 
+0008 <span class="comment">% Add main folders in Matlab path</span>
+0009 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> generatePaths.m;
+0010 
+0011 <span class="comment">%% clear all variables and close all previous figures</span>
+0012 clear
+0013 close all
+0014 clc
+0015 
+0016 <span class="comment">%Clear static data</span>
+0017 clear classes;
+0018 
+0019 <span class="comment">% Create YARP Network device, for initializing YARP classes for communication</span>
+0020 yarp.Network.init();
+0021 
+0022 <span class="comment">% load application main interface parameters</span>
+0023 init = Init.load(<span class="string">'sensorSelfCalibratorInit'</span>);
+0024 
+0025 <span class="comment">% Create robot model. The model holds the robot name, the parameters</span>
+0026 <span class="comment">% extracted from the URDF model, the sensor calibration parameters and the</span>
+0027 <span class="comment">% joint/motor parameters (PWM to torque rate, friction parameters, ...).</span>
+0028 model = <a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>(init.modelName,init.modelPath,init.calibrationMapFile);
+0029 
+0030 <span class="comment">% Load last acquired data accessors from file</span>
+0031 <span class="keyword">if</span> exist(<span class="string">'lastAcqSensorDataAccessorMap.mat'</span>,<span class="string">'file'</span>) == 2
+0032     load(<span class="string">'lastAcqSensorDataAccessorMap.mat'</span>,<span class="string">'lastAcqSensorDataAccessorMap'</span>);
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">if</span> ~exist(<span class="string">'lastAcqSensorDataAccessorMap'</span>,<span class="string">'var'</span>)
+0035     lastAcqSensorDataAccessorMap = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0036 <span class="keyword">end</span>
+0037 
+0038 <span class="comment">% All below procedures are optional and checked/unchecked in the main</span>
+0039 <span class="comment">% interface parameters</span>
+0040 
+0041 isTaskScheduled = [<span class="keyword">...</span>
+0042     init.calibrateAccelerometers,<span class="keyword">...</span>
+0043     init.calibrateJointEncoders,<span class="keyword">...</span>
+0044     init.acquireSensorsTestData,<span class="keyword">...</span>
+0045     init.calibrateFTsensors,<span class="keyword">...</span>
+0046     init.calibrateGyroscopes,<span class="keyword">...</span>
+0047     init.calibrateLowLevTauCtrl];
+0048 
+0049 calibratorTasks = {<span class="keyword">...</span>
+0050     @AccelerometersCalibrator.instance,<span class="keyword">...</span>
+0051     @JointEncodersCalibrator.instance,<span class="keyword">...</span>
+0052     [],<span class="keyword">...</span>
+0053     [],<span class="keyword">...</span>
+0054     [],<span class="keyword">...</span>
+0055     @LowlevTauCtrlCalibrator.instance};
+0056 
+0057 <span class="comment">% filter activated tasks and parameters</span>
+0058 calibratorTasks = calibratorTasks(isTaskScheduled);
+0059 
+0060 <span class="comment">%% 1 - Run the calibrators: data acquisition, processing and diagnosis</span>
+0061 <span class="comment">%</span>
+0062 
+0063 <span class="keyword">for</span> cTaskAccessor = calibratorTasks
+0064     <span class="comment">% unwrap task accessor and get the calibrator singleton</span>
+0065     task = cTaskAccessor{1}();
+0066     task.run(init,model,lastAcqSensorDataAccessorMap);
+0067 <span class="keyword">end</span>
+0068 
+0069 
+0070 <span class="comment">%% Uninitialize yarp</span>
+0071 yarp.Network.fini();
+0072 
+0073 
+0074 <span class="comment">%%</span>
+0075 <span class="comment">%%===================================================================================</span>
+0076 <span class="comment">% Static local functions</span>
+0077 <span class="comment">%%===================================================================================</span>
+0078 
+0079 <span class="comment">% ...</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,33 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  LowlevTauCtrlCalibrator -> LowlevTauCtrlCalibrator;
+  LowlevTauCtrlCalibrator -> acquire;
+  LowlevTauCtrlCalibrator -> buildDataLoadingParams;
+  LowlevTauCtrlCalibrator -> calibrateSensors;
+  LowlevTauCtrlCalibrator -> defStatesFromDesc;
+  LowlevTauCtrlCalibrator -> fit;
+  LowlevTauCtrlCalibrator -> nextGroupTrans;
+  LowlevTauCtrlCalibrator -> plotModel;
+  LowlevTauCtrlCalibrator -> plotTrainingData;
+  LowlevTauCtrlCalibrator -> promptUser;
+  LowlevTauCtrlCalibrator -> run;
+  LowlevTauCtrlCalibrator -> savePlot;
+  LowlevTauCtrlCalibrator -> start;
+  plotTrainingData -> savePlot;
+  run -> run;
+  savePlot -> savePlot;
+
+  LowlevTauCtrlCalibrator [URL="LowlevTauCtrlCalibrator.html"];
+  acquire [URL="acquire.html"];
+  buildDataLoadingParams [URL="buildDataLoadingParams.html"];
+  calibrateSensors [URL="calibrateSensors.html"];
+  defStatesFromDesc [URL="defStatesFromDesc.html"];
+  fit [URL="fit.html"];
+  nextGroupTrans [URL="nextGroupTrans.html"];
+  plotModel [URL="plotModel.html"];
+  plotTrainingData [URL="plotTrainingData.html"];
+  promptUser [URL="promptUser.html"];
+  run [URL="run.html"];
+  savePlot [URL="savePlot.html"];
+  start [URL="start.html"];
+}

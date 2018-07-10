@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of seqMap2runner</title>
+  <meta name="keywords" content="seqMap2runner">
+  <meta name="description" content="UNTITLED2 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotionSequencer -->
+<h1>seqMap2runner
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED2 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function runSeq = seqMap2runner( obj,seqParamsMap ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED2 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function rowVecConcat = struct2cellConcat(aStruct)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function runSeq = seqMap2runner( obj,seqParamsMap )</a>
+0002 <span class="comment">%UNTITLED2 Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% build the array with all the expanded key labels and the associated</span>
+0006 <span class="comment">% tables. 1 key/value of 'seqParamsMap' =&gt; 1 line of result array formated</span>
+0007 <span class="comment">% as follows:</span>
+0008 <span class="comment">% key &lt;-- seqParamsMap.keys{i}</span>
+0009 <span class="comment">% &lt;action&gt;,&lt;sensor&gt;,&lt;part&gt; &lt;-- expand(key)</span>
+0010 <span class="comment">% sequence{i,:} &lt;-- &lt;action&gt;,&lt;sensor&gt;,&lt;part&gt;,seqParamsMap(key)</span>
+0011 <span class="keyword">for</span> cellKey = seqParamsMap.keys
+0012     key = cellKey{:};
+0013     <span class="comment">% expand key into labels</span>
+0014     dict = SequenceParams.labelKeys2ActSensPart;
+0015     keyLabels = dict(key);
+0016     <span class="comment">% set the resulting field of the result array to the value seqParamsMap(key)</span>
+0017     runSeq.(keyLabels{1}).(keyLabels{2}).(keyLabels{3}) = seqParamsMap(key).val;
+0018 <span class="keyword">end</span>
+0019 
+0020 <span class="comment">% list of parts for control</span>
+0021 runSeq.ctrl.part = fieldnames(runSeq.ctrl.pos)';
+0022 <span class="comment">% reshape 'pos'</span>
+0023 runSeq.ctrl.pos = <a href="#_sub1" class="code" title="subfunction rowVecConcat = struct2cellConcat(aStruct)">struct2cellConcat</a>(runSeq.ctrl.pos);
+0024 <span class="comment">% reshape 'vel'</span>
+0025 <span class="keyword">if</span> ismember(<span class="string">'vel'</span>,fieldnames(runSeq.ctrl))
+0026     runSeq.ctrl.vel = <a href="#_sub1" class="code" title="subfunction rowVecConcat = struct2cellConcat(aStruct)">struct2cellConcat</a>(runSeq.ctrl.vel);
+0027 <span class="keyword">else</span>
+0028     runSeq.ctrl.vel = runSeq.ctrl.pos;
+0029     [runSeq.ctrl.vel{:}] = deal([]);
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="keyword">if</span> ismember(<span class="string">'meas'</span>,fieldnames(runSeq))
+0033     <span class="comment">% list of sensors for measurements</span>
+0034     runSeq.meas.sensor = fieldnames(runSeq.meas)';
+0035     <span class="comment">% list of parts and 'acquire' flag for measurements</span>
+0036     [runSeq.meas.part,runSeq.meas.acquire] = cellfun(<span class="keyword">...</span>
+0037         @(sensor) deal(<span class="keyword">...</span>
+0038         fieldnames(runSeq.meas.(sensor))',<span class="keyword">...</span>
+0039         cell2mat(<a href="#_sub1" class="code" title="subfunction rowVecConcat = struct2cellConcat(aStruct)">struct2cellConcat</a>(runSeq.meas.(sensor)))),<span class="keyword">...</span>
+0040         runSeq.meas.sensor,<span class="keyword">...</span>
+0041         <span class="string">'UniformOutput'</span>,false);
+0042     <span class="comment">% remove obsolete fields</span>
+0043     <span class="keyword">for</span> cField = runSeq.meas.sensor
+0044         field = cField{:};
+0045         runSeq.meas = rmfield(runSeq.meas,field);
+0046     <span class="keyword">end</span>
+0047     <span class="comment">% set logger function</span>
+0048     runSeq.logCmd = obj.logCmd;
+0049 <span class="keyword">else</span>
+0050     runSeq.meas.sensor = {}; runSeq.meas.part = {}; runSeq.meas.acquire = {};
+0051     <span class="comment">% set logger function</span>
+0052     runSeq.logCmd = obj.dummyCmd;
+0053 <span class="keyword">end</span>
+0054 
+0055 <span class="keyword">if</span> ismember(<span class="string">'calib'</span>,fieldnames(runSeq))
+0056     <span class="comment">% list of calibrated sensor modalities</span>
+0057     runSeq.calib.sensor = fieldnames(runSeq.calib)';
+0058     <span class="comment">% list of calibrated parts</span>
+0059     runSeq.calib.part = cellfun(<span class="keyword">...</span>
+0060         @(sensor) fieldnames(runSeq.calib.(sensor))',<span class="keyword">...</span>
+0061         runSeq.calib.sensor,<span class="keyword">...</span>
+0062         <span class="string">'UniformOutput'</span>,false);
+0063     <span class="comment">% remove obsolete fields</span>
+0064     <span class="keyword">for</span> cField = runSeq.calib.sensor
+0065         field = cField{:};
+0066         runSeq.calib = rmfield(runSeq.calib,field);
+0067     <span class="keyword">end</span>
+0068     <span class="comment">% set logger function</span>
+0069     runSeq.logCmd = obj.logCmd;
+0070 <span class="keyword">else</span>
+0071     runSeq.calib.sensor = {}; runSeq.calib.part = {};
+0072     <span class="comment">% set logger function</span>
+0073     runSeq.logCmd = obj.dummyCmd;
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="keyword">if</span> ismember(<span class="string">'pwmctrl'</span>,fieldnames(runSeq))
+0077     <span class="comment">% list of join/motor groups</span>
+0078     runSeq.pwmctrl.motor = cell2mat(fieldnames(runSeq.pwmctrl.pwm));
+0079     <span class="comment">% reshape 'pwm'</span>
+0080     runSeq.pwmctrl.pwm = <a href="#_sub1" class="code" title="subfunction rowVecConcat = struct2cellConcat(aStruct)">struct2cellConcat</a>(runSeq.pwmctrl.pwm);
+0081 <span class="keyword">end</span>
+0082 
+0083 <span class="comment">% Mode handling</span>
+0084 <span class="keyword">if</span> ismember(<span class="string">'mode'</span>,fieldnames(runSeq))
+0085     <span class="comment">% copy respective content</span>
+0086     runSeq.mode = runSeq.mode.NA.NA;
+0087 <span class="keyword">else</span>
+0088     <span class="comment">% default value</span>
+0089     runSeq.mode = cell(size(runSeq.ctrl.pos,1),1);
+0090     runSeq.mode(:) = {<span class="string">'ctrl'</span>};
+0091 <span class="keyword">end</span>
+0092 
+0093 <span class="comment">% Prompt handling</span>
+0094 <span class="keyword">if</span> ismember(<span class="string">'prpt'</span>,fieldnames(runSeq))
+0095     <span class="comment">% copy respective content</span>
+0096     runSeq.prpt = runSeq.prpt.NA.NA;
+0097 <span class="keyword">else</span>
+0098     <span class="comment">% default value</span>
+0099     runSeq.prpt = cell(size(runSeq.ctrl.pos,1),1);
+0100     runSeq.prpt(:) = {@() []};
+0101 <span class="keyword">end</span>
+0102 
+0103 <span class="keyword">end</span>
+0104 
+0105 <a name="_sub1" href="#_subfunctions" class="code">function rowVecConcat = struct2cellConcat(aStruct)</a>
+0106 
+0107 cellArray=struct2cell(aStruct);
+0108 rowVecConcat = [cellArray{:}];
+0109 
+0110 <span class="keyword">end</span>
+0111 
+0112 
+0113 <span class="comment">% % EXAMPLE 1</span>
+0114 <span class="comment">%</span>
+0115 <span class="comment">% runSeq.calib.sensor = {'joint'};</span>
+0116 <span class="comment">%</span>
+0117 <span class="comment">% runSeq.calib.part = {{'right_arm','head'}};</span>
+0118 <span class="comment">%</span>
+0119 <span class="comment">% runSeq.ctrl.part = {'right_arm','head'};</span>
+0120 <span class="comment">%</span>
+0121 <span class="comment">% runSeq.ctrl.pos = {...</span>
+0122 <span class="comment">%     [  0 45 -23 50 0 0 0],[0 0 0];...</span>
+0123 <span class="comment">%     [  0 45  49 50 0 0 0],[0 0 0];...</span>
+0124 <span class="comment">%     [  0 45   0 50 0 0 0],[0 0 0];...</span>
+0125 <span class="comment">%     [-20 30 -30 90 0 0 0],[0 0 0];...</span>
+0126 <span class="comment">%     [-20 30 -30  0 0 0 0],[0 0 0];...</span>
+0127 <span class="comment">%     [-20 30 -30 90 0 0 0],[0 0 0];...</span>
+0128 <span class="comment">%     [ 0  45   0 50 0 0 0],[0 0 0];...</span>
+0129 <span class="comment">%     [ 0  45   0 50 0 0 0],[0 0 0]};</span>
+0130 <span class="comment">%</span>
+0131 <span class="comment">% runSeq.ctrl.vel = {</span>
+0132 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10];...</span>
+0133 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10];...</span>
+0134 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10];...</span>
+0135 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10];...</span>
+0136 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10];...</span>
+0137 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10];...</span>
+0138 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10];...</span>
+0139 <span class="comment">%     [10 10 10 10 10 10 10],[10 10 10]};</span>
+0140 <span class="comment">%</span>
+0141 <span class="comment">% runSeq.meas.sensor = {'joint','acc','imu'};</span>
+0142 <span class="comment">%</span>
+0143 <span class="comment">% runSeq.meas.part = {...</span>
+0144 <span class="comment">%     {'right_arm','torso','head'},...</span>
+0145 <span class="comment">%     {'right_arm'},...</span>
+0146 <span class="comment">%     {'head'}};</span>
+0147 <span class="comment">%</span>
+0148 <span class="comment">% runSeq.meas.acquire = {...</span>
+0149 <span class="comment">%     {...</span>
+0150 <span class="comment">%     [true       ,true       ,false      ];...</span>
+0151 <span class="comment">%     [true       ,true       ,true       ];...</span>
+0152 <span class="comment">%     [true       ,true       ,true       ];...</span>
+0153 <span class="comment">%     [false      ,true       ,true       ];...</span>
+0154 <span class="comment">%     [true       ,true       ,false      ];...</span>
+0155 <span class="comment">%     [true       ,true       ,false      ];...</span>
+0156 <span class="comment">%     [false      ,false      ,false      ];...</span>
+0157 <span class="comment">%     [false      ,false      ,false      ]},...</span>
+0158 <span class="comment">%     {...</span>
+0159 <span class="comment">%     [true       ];...</span>
+0160 <span class="comment">%     [true       ];...</span>
+0161 <span class="comment">%     [true       ];...</span>
+0162 <span class="comment">%     [false      ];...</span>
+0163 <span class="comment">%     [true       ];...</span>
+0164 <span class="comment">%     [true       ];...</span>
+0165 <span class="comment">%     [false      ];...</span>
+0166 <span class="comment">%     [false      ]},...</span>
+0167 <span class="comment">%     {...</span>
+0168 <span class="comment">%     [false      ];...</span>
+0169 <span class="comment">%     [true       ];...</span>
+0170 <span class="comment">%     [true       ];...</span>
+0171 <span class="comment">%     [true       ];...</span>
+0172 <span class="comment">%     [false      ];...</span>
+0173 <span class="comment">%     [false      ];...</span>
+0174 <span class="comment">%     [false      ];...</span>
+0175 <span class="comment">%     [false      ]}};</span>
+0176 
+0177 <span class="comment">% % EXAMPLE 2</span>
+0178 <span class="comment">%</span>
+0179 <span class="comment">% runSeq.calib.sensor = {'LLTctrl'};</span>
+0180 <span class="comment">%</span>
+0181 <span class="comment">% runSeq.calib.part = {{'right_arm'}};</span>
+0182 <span class="comment">%</span>
+0183 <span class="comment">% runSeq.ctrl.part = {'right_arm'};</span>
+0184 <span class="comment">%</span>
+0185 <span class="comment">% runSeq.ctrl.pos = {...</span>
+0186 <span class="comment">%     [  0 45 -23 50 0 0 0];...</span>
+0187 <span class="comment">%     [  0 45  49 50 0 0 0]};</span>
+0188 <span class="comment">%</span>
+0189 <span class="comment">% runSeq.ctrl.vel = {</span>
+0190 <span class="comment">%     [10 10 10 10 10 10 10];...</span>
+0191 <span class="comment">%     [10 10 10 10 10 10 10]};</span>
+0192 <span class="comment">%</span>
+0193 <span class="comment">% runSeq.pwmctrl.motor = 'r_shoulder_grp';</span>
+0194 <span class="comment">%</span>
+0195 <span class="comment">% runSeq.pwmctrl.pwm = {</span>
+0196 <span class="comment">%     0;...</span>
+0197 <span class="comment">%     0};</span>
+0198 <span class="comment">%</span>
+0199 <span class="comment">% runSeq.mode = {</span>
+0200 <span class="comment">%     'ctrl';...</span>
+0201 <span class="comment">%     'pwmctrl'};</span>
+0202 <span class="comment">%</span>
+0203 <span class="comment">% runSeq.prpt = {</span>
+0204 <span class="comment">%     @() [];...</span>
+0205 <span class="comment">%     @() 'some text'};</span>
+0206 <span class="comment">%</span>
+0207 <span class="comment">% runSeq.meas.sensor = {'joint','jtorq'};</span>
+0208 <span class="comment">%</span>
+0209 <span class="comment">% runSeq.meas.part = {...</span>
+0210 <span class="comment">%     {'right_arm'},...</span>
+0211 <span class="comment">%     {'right_arm'}};</span>
+0212 <span class="comment">%</span>
+0213 <span class="comment">% runSeq.meas.acquire = {...</span>
+0214 <span class="comment">%     {...</span>
+0215 <span class="comment">%     [false      ];...</span>
+0216 <span class="comment">%     [true       ]},...</span>
+0217 <span class="comment">%     {...</span>
+0218 <span class="comment">%     [false      ];...</span>
+0219 <span class="comment">%     [true       ]}};</span>
+0220</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

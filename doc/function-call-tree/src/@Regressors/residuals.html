@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of residuals</title>
+  <meta name="keywords" content="residuals">
+  <meta name="description" content="UNTITLED Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Regressors -->
+<h1>residuals
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function resVec = residuals(thetaPos,thetaNeg,x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Regressors.html" class="code" title="">Regressors</a>	</li><li><a href="../../src/utils/quadfit/circlefit.html" class="code" title="function [center,radius,residuals] = circlefit(x,y)">circlefit</a>	Fit a circle to data using the least squares approach.</li><li><a href="../../src/utils/quadfit/spherefit.html" class="code" title="function [center,radius,residuals] = spherefit(x,y,z)">spherefit</a>	Fit a sphere to data using the least squares approach.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function resVec = residuals(thetaPos,thetaNeg,x,y)</a>
+0002 <span class="comment">%UNTITLED Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% format X adding the column of ones</span>
+0006 Xs = [ones(length(x),1) x];
+0007 ys = zeros(length(x),1);
+0008 
+0009 <span class="comment">% process positive velocities model</span>
+0010 Xpos = Xs(Xs(:,2)&gt;=0,:);
+0011 ys(Xs(:,2)&gt;=0) = Xpos*thetaPos;
+0012 
+0013 <span class="comment">% process negative velocities model</span>
+0014 Xneg = Xs(Xs(:,2)&lt;0,:);
+0015 ys(Xs(:,2)&lt;0) = Xneg*thetaNeg;
+0016 
+0017 resVec = <a href="../../src/@y/y.html" class="code" title="">y</a>-ys;
+0018 
+0019 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

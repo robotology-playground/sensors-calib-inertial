@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Angle</title>
+  <meta name="keywords" content="Angle">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html utils -->
+<h1>Angle
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Angle.html" class="code" title="">Angle</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Angle.html" class="code" title="">Angle</a>	</li><li><a href="AngleVector.html" class="code" title="">AngleVector</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function angle = va2vb(va,vb)</a></li><li><a href="#_sub2" class="code">function obj = Angle(rawVec)</a></li><li><a href="#_sub3" class="code">function setGravRef(obj,rawVec)</a></li><li><a href="#_sub4" class="code">function normVecAngle2ref = computeNormAngle2ref(obj,rawVec)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Angle.html" class="code" title="">Angle</a> &lt; handle
+0002     <span class="comment">%UNTITLED2 Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         refVec;
+0007         acc_gain = 5.9855e-04;
+0008         refNorm;
+0009     <span class="keyword">end</span>
+0010     
+0011     methods(Static)
+0012         <span class="comment">% Compute angle from vector va to vector vb</span>
+0013         <span class="comment">% Oriented angle axis support = va x vb</span>
+0014         <a name="_sub0" href="#_subfunctions" class="code">function angle = va2vb(va,vb)</a>
+0015             va = va(:); vb = vb(:);
+0016             sinAngle = norm(cross(va,vb),2)/(norm(va,2)*norm(vb,2));
+0017             cosAngle = (va'*vb)/(norm(va,2)*norm(vb,2));
+0018             angle = atan2(sinAngle,cosAngle);
+0019         <span class="keyword">end</span>
+0020     <span class="keyword">end</span>
+0021     
+0022     methods
+0023         <span class="comment">% Constructor. Sets ref vector vector from rawVec</span>
+0024         <a name="_sub1" href="#_subfunctions" class="code">function obj = Angle(rawVec)</a>
+0025             obj.setGravRef(rawVec);
+0026         <span class="keyword">end</span>
+0027         
+0028         <span class="comment">% Set ref vector from rawVec</span>
+0029         <a name="_sub2" href="#_subfunctions" class="code">function setGravRef(obj,rawVec)</a>
+0030             obj.refVec = rawVec'*obj.acc_gain;
+0031             obj.refNorm = norm(obj.refVec);
+0032         <span class="keyword">end</span>
+0033         
+0034         <span class="comment">% Compute the raw vector norm (as an acceleration) and</span>
+0035         <span class="comment">% the angle to ref vector</span>
+0036         <a name="_sub3" href="#_subfunctions" class="code">function normVecAngle2ref = computeNormAngle2ref(obj,rawVec)</a>
+0037             <span class="comment">% convert raw vector to acceleration vector</span>
+0038             vec = rawVec'*obj.acc_gain;
+0039             <span class="comment">% compute norm</span>
+0040             normVec = norm(vec,2);
+0041             <span class="comment">% compute angle</span>
+0042             angle = Angle.va2vb(obj.refVec,vec);
+0043             angle2ref = angle*180/pi;
+0044             normVecAngle2ref = [normVec angle2ref]';
+0045         <span class="keyword">end</span>
+0046     <span class="keyword">end</span>
+0047     
+0048 <span class="keyword">end</span>
+0049</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

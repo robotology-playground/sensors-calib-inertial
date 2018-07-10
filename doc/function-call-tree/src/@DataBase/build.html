@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of build</title>
+  <meta name="keywords" content="build">
+  <meta name="description" content="build Creates the mappings between properties and keys, as well as the">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @DataBase -->
+<h1>build
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>build Creates the mappings between properties and keys, as well as the</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function success = build(obj) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">build Creates the mappings between properties and keys, as well as the
+accessors.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DataBase.html" class="code" title="">DataBase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function success = build(obj)</a>
+0002 <span class="comment">%build Creates the mappings between properties and keys, as well as the</span>
+0003 <span class="comment">%accessors.</span>
+0004 
+0005 <span class="comment">%% check structure consistency before building database</span>
+0006 <span class="comment">% all property names or keys are char vectors</span>
+0007 <span class="keyword">if</span> ~iscellstr(obj.propNameList)
+0008     error(<span class="string">'Property names list should all be char type.'</span>);
+0009 <span class="keyword">end</span>
+0010 <span class="comment">% keys list is a subset of property names list</span>
+0011 <span class="keyword">if</span> ~all(ismember(obj.propKeyList,obj.propNameList))
+0012     error(<span class="string">'One of the keys is not present in the properties names list.'</span>);
+0013 <span class="keyword">end</span>
+0014 <span class="comment">% size mismatch</span>
+0015 <span class="keyword">if</span> ~all(size(obj.propNameList) == [1 size(obj.propValueList,2)])
+0016     error(<span class="string">'property names and property values lists sizes mismatch'</span>);
+0017 <span class="keyword">end</span>
+0018 
+0019 obj.nbNames = length(obj.propNameList);
+0020 obj.nbElems = size(obj.propValueList,1);
+0021 
+0022 <span class="comment">%% build database</span>
+0023 
+0024 <span class="comment">% map the property names to column indexes</span>
+0025 obj.name2colIdx = containers.Map(obj.propNameList,num2cell(1:obj.nbNames));
+0026 
+0027 <span class="comment">% init the list of func handles mapping the property value to the row idx</span>
+0028 obj.name2rowIdxHandleList = cell(size(obj.propNameList));
+0029 
+0030 <span class="comment">% Define the mapper functions. We first define a mapper function</span>
+0031 <span class="comment">% 'isMemberAllT()' returning 2 quantities as the function 'ismember()':</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% [isAinB,locInB] = isMemberAllT(A,B)</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">% As for 'ismember', we have...</span>
+0036 <span class="comment">% 'isAinB': array of the same size as A containing [true] where the elements</span>
+0037 <span class="comment">% of A are in B and [false] otherwise.</span>
+0038 <span class="comment">% 'locInB': array containing the absolute index in B for each element in A</span>
+0039 <span class="comment">% which is a member of B and 0 if A is not a member of B.</span>
+0040 <span class="comment">%</span>
+0041 <span class="comment">% The function works exactly like 'ismember()' except that it supports the</span>
+0042 <span class="comment">% types 'char', 'double' (numeric) and 'object'. For objects, we only</span>
+0043 <span class="comment">% support querying one at a time, so B will hold a single element in that</span>
+0044 <span class="comment">% case. In general, A is the list where to find the elements ('dBaseList')</span>
+0045 <span class="comment">% and B the list of elements to locate ('queryList'). We would then define</span>
+0046 <span class="comment">% isMemberAllT(A,B) depending on the type of the elements in 'dBaseList':</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">% char   : isMemberAllT = @(dBaseList,queryList) ismember(dBaseList,queryList);</span>
+0049 <span class="comment">% numeric: isMemberAllT = @(dBaseList,queryList) ismember(cell2mat(dBaseList),cell2mat(queryList));</span>
+0050 <span class="comment">% object : isMemberAllT = @(dBaseList,queryElem) eq(queryElem,[dBaseList{:}]);</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">% In fine, a mapping function is defined for each property name (column list</span>
+0053 <span class="comment">% 'dBaseList') and includes the 'dBaseList' in its definition:</span>
+0054 <span class="comment">%</span>
+0055 <span class="comment">% mapperFuncH = @(queryList) isMemberAllT(dBaseList,queryList)</span>
+0056 <span class="comment">%</span>
+0057 
+0058 
+0059 <span class="comment">% go across the first line of the prop values list and set the function</span>
+0060 <span class="comment">% handles according to the elements type.</span>
+0061 <span class="keyword">for</span> propValue = [obj.propValueList(1,:);num2cell(1:obj.nbNames)]
+0062     <span class="comment">% extract current prop value, and current index</span>
+0063     value = propValue{1}; valueIdx = propValue{2};
+0064     dBaseList = obj.propValueList(:,valueIdx);
+0065     <span class="comment">% select mapper func handle according to the type</span>
+0066     <span class="keyword">if</span> ischar(value)
+0067         mapperFuncH = @(queryList) ismember(dBaseList,queryList);
+0068     <span class="keyword">elseif</span> isnumeric(value)
+0069         mapperFuncH = @(queryList) ismember(cell2mat(dBaseList),cell2mat(queryList));
+0070     <span class="keyword">elseif</span> isobject(value)
+0071         mapperFuncH = @(queryElem) eq(queryElem{:},[dBaseList{:}]);
+0072     <span class="keyword">else</span> <span class="comment">% default</span>
+0073         mapperFuncH = @(queryList) ismember(dBaseList,queryList);
+0074     <span class="keyword">end</span>
+0075     
+0076     <span class="comment">% set the list of handles</span>
+0077     obj.name2rowIdxHandleList{valueIdx} = mapperFuncH;
+0078 <span class="keyword">end</span>
+0079 
+0080 <span class="comment">% %=== keys special use case ===========: TO BE CHECKED (order of selected lines)</span>
+0081 <span class="comment">% % get the indexes of the key props and update the respective func handles</span>
+0082 <span class="comment">% keyIdxes = cell2mat(obj.name2colIdx.values(obj.propKeyList));</span>
+0083 <span class="comment">% % map the keys to line indexes and set the key map handles</span>
+0084 <span class="comment">% for keyIdx = keyIdxes(:)'</span>
+0085 <span class="comment">%     % get the values for current key</span>
+0086 <span class="comment">%     values = obj.propValueList(:,keyIdx);</span>
+0087 <span class="comment">%     % build the mapping</span>
+0088 <span class="comment">%     key2linIdx = containers.Map(values,num2cell(1:obj.nbElems));</span>
+0089 <span class="comment">%     % set mapping handle in the list</span>
+0090 <span class="comment">%     mapperFuncH = @(queryList) cell2mat(key2linIdx.values(queryList));</span>
+0091 <span class="comment">%     obj.name2rowIdxHandleList{keyIdx} = mapperFuncH;</span>
+0092 <span class="comment">% end</span>
+0093 
+0094 <span class="comment">% update database state</span>
+0095 obj.ready = true;
+0096 success = true;
+0097 
+0098 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of JointsDbase</title>
+  <meta name="keywords" content="JointsDbase">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointsDbase -->
+<h1>JointsDbase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@DataBase/DataBase.html" class="code" title="">DataBase</a>	</li><li><a href="JointsDbase.html" class="code" title="">JointsDbase</a>	</li><li><a href="getAxesIdxesFromCtrlBoard.html" class="code" title="function [ AxesIdxes ] = getAxesIdxesFromCtrlBoard( obj,axesType,jointOrMotorNameList )">getAxesIdxesFromCtrlBoard</a>	Get the joint index as mapped in the motors control board server.</li><li><a href="getCpldJointSharingIdx.html" class="code" title="function jointNameList = getCpldJointSharingIdx( obj,motorNameList )">getCpldJointSharingIdx</a>	Get joints sharing the same indexes as the given motors</li><li><a href="getCpldMotorSharingIdx.html" class="code" title="function motorNameList = getCpldMotorSharingIdx( obj,jointNameList )">getCpldMotorSharingIdx</a>	Get motors sharing the same indexes as the given joints</li><li><a href="getJMcouplingFromCtrlBoard.html" class="code" title="function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM ] =getJMcouplingFromCtrlBoard( joint2coupling,robotYarpPortPrefix,part,jointName )">getJMcouplingFromCtrlBoard</a>	Get the joint/motor coupling info from the control board server.</li><li><a href="getJMcouplings.html" class="code" title="function jmCouplings = getJMcouplings( obj,inputType,jointOrMotorNameList )">getJMcouplings</a>	Get the list of joint/motor couplings connected to the joints or motors in 'jointOrMotorNameList'</li><li><a href="getJointNames.html" class="code" title="function jointNameList = getJointNames( obj,part )">getJointNames</a>	getJointNames Get joints names from a given part</li><li><a href="getJointsMaxCalibDq0.html" class="code" title="function MaxDq0col = getJointsMaxCalibDq0( obj,jointList )">getJointsMaxCalibDq0</a>	getJointsMaxCalibDq0 Get the calibration init point Dq0 vector for a given list of joints</li><li><a href="getMotorGearboxRatioNfullscale.html" class="code" title="function [ gearboxDqM2Jratio,fullscalePWM ] = getMotorGearboxRatioNfullscale( obj,motorNameList )">getMotorGearboxRatioNfullscale</a>	Get the gearbox ratios and fullscale values for a given list of motors</li><li><a href="getPartFromMotors.html" class="code" title="function parts = getPartFromMotors( obj,motorNameList )">getPartFromMotors</a>	Get part names holding the motors</li><li><a href="getTotalJointDoF.html" class="code" title="function totalDoF = getTotalJointDoF( obj,jointList )">getTotalJointDoF</a>	getTotalJointDoF Get the total DoF from a given list of joints</li><li><a href="setAllJointsMaxCalibDq0.html" class="code" title="function success = setAllJointsMaxCalibDq0( obj,maxDq0 )">setAllJointsMaxCalibDq0</a>	setAllJointsMaxCalibDq0 Set maximum Dq0 (required by the optimisation solver) for all joints</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointsDbase.html" class="code" title="">JointsDbase</a>	</li><li><a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = JointsDbase(iDynTreeModelFromURDF,link2partH,robotYarpPortPrefix)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="JointsDbase.html" class="code" title="">JointsDbase</a> &lt; <a href="../../src/@DataBase/DataBase.html" class="code" title="">DataBase</a>
+0002     <span class="comment">%JointsDbase Implements a database with joints parameters</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties(Constant = true, Access = protected)
+0006         defaultMaxDq0 = 0;
+0007     <span class="keyword">end</span>
+0008     
+0009     properties(Access = protected)
+0010         iDynTreeModel;
+0011     <span class="keyword">end</span>
+0012     
+0013     methods(Access = public)
+0014         <span class="comment">% Constructor</span>
+0015         <a name="_sub0" href="#_subfunctions" class="code">function obj = JointsDbase(iDynTreeModelFromURDF,link2partH,robotYarpPortPrefix)</a>
+0016             <span class="comment">% create property names and keys</span>
+0017             propKeyList = {<span class="string">'jointName'</span>,<span class="string">'cpldMotorSharingIdx'</span>};
+0018             propNameList = {<span class="keyword">...</span>
+0019                 <span class="string">'jointName'</span>,<span class="string">'iDynObject'</span>,<span class="keyword">...</span>
+0020                 <span class="string">'firstAttachedLink'</span>,<span class="string">'secondAttachedLink'</span>,<span class="string">'part'</span>,<span class="string">'DoF'</span>,<span class="string">'maxDq0'</span>,<span class="keyword">...</span>
+0021                 <span class="string">'jmCoupling'</span>,<span class="string">'idxInCtrlBoardServer'</span>,<span class="string">'cpldMotorSharingIdx'</span>,<span class="keyword">...</span>
+0022                 <span class="string">'gearboxDqM2Jratio'</span>,<span class="string">'fullscalePWM'</span>};
+0023             propValueList = cell(iDynTreeModelFromURDF.getNrOfJoints(),length(propNameList));
+0024             
+0025             <span class="comment">% Set 'propValueList' with the properties from the iDynTree model</span>
+0026             jointIdxList = 0:iDynTreeModelFromURDF.getNrOfJoints()-1;
+0027             joint2coupling = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0028             propValueLineIdx = 1;
+0029             
+0030             <span class="keyword">for</span> jointIdx = jointIdxList
+0031                 <span class="comment">% get native parameters</span>
+0032                 iDynObject = iDynTreeModelFromURDF.getJoint(jointIdx);
+0033                 jointName = iDynTreeModelFromURDF.getJointName(jointIdx);
+0034                 firstAttachedLink = iDynTreeModelFromURDF.getLinkName(iDynObject.getFirstAttachedLink());
+0035                 secondAttachedLink = iDynTreeModelFromURDF.getLinkName(iDynObject.getSecondAttachedLink());
+0036                 DoF = iDynObject.getNrOfDOFs();
+0037                 
+0038                 <span class="comment">% determine to which part the parent link is attached to</span>
+0039                 part = link2partH(secondAttachedLink);
+0040                 
+0041                 <span class="comment">% This joint might be coupled with other joints to a set of motors.</span>
+0042                 <span class="comment">% Retrieve the respective joints/motors coupling information</span>
+0043                 <span class="keyword">if</span> DoF&gt;0
+0044                     [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM] = <span class="keyword">...</span>
+0045                         JointsDbase.getJMcouplingFromCtrlBoard(joint2coupling,robotYarpPortPrefix,part,jointName);
+0046                 <span class="keyword">else</span>
+0047                     warning(<span class="string">'JointsDbase: %s is a fixed joint.'</span>,jointName);
+0048                     parentCoupling = [];
+0049                     idxInCtrlBoardServer = [];
+0050                     cpldMotorSharingIdx = <span class="string">''</span>;
+0051                     gearboxDqM2Jratio = [];
+0052                     fullscalePWM = [];
+0053                 <span class="keyword">end</span>
+0054                 
+0055                 <span class="comment">% fill the properties list</span>
+0056                 propValueList(propValueLineIdx,:) = {<span class="keyword">...</span>
+0057                     jointName,iDynObject,<span class="keyword">...</span>
+0058                     firstAttachedLink,secondAttachedLink,part,DoF,JointsDbase.defaultMaxDq0,<span class="keyword">...</span>
+0059                     parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,<span class="keyword">...</span>
+0060                     gearboxDqM2Jratio,fullscalePWM};
+0061                 
+0062                 <span class="comment">% increment pointer</span>
+0063                 propValueLineIdx = propValueLineIdx+1;
+0064             <span class="keyword">end</span>
+0065             
+0066             <span class="comment">% create and build database</span>
+0067             obj = obj@<a href="../../src/@DataBase/DataBase.html" class="code" title="">DataBase</a>(<span class="string">'keys'</span>,propKeyList,<span class="string">'names'</span>,propNameList,<span class="string">'values'</span>,propValueList);
+0068             obj.build();
+0069             
+0070             <span class="comment">% save iDynTree sensors object and coupling list</span>
+0071             obj.iDynTreeModel = iDynTreeModelFromURDF;
+0072         <span class="keyword">end</span>
+0073         
+0074         <span class="comment">% Get joints names from a given part</span>
+0075         jointNameList = <a href="getJointNames.html" class="code" title="function jointNameList = getJointNames( obj,part )">getJointNames</a>(obj,part);
+0076         
+0077         <span class="comment">% Get joints sharing the same indexes as the given motors</span>
+0078         jointNameList = <a href="getCpldJointSharingIdx.html" class="code" title="function jointNameList = getCpldJointSharingIdx( obj,motorNameList )">getCpldJointSharingIdx</a>(obj,motorNameList);
+0079         
+0080         <span class="comment">% Get motors sharing the same indexes as the given joints</span>
+0081         motorNameList = <a href="getCpldMotorSharingIdx.html" class="code" title="function motorNameList = getCpldMotorSharingIdx( obj,jointNameList )">getCpldMotorSharingIdx</a>(obj,jointNameList);
+0082         
+0083         <span class="comment">% Get the gearbox ratios and fullscale values for a given list of motors</span>
+0084         [gearboxDqM2Jratio,fullscalePWM] = <a href="getMotorGearboxRatioNfullscale.html" class="code" title="function [ gearboxDqM2Jratio,fullscalePWM ] = getMotorGearboxRatioNfullscale( obj,motorNameList )">getMotorGearboxRatioNfullscale</a>(obj,motorNameList);
+0085         
+0086         <span class="comment">% Get the list of joint/motor couplings. Input type is 'joints'</span>
+0087         <span class="comment">% or 'motors'.</span>
+0088         jmCouplings = <a href="getJMcouplings.html" class="code" title="function jmCouplings = getJMcouplings( obj,inputType,jointOrMotorNameList )">getJMcouplings</a>(obj,inputType,jointOrMotorNameList);
+0089         
+0090         <span class="comment">% Get part names holding the motors</span>
+0091         parts = <a href="getPartFromMotors.html" class="code" title="function parts = getPartFromMotors( obj,motorNameList )">getPartFromMotors</a>(obj,motorNameList);
+0092         
+0093         <span class="comment">% Get the calibration init point Dq0 vector for a given list of joints</span>
+0094         MaxDq0col = <a href="getJointsMaxCalibDq0.html" class="code" title="function MaxDq0col = getJointsMaxCalibDq0( obj,jointList )">getJointsMaxCalibDq0</a>(obj,jointList);
+0095         
+0096         <span class="comment">% Get the total DoF from a given list of joints</span>
+0097         DoF = <a href="getTotalJointDoF.html" class="code" title="function totalDoF = getTotalJointDoF( obj,jointList )">getTotalJointDoF</a>(obj,jointList);
+0098         
+0099         <span class="comment">% Get the joint index as mapped in the motors control board server.</span>
+0100         <span class="comment">% Axes type is 'joints' or 'motors'.</span>
+0101         [AxesIdxes] = <a href="getAxesIdxesFromCtrlBoard.html" class="code" title="function [ AxesIdxes ] = getAxesIdxesFromCtrlBoard( obj,axesType,jointOrMotorNameList )">getAxesIdxesFromCtrlBoard</a>(obj,axesType,jointOrMotorNameList);
+0102         
+0103         <span class="comment">% Set maximum Dq0 (required by the optimisation solver) for all joints</span>
+0104         success = <a href="setAllJointsMaxCalibDq0.html" class="code" title="function success = setAllJointsMaxCalibDq0( obj,maxDq0 )">setAllJointsMaxCalibDq0</a>(obj,maxDq0);
+0105     <span class="keyword">end</span>
+0106     
+0107     methods(Static=true, Access=protected)
+0108         <span class="comment">% Get the joint/motor coupling info from the control board server.</span>
+0109         <span class="comment">% The method stores the respective retrieved objects in the running</span>
+0110         <span class="comment">% 'joint2coupling', for future queries. It returns the handle of the</span>
+0111         <span class="comment">% coupling to which the joint belongs.</span>
+0112         [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM] = <span class="keyword">...</span>
+0113             <a href="getJMcouplingFromCtrlBoard.html" class="code" title="function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM ] =getJMcouplingFromCtrlBoard( joint2coupling,robotYarpPortPrefix,part,jointName )">getJMcouplingFromCtrlBoard</a>(joint2coupling,robotYarpPortPrefix,part,jointName);
+0114     <span class="keyword">end</span>
+0115 <span class="keyword">end</span>
+0116</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

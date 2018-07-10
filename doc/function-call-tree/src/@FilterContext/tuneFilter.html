@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of tuneFilter</title>
+  <meta name="keywords" content="tuneFilter">
+  <meta name="description" content="UNTITLED3 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @FilterContext -->
+<h1>tuneFilter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED3 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function tuneFilter(hObject,callbackdata,filterContext) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED3 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/utils/sgolay/sgolayfilt.html" class="code" title="function y=sgolayfilt(x,k,F,W,DIM)">sgolayfilt</a>	SGOLAYFILT Savitzky-Golay Filtering.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="FilterContext.html" class="code" title="">FilterContext</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function tuneFilter(hObject,callbackdata,filterContext)</a>
+0002 <span class="comment">%UNTITLED3 Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 figureOpened = true; <span class="comment">% for handling &quot;close figure&quot; action</span>
+0006 
+0007 <span class="comment">% define operation on graph depending on the key pressed</span>
+0008 <span class="keyword">switch</span> callbackdata.Key
+0009     <span class="keyword">case</span> <span class="string">'q'</span>
+0010         close;
+0011         figureOpened = false;
+0012     <span class="keyword">case</span> <span class="string">'i'</span>
+0013         filterContext.SgolayK = 3;
+0014         filterContext.SgolayF = 11;
+0015     <span class="keyword">case</span> <span class="string">'s'</span>
+0016         filtParams.type = <span class="string">'sgolay'</span>;
+0017         filtParams.SgolayK = filterContext.SgolayK;
+0018         filtParams.SgolayF = filterContext.SgolayF;
+0019         save(filterContext.contextPath,<span class="string">'filtParams'</span>);
+0020     <span class="keyword">case</span> <span class="string">'l'</span>
+0021         load(filterContext.contextPath,<span class="string">'filtParams'</span>);
+0022         filterContext.SgolayK = filtParams.SgolayK;
+0023         filterContext.SgolayF = filtParams.SgolayF;
+0024     <span class="keyword">case</span> {<span class="string">'1'</span>,<span class="string">'2'</span>,<span class="string">'3'</span>,<span class="string">'4'</span>,<span class="string">'5'</span>}
+0025         filterContext.SgolayK = str2double(callbackdata.Key);
+0026     <span class="keyword">case</span> <span class="string">'rightarrow'</span>
+0027         filterContext.deltaF = filterContext.deltaF*10;
+0028     <span class="keyword">case</span> <span class="string">'leftarrow'</span>
+0029         filterContext.deltaF = max(1,filterContext.deltaF/10);
+0030     <span class="keyword">case</span> <span class="string">'downarrow'</span>
+0031         filterContext.SgolayF = filterContext.SgolayF - filterContext.adjustedDeltaF;
+0032     <span class="keyword">case</span> <span class="string">'uparrow'</span>
+0033         filterContext.SgolayF = filterContext.SgolayF + filterContext.adjustedDeltaF;
+0034     <span class="keyword">otherwise</span>
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">% is reploting necessary?</span>
+0038 <span class="keyword">switch</span> callbackdata.Key
+0039     <span class="keyword">case</span> {<span class="string">'i'</span>,<span class="string">'l'</span>,<span class="string">'1'</span>,<span class="string">'2'</span>,<span class="string">'3'</span>,<span class="string">'4'</span>,<span class="string">'5'</span>,<span class="string">'downarrow'</span>,<span class="string">'uparrow'</span>}
+0040         refresh = true;
+0041     <span class="keyword">otherwise</span>
+0042         refresh = false;
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="comment">% make sure to always apply an even deltaF</span>
+0046 filterContext.adjustedDeltaF = filterContext.deltaF + mod(filterContext.deltaF,2);
+0047 
+0048 <span class="comment">%% make sure that we still meet following requirements after K or F is changed :</span>
+0049 newF = filterContext.SgolayF; <span class="comment">% for readability</span>
+0050 <span class="comment">% newF &gt;= SgolayK+1</span>
+0051 newF = max(newF,filterContext.SgolayK+1);
+0052 <span class="comment">% newF &lt; (nb of samples - margin)</span>
+0053 newF = min(newF,length(filterContext.time)-10);
+0054 <span class="comment">% newF is odd</span>
+0055 newF = newF-mod(newF,2)+1;
+0056 <span class="comment">% store newF</span>
+0057 filterContext.SgolayF = newF;
+0058 
+0059 <span class="comment">%% Plot filtered sensor data components</span>
+0060 
+0061 <span class="comment">%% print filter (this will be done on any key press)</span>
+0062 clc;
+0063 disp([<span class="string">'key pressed : '</span> callbackdata.Key]);
+0064 disp([<span class="string">'from figure : '</span> get(gcf,<span class="string">'Name'</span>)]);
+0065 filterContext
+0066 <span class="keyword">if</span> callbackdata.Key == <span class="string">'s'</span>
+0067     disp(<span class="string">'Saved!'</span>);
+0068 <span class="keyword">end</span>
+0069 <span class="keyword">if</span> callbackdata.Key == <span class="string">'l'</span>
+0070     disp(<span class="string">'Loaded!'</span>);
+0071 <span class="keyword">end</span>
+0072 
+0073 SigOrigStyle = {<span class="string">'Color'</span>,[239/255 170/255 170/255],<span class="string">'LineStyle'</span>,<span class="string">'-'</span>};
+0074 
+0075 <span class="keyword">if</span> figureOpened &amp;&amp; refresh
+0076     <span class="comment">%% compute new filtered signal</span>
+0077     filteredMeas = <a href="../../src/utils/sgolay/sgolayfilt.html" class="code" title="function y=sgolayfilt(x,k,F,W,DIM)">sgolayfilt</a>(filterContext.sensMeas,filterContext.SgolayK,filterContext.SgolayF);
+0078     disp(<span class="string">'...Filtered signal computed.'</span>);
+0079     disp(<span class="string">'plotting...'</span>);
+0080     <span class="comment">%% Replace previous plot with original/lastFiltered/newFiltered plots</span>
+0081     
+0082     <span class="comment">% Plot original signal components X, Y, Z, flushing previous plots</span>
+0083     plot(filterContext.ax,<span class="keyword">...</span>
+0084         filterContext.time,filterContext.sensMeas(:,1),<span class="keyword">...</span>
+0085         SigOrigStyle{:},<span class="string">'lineWidth'</span>,3);                   <span class="comment">% component X</span>
+0086     plot(filterContext.ay,<span class="keyword">...</span>
+0087         filterContext.time,filterContext.sensMeas(:,2),<span class="keyword">...</span>
+0088         SigOrigStyle{:},<span class="string">'lineWidth'</span>,3);                   <span class="comment">% component Y</span>
+0089     plot(filterContext.az,<span class="keyword">...</span>
+0090         filterContext.time,filterContext.sensMeas(:,3),<span class="keyword">...</span>
+0091         SigOrigStyle{:},<span class="string">'lineWidth'</span>,3);                   <span class="comment">% component Z</span>
+0092     
+0093     <span class="comment">% Hold on</span>
+0094     hold(filterContext.ax,<span class="string">'on'</span>);
+0095     hold(filterContext.ay,<span class="string">'on'</span>);
+0096     hold(filterContext.az,<span class="string">'on'</span>);
+0097     
+0098     <span class="comment">% Plot last filtered signal</span>
+0099     plot(filterContext.ax,<span class="keyword">...</span>
+0100         filterContext.time,filterContext.lastFilteredSensMeas(:,1),<span class="keyword">...</span>
+0101         <span class="string">'k:'</span>,<span class="string">'lineWidth'</span>,1);                             <span class="comment">% component X</span>
+0102     plot(filterContext.ay,<span class="keyword">...</span>
+0103         filterContext.time,filterContext.lastFilteredSensMeas(:,2),<span class="keyword">...</span>
+0104         <span class="string">'k:'</span>,<span class="string">'lineWidth'</span>,1);                             <span class="comment">% component Y</span>
+0105     plot(filterContext.az,<span class="keyword">...</span>
+0106         filterContext.time,filterContext.lastFilteredSensMeas(:,3),<span class="keyword">...</span>
+0107         <span class="string">'k:'</span>,<span class="string">'lineWidth'</span>,1);                             <span class="comment">% component Z</span>
+0108 
+0109     <span class="comment">% Plot filtered signal</span>
+0110     plot(filterContext.ax,<span class="keyword">...</span>
+0111         filterContext.time,filteredMeas(:,1),<span class="keyword">...</span>
+0112         <span class="string">'b-'</span>,<span class="string">'lineWidth'</span>,2);                             <span class="comment">% component X</span>
+0113     plot(filterContext.ay,<span class="keyword">...</span>
+0114         filterContext.time,filteredMeas(:,2),<span class="keyword">...</span>
+0115         <span class="string">'b-'</span>,<span class="string">'lineWidth'</span>,2);                             <span class="comment">% component Y</span>
+0116     plot(filterContext.az,<span class="keyword">...</span>
+0117         filterContext.time,filteredMeas(:,3),<span class="keyword">...</span>
+0118         <span class="string">'b-'</span>,<span class="string">'lineWidth'</span>,2);                             <span class="comment">% component Z</span>
+0119     
+0120     disp(<span class="string">'plot complete!'</span>);
+0121         
+0122     <span class="comment">% Plot titles</span>
+0123     title(filterContext.ax,<span class="string">'X component'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0124     title(filterContext.ay,<span class="string">'Y component'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0125     title(filterContext.az,<span class="string">'Z component'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0126 
+0127     <span class="comment">% Hold off</span>
+0128     hold(filterContext.ax,<span class="string">'off'</span>);
+0129     hold(filterContext.ay,<span class="string">'off'</span>);
+0130     hold(filterContext.az,<span class="string">'off'</span>);
+0131     
+0132     <span class="comment">%% replace last filtered signal</span>
+0133     filterContext.lastFilteredSensMeas = filteredMeas;
+0134 <span class="keyword">end</span>
+0135 
+0136 <span class="keyword">end</span>
+0137</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of symms</title>
+  <meta name="keywords" content="symms">
+  <meta name="description" content="Create a symmetric matrix of symbolic variables.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>symms
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Create a symmetric matrix of symbolic variables.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function S = symms(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Create a symmetric matrix of symbolic variables.
+
+ See also: <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>
+
+ Examples:
+ A = symms('A',3)
+    creates a symmetric symbolic 3-by-3 matrix
+ A = symms('A',3,'positive')
+    creates a symmetric symbolic 3-by-3 matrix with positive entries</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="symmvars.html" class="code" title="function [variable,type,sz] = symmvars(deftype, variable, varargin)">symmvars</a>	Parse parameters for symbolic matrix creation.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_symm.html" class="code" title="function example_symm">example_symm</a>	Sample code for matrices in symbolic variables</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function S = symms(varargin)</a>
+0002 <span class="comment">% Create a symmetric matrix of symbolic variables.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also: symm</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Examples:</span>
+0007 <span class="comment">% A = symms('A',3)</span>
+0008 <span class="comment">%    creates a symmetric symbolic 3-by-3 matrix</span>
+0009 <span class="comment">% A = symms('A',3,'positive')</span>
+0010 <span class="comment">%    creates a symmetric symbolic 3-by-3 matrix with positive entries</span>
+0011 
+0012 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0013 
+0014 [variable,type,sz] = <a href="symmvars.html" class="code" title="function [variable,type,sz] = symmvars(deftype, variable, varargin)">symmvars</a>(<span class="string">'real'</span>, varargin{:});
+0015 type = validatestring(type, {<span class="string">'positive'</span>,<span class="string">'real'</span>});  <span class="comment">% symmetric matrices cannot be complex</span>
+0016 assert(numel(unique(sz)) == 1, <span class="string">'symms:DimensionMismatch'</span>, <span class="string">'A symmetric matrix must be square.'</span>);
+0017 sz = sz(1);
+0018 
+0019 <span class="comment">% populate matrix with entries</span>
+0020 <span class="keyword">if</span> sz == 1  <span class="comment">% a scalar</span>
+0021     <a href="../../../src/@S/S.html" class="code" title="">S</a> = sym(variable);
+0022 <span class="keyword">else</span>
+0023     <a href="../../../src/@S/S.html" class="code" title="">S</a> = sym;
+0024     <a href="../../../src/@S/S.html" class="code" title="">S</a>(sz,sz) = 0;  <span class="comment">% expand matrix to desired dimensions</span>
+0025     <span class="keyword">if</span> sz &lt; 10
+0026         <span class="keyword">for</span> j = 1 : sz
+0027             <span class="keyword">for</span> i = j : sz
+0028                 <a href="../../../src/@S/S.html" class="code" title="">S</a>(i,j) = sym([variable num2str(i, <span class="string">'%d'</span>) num2str(j, <span class="string">'%d'</span>)], type);
+0029                 <span class="keyword">if</span> i ~= j
+0030                     <a href="../../../src/@S/S.html" class="code" title="">S</a>(j,i) = <a href="../../../src/@S/S.html" class="code" title="">S</a>(i,j);
+0031                 <span class="keyword">end</span>
+0032             <span class="keyword">end</span>
+0033         <span class="keyword">end</span>
+0034     <span class="keyword">else</span>
+0035         <span class="keyword">for</span> j = 1 : sz
+0036             <span class="keyword">for</span> i = j : sz
+0037                 <a href="../../../src/@S/S.html" class="code" title="">S</a>(i,j) = sym([variable <span class="string">'_'</span> num2str(i, <span class="string">'%d'</span>) <span class="string">'_'</span> num2str(j, <span class="string">'%d'</span>)], type);
+0038                 <span class="keyword">if</span> i ~= j
+0039                     <a href="../../../src/@S/S.html" class="code" title="">S</a>(j,i) = <a href="../../../src/@S/S.html" class="code" title="">S</a>(i,j);
+0040                 <span class="keyword">end</span>
+0041             <span class="keyword">end</span>
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

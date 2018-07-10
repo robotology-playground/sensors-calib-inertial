@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SensorMeasurementsEstimator</title>
+  <meta name="keywords" content="SensorMeasurementsEstimator">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorMeasurementsEstimator -->
+<h1>SensorMeasurementsEstimator
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorMeasurementsEstimator.html" class="code" title="">SensorMeasurementsEstimator</a>	</li><li><a href="addSensors.html" class="code" title="function [ sensorIdxes ] = addSensors( obj,aSensorsList )">addSensors</a>	Get sensors list in the model</li><li><a href="changeFixedBase.html" class="code" title="function changeFixedBase( obj,linkName )">changeFixedBase</a>	Set the fixed base index and update settings accordingly</li><li><a href="getEstimatedMeasurements.html" class="code" title="function [ FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas ] = getEstimatedMeasurements( obj,q,dq,d2q,gravity )">getEstimatedMeasurements</a>	Computes the predicted sensor measurements</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorMeasurementsEstimator.html" class="code" title="">SensorMeasurementsEstimator</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = SensorMeasurementsEstimator(modelName,modelPath)</a></li><li><a href="#_sub2" class="code">function sensorList = getSensorList(obj)</a></li><li><a href="#_sub3" class="code">function updateBasePose(obj,worldBasePose)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SensorMeasurementsEstimator.html" class="code" title="">SensorMeasurementsEstimator</a> &lt; handle
+0002     <span class="comment">%This class computes the predicted sensors measurements</span>
+0003     <span class="comment">%   using iDynTree estimator and all the sensors information from the</span>
+0004     <span class="comment">%   URDF model.</span>
+0005     
+0006     properties(Access=public)
+0007         modelName;
+0008         estimator;             <span class="comment">% estimator of sensor measurements using Forward Kinematics</span>
+0009         grav_idyn;             <span class="comment">% gravity iDynTree object</span>
+0010         dofs;                  <span class="comment">% joint information: DOF</span>
+0011         q_idyn;                <span class="comment">% joint position iDynTree object</span>
+0012         dq_idyn;               <span class="comment">% joint velocity iDynTree object</span>
+0013         d2q_idyn;              <span class="comment">% joint acceleration iDynTree object</span>
+0014         base_link_index;       <span class="comment">% input param of estimator. iDynTree model indexing</span>
+0015         fullBodyUnknowns;      <span class="comment">% input param of estimator</span>
+0016         estMeasurements;       <span class="comment">% input param of estimator</span>
+0017         allMeas_idyn;          <span class="comment">% temporary serialized estimated measurements</span>
+0018         sink1;                 <span class="comment">% sink for output estContactForces</span>
+0019         sink2;                 <span class="comment">% sink for output estJointTorques</span>
+0020         estimatedSensorLinAcc;     <span class="comment">% predicted accelerometer measurement on sensor frame</span>
+0021         estimatedSensorAngVel;     <span class="comment">% predicted gyroscope measurement on sensor frame</span>
+0022         fixedBasePose;             <span class="comment">% full tree joint positions (including base link)</span>
+0023         nbFTs;
+0024         nbAccs;
+0025         nbGyros;
+0026         nbThAxAngAccs;
+0027         nbThAxFTs;
+0028     <span class="keyword">end</span>
+0029     
+0030     methods
+0031         <a name="_sub0" href="#_subfunctions" class="code">function obj = SensorMeasurementsEstimator(modelName,modelPath)</a>
+0032             <span class="comment">% save model name</span>
+0033             obj.modelName = modelName;
+0034             
+0035             <span class="comment">% Create estimator class</span>
+0036             obj.estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
+0037             
+0038             <span class="comment">% Load model and sensors from the URDF file</span>
+0039             obj.estimator.loadModelAndSensorsFromFile(modelPath);
+0040             obj.nbFTs = obj.estimator.sensors.getNrOfSensors(iDynTree.SIX_AXIS_FORCE_TORQUE);
+0041             obj.nbAccs = obj.estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER);
+0042             obj.nbGyros = obj.estimator.sensors.getNrOfSensors(iDynTree.GYROSCOPE);
+0043             obj.nbThAxAngAccs = obj.estimator.sensors.getNrOfSensors(iDynTree.THREE_AXIS_ANGULAR_ACCELEROMETER);
+0044             obj.nbThAxFTs = obj.estimator.sensors.getNrOfSensors(iDynTree.THREE_AXIS_FORCE_TORQUE_CONTACT);
+0045             
+0046             <span class="comment">% Prepare inputs for updating the kinematics information in the estimator</span>
+0047             <span class="comment">%</span>
+0048             <span class="comment">% Compute the kinematics information necessary for the accelerometer sensor</span>
+0049             <span class="comment">% predicted measurements computation. We assume the robot root link is fixed to</span>
+0050             <span class="comment">% the ground. We then assume to know the gravity (ground truth) projected on the</span>
+0051             <span class="comment">% frame (base_link) fixed to the root link. This is a default value that shall be</span>
+0052             <span class="comment">% used if none is passed with the predictMeasurements() function call.</span>
+0053             <span class="comment">%</span>
+0054             obj.grav_idyn = iDynTree.Vector3();
+0055             obj.grav_idyn.fromMatlab([0.0 0.0 -9.81]');
+0056             
+0057             <span class="comment">% Base link index for later applying forward kynematics</span>
+0058             obj.base_link_index = obj.estimator.model.getFrameIndex(<span class="string">'base_link'</span>);
+0059             
+0060             <span class="comment">% Set the position of base link</span>
+0061             obj.fixedBasePose = iDynTree.FreeFloatingPos(obj.estimator.model);
+0062             obj.fixedBasePose.worldBasePos().setRotation(iDynTree.Rotation.Identity());
+0063             obj.fixedBasePose.worldBasePos().setPosition(iDynTree.Position.Zero());
+0064 
+0065             <span class="comment">% Specify unknown wrenches (unknown Full wrench applied at the origin of the base_link frame)</span>
+0066             <span class="comment">% The fullBodyUnknowns is a class storing all the unknown external wrenches acting on</span>
+0067             <span class="comment">% the robot: we consider the pole/ground reaction on the base link as the only</span>
+0068             <span class="comment">% external force.</span>
+0069             obj.fullBodyUnknowns = iDynTree.LinkUnknownWrenchContacts(obj.estimator.model);
+0070             obj.fullBodyUnknowns.addNewUnknownFullWrenchInFrameOrigin(<span class="keyword">...</span>
+0071                 obj.estimator.model, <span class="keyword">...</span>
+0072                 obj.base_link_index);
+0073             
+0074             <span class="comment">% Print the unknowns to make sure that everything is properly working</span>
+0075             obj.fullBodyUnknowns.toString(obj.estimator.model())
+0076             
+0077             <span class="comment">% The estimated sensor measurements:</span>
+0078             <span class="comment">% `estimator.sensors()` gets used sensors (returns `SensorList`)</span>
+0079             <span class="comment">% ex: `estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER)`</span>
+0080             <span class="comment">%     `estimator.sensors.getSensor(iDynTree.ACCELEROMETER,1)`</span>
+0081             obj.estMeasurements = iDynTree.SensorsMeasurements(obj.estimator.sensors);
+0082             obj.allMeas_idyn = iDynTree.VectorDynSize();
+0083             
+0084             <span class="comment">% Joint states and sensor measurements containers</span>
+0085             <span class="comment">% Get joint information (DOF) and create joint position iDynTree objects</span>
+0086             <span class="comment">% Note: 'JointPosDoubleArray' is a special type for future evolution which</span>
+0087             <span class="comment">% will handle quaternions. But for now the type has the format as</span>
+0088             <span class="comment">% 'JointDOFsDoubleArray'.</span>
+0089             obj.dofs = obj.estimator.model.getNrOfDOFs();
+0090             obj.q_idyn   = iDynTree.JointPosDoubleArray(obj.dofs);
+0091             obj.dq_idyn  = iDynTree.JointDOFsDoubleArray(obj.dofs);
+0092             obj.d2q_idyn = iDynTree.JointDOFsDoubleArray(obj.dofs);
+0093             
+0094             <span class="comment">% estimation outputs</span>
+0095             obj.estimatedSensorLinAcc = iDynTree.LinearMotionVector3();
+0096             obj.estimatedSensorAngVel = iDynTree.AngularMotionVector3();
+0097             
+0098             <span class="comment">% Memory allocation for unused output variables</span>
+0099             obj.sink1 = iDynTree.LinkContactWrenches(obj.estimator.model);
+0100             obj.sink2 = iDynTree.JointDOFsDoubleArray(obj.dofs);
+0101         <span class="keyword">end</span>
+0102         
+0103         <span class="comment">% Returns the sensors list currently handled by the Predictor</span>
+0104         <a name="_sub1" href="#_subfunctions" class="code">function sensorList = getSensorList(obj)</a>
+0105             sensorList = obj.estimator.sensors;
+0106         <span class="keyword">end</span>
+0107         
+0108         <span class="comment">% Update the fixed base position and orientation</span>
+0109         <a name="_sub2" href="#_subfunctions" class="code">function updateBasePose(obj,worldBasePose)</a>
+0110             <span class="comment">%obj.fixedBasePose.worldBasePos() = worldBasePose;</span>
+0111         <span class="keyword">end</span>
+0112         
+0113         <span class="comment">% Add sensors to the list of sensors and update the estimated</span>
+0114         <span class="comment">% measurements sink variable</span>
+0115         [sensorIdxes] = <a href="addSensors.html" class="code" title="function [ sensorIdxes ] = addSensors( obj,aSensorsList )">addSensors</a>(obj,aSensorsList);
+0116         
+0117         <span class="comment">% Set the fixed base index and update settings accordingly</span>
+0118         <a href="changeFixedBase.html" class="code" title="function changeFixedBase( obj,linkName )">changeFixedBase</a>(obj,linkName);
+0119         
+0120         <span class="comment">% Computes the predicted sensor measurements</span>
+0121         [FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas] = <a href="getEstimatedMeasurements.html" class="code" title="function [ FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas ] = getEstimatedMeasurements( obj,q,dq,d2q,gravity )">getEstimatedMeasurements</a>(obj,q,dq,d2q,gravity);
+0122     <span class="keyword">end</span>
+0123 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

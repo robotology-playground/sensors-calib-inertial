@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipsefit1</title>
+  <meta name="keywords" content="example_ellipsefit1">
+  <meta name="description" content="Demonstration of various ellipse (and general quadratic curve) fits.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipsefit1
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstration of various ellipse (and general quadratic curve) fits.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_ellipsefit1 </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstration of various ellipse (and general quadratic curve) fits.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>	Stop the PWM controller.</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>	Generates points along an ellipse.</li><li><a href="ellipse_kepler2im.html" class="code" title="function p = ellipse_kepler2im(varargin)">ellipse_kepler2im</a>	Cast ellipse defined in Kepler form to standard parameter vector form.</li><li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>	Direct least squares fitting of ellipses.</li><li><a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>	Maximum likelihood ellipse fit with foot points.</li><li><a href="ellipsefit_koopmans.html" class="code" title="function [theta,mu] = ellipsefit_koopmans(varargin)">ellipsefit_koopmans</a>	Fit an ellipse to data using the nonlinear Koopmans method.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>	Fit a quadratic curve to data using consistent algebraic least squares.</li><li><a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>	General quadratic curve fit with Taubin's method.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function setlinestyle(line, style)</a></li><li><a href="#_sub2" class="code">function stop = example_plot(theta,~,state)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_ellipsefit1</a>
+0002 <span class="comment">% Demonstration of various ellipse (and general quadratic curve) fits.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 <span class="comment">%% Various ellipse fits to few data points</span>
+0007 x = [1 2 5 7 9 3 6 8];
+0008 <a href="../../../src/@y/y.html" class="code" title="">y</a> = [7 6 8 7 5 7 2 4];
+0009 
+0010 p1 = <a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0011 p2 = <a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0012 p3 = <a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0013 
+0014 figure;
+0015 hold all;
+0016 plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'.'</span>, <span class="string">'MarkerSize'</span>, 18);
+0017 <span class="comment">%imconic(ellipse_ex2im([2.6996, 3.8160, 6.5187, 3.0319, 0.3596]));</span>
+0018 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p1);
+0019 set(line, <span class="string">'LineStyle'</span>, <span class="string">'-'</span>, <span class="string">'LineWidth'</span>, 2);
+0020 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p2);
+0021 set(line, <span class="string">'LineStyle'</span>, <span class="string">'--'</span>, <span class="string">'LineWidth'</span>, 2);
+0022 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p3);
+0023 set(line, <span class="string">'Color'</span>, <span class="string">'k'</span>, <span class="string">'LineStyle'</span>, <span class="string">':'</span>, <span class="string">'LineWidth'</span>, 2);
+0024 hold off;
+0025 
+0026 <span class="comment">%% Maximum likelihood estimation with foot points</span>
+0027 x = [1;2;5;7;9;3;6;8];
+0028 <a href="../../../src/@y/y.html" class="code" title="">y</a> = [7;6;8;7;5;7;2;4];
+0029 
+0030 figure;
+0031 <a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0032 axis equal;
+0033 
+0034 <span class="comment">%% Iterations of maximum likelihood estimation of ellipse</span>
+0035 x = [1 2 5 7 9 3 6 8];
+0036 <a href="../../../src/@y/y.html" class="code" title="">y</a> = [7 6 8 7 5 7 2 4];
+0037 
+0038 figure;
+0039 hold on;
+0040 plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>, <span class="keyword">...</span>
+0041     <span class="string">'MarkerSize'</span>, 18);
+0042 <a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="keyword">...</span>
+0043     <span class="string">'Method'</span>, <span class="string">'kepler'</span>, <span class="keyword">...</span>
+0044     <span class="string">'OutputFcn'</span>, @<a href="#_sub2" class="code" title="subfunction stop = example_plot(theta,~,state)">example_plot</a>);
+0045 hold off;
+0046 
+0047 <span class="comment">%% Various ellipse fits to many data points</span>
+0048 N = 75;  <span class="comment">% sample count</span>
+0049 sigma_x = 1;
+0050 sigma_y = 1;
+0051 
+0052 <span class="comment">% generate data points</span>
+0053 [x0,y0] = <a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>(N, 2, 3, 4, 2, pi/6);
+0054 
+0055 <span class="comment">% pollute with noise</span>
+0056 x = x0 + sigma_x * randn(size(x0));
+0057 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + sigma_y * randn(size(x0));
+0058 
+0059 p1 = <a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0060 p2 = <a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0061 p3 = <a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0062 p4 = <a href="ellipsefit_koopmans.html" class="code" title="function [theta,mu] = ellipsefit_koopmans(varargin)">ellipsefit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0063 p5 = <a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0064 
+0065 figure;
+0066 hold all;
+0067 plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>)
+0068 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p1);
+0069 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p2);
+0070 <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'--'</span>);
+0071 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p3);
+0072 <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">':'</span>);
+0073 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p4);
+0074 <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'-.'</span>);
+0075 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p4);
+0076 <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'-.'</span>);
+0077 legend(<span class="string">'Data'</span>,<span class="string">'ML'</span>,<span class="string">'Taubin'</span>,<span class="string">'Direct'</span>,<span class="string">'Koopmans'</span>,<span class="string">'CALS'</span>);
+0078 hold off;
+0079 
+0080 <a name="_sub1" href="#_subfunctions" class="code">function setlinestyle(line, style)</a>
+0081 
+0082 set(findobj(line, <span class="string">'-property'</span>, <span class="string">'LineStyle'</span>), <span class="string">'LineStyle'</span>, style);
+0083 
+0084 <a name="_sub2" href="#_subfunctions" class="code">function stop = example_plot(theta,~,state)</a>
+0085 
+0086 <a href="../../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a> = false;
+0087 p = <a href="ellipse_kepler2im.html" class="code" title="function p = ellipse_kepler2im(varargin)">ellipse_kepler2im</a>(theta);
+0088 <span class="keyword">switch</span> state
+0089     <span class="keyword">case</span> <span class="string">'init'</span>
+0090     <span class="keyword">case</span> <span class="string">'iter'</span>
+0091         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p);
+0092         set(line, <span class="string">'LineStyle'</span>, <span class="string">':'</span>, <span class="string">'LineWidth'</span>, 2);
+0093     <span class="keyword">case</span> <span class="string">'done'</span>
+0094         line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p);
+0095         set(line, <span class="string">'Color'</span>, <span class="string">'black'</span>);
+0096 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

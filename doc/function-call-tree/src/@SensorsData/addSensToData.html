@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of addSensToData</title>
+  <meta name="keywords" content="addSensToData">
+  <meta name="description" content="ADDSENSTODATA Add a sensor to the data structure">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsData -->
+<h1>addSensToData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ADDSENSTODATA Add a sensor to the data structure</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function addSensToData(obj, part, frame, label, ndof, index, type, calib, visualize) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">ADDSENSTODATA Add a sensor to the data structure</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function addSensToData(obj, part, frame, label, ndof, index, type, calib, visualize)</a>
+0002 
+0003 <span class="comment">%ADDSENSTODATA Add a sensor to the data structure</span>
+0004 currSize = length(obj.parts);
+0005 obj.parts{currSize+1} = part;
+0006 obj.frames{currSize+1} = frame;
+0007 obj.labels{currSize+1} = label;
+0008 obj.ndof{currSize+1} = ndof;
+0009 obj.index{currSize+1} = index;
+0010 obj.type{currSize+1} = type;
+0011 obj.calib{currSize+1} = calib;
+0012 obj.visualize{currSize+1} = visualize;
+0013 
+0014 <span class="keyword">end</span>
+0015</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

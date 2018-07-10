@@ -1,0 +1,250 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsefit</title>
+  <meta name="keywords" content="ellipsefit">
+  <meta name="description" content="Fit an ellipse to data by minimizing point-to-curve distance.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsefit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit an ellipse to data by minimizing point-to-curve distance.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,e,d] = ellipsefit(x,y,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit an ellipse to data by minimizing point-to-curve distance.
+
+ This function uses an iterative procedure. For a non-iterative approach, use
+ a direct least squares fit.
+
+ Output arguments:
+ p:
+    parameters of ellipse expressed in implicit form
+ e:
+    mean square distance
+ d:
+    distance from data points to fitted ellipse
+
+ See also: <a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a>	Cast ellipse defined with explicit parameters to implicit form.</li><li><a href="ellipse_im2ex.html" class="code" title="function varargout = ellipse_im2ex(varargin)">ellipse_im2ex</a>	Cast ellipse defined with implicit parameter vector to explicit form.</li><li><a href="ellipse_im2kepler.html" class="code" title="function varargout = ellipse_im2kepler(varargin)">ellipse_im2kepler</a>	Cast ellipse defined with standard parameter vector to Kepler form.</li><li><a href="ellipse_kepler2im.html" class="code" title="function p = ellipse_kepler2im(varargin)">ellipse_kepler2im</a>	Cast ellipse defined in Kepler form to standard parameter vector form.</li><li><a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>	Direct least squares fitting of ellipses.</li><li><a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>	Maximum likelihood ellipse fit with foot points.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>	General quadratic curve fit with Taubin's method.</li><li><a href="quad2dproj.html" class="code" title="function [Wp,rss] = quad2dproj(W, varargin)">quad2dproj</a>	Projects a set of points onto a quadratic curve.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>	Maximum likelihood ellipse fit with foot points.</li><li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li><li><a href="example_ellipsefit2.html" class="code" title="function example_ellipsefit2">example_ellipsefit2</a>	Various ellipse fits to some data points.</li><li><a href="example_ellipsefitsector.html" class="code" title="function example_ellipsefitsector">example_ellipsefitsector</a>	Ellipse fitting to data from a limited sector.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [d,ddp] = ellipsefit_distance(x,y,p)</a></li><li><a href="#_sub2" class="code">function [d,ddp] = ellipsefit_distance_kepler(x,y,p)</a></li><li><a href="#_sub3" class="code">function [xf,yf] = ellipsefit_foot(x,y,cx,cy,a,b,theta)</a></li><li><a href="#_sub4" class="code">function [xf,yf] = ellipsefit_foot_kepler(x,y,px,py,qx,qy,a)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,e,d] = ellipsefit(x,y,varargin)</a>
+0002 <span class="comment">% Fit an ellipse to data by minimizing point-to-curve distance.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This function uses an iterative procedure. For a non-iterative approach, use</span>
+0005 <span class="comment">% a direct least squares fit.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Output arguments:</span>
+0008 <span class="comment">% p:</span>
+0009 <span class="comment">%    parameters of ellipse expressed in implicit form</span>
+0010 <span class="comment">% e:</span>
+0011 <span class="comment">%    mean square distance</span>
+0012 <span class="comment">% d:</span>
+0013 <span class="comment">%    distance from data points to fitted ellipse</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also: ellipsefit_direct</span>
+0016 
+0017 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0018 
+0019 <span class="keyword">if</span> ~exist(<span class="string">'lsqnonlin'</span>,<span class="string">'file'</span>)
+0020     error(<span class="string">'quadfit:DependencyMissing'</span>, <span class="string">'This function requires the Optimization Toolbox.\nFor a simple least-squares fit, try the function &quot;ellipsefit_direct&quot;.'</span>);
+0021 <span class="keyword">end</span>
+0022 
+0023 narginchk(2,Inf);
+0024 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0025 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0026 x = x(:);
+0027 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0028 
+0029 <span class="comment">% compute a close-enough initial estimate</span>
+0030 pinit = <a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0031 <span class="keyword">switch</span> <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(pinit,0)
+0032     <span class="keyword">case</span> <span class="string">'ellipse'</span>  <span class="comment">% use Taubin's fit, which has produced an ellipse</span>
+0033     <span class="keyword">otherwise</span>  <span class="comment">% use direct least squares ellipse fit to obtain an initial estimate</span>
+0034         pinit = <a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0035 <span class="keyword">end</span>
+0036 
+0037 method = <span class="string">'explicit'</span>;
+0038 outputfcn = [];
+0039 <span class="keyword">for</span> k = 1 : 2 : numel(varargin)
+0040     validateattributes(varargin{k}, {<span class="string">'char'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'row'</span>});
+0041     arg = varargin{k+1};
+0042     <span class="keyword">switch</span> lower(varargin{k})
+0043         <span class="keyword">case</span> <span class="string">'method'</span>
+0044             validateattributes(arg, {<span class="string">'char'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'row'</span>});
+0045             method = arg;
+0046         <span class="keyword">case</span> <span class="string">'outputfcn'</span>
+0047             validateattributes(arg, {<span class="string">'function_handle'</span>}, {<span class="string">'scalar'</span>});
+0048             outputfcn = arg;
+0049     <span class="keyword">end</span>
+0050 <span class="keyword">end</span>
+0051 
+0052 opts = optimset( <span class="keyword">...</span>
+0053     <span class="keyword">...</span><span class="comment"> %'Algorithm', 'levenberg-marquardt', ...</span>
+0054     <span class="string">'DerivativeCheck'</span>, <span class="string">'on'</span>, <span class="keyword">...</span>
+0055     <span class="string">'Display'</span>, <span class="string">'off'</span>, <span class="keyword">...</span>
+0056     <span class="string">'Jacobian'</span>, <span class="string">'off'</span>, <span class="keyword">...</span>
+0057     <span class="string">'OutputFcn'</span>, outputfcn);
+0058 <span class="keyword">switch</span> lower(method)
+0059     <span class="keyword">case</span> <span class="string">'kepler'</span>
+0060         pkinit = <a href="ellipse_im2kepler.html" class="code" title="function varargout = ellipse_im2kepler(varargin)">ellipse_im2kepler</a>(pinit);
+0061         [pk,e] = lsqnonlin(@(p) <a href="#_sub2" class="code" title="subfunction [d,ddp] = ellipsefit_distance_kepler(x,y,p)">ellipsefit_distance_kepler</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,p), pkinit, [], [], opts);
+0062         p = <a href="ellipse_kepler2im.html" class="code" title="function p = ellipse_kepler2im(varargin)">ellipse_kepler2im</a>(pk);
+0063         
+0064         <span class="keyword">if</span> nargout &gt; 2
+0065             d = <a href="#_sub2" class="code" title="subfunction [d,ddp] = ellipsefit_distance_kepler(x,y,p)">ellipsefit_distance_kepler</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,pk);
+0066         <span class="keyword">end</span>
+0067     <span class="keyword">case</span> <span class="string">'explicit'</span>
+0068         peinit = <a href="ellipse_im2ex.html" class="code" title="function varargout = ellipse_im2ex(varargin)">ellipse_im2ex</a>(pinit);
+0069         [pe,e] = lsqnonlin(@(p) <a href="#_sub1" class="code" title="subfunction [d,ddp] = ellipsefit_distance(x,y,p)">ellipsefit_distance</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,p), peinit, [-Inf,-Inf,0,0,-0.5*pi], [Inf,Inf,Inf,Inf,0.5*pi], opts);
+0070         p = <a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a>(pe);
+0071         
+0072         <span class="keyword">if</span> nargout &gt; 2
+0073             d = <a href="#_sub1" class="code" title="subfunction [d,ddp] = ellipsefit_distance(x,y,p)">ellipsefit_distance</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,pe);
+0074         <span class="keyword">end</span>
+0075 <span class="keyword">end</span>
+0076 e = e / numel(x);
+0077 
+0078 <a name="_sub1" href="#_subfunctions" class="code">function [d,ddp] = ellipsefit_distance(x,y,p)</a>
+0079 <span class="comment">% Distance of points to ellipse defined with parameters center, axes and tilt.</span>
+0080 <span class="comment">% P = b^2*((x-cx)*cos(theta)-(y-cy)*sin(theta))</span>
+0081 <span class="comment">%   + a^2*((x-cx)*sin(theta)+(y-cy)*cos(theta))</span>
+0082 <span class="comment">%   - a^2*b^2 = 0</span>
+0083 
+0084 pcl = num2cell(p);
+0085 [cx,cy,ap,bp,theta] = pcl{:};
+0086 
+0087 <span class="comment">% get foot points</span>
+0088 <span class="keyword">if</span> ap &gt; bp
+0089     a = ap;
+0090     b = bp;
+0091 <span class="keyword">else</span>
+0092     a = bp;
+0093     b = ap;
+0094     theta = theta + 0.5*pi;
+0095     <span class="keyword">if</span> theta &gt; 0.5*pi
+0096         theta = theta - pi;
+0097     <span class="keyword">end</span>
+0098 <span class="keyword">end</span>
+0099 [xf,yf] = <a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,cx,cy,a,b,theta);
+0100 
+0101 <span class="comment">% calculate distance from foot points</span>
+0102 d = realsqrt((x-xf).^2 + (<a href="../../../src/@y/y.html" class="code" title="">y</a>-yf).^2);
+0103 
+0104 <span class="comment">% use ellipse equation P = 0 to determine if point inside ellipse (P &lt; 0)</span>
+0105 f = b^2.*((x-cx).*cos(theta)-(<a href="../../../src/@y/y.html" class="code" title="">y</a>-cy).*sin(theta)).^2 + a^2.*((x-cx).*sin(theta)+(<a href="../../../src/@y/y.html" class="code" title="">y</a>-cy).*cos(theta)).^2 - a^2.*b^2 &lt; 0;
+0106 
+0107 <span class="comment">% convert to signed distance, d &lt; 0 inside ellipse</span>
+0108 d(f) = -d(f);
+0109 
+0110 <span class="keyword">if</span> nargout &gt; 1  <span class="comment">% FIXME derivatives</span>
+0111     x = xf;
+0112     <a href="../../../src/@y/y.html" class="code" title="">y</a> = yf;
+0113     <span class="comment">% Jacobian matrix, i.e. derivatives w.r.t. parameters</span>
+0114     dPdp = [ <span class="keyword">...</span><span class="comment">  % Jacobian J is m-by-n, where m = numel(x) and n = numel(p) = 5</span>
+0115         b.^2.*cos(theta).*(cos(theta).*(cx-x)-sin(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)).*2.0+a.^2.*sin(theta).*(cos(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)+sin(theta).*(cx-x)).*2.0 <span class="keyword">...</span>
+0116         a.^2.*cos(theta).*(cos(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)+sin(theta).*(cx-x)).*2.0-b.^2.*sin(theta).*(cos(theta).*(cx-x)-sin(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)).*2.0 <span class="keyword">...</span>
+0117         a.*(cos(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)+sin(theta).*(cx-x)).^2.*2.0-a.*b.^2.*2.0 <span class="keyword">...</span>
+0118         b.*(cos(theta).*(cx-x)-sin(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)).^2.*2.0-a.^2.*b.*2.0 <span class="keyword">...</span>
+0119         a.^2.*(cos(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)+sin(theta).*(cx-x)).*(cos(theta).*(cx-x)-sin(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)).*2.0-b.^2.*(cos(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)+sin(theta).*(cx-x)).*(cos(theta).*(cx-x)-sin(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)).*2.0 <span class="keyword">...</span>
+0120     ];
+0121     dPdx = b.^2.*cos(theta).*(cos(theta).*(cx-x)-sin(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)).*-2.0-a.^2.*sin(theta).*(cos(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)+sin(theta).*(cx-x)).*2.0;
+0122     dPdy = a.^2.*cos(theta).*(cos(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)+sin(theta).*(cx-x)).*-2.0+b.^2.*sin(theta).*(cos(theta).*(cx-x)-sin(theta).*(cy-<a href="../../../src/@y/y.html" class="code" title="">y</a>)).*2.0;
+0123     
+0124     <span class="comment">% derivative of distance to foot point w.r.t. parameters</span>
+0125     ddp = bsxfun(@rdivide, dPdp, realsqrt(dPdx.^2 + dPdy.^2));
+0126 <span class="keyword">end</span>
+0127 
+0128 <a name="_sub2" href="#_subfunctions" class="code">function [d,ddp] = ellipsefit_distance_kepler(x,y,p)</a>
+0129 <span class="comment">% Distance of points to ellipse defined with Kepler's parameters.</span>
+0130 
+0131 pcl = num2cell(p);
+0132 [px,py,qx,qy,a] = pcl{:};
+0133 
+0134 <span class="comment">% get foot points</span>
+0135 [xf,yf] = <a href="#_sub4" class="code" title="subfunction [xf,yf] = ellipsefit_foot_kepler(x,y,px,py,qx,qy,a)">ellipsefit_foot_kepler</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,px,py,qx,qy,a);
+0136 
+0137 <span class="comment">% calculate distance from foot points</span>
+0138 d = realsqrt((x-xf).^2 + (<a href="../../../src/@y/y.html" class="code" title="">y</a>-yf).^2);
+0139 
+0140 <span class="comment">% use ellipse equation P = 0 to determine if point inside ellipse (P &lt; 0)</span>
+0141 f = realsqrt((x-px).^2+(<a href="../../../src/@y/y.html" class="code" title="">y</a>-py).^2) + realsqrt((x-qx).^2+(<a href="../../../src/@y/y.html" class="code" title="">y</a>-qy).^2) - 2*a &lt; 0;
+0142 
+0143 <span class="comment">% convert to signed distance, d &lt; 0 inside ellipse</span>
+0144 d(f) = -d(f);
+0145 
+0146 <span class="keyword">if</span> nargout &gt; 1
+0147     <span class="comment">% compute partial derivatives of ellipse equation P given with Kepler's parameters</span>
+0148     <span class="comment">% in Kepler's form, the foci of an ellipse are (px;py) and (qx;qy),</span>
+0149     <span class="comment">% and 2*a is the major axis such that the parameter vector is [p1 p2 q1 q2 a]</span>
+0150 
+0151     <span class="comment">% Jacobian matrix, i.e. derivatives w.r.t. parameters</span>
+0152     dPdp = [ <span class="keyword">...</span><span class="comment">  % Jacobian J is m-by-n, where m = numel(x) and n = numel(p) = 5</span>
+0153         -(xf-px)./realsqrt((xf-px).^2+(yf-py).^2), <span class="keyword">...</span>
+0154         -(yf-py)./realsqrt((xf-px).^2+(yf-py).^2), <span class="keyword">...</span>
+0155         -(xf-qx)./realsqrt((xf-qx).^2+(yf-qy).^2), <span class="keyword">...</span>
+0156         -(yf-qy)./realsqrt((xf-qx).^2+(yf-qy).^2), <span class="keyword">...</span>
+0157         -2.*ones(size(xf)) <span class="keyword">...</span>
+0158     ];
+0159     dPdx = (xf-px)./realsqrt((xf-px).^2+(yf-py).^2) + (xf-qx)./realsqrt((xf-qx).^2+(yf-qy).^2);
+0160     dPdy = (yf-py)./realsqrt((xf-px).^2+(yf-py).^2) + (yf-qy)./realsqrt((xf-qx).^2+(yf-qy).^2);
+0161 
+0162     <span class="comment">% derivative of distance to foot point w.r.t. parameters</span>
+0163     ddp = bsxfun(@rdivide, dPdp, realsqrt(dPdx.^2 + dPdy.^2));
+0164 <span class="keyword">end</span>
+0165 
+0166 <a name="_sub3" href="#_subfunctions" class="code">function [xf,yf] = ellipsefit_foot(x,y,cx,cy,a,b,theta)</a>
+0167 <span class="comment">% Foot points obtained by projecting a set of coordinates onto an ellipse.</span>
+0168 
+0169 xfyf = <a href="quad2dproj.html" class="code" title="function [Wp,rss] = quad2dproj(W, varargin)">quad2dproj</a>([x <a href="../../../src/@y/y.html" class="code" title="">y</a>], [cx cy], [a b], theta);
+0170 xf = xfyf(:,1);
+0171 yf = xfyf(:,2);
+0172 
+0173 <a name="_sub4" href="#_subfunctions" class="code">function [xf,yf] = ellipsefit_foot_kepler(x,y,px,py,qx,qy,a)</a>
+0174 <span class="comment">% Foot points obtained by projecting a set of coordinates onto an ellipse.</span>
+0175 <span class="comment">%</span>
+0176 <span class="comment">% Input arguments:</span>
+0177 <span class="comment">% x,y:</span>
+0178 <span class="comment">%    coordinates to data points to project</span>
+0179 <span class="comment">% px,py,qx,qy:</span>
+0180 <span class="comment">%    coordinates of ellipse foci</span>
+0181 <span class="comment">% a:</span>
+0182 <span class="comment">%    ellipse semi-major axis length</span>
+0183 
+0184 c1 = 0.5*(px+qx);
+0185 c2 = 0.5*(py+qy);
+0186 cf2 = (c1-px)^2 + (c2-py)^2;  <span class="comment">% distance squared from center to focus</span>
+0187 b = realsqrt(a^2 - cf2);
+0188 theta = atan2(qy-py,qx-px);  <span class="comment">% tilt angle</span>
+0189 [xf,yf] = <a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,c1,c2,a,b,theta);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

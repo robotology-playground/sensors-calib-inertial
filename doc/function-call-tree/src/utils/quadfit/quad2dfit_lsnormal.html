@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dfit_lsnormal</title>
+  <meta name="keywords" content="quad2dfit_lsnormal">
+  <meta name="description" content="Fit a quadratic curve to a set of 2D data points with normals.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dfit_lsnormal
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit a quadratic curve to a set of 2D data points with normals.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = quad2dfit_lsnormal(x,y,nx,ny) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit a quadratic curve to a set of 2D data points with normals.
+
+ Input arguments:
+ x, y:
+    cartesian coordinates of noisy data points
+ nx, ny:
+    cartesian coordinates of normals
+
+ Output arguments:
+ p:
+    the 6 parameters describing the ellipse algebraically</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsenormfit.html" class="code" title="function example_ellipsenormfit">example_ellipsenormfit</a>	Comparing the accuracy of various ellipse fits with and without normals.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = quad2dfit_lsnormal(x,y,nx,ny)</a>
+0002 <span class="comment">% Fit a quadratic curve to a set of 2D data points with normals.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y:</span>
+0006 <span class="comment">%    cartesian coordinates of noisy data points</span>
+0007 <span class="comment">% nx, ny:</span>
+0008 <span class="comment">%    cartesian coordinates of normals</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Output arguments:</span>
+0011 <span class="comment">% p:</span>
+0012 <span class="comment">%    the 6 parameters describing the ellipse algebraically</span>
+0013 <span class="comment">%</span>
+0014 
+0015 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0016 
+0017 narginchk(4, 4);  <span class="comment">% check input arguments</span>
+0018 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0019 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0020 validateattributes(nx, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0021 validateattributes(ny, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0022 x = x(:);
+0023 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0024 nx = nx(:);
+0025 ny = ny(:);
+0026 
+0027 assert(numel(x) &gt;= 5, <span class="keyword">...</span>
+0028     <span class="string">'At least 5 points are required to fit a unique ellipse.'</span>);
+0029 
+0030 o = zeros(size(x));
+0031 h = ones(size(x));
+0032 
+0033 <span class="comment">% data points</span>
+0034 X = [ x.^2, x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>, y.^2, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, h ];
+0035 
+0036 <span class="comment">% normals</span>
+0037 dXdx = [ 2.*x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, o, h, o, o ];
+0038 dXdy = [ o, x, 2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>, o, h, o ];
+0039 dX = [ dXdx ; dXdy ];
+0040 
+0041 <span class="comment">% system of equations</span>
+0042 A = [ X ; dX ];
+0043 b = [ o ; nx ; ny ];
+0044 p = A \ b;  <span class="comment">% Moore-Penrose pseudoinverse</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

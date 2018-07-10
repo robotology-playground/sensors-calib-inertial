@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of GridGeneratorWOsuspend</title>
+  <meta name="keywords" content="GridGeneratorWOsuspend">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @GridGeneratorWOsuspend -->
+<h1>GridGeneratorWOsuspend
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@GridGenerator/GridGenerator.html" class="code" title="">GridGenerator</a>	</li><li><a href="../../src/@GridGenerator/getMeasTagsFromPaths.html" class="code" title="function measTag = getMeasTagsFromPaths(~,qT)">getMeasTagsFromPaths</a>	For each pair of simultaneous target positions <qT_i,qA_i>, set the tag</li><li><a href="GridGeneratorWOsuspend.html" class="code" title="">GridGeneratorWOsuspend</a>	</li><li><a href="getMeasTagsFromPaths.html" class="code" title="function measTag = getMeasTagsFromPaths(~,qT)">getMeasTagsFromPaths</a>	For each pair of simultaneous target positions <qT_i,qA_i>, set the tag</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="GridGeneratorWOsuspend.html" class="code" title="">GridGeneratorWOsuspend</a>	</li><li><a href="../../src/conf/advanced/accelerometersCalibratorSequenceProfileWOsuspend.html" class="code" title="">accelerometersCalibratorSequenceProfileWOsuspend</a>	% Home single step sequence</li><li><a href="../../src/conf/advanced/gyroscopesCalibratorSequenceProfile1checkAlgo.html" class="code" title="">gyroscopesCalibratorSequenceProfile1checkAlgo</a>	% Home single step sequence</li><li><a href="../../src/conf/advanced/gyroscopesCalibratorSequenceProfile2checkCalib.html" class="code" title="">gyroscopesCalibratorSequenceProfile2checkCalib</a>	% Home single step sequence</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = GridGeneratorWOsuspend()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="GridGeneratorWOsuspend.html" class="code" title="">GridGeneratorWOsuspend</a> &lt; <a href="../../src/@GridGenerator/GridGenerator.html" class="code" title="">GridGenerator</a>
+0002     <span class="comment">%GridGeneratorWOpause This class generates the same grid as</span>
+0003     <span class="comment">%   GridGenerator, but the acquisition is never suspended during</span>
+0004     <span class="comment">%   transition motions.</span>
+0005     
+0006     methods(Access = public)
+0007         <a name="_sub0" href="#_subfunctions" class="code">function obj = GridGeneratorWOsuspend()</a>
+0008         <span class="keyword">end</span>
+0009     <span class="keyword">end</span>
+0010     
+0011     methods(Access = protected)
+0012         measTag = <a href="getMeasTagsFromPaths.html" class="code" title="function measTag = getMeasTagsFromPaths(~,qT)">getMeasTagsFromPaths</a>(obj,qT);
+0013     <span class="keyword">end</span>
+0014     
+0015 <span class="keyword">end</span>
+0016</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

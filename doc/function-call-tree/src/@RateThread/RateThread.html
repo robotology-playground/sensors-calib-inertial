@@ -1,0 +1,198 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RateThread</title>
+  <meta name="keywords" content="RateThread">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RateThread -->
+<h1>RateThread
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>	Inits the state machine</li><li><a href="../../src/@MotorPWMcontroller/start.html" class="code" title="function [ ok ] = start( obj )">start</a>	Set the controlled motor obj.ctrledMotor in PWM control mode.</li><li><a href="../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>	Stop the PWM controller.</li><li><a href="RateThread.html" class="code" title="">RateThread</a>	</li><li><a href="../../src/@Timers/Timers.html" class="code" title="">Timers</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/+UT/@RateThread_CB/RateThread_CB.html" class="code" title="">RateThread_CB</a>	</li><li><a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li><li><a href="../../src/@MotorPWMcontroller/runPwmEmulPosCtrlMode.html" class="code" title="function [ ok ] = runPwmEmulPosCtrlMode( obj,samplingPeriod,timeout )">runPwmEmulPosCtrlMode</a>	UNTITLED Summary of this function goes here</li><li><a href="../../src/@MotorPWMcontroller/runRealtimePidPlotter.html" class="code" title="function [ ok ] = runRealtimePidPlotter( obj,threadPeriod,threadTimeout )">runRealtimePidPlotter</a>	UNTITLED Summary of this function goes here</li><li><a href="../../src/@MotorPWMcontroller/runRealtimePlotter.html" class="code" title="function [ ok ] = runRealtimePlotter( obj,threadPeriod,threadTimeout )">runRealtimePlotter</a>	UNTITLED Summary of this function goes here</li><li><a href="RateThread.html" class="code" title="">RateThread</a>	</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = RateThread(rateFcn,startFcn,stopFcn,threadClock,period,timeout)</a></li><li><a href="#_sub2" class="code">function setTimerFcn(obj,threadClock)</a></li><li><a href="#_sub3" class="code">function delete(obj)</a></li><li><a href="#_sub4" class="code">function ok = run(obj,waitTimerStop)</a></li><li><a href="#_sub5" class="code">function stop(obj,completion)</a></li><li><a href="#_sub6" class="code">function isit = isRunning(obj)</a></li><li><a href="#_sub7" class="code">function localSyncYarpClock(obj,timerObj,thisEvent,rateFcn)</a></li><li><a href="#_sub8" class="code">function yarpClock(obj,timerObj,thisEvent,rateFcn)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="RateThread.html" class="code" title="">RateThread</a> &lt; handle
+0002     <span class="comment">%Runs at a fixed rate a given function.</span>
+0003     <span class="comment">%   The function and execution rate is defined through the class constructor.</span>
+0004     
+0005     properties (Access=protected)
+0006         minTimerFcnSpacing@double = 0.001 <span class="comment">% 1 ms in 'fixedSpacing' execution mode</span>
+0007     <span class="keyword">end</span>
+0008     
+0009     properties (GetAccess=public, SetAccess=protected)
+0010         threadTimer@timer;  <span class="comment">% scheduling timer</span>
+0011         period@double  = 1; <span class="comment">% thread period in seconds</span>
+0012         timeout@double = 1; <span class="comment">% thread timeout in seconds</span>
+0013         rateFcn@function_handle; <span class="comment">% for setting TimerFcn callback</span>
+0014         firstYarpTime@double = 0;  <span class="comment">% for synchronisation with Yarp clock</span>
+0015         currentLocalTime@uint64 = uint64(0); <span class="comment">% for synchronisation with Yarp clock</span>
+0016         threadClock@char = <span class="string">'local'</span>; <span class="comment">% local clock / synced to Yarp / Yarp clock</span>
+0017     <span class="keyword">end</span>
+0018     
+0019     methods
+0020         <a name="_sub0" href="#_subfunctions" class="code">function obj = RateThread(rateFcn,startFcn,stopFcn,threadClock,period,timeout)</a>
+0021             <span class="comment">% set period and timeout</span>
+0022             obj.period = round(period,3);
+0023             <span class="keyword">if</span> exist(<span class="string">'timeout'</span>,<span class="string">'var'</span>)
+0024                 obj.timeout = timeout;
+0025             <span class="keyword">end</span>
+0026             
+0027             <span class="comment">% Set timer function</span>
+0028             obj.rateFcn = rateFcn;
+0029             
+0030             <span class="comment">% create the scheduling timer (default clock is 'local')</span>
+0031             obj.threadTimer = timer(<span class="keyword">...</span>
+0032                 <span class="string">'BusyMode'</span>,<span class="string">'drop'</span>,<span class="keyword">...</span><span class="comment">           % drop current timerFcn if previous not completed</span>
+0033                 <span class="string">'TasksToExecute'</span>,ceil(timeout/period),<span class="keyword">...</span><span class="comment"> % number of runs before the timer stops</span>
+0034                 <span class="string">'UserData'</span>,false);
+0035             <span class="keyword">if</span> ~isempty(startFcn)
+0036                 obj.threadTimer.StartFcn = startFcn;
+0037             <span class="keyword">end</span>
+0038             <span class="keyword">if</span> ~isempty(stopFcn)
+0039                 obj.threadTimer.StopFcn = stopFcn;
+0040             <span class="keyword">end</span>
+0041             
+0042             <span class="comment">% set timer function clock</span>
+0043             <span class="keyword">if</span> exist(<span class="string">'threadClock'</span>,<span class="string">'var'</span>)
+0044                 obj.threadClock = threadClock;
+0045             <span class="keyword">end</span>
+0046             
+0047             <span class="comment">% change timer clock type</span>
+0048             obj.setTimerFcn(obj.threadClock);
+0049         <span class="keyword">end</span>
+0050         
+0051         <a name="_sub1" href="#_subfunctions" class="code">function setTimerFcn(obj,threadClock)</a>
+0052             <span class="comment">% Reset execution mode</span>
+0053             <span class="keyword">switch</span> threadClock
+0054                 <span class="keyword">case</span> <span class="string">'local'</span>
+0055                     <span class="comment">% Starts immediately after the timer callback function</span>
+0056                     <span class="comment">% is added to the MATLAB execution queue.</span>
+0057                     obj.threadTimer.ExecutionMode = <span class="string">'fixedRate'</span>;
+0058                     obj.threadTimer.Period = obj.period;
+0059                     <span class="comment">% Timer function</span>
+0060                     obj.threadTimer.TimerFcn = <span class="keyword">...</span>
+0061                         @(timerObj,thisEvent) obj.rateFcn(timerObj,thisEvent,@obj.stop);
+0062                     
+0063                 <span class="keyword">case</span> <span class="string">'localSyncYarp'</span>
+0064                     obj.threadTimer.ExecutionMode = <span class="string">'fixedRate'</span>;
+0065                     obj.threadTimer.Period = obj.period;
+0066                     <span class="comment">% Timer function</span>
+0067                     obj.threadTimer.TimerFcn = <span class="keyword">...</span>
+0068                         @(timerObj,thisEvent) obj.localSyncYarpClock(timerObj,thisEvent,obj.rateFcn);
+0069                     
+0070                     <span class="comment">% prepare Timers class of wait timers</span>
+0071                     <a href="../../src/@Timers/Timers.html" class="code" title="">Timers</a>;
+0072                     
+0073                 <span class="keyword">case</span> <span class="string">'yarp'</span>
+0074                     <span class="comment">% Starts when the timer callback function finishes executing.</span>
+0075                     obj.threadTimer.ExecutionMode = <span class="string">'fixedSpacing'</span>;
+0076                     obj.threadTimer.Period = obj.minTimerFcnSpacing;
+0077                     <span class="comment">% Timer function</span>
+0078                     obj.threadTimer.TimerFcn = <span class="keyword">...</span>
+0079                         @(timerObj,thisEvent) obj.yarpClock(timerObj,thisEvent,obj.rateFcn);
+0080                     
+0081                 <span class="keyword">otherwise</span>
+0082                     error(<span class="string">'Unknown thread clock sync type!!'</span>);
+0083             <span class="keyword">end</span>
+0084         <span class="keyword">end</span>
+0085         
+0086         <a name="_sub2" href="#_subfunctions" class="code">function delete(obj)</a>
+0087             <span class="keyword">if</span> strcmp(obj.threadTimer.Running,<span class="string">'on'</span>)
+0088                 <a href="../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>(obj.threadTimer);
+0089             <span class="keyword">end</span>
+0090             <a href="#_sub3" class="code" title="subfunction delete(obj)">delete</a>(obj.threadTimer);
+0091         <span class="keyword">end</span>
+0092         
+0093         <a name="_sub3" href="#_subfunctions" class="code">function ok = run(obj,waitTimerStop)</a>
+0094             <span class="comment">% latch Yarp clock and local clock</span>
+0095             obj.firstYarpTime = yarp.now;
+0096             obj.currentLocalTime = tic;
+0097             <span class="comment">% Start the timer and wait termination by 'rateFunctionH' or</span>
+0098             <span class="comment">% timeout.</span>
+0099             <a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>(obj.threadTimer);
+0100             ok = true;
+0101             <span class="keyword">if</span> waitTimerStop
+0102                 wait(obj.threadTimer);
+0103                 <span class="comment">% return motion done success or failure</span>
+0104                 ok = get(obj.threadTimer,<span class="string">'UserData'</span>);
+0105             <span class="keyword">end</span>
+0106         <span class="keyword">end</span>
+0107         
+0108         <a name="_sub4" href="#_subfunctions" class="code">function stop(obj,completion)</a>
+0109             <span class="comment">% Set the completion flag (bool)</span>
+0110             set(obj.threadTimer,<span class="string">'UserData'</span>,completion);
+0111             <span class="comment">% stop the timer</span>
+0112             <a href="../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>(obj.threadTimer);
+0113         <span class="keyword">end</span>
+0114         
+0115         <a name="_sub5" href="#_subfunctions" class="code">function isit = isRunning(obj)</a>
+0116             isit = obj.threadTimer.Running;
+0117         <span class="keyword">end</span>
+0118     <span class="keyword">end</span>
+0119     
+0120     methods (Access=protected)
+0121         <a name="_sub6" href="#_subfunctions" class="code">function localSyncYarpClock(obj,timerObj,thisEvent,rateFcn)</a>
+0122             <span class="comment">% fine adjust the period, for aavoiding thrift</span>
+0123             currentYarpTime = yarp.now - obj.firstYarpTime;
+0124             adjust = round(currentYarpTime - toc(obj.currentLocalTime),3);
+0125             <span class="comment">% adjust &gt; 0 means that the Yarp clock is faster than the local</span>
+0126             <span class="comment">% and we have to shorten the period by as much</span>
+0127             <span class="comment">%timerObj.Period = timerObj.Period - adjust; =&gt; this action is</span>
+0128             <span class="comment">%not possible while the timer is running</span>
+0129             <span class="keyword">if</span> (adjust&lt;-0.001)
+0130                 Timers.wait(-adjust);
+0131             <span class="keyword">end</span>
+0132             
+0133             <span class="comment">% call the periodoc external function</span>
+0134             rateFcn(timerObj,thisEvent,@obj.stop);
+0135         <span class="keyword">end</span>
+0136         
+0137         <a name="_sub7" href="#_subfunctions" class="code">function yarpClock(obj,timerObj,thisEvent,rateFcn)</a>
+0138             <span class="comment">% This is the Nth iteration (N=timerObj.TasksExecuted). We wish</span>
+0139             <span class="comment">% to trigger the execution of 'rateFcn()' at t=N*period.</span>
+0140             
+0141             <span class="comment">% check the elapsed Yarp time</span>
+0142             currentYarpTime = yarp.now - obj.firstYarpTime;
+0143             <span class="comment">% wait depending on desired period</span>
+0144             yarp.delay(timerObj.TasksExecuted*obj.period - currentYarpTime);
+0145             <span class="comment">% call the requested external timer function</span>
+0146             rateFcn(timerObj,thisEvent,@obj.stop);
+0147         <span class="keyword">end</span>
+0148     <span class="keyword">end</span>
+0149     
+0150     <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

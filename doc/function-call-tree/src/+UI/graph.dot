@@ -1,0 +1,9 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  cellArrayOfStr2str [URL="cellArrayOfStr2str.html"];
+  convertCalibrationMap2table [URL="convertCalibrationMap2table.html"];
+  convertCellArray2table [URL="convertCellArray2table.html"];
+  getMappingFromIniFile [URL="getMappingFromIniFile.html"];
+  getPlotDataNfitModel [URL="getPlotDataNfitModel.html"];
+}

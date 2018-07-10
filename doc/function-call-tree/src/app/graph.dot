@@ -1,0 +1,10 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  unitTests -> unitTestsInit;
+
+  generatePaths [URL="generatePaths.html"];
+  resetMex [URL="resetMex.html"];
+  sensorSelfCalibrator [URL="sensorSelfCalibrator.html"];
+  unitTests [URL="unitTests.html"];
+  unitTestsInit [URL="unitTestsInit.html"];
+}

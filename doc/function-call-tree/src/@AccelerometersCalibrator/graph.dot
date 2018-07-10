@@ -1,0 +1,8 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  AccelerometersCalibrator -> AccelerometersCalibrator;
+  AccelerometersCalibrator -> calibrateSensors;
+
+  AccelerometersCalibrator [URL="AccelerometersCalibrator.html"];
+  calibrateSensors [URL="calibrateSensors.html"];
+}

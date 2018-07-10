@@ -1,0 +1,17 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  Angle -> Angle;
+  AngleVector -> Angle;
+  AngleVector -> AngleVector;
+
+  Angle [URL="Angle.html"];
+  AngleVector [URL="AngleVector.html"];
+  cellArrayOfStr2str [URL="cellArrayOfStr2str.html"];
+  concatMap [URL="concatMap.html"];
+  genNewOffsets [URL="genNewOffsets.html"];
+  lengths [URL="lengths.html"];
+  linAng2AngLin [URL="linAng2AngLin.html"];
+  loadInit [URL="loadInit.html"];
+  sgolayFiltParamsTuning [URL="sgolayFiltParamsTuning.html"];
+  sizes [URL="sizes.html"];
+}

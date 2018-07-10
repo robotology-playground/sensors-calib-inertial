@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getJointsControlMode</title>
+  <meta name="keywords" content="getJointsControlMode">
+  <meta name="description" content="Set control mode for a set of joint indexes">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoardRemapper -->
+<h1>getJointsControlMode
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Set control mode for a set of joint indexes</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ ok,modes ] = getJointsControlMode( obj,jointsIdxList ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Set control mode for a set of joint indexes
+   Supported modes are:
+   Position, Open loop (applicable for PWM, torque, current).</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ ok,modes ] = getJointsControlMode( obj,jointsIdxList )</a>
+0002 <span class="comment">%Set control mode for a set of joint indexes</span>
+0003 <span class="comment">%   Supported modes are:</span>
+0004 <span class="comment">%   Position, Open loop (applicable for PWM, torque, current).</span>
+0005 <span class="comment">%</span>
+0006 
+0007 <span class="comment">% Set control mode</span>
+0008 iCtrlMode = obj.driver.viewIControlMode2();
+0009 
+0010 <span class="comment">% convert parameters to types handled by the bindings API</span>
+0011 n_joints = length(jointsIdxList);
+0012 jointsIVec = yarp.IVector(n_joints);
+0013 modesIVec  = yarp.IVector(n_joints);
+0014 jointsIVec.fromMatlab(jointsIdxList-1); <span class="comment">% C++ like indexes</span>
+0015 modesIVec.zero();
+0016 
+0017 <span class="comment">% configure mode for specified joints</span>
+0018 ok = iCtrlMode.getControlModes(n_joints,jointsIVec,modesIVec);
+0019 
+0020 <span class="comment">% Translate retrieved mode from vocab</span>
+0021 modes = arrayfun(<span class="keyword">...</span>
+0022     @(vocab) obj.vocab2ctrlMode(vocab),<span class="keyword">...</span>
+0023     modesIVec.toMatlab,<span class="keyword">...</span>
+0024     <span class="string">'UniformOutput'</span>,false);
+0025 
+0026 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

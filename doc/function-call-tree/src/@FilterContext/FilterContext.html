@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of FilterContext</title>
+  <meta name="keywords" content="FilterContext">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @FilterContext -->
+<h1>FilterContext
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="FilterContext.html" class="code" title="">FilterContext</a>	</li><li><a href="tuneFilter.html" class="code" title="function tuneFilter(hObject,callbackdata,filterContext)">tuneFilter</a>	UNTITLED3 Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="FilterContext.html" class="code" title="">FilterContext</a>	</li><li><a href="../../src/utils/sgolayFiltParamsTuning.html" class="code" title="">sgolayFiltParamsTuning</a>	% clear all variables and close all previous figures</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = FilterContext(K,F,time,sensMeas,contextPath)</a></li><li><a href="#_sub2" class="code">function regSubPlots(obj,ax,ay,az)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="FilterContext.html" class="code" title="">FilterContext</a> &lt; handle
+0002     <span class="comment">%UNTITLED Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         SgolayK;
+0007         SgolayF;
+0008         time;
+0009         sensMeas;
+0010         lastFilteredSensMeas = [];
+0011         deltaF;
+0012         adjustedDeltaF; <span class="comment">% always even</span>
+0013         ax;
+0014         ay;
+0015         az;
+0016         contextPath = <span class="string">''</span>;
+0017     <span class="keyword">end</span>
+0018     
+0019     methods
+0020         <a name="_sub0" href="#_subfunctions" class="code">function obj = FilterContext(K,F,time,sensMeas,contextPath)</a>
+0021             obj.SgolayK = K;
+0022             obj.SgolayF = F;
+0023             obj.time = time;
+0024             obj.sensMeas = sensMeas;
+0025             obj.lastFilteredSensMeas = sensMeas;
+0026             obj.deltaF = 1;
+0027             obj.adjustedDeltaF = 2;
+0028             obj.contextPath = contextPath;
+0029         <span class="keyword">end</span>
+0030         
+0031         <a name="_sub1" href="#_subfunctions" class="code">function regSubPlots(obj,ax,ay,az)</a>
+0032             obj.ax = ax;
+0033             obj.ay = ay;
+0034             obj.az = az;
+0035         <span class="keyword">end</span>
+0036     <span class="keyword">end</span>
+0037     
+0038     methods(Static)
+0039         <a href="tuneFilter.html" class="code" title="function tuneFilter(hObject,callbackdata,filterContext)">tuneFilter</a>(hObject,callbackdata,filterContext)
+0040     <span class="keyword">end</span>
+0041     
+0042 <span class="keyword">end</span>
+0043</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

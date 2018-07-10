@@ -1,0 +1,206 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkSensorMeasVsEst</title>
+  <meta name="keywords" content="checkSensorMeasVsEst">
+  <meta name="description" content="number of measurement samples">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDiagnosis -->
+<h1>checkSensorMeasVsEst
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>number of measurement samples</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function angleList = checkSensorMeasVsEst(data,sensorsIdxListFile,sensMeasCell,sensEstCell,figuresHandler,logtag) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> number of measurement samples</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function angleList = checkSensorMeasVsEst(</a><span class="keyword">...</span>
+0002     data,sensorsIdxListFile,<span class="keyword">...</span>
+0003     sensMeasCell,sensEstCell,<span class="keyword">...</span>
+0004     figuresHandler,logtag)
+0005 
+0006 <span class="comment">% number of measurement samples</span>
+0007 subSamplingSize = size(sensMeasCell,1);
+0008 
+0009 <span class="comment">% select accelerometers to check and plot</span>
+0010 accIter = 1:length(sensorsIdxListFile);
+0011 
+0012 <span class="comment">% time series</span>
+0013 time = data.ac.tInit + data.ac.parsedParams.time(:);
+0014 
+0015 <span class="comment">%% ============ 3D vectors ===============================================</span>
+0016 <span class="comment">%</span>
+0017 figH = figure(<span class="string">'Name'</span>, <span class="string">'3D vectors sensor measurement VS sensor estimation'</span>,<span class="keyword">...</span>
+0018     <span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0019 title(<span class="string">'3D vectors of sensors measurement VS estimation'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0020 
+0021 <span class="comment">% Add figure to the figure handler</span>
+0022 figLabel = [logtag <span class="string">'_v3dAccEstVSaccMeas'</span>];
+0023 figuresHandler.addFigure(figH,figLabel);
+0024 
+0025 <span class="comment">% origin of the vectors = origin of the sensor frame</span>
+0026 origin=zeros(size(sensMeasCell,1),3);
+0027 
+0028 subplotIdx = 0;
+0029 <span class="keyword">for</span> acc_i = accIter
+0030     subplotIdx = subplotIdx+1;
+0031     subplot(max(1,ceil(length(accIter)/4)),min(4,length(accIter)),subplotIdx);
+0032     hold on;
+0033     
+0034     Vmeas=cell2mat(sensMeasCell(:,acc_i));
+0035     Vest=cell2mat(sensEstCell(:,acc_i));
+0036     
+0037     quiver3(origin(:,1),origin(:,2),origin(:,3),Vmeas(:,1),Vmeas(:,2),Vmeas(:,3),<span class="string">'color'</span>,[1 0 0]);
+0038     quiver3(origin(:,1),origin(:,2),origin(:,3),Vest(:,1),Vest(:,2),Vest(:,3),<span class="string">'color'</span>,[0 0 1]);
+0039     
+0040     title(data.ac.labels{sensorsIdxListFile(acc_i)});
+0041     axis vis3d;
+0042     <span class="comment">% axis square;</span>
+0043     daspect([1 1 1]);
+0044     grid ON;
+0045     xlabel(<span class="string">'Acc X (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0046     ylabel(<span class="string">'Acc Y (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0047     zlabel(<span class="string">'Acc Z (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0048     legend(<span class="string">'Location'</span>,<span class="string">'BestOutside'</span>,<span class="string">'measured acc.'</span>,<span class="string">'estimated acc.'</span>);
+0049     hold off;
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">%% ============ vector components ========================================</span>
+0053 <span class="comment">%</span>
+0054 figH = figure(<span class="string">'Name'</span>, <span class="string">'components of sensor measurement VS sensor estimation'</span>,<span class="keyword">...</span>
+0055     <span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0056 title(<span class="string">'components of sensors measurement VS estimation'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0057 
+0058 <span class="comment">% Add figure to the figure handler</span>
+0059 figLabel = [logtag <span class="string">'_xyzAccEstVSaccMeas'</span>];
+0060 figuresHandler.addFigure(figH,figLabel);
+0061 
+0062 subplotIdx = 0;
+0063 <span class="keyword">for</span> acc_i = accIter
+0064     subplotIdx = subplotIdx+1;
+0065     subplot(max(1,ceil(length(accIter)/4)),min(4,length(accIter)),subplotIdx);
+0066     hold on;
+0067     
+0068     Vmeas=cell2mat(sensMeasCell(:,acc_i));
+0069     Vest=cell2mat(sensEstCell(:,acc_i));
+0070     
+0071     plot(time,Vmeas(:,1),<span class="string">'r-'</span>);
+0072     plot(time,Vmeas(:,2),<span class="string">'rV:'</span>);
+0073     plot(time,Vmeas(:,3),<span class="string">'r^:'</span>);
+0074     plot(time,Vest(:,1),<span class="string">'b-'</span>);
+0075     plot(time,Vest(:,2),<span class="string">'bV:'</span>);
+0076     plot(time,Vest(:,3),<span class="string">'b^:'</span>);
+0077     
+0078     title(data.ac.labels{sensorsIdxListFile(acc_i)});
+0079     grid ON;
+0080     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0081     ylabel(<span class="string">'Acc X|Y|Z (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0082     legend(<span class="string">'Location'</span>,<span class="string">'BestOutside'</span>,<span class="string">'measured x'</span>,<span class="string">'measured y'</span>,<span class="string">'measured z'</span>,<span class="keyword">...</span>
+0083         <span class="string">'estimated x'</span>,<span class="string">'estimated y'</span>,<span class="string">'estimated z'</span>);
+0084     hold off;
+0085 <span class="keyword">end</span>
+0086 
+0087 <span class="comment">%% ============ vector norms =============================================</span>
+0088 <span class="comment">%</span>
+0089 figH = figure(<span class="string">'Name'</span>, <span class="string">'Norm of sensor measurement VS sensor estimation'</span>,<span class="keyword">...</span>
+0090     <span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0091 title(<span class="string">'Norm of sensors measurement VS estimation'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0092 
+0093 <span class="comment">% Add figure to the figure handler</span>
+0094 figLabel = [logtag <span class="string">'_normAccEstVSaccMeas'</span>];
+0095 figuresHandler.addFigure(figH,figLabel);
+0096 
+0097 subplotIdx = 0;
+0098 <span class="keyword">for</span> acc_i = accIter
+0099     subplotIdx = subplotIdx+1;
+0100     subplot(max(1,ceil(length(accIter)/4)),min(4,length(accIter)),subplotIdx);
+0101     hold on;
+0102     
+0103     [Vmeas,Vest,Vcost] = deal(zeros(subSamplingSize,1));
+0104     <span class="keyword">for</span> ts = 1:subSamplingSize
+0105         Vmeas(ts) = norm(sensMeasCell{ts,acc_i},2);
+0106         Vest(ts) = norm(sensEstCell{ts,acc_i},2);
+0107         Vcost(ts) = norm(sensMeasCell{ts,acc_i}-sensEstCell{ts,acc_i},2);
+0108     <span class="keyword">end</span>
+0109     
+0110     plot(time,Vmeas,<span class="string">'r'</span>,<span class="string">'lineWidth'</span>,2.0);
+0111     plot(time,Vest,<span class="string">'b'</span>,<span class="string">'lineWidth'</span>,2.0);
+0112     plot(time,Vcost,<span class="string">'g'</span>,<span class="string">'lineWidth'</span>,2.0);
+0113     
+0114     title(data.ac.labels{sensorsIdxListFile(acc_i)});
+0115     grid ON;
+0116     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0117     ylabel(<span class="string">'Acc norm (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0118     legend(<span class="string">'Location'</span>,<span class="string">'BestOutside'</span>,<span class="string">'norm(measured)'</span>,<span class="string">'norm(estimated)'</span>,<span class="string">'norm(measured-estimated)'</span>);
+0119     hold off;
+0120 <span class="keyword">end</span>
+0121 
+0122 <span class="comment">%% ============ angle between vectors ====================================</span>
+0123 <span class="comment">%</span>
+0124 figH = figure(<span class="string">'Name'</span>, <span class="string">'Angle of sensor measurement VS sensor estimation'</span>,<span class="keyword">...</span>
+0125     <span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0126 title(<span class="string">'Angle of sensors measurement VS estimation'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0127 
+0128 <span class="comment">% Add figure to the figure handler</span>
+0129 figLabel = [logtag <span class="string">'_angleAccEstVSaccMeas'</span>];
+0130 figuresHandler.addFigure(figH,figLabel);
+0131 
+0132 <span class="comment">% each iteration of the for loop will feed a subplot</span>
+0133 subplotIdx = 0;
+0134 <span class="comment">% at each iteration, save the computed angle for the function output</span>
+0135 angleList = zeros(subSamplingSize,length(accIter));
+0136 <span class="comment">% compute the angles</span>
+0137 <span class="keyword">for</span> acc_i = accIter
+0138     <span class="comment">% define subplot for the current selected sensor</span>
+0139     subplotIdx = subplotIdx+1;
+0140     subplot(max(1,ceil(length(accIter)/4)),min(4,length(accIter)),subplotIdx);
+0141     hold on;
+0142     
+0143     <span class="comment">% compute angles for the current selected sensor</span>
+0144     angleMat = zeros(subSamplingSize,1);
+0145     <span class="keyword">for</span> ts = 1:subSamplingSize
+0146         angleMat(ts) = Angle.va2vb(sensEstCell{ts,acc_i},sensMeasCell{ts,acc_i});
+0147     <span class="keyword">end</span>
+0148     
+0149     <span class="comment">% plot angles</span>
+0150     plot(time,angleMat*180/pi,<span class="string">'r'</span>,<span class="string">'lineWidth'</span>,2.0);
+0151     title(data.ac.labels{sensorsIdxListFile(acc_i)});
+0152     grid ON;
+0153     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0154     ylabel(<span class="string">'Angle (degrees)'</span>,<span class="string">'Fontsize'</span>,12);
+0155     hold off
+0156     
+0157     <span class="comment">% save angles for the function output</span>
+0158     angleList(:,acc_i) = angleMat(:);
+0159 <span class="keyword">end</span>
+0160</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

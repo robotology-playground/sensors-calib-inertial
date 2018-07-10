@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of savePlot</title>
+  <meta name="keywords" content="savePlot">
+  <meta name="description" content="UNTITLED6 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @LowlevTauCtrlCalibrator -->
+<h1>savePlot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED6 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function savePlot( figuresHandler,savePlot,exportPlot,dataPath ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED6 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>	UNTITLED6 Summary of this function goes here</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li><li><a href="plotTrainingData.html" class="code" title="function plotTrainingData(obj,dataPath,measedSensorList,measedPartsList,model,taskSpecificParams)">plotTrainingData</a>	This function plots the acquired data for the friction or ktau calibration</li><li><a href="savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>	UNTITLED6 Summary of this function goes here</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li><li><a href="../../src/conf/sensorSelfCalibratorInit.html" class="code" title="">sensorSelfCalibratorInit</a>	====================================================================</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function savePlot( figuresHandler,savePlot,exportPlot,dataPath )</a>
+0002 <span class="comment">%UNTITLED6 Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% Save the plots into matlab figure files and eventually export them to PNG</span>
+0006 <span class="comment">% files.</span>
+0007 <span class="keyword">if</span> <a href="savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>
+0008     <span class="comment">% save plots</span>
+0009     [figsFolder,iterator] = figuresHandler.saveFigures(exportPlot);
+0010     <span class="comment">% create log info file</span>
+0011     fileID = fopen([figsFolder <span class="string">'.txt'</span>],<span class="string">'w'</span>);
+0012     fprintf(fileID,<span class="string">'figs folder = %s\n'</span>,[dataPath <span class="string">'/'</span> figsFolder]);
+0013     fprintf(fileID,<span class="string">'iterator = %d\n'</span>,iterator);
+0014     <span class="comment">%fprintf(fileID,whos);</span>
+0015     fclose(fileID);
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

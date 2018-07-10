@@ -1,0 +1,7 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  hardwareMechanicalsConfig [URL="hardwareMechanicalsConfig.html"];
+  link2partMappingIni [URL="link2partMappingIni.html"];
+  yarpPortNameRules [URL="yarpPortNameRules.html"];
+}

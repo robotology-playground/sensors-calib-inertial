@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipse_im2ex</title>
+  <meta name="keywords" content="ellipse_im2ex">
+  <meta name="description" content="Cast ellipse defined with implicit parameter vector to explicit form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipse_im2ex
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Cast ellipse defined with implicit parameter vector to explicit form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function varargout = ellipse_im2ex(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Cast ellipse defined with implicit parameter vector to explicit form.
+
+ See also: <a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipse_distance.html" class="code" title="function [e,d,xf,yf] = ellipse_distance(x, y, p)">ellipse_distance</a>	Distance of points projected onto an ellipse.</li><li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>	Maximum likelihood ellipse fit with foot points.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [c1,c2,semia,semib,phi] = ellipse_explicit(a,b,c,d,f,g)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = ellipse_im2ex(varargin)</a>
+0002 <span class="comment">% Cast ellipse defined with implicit parameter vector to explicit form.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also: ellipse_ex2im</span>
+0005 
+0006 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0007 
+0008 <span class="keyword">if</span> nargin &gt; 1
+0009     narginchk(6,6);
+0010     <span class="keyword">for</span> k = 1 : 6
+0011         validateattributes(varargin{k}, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0012     <span class="keyword">end</span>
+0013     [c1,c2,a,b,phi] = <a href="#_sub1" class="code" title="subfunction [c1,c2,semia,semib,phi] = ellipse_explicit(a,b,c,d,f,g)">ellipse_explicit</a>(varargin{:});
+0014 <span class="keyword">else</span>
+0015     narginchk(1,1);
+0016     p = varargin{1};
+0017     validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0018     p = p(:);
+0019     validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[6 1]});
+0020     [c1,c2,a,b,phi] = <a href="#_sub1" class="code" title="subfunction [c1,c2,semia,semib,phi] = ellipse_explicit(a,b,c,d,f,g)">ellipse_explicit</a>(p(1), 0.5*p(2), p(3), 0.5*p(4), 0.5*p(5), p(6));
+0021 <span class="keyword">end</span>
+0022 <span class="keyword">if</span> nargout &gt; 1
+0023     varargout = num2cell([c1,c2,a,b,phi]);
+0024 <span class="keyword">else</span>
+0025     varargout{1} = [c1,c2,a,b,phi];
+0026 <span class="keyword">end</span>
+0027 
+0028 <a name="_sub1" href="#_subfunctions" class="code">function [c1,c2,semia,semib,phi] = ellipse_explicit(a,b,c,d,f,g)</a>
+0029 <span class="comment">% Cast ellipse defined with explicit parameter vector to implicit form.</span>
+0030 
+0031 <span class="comment">% helper quantities</span>
+0032 N = 2*(a*f^2+c*d^2+g*b^2-2*b*d*f-a*c*g);
+0033 D = b^2-a*c;
+0034 <a href="../../../src/@S/S.html" class="code" title="">S</a> = realsqrt((a-c)^2+4*b^2);
+0035 
+0036 <span class="comment">% semi-axes</span>
+0037 ap = realsqrt( N/(D*(<a href="../../../src/@S/S.html" class="code" title="">S</a>-(a+c))) );
+0038 bp = realsqrt( N/(D*(-<a href="../../../src/@S/S.html" class="code" title="">S</a>-(a+c))) );
+0039 semia = max(ap,bp);
+0040 semib = min(ap,bp);
+0041 
+0042 <span class="comment">% center</span>
+0043 c1 = (c*d-b*f)/D;
+0044 c2 = (a*f-b*d)/D;
+0045 
+0046 <span class="comment">% angle of tilt</span>
+0047 <span class="keyword">if</span> b ~= 0
+0048     <span class="keyword">if</span> abs(a) &lt; abs(c)
+0049         phi = 0.5*acot((a-c)/(2*b));
+0050     <span class="keyword">else</span>
+0051         phi = 0.5*pi+0.5*acot((a-c)/(2*b));
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">else</span>
+0054     <span class="keyword">if</span> abs(a) &lt; abs(c)
+0055         phi = 0;
+0056     <span class="keyword">else</span>  <span class="comment">% a &gt; c</span>
+0057         phi = 0.5*pi;
+0058     <span class="keyword">end</span>
+0059 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

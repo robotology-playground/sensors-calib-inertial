@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Plotter</title>
+  <meta name="keywords" content="Plotter">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Plotter -->
+<h1>Plotter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Plotter.html" class="code" title="">Plotter</a>	</li><li><a href="plot2dDataNfittedModel.html" class="code" title="function plot2dDataNfittedModel(figuresHandler,aTitle,aLabel,xData,yData,xModel,yModel,xLabel,yLabel,dataLegend,modelLegend)">plot2dDataNfittedModel</a>	UNTITLED9 Summary of this function goes here</li><li><a href="plot2funcTimeseries.html" class="code" title="function plot2funcTimeseries(figuresHandler,aTitle,aLabel,time,y1,y2,yLabel,y1Legend,y2Legend)">plot2funcTimeseries</a>	UNTITLED9 Summary of this function goes here</li><li><a href="plot2funcTimeseriesYY.html" class="code" title="function plot2funcTimeseriesYY(figuresHandler,aTitle,aLabel,time1,y1,time2,y2,yLabel1,yLabel2,y1Legend,y2Legend)">plot2funcTimeseriesYY</a>	UNTITLED9 Summary of this function goes here</li><li><a href="plotFuncTimeseries.html" class="code" title="function plotFuncTimeseries(figuresHandler,aTitle,aLabel,time,y,yLabel)">plotFuncTimeseries</a>	UNTITLED9 Summary of this function goes here</li><li><a href="plotFuncTimeseriesNderivative.html" class="code" title="function plotFuncTimeseriesNderivative(figuresHandler,aTitle,aLabel,time,y,dtFrac,dy,yLabel,yLegend,dydtLegend)">plotFuncTimeseriesNderivative</a>	UNTITLED9 Summary of this function goes here</li><li><a href="plotNFuncTimeseries.html" class="code" title="function figH = plotNFuncTimeseries(figuresHandler,aTitle,aLabel,yLabel,...    % params irrelevant if figH is not empty">plotNFuncTimeseries</a>	</li><li><a href="plotNanimLineTimeseries.html" class="code" title="function [ figH,animLinesList ] = plotNanimLineTimeseries(figuresHandler,aTitle,aLabel,yLabel,yLegends,lineStyles,lineWidths,colors,markerSymbols,markerSizes,markerEdgeColors,markerFaceColors)">plotNanimLineTimeseries</a>	Plots y1(t), y2(t),...,yn(t) on the same axis.</li><li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Plotter.html" class="code" title="">Plotter</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Plotter.html" class="code" title="">Plotter</a> &lt; handle
+0002     <span class="comment">%UNTITLED8 Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties(Constant)
+0006         rad2deg = @(x) x*180/pi;
+0007         colorPanel = {<span class="string">'b'</span>,<span class="string">'g'</span>,<span class="string">'r'</span>,<span class="string">'c'</span>,<span class="string">'m'</span>,<span class="string">'y'</span>};
+0008         <span class="comment">% the figures handles and properties</span>
+0009         figuresHandlerMap = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0010     <span class="keyword">end</span>
+0011     
+0012     methods (Static=true)
+0013         <a href="plotFuncTimeseries.html" class="code" title="function plotFuncTimeseries(figuresHandler,aTitle,aLabel,time,y,yLabel)">plotFuncTimeseries</a>(<span class="keyword">...</span>
+0014             figuresHandler,aTitle,aLabel,<span class="keyword">...</span>
+0015             time,<a href="../../src/@y/y.html" class="code" title="">y</a>,<span class="keyword">...</span>
+0016             yLabel);
+0017         
+0018         <a href="plot2funcTimeseries.html" class="code" title="function plot2funcTimeseries(figuresHandler,aTitle,aLabel,time,y1,y2,yLabel,y1Legend,y2Legend)">plot2funcTimeseries</a>(<span class="keyword">...</span>
+0019             figuresHandler,aTitle,aLabel,<span class="keyword">...</span>
+0020             time,y1,y2,<span class="keyword">...</span>
+0021             yLabel,y1Legend,y2Legend);
+0022         
+0023         figH = <a href="plotNFuncTimeseries.html" class="code" title="function figH = plotNFuncTimeseries(figuresHandler,aTitle,aLabel,yLabel,...    % params irrelevant if figH is not empty">plotNFuncTimeseries</a>(<span class="keyword">...</span>
+0024             figuresHandler,aTitle,aLabel,yLabel,<span class="keyword">...</span><span class="comment">     % params irrelevant if figH is not empty</span>
+0025             time,Y,yLegends,<span class="keyword">...</span><span class="comment">                               % params always required</span>
+0026             lineStyles,lineWidth,markerCycle,figH,resetPlot); <span class="comment">% params always required</span>
+0027         
+0028         <a href="plotFuncTimeseriesNderivative.html" class="code" title="function plotFuncTimeseriesNderivative(figuresHandler,aTitle,aLabel,time,y,dtFrac,dy,yLabel,yLegend,dydtLegend)">plotFuncTimeseriesNderivative</a>(<span class="keyword">...</span>
+0029             figuresHandler,aTitle,aLabel,<span class="keyword">...</span>
+0030             time,<a href="../../src/@y/y.html" class="code" title="">y</a>,dtFrac,dy,<span class="keyword">...</span>
+0031             yLabel,yLegend,dydtLegend);
+0032         
+0033         <a href="plot2funcTimeseriesYY.html" class="code" title="function plot2funcTimeseriesYY(figuresHandler,aTitle,aLabel,time1,y1,time2,y2,yLabel1,yLabel2,y1Legend,y2Legend)">plot2funcTimeseriesYY</a>(<span class="keyword">...</span>
+0034             figuresHandler,aTitle,aLabel,<span class="keyword">...</span>
+0035             time1,y1,time2,y2,<span class="keyword">...</span>
+0036             yLabel1,yLabel2,y1Legend,y2Legend);
+0037         
+0038         <a href="plot2dDataNfittedModel.html" class="code" title="function plot2dDataNfittedModel(figuresHandler,aTitle,aLabel,xData,yData,xModel,yModel,xLabel,yLabel,dataLegend,modelLegend)">plot2dDataNfittedModel</a>(<span class="keyword">...</span>
+0039             figuresHandler,aTitle,aLabel,<span class="keyword">...</span>
+0040             xData,yData,xModel,yModel,<span class="keyword">...</span>
+0041             xLabel,yLabel,<span class="keyword">...</span>
+0042             dataLegend,modelLegend);
+0043         
+0044         [ figH,animLinesList ] = <a href="plotNanimLineTimeseries.html" class="code" title="function [ figH,animLinesList ] = plotNanimLineTimeseries(figuresHandler,aTitle,aLabel,yLabel,yLegends,lineStyles,lineWidths,colors,markerSymbols,markerSizes,markerEdgeColors,markerFaceColors)">plotNanimLineTimeseries</a>(<span class="keyword">...</span>
+0045             figuresHandler,aTitle,aLabel,yLabel,<span class="keyword">...</span>
+0046             yLegends,lineStyles,lineWidths,colors,<span class="keyword">...</span>
+0047             markerSymbols,markerSizes,markerEdgeColors,markerFaceColors);
+0048     <span class="keyword">end</span>
+0049     
+0050 <span class="keyword">end</span>
+0051</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

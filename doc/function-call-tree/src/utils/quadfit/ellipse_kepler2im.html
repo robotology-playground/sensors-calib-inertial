@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipse_kepler2im</title>
+  <meta name="keywords" content="ellipse_kepler2im">
+  <meta name="description" content="Cast ellipse defined in Kepler form to standard parameter vector form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipse_kepler2im
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Cast ellipse defined in Kepler form to standard parameter vector form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = ellipse_kepler2im(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Cast ellipse defined in Kepler form to standard parameter vector form.
+ The general quadratic equation is a*x^2+2*b*x*y+c*y^2+2*d*x+2*f*y+g = 0 where the
+ standard parameter vector is [a 2*b c 2*d 2*f g].
+ In Kepler's form, the foci of an ellipse are (p1;p2) and (q1;q2) and 2*a is the major
+ axis such that the parameter vector is [p1 p2 q1 q2 a] and the ellipse is expressed
+ by the equation P = sqrt((x-p1)^2+(y-p2)^2) + sqrt((x-q1)^2+(y-q2)^2) - 2*a = 0.
+
+ See also: <a href="ellipse_im2kepler.html" class="code" title="function varargout = ellipse_im2kepler(varargin)">ellipse_im2kepler</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function p = ellipse_standard(p1,p2,q1,q2,a)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = ellipse_kepler2im(varargin)</a>
+0002 <span class="comment">% Cast ellipse defined in Kepler form to standard parameter vector form.</span>
+0003 <span class="comment">% The general quadratic equation is a*x^2+2*b*x*y+c*y^2+2*d*x+2*f*y+g = 0 where the</span>
+0004 <span class="comment">% standard parameter vector is [a 2*b c 2*d 2*f g].</span>
+0005 <span class="comment">% In Kepler's form, the foci of an ellipse are (p1;p2) and (q1;q2) and 2*a is the major</span>
+0006 <span class="comment">% axis such that the parameter vector is [p1 p2 q1 q2 a] and the ellipse is expressed</span>
+0007 <span class="comment">% by the equation P = sqrt((x-p1)^2+(y-p2)^2) + sqrt((x-q1)^2+(y-q2)^2) - 2*a = 0.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% See also: ellipse_im2kepler</span>
+0010 
+0011 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0012 
+0013 <span class="keyword">if</span> nargin &gt; 1
+0014     narginchk(5,5);
+0015     <span class="keyword">for</span> k = 1 : 5
+0016         validateattributes(varargin{k}, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0017     <span class="keyword">end</span>
+0018     p = <a href="#_sub1" class="code" title="subfunction p = ellipse_standard(p1,p2,q1,q2,a)">ellipse_standard</a>(varargin{:});
+0019 <span class="keyword">else</span>
+0020     narginchk(1,1);
+0021     q = varargin{1};
+0022     validateattributes(q, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0023     q = q(:);
+0024     validateattributes(q, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[5 1]});
+0025     p = <a href="#_sub1" class="code" title="subfunction p = ellipse_standard(p1,p2,q1,q2,a)">ellipse_standard</a>(q(1), q(2), q(3), q(4), q(5));
+0026 <span class="keyword">end</span>
+0027 
+0028 <a name="_sub1" href="#_subfunctions" class="code">function p = ellipse_standard(p1,p2,q1,q2,a)</a>
+0029 <span class="comment">% Cast ellipse defined in Kepler form to standard parameter vector form.</span>
+0030 
+0031 p = <span class="keyword">...</span>
+0032 [ -16*a^2 + 4*p1^2 - 8*p1*q1 + 4*q1^2 <span class="keyword">...</span><span class="comment">    % x^2</span>
+0033 ; 8*p1*p2 - 8*p1*q2 - 8*p2*q1 + 8*q1*q2 <span class="keyword">...</span><span class="comment">  % x*y</span>
+0034 ; -16*a^2 + 4*p2^2 - 8*p2*q2 + 4*q2^2 <span class="keyword">...</span><span class="comment">    % y^2</span>
+0035 ; 16*a^2*p1 + 16*a^2*q1 - 4*p1^3 + 4*p1^2*q1 - 4*p1*p2^2 + 4*p1*q1^2 + 4*p1*q2^2 + 4*p2^2*q1 - 4*q1^3 - 4*q1*q2^2 <span class="keyword">...</span><span class="comment">  % x</span>
+0036 ; 16*a^2*p2 + 16*a^2*q2 - 4*p1^2*p2 + 4*p1^2*q2 - 4*p2^3 + 4*p2^2*q2 + 4*p2*q1^2 + 4*p2*q2^2 - 4*q1^2*q2 - 4*q2^3 <span class="keyword">...</span><span class="comment">  % y</span>
+0037 ; 16*a^4 - 8*a^2*p1^2 - 8*a^2*p2^2 - 8*a^2*q1^2 - 8*a^2*q2^2 + p1^4 + 2*p1^2*p2^2 - 2*p1^2*q1^2 - 2*p1^2*q2^2 + p2^4 - 2*p2^2*q1^2 - 2*p2^2*q2^2 + q1^4 + 2*q1^2*q2^2 + q2^4 <span class="keyword">...</span><span class="comment">  % 1</span>
+0038 ];
+0039 
+0040 p = p ./ norm(p);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

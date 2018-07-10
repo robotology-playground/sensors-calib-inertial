@@ -1,0 +1,8 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  GridGeneratorWOsuspend -> GridGeneratorWOsuspend;
+  GridGeneratorWOsuspend -> getMeasTagsFromPaths;
+
+  GridGeneratorWOsuspend [URL="GridGeneratorWOsuspend.html"];
+  getMeasTagsFromPaths [URL="getMeasTagsFromPaths.html"];
+}

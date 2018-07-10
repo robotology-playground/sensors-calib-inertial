@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ang2rot</title>
+  <meta name="keywords" content="ang2rot">
+  <meta name="description" content="Convert Euler angles to rotation matrix.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ang2rot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Convert Euler angles to rotation matrix.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function A = ang2rot(phi, theta, psi) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Convert Euler angles to rotation matrix.
+ Euler angles use the x-convention, i.e. phi, theta and psi are taken around the Z, X
+ and again the Z-axis.
+
+ See also: <a href="rot2ang.html" class="code" title="function [phi,theta,psi] = rot2ang(A)">rot2ang</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function A = ang2rot(phi, theta, psi)</a>
+0002 <span class="comment">% Convert Euler angles to rotation matrix.</span>
+0003 <span class="comment">% Euler angles use the x-convention, i.e. phi, theta and psi are taken around the Z, X</span>
+0004 <span class="comment">% and again the Z-axis.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% See also: rot2ang</span>
+0007 
+0008 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0009 
+0010 <span class="keyword">if</span> nargin &gt; 1
+0011     narginchk(3, 3);
+0012     a = phi;
+0013     b = theta;
+0014     c = psi;
+0015 <span class="keyword">else</span>
+0016     narginchk(1, 1);
+0017     a = phi(1);
+0018     b = phi(2);
+0019     c = phi(3);
+0020 <span class="keyword">end</span>
+0021 
+0022 ca = cos(a); sa = sin(a);
+0023 cb = cos(b); sb = sin(b);
+0024 cc = cos(c); sc = sin(c);
+0025 
+0026 A_x = <span class="keyword">...</span>
+0027     [ 1,  0,   0 <span class="keyword">...</span>
+0028     ; 0, ca, -sa <span class="keyword">...</span>
+0029     ; 0, sa,  ca ];
+0030 A_y = <span class="keyword">...</span>
+0031     [ cb,  0, sb <span class="keyword">...</span>
+0032     ; 0,   1,  0 <span class="keyword">...</span>
+0033     ; -sb, 0, cb ];
+0034 A_z = <span class="keyword">...</span>
+0035     [ cc, -sc, 0 <span class="keyword">...</span>
+0036     ; sc,  cc, 0 <span class="keyword">...</span>
+0037     ; 0,    0, 1 ];
+0038 A = A_x * A_y * A_z;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

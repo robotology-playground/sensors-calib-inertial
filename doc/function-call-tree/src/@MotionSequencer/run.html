@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of run</title>
+  <meta name="keywords" content="run">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotionSequencer -->
+<h1>run
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function acqSensorDataAccessor = run(obj) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@AcqSensorDataAccessor/AcqSensorDataAccessor.html" class="code" title="">AcqSensorDataAccessor</a>	</li><li><a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li><li><a href="../../src/@RemoteControlBoardRemapper/waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a>	Waits for last programmed joint position to be reached.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/+UI/getMappingFromIniFile.html" class="code" title="function [ mapping ] = getMappingFromIniFile( mappingIniScript )">getMappingFromIniFile</a>	UNTITLED2 Summary of this function goes here</li><li><a href="../../src/@AccelerometersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot</li><li><a href="../../src/@Calibrator/Calibrator.html" class="code" title="">Calibrator</a>	</li><li><a href="../../src/@Init/Init.html" class="code" title="">Init</a>	</li><li><a href="../../src/@JointEncodersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="../../src/@LowlevTauCtrlCalibrator/LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li><li><a href="../../src/@SensorDataAcquisition/getSeqProfile.html" class="code" title="function [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams)">getSeqProfile</a>	getSeqProfile Loads the sequence profile parameters from a script ini file</li><li><a href="../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li><li><a href="../../src/app/sensorSelfCalibrator.html" class="code" title="">sensorSelfCalibrator</a>	Calibrates accelerometers, joint encoders using only self sensors</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li><li><a href="../../src/utils/loadInit.html" class="code" title="function init = loadInit(initScript)">loadInit</a>	loadInit Builds input structure init from a script</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [sensors,parts] = getSensorsParts4fullSeq(sequence)</a></li><li><a href="#_sub2" class="code">function [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function acqSensorDataAccessor = run(obj)</a>
+0002 
+0003 import System.Const;
+0004 
+0005 <span class="comment">% init logged sequences. These information will be needed by the calibrators for</span>
+0006 <span class="comment">% retrieving the acquired data they require.</span>
+0007 loggedSeqs = {};
+0008 
+0009 <span class="comment">% Schedule the logging of a new calibration iteration (for handling data</span>
+0010 <span class="comment">% logger counters)</span>
+0011 obj.logCmd.sched();
+0012 
+0013 <span class="comment">% process each sequence</span>
+0014 <span class="keyword">for</span> seqIdx = 1:numel(obj.sequences)
+0015     <span class="comment">% get next sequence to run</span>
+0016     sequence = obj.sequences{seqIdx};
+0017     
+0018     <span class="comment">% open ctrl board remapper driver</span>
+0019     obj.ctrlBoardRemap.open(sequence.ctrl.part);
+0020     
+0021     <span class="comment">% request new log creation for current sequence</span>
+0022     
+0023     <span class="comment">% This info specifies for which calibration procedure the log can be</span>
+0024     <span class="comment">% used for. Each calibedPart/calibedSensors pair points to a folder name</span>
+0025     <span class="comment">% where to find the files for calibrating the sensors of modality</span>
+0026     <span class="comment">% 'calibedSensor' on the part 'calibedPart'.</span>
+0027     logInfo = struct(<span class="keyword">...</span>
+0028         <span class="string">'calibApp'</span>,obj.calibApp,<span class="string">'calibedSensorList'</span>,{sequence.calib.sensor},<span class="keyword">...</span>
+0029         <span class="string">'calibedPartsList'</span>,{sequence.calib.part},<span class="string">'sequence'</span>,sequence);
+0030     [sensors,parts] = <a href="#_sub1" class="code" title="subfunction [sensors,parts] = getSensorsParts4fullSeq(sequence)">getSensorsParts4fullSeq</a>(sequence);
+0031     <span class="comment">% As the logger triggers a new data acquisition, it returns the</span>
+0032     <span class="comment">% respective created folder. The folder path, along with the 'sequence'</span>
+0033     <span class="comment">% information will be returned to the caller function for further use</span>
+0034     <span class="comment">% by the calibrators.</span>
+0035     sequence.seqDataFolderPath = sequence.logCmd.new(logInfo,sensors,parts);
+0036     <span class="comment">% Skip this sequence if we are not actually acquiring data.</span>
+0037     <span class="keyword">if</span> ~isempty(sequence.seqDataFolderPath)
+0038         loggedSeqs = [loggedSeqs sequence];
+0039     <span class="keyword">end</span>
+0040     
+0041     <span class="keyword">for</span> stepIdx = 1:size(sequence.ctrl.pos,1)
+0042         <span class="comment">% Get acquire flag from the sequence.</span>
+0043         <span class="comment">% Stop logging of parts for which 'acquire' flag is off</span>
+0044         <span class="comment">% Start logging of parts for which 'acquire' flag is on</span>
+0045         [sensors,partsToStop,partsToStart] = <a href="#_sub2" class="code" title="subfunction [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx)">getSensorsParts4Pos</a>(sequence,stepIdx);
+0046         sequence.logCmd.stop(sensors,partsToStop);
+0047         sequence.logCmd.start(sensors,partsToStart);
+0048         
+0049         <span class="comment">% The following processing depends on the control mode</span>
+0050         <span class="keyword">switch</span> sequence.mode{stepIdx}
+0051             <span class="keyword">case</span> <span class="string">'ctrl'</span>    <span class="comment">% position control</span>
+0052                 <span class="comment">% Set joints in position control mode</span>
+0053                 [jointsIdxList,~] = obj.ctrlBoardRemap.getJointsMappedIdxes(obj.ctrlBoardRemap.jointsList);
+0054                 obj.ctrlBoardRemap.setJointsControlMode(jointsIdxList,<span class="string">'ctrl'</span>);
+0055                 
+0056                 <span class="comment">% get next position, velocity and acquire flag from the</span>
+0057                 <span class="comment">% sequence. Get concatenated matrices for all parts</span>
+0058                 pos = sequence.ctrl.pos(stepIdx,:);
+0059                 vel = sequence.ctrl.vel(stepIdx,:);
+0060                 
+0061                 <span class="comment">% run the sequencer step, while waiting for user</span>
+0062                 <span class="comment">% confirmation to proceed, or for motion to complete.</span>
+0063                 promptString = sequence.prpt{stepIdx}();
+0064                 <span class="keyword">if</span> isempty(promptString)
+0065                     <span class="comment">% run the sequencer step</span>
+0066                     <a href="../../src/@RemoteControlBoardRemapper/waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a> = true; timeout = 10; <span class="comment">% in seconds</span>
+0067                     <span class="keyword">if</span> ~obj.ctrlBoardRemap.setEncoders(pos,<span class="string">'refVel'</span>,vel,<a href="../../src/@RemoteControlBoardRemapper/waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a>,timeout)
+0068                         error(<span class="string">'Waiting for motion done timeout!'</span>);
+0069                     <span class="keyword">end</span>
+0070                 <span class="keyword">else</span>
+0071                     <span class="comment">% run the sequencer step</span>
+0072                     <a href="../../src/@RemoteControlBoardRemapper/waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a> = false; timeout = 0; <span class="comment">% in seconds</span>
+0073                     <span class="keyword">if</span> ~obj.ctrlBoardRemap.setEncoders(pos,<span class="string">'refVel'</span>,vel,<a href="../../src/@RemoteControlBoardRemapper/waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a>,timeout)
+0074                         error(<span class="string">'Error while setting position!'</span>);
+0075                     <span class="keyword">end</span>
+0076                     <span class="comment">% Notify the user about ongoing step and prompt for</span>
+0077                     <span class="comment">% completion confirmation before proceeding to next step</span>
+0078                     fprintf(promptString);
+0079                     pause;
+0080                 <span class="keyword">end</span>
+0081                 
+0082             <span class="keyword">case</span> <span class="string">'pwmctrl'</span> <span class="comment">% PWM control</span>
+0083                 <span class="comment">% Only setting 1 motor or 1 set of coupled motors in PWM</span>
+0084                 <span class="comment">% control mode is supported.</span>
+0085                 <span class="comment">% Get name of motor to set in PWM control mode, as well as</span>
+0086                 <span class="comment">% the PWM value.</span>
+0087                 motorName = sequence.pwmctrl.motor;
+0088                 pwm = sequence.pwmctrl.pwm{stepIdx};
+0089                 
+0090                 <span class="comment">% Set the motor in PWM control mode and handle the coupled</span>
+0091                 <span class="comment">% motors keeping their control mode and state unchanged. If</span>
+0092                 <span class="comment">% this is not supported by the YARP remoteControlBoardRemapper,</span>
+0093                 <span class="comment">% emulate it. We can only emulate position control.</span>
+0094                 pwmController = <a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>(motorName,obj.ctrlBoardRemap,Const.ThreadON);
+0095                 
+0096                 <span class="comment">% Set the desired PWM level (0-100%) for the named motor</span>
+0097                 ok = pwmController.setMotorPWM(pwm);
+0098                 
+0099                 <span class="comment">% Prompt the user to proceed</span>
+0100                 promptString = sequence.prpt{stepIdx}();
+0101                 <span class="keyword">if</span> ~isempty(promptString)
+0102                     fprintf(promptString);
+0103                     pause;
+0104                 <span class="keyword">end</span>
+0105                 
+0106                 <span class="comment">% Stop the controller. This also restores the previous</span>
+0107                 <span class="comment">% control mode for the named motor and eventual coupled</span>
+0108                 <span class="comment">% motors.</span>
+0109                 ok = pwmController.stop();
+0110                 
+0111             <span class="keyword">otherwise</span>
+0112                 error(<span class="string">'Unknown control mode!'</span>);
+0113         <span class="keyword">end</span>
+0114     <span class="keyword">end</span>
+0115     
+0116     <span class="comment">% Stop logging of last step and close log</span>
+0117     sequence.logCmd.close();
+0118     
+0119     <span class="comment">% close ctrl board remapper driver</span>
+0120     obj.ctrlBoardRemap.close();
+0121 <span class="keyword">end</span>
+0122 
+0123 <span class="comment">% Return sensor stored data information for the calibrators</span>
+0124 acqSensorDataAccessor = <a href="../../src/@AcqSensorDataAccessor/AcqSensorDataAccessor.html" class="code" title="">AcqSensorDataAccessor</a>(loggedSeqs);
+0125 
+0126 <span class="keyword">end</span>
+0127 
+0128 <a name="_sub1" href="#_subfunctions" class="code">function [sensors,parts] = getSensorsParts4fullSeq(sequence)</a>
+0129 
+0130 <span class="comment">% return sensors and respective parts</span>
+0131 sensors = sequence.meas.sensor;
+0132 parts = sequence.meas.part;
+0133 
+0134 <span class="keyword">end</span>
+0135 
+0136 <a name="_sub2" href="#_subfunctions" class="code">function [sensors,partsToStop,partsToStart] = getSensorsParts4Pos(sequence,posIdx)</a>
+0137 
+0138 <span class="comment">% lists to be processed:</span>
+0139 <span class="comment">% each sensor is associated to a set of parts from where the sensor data is</span>
+0140 <span class="comment">% collected (or not, depending on the 'acquire' flag). An acquire set and</span>
+0141 <span class="comment">% the parts set have the same dimensions.</span>
+0142 sensorList = sequence.meas.sensor;
+0143 partSetList = sequence.meas.part;
+0144 acquireSetList = sequence.meas.acquire;
+0145 
+0146 <span class="comment">% process the lists</span>
+0147 [sensors,partsToStop,partsToStart] = cellfun(<span class="keyword">...</span>
+0148     @(sensor,partSet,acquireSet) deal(<span class="keyword">...</span>
+0149     sensor,<span class="keyword">...</span><span class="comment">                                 % 2-sensor (modality)</span>
+0150     partSet(~acquireSet(posIdx,:)),<span class="keyword">...</span><span class="comment">           % 3-stop acquiring data from sensors on those parts</span>
+0151     partSet(acquireSet(posIdx,:))),<span class="keyword">...</span><span class="comment">           % 4-start  acquiring data from sensors on those parts</span>
+0152     sensorList,partSetList,acquireSetList,<span class="keyword">...</span><span class="comment">  % 1-for each sensor...</span>
+0153     <span class="string">'UniformOutput'</span>,false);                    <span class="comment">% 5-don't concatenate lists from iterations</span>
+0154 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

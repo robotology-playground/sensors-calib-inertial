@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoid_proj_distance_fromExp</title>
+  <meta name="keywords" content="ellipsoid_proj_distance_fromExp">
+  <meta name="description" content="Projections and distance of points projected onto an ellipsoid.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDiagnosis -->
+<h1>ellipsoid_proj_distance_fromExp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Projections and distance of points projected onto an ellipsoid.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(x,y,z,centre,radii,R) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Projections and distance of points projected onto an ellipsoid.
+
+ Input arguments:
+ x, y, z:
+    co-ordinates of data points whose distance from the ellipsoid to measure
+ centre,radii,R:
+    parameters of the ellipsoid expressed in explicit form</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="../../src/utils/quadfit/ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>	Finds the distance of the point (x,y,z) to the nearest point on the ellipsoid.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [pVec,dVec,dOrient,d] = ellipsoid_proj_distance_fromExp(x,y,z,centre,radii,R)</a>
+0002 <span class="comment">% Projections and distance of points projected onto an ellipsoid.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y, z:</span>
+0006 <span class="comment">%    co-ordinates of data points whose distance from the ellipsoid to measure</span>
+0007 <span class="comment">% centre,radii,R:</span>
+0008 <span class="comment">%    parameters of the ellipsoid expressed in explicit form</span>
+0009 
+0010 <span class="comment">% projection of the data point on to the ellipsoid surface (shortest</span>
+0011 <span class="comment">% distance to the surface</span>
+0012 [xp,yp,zp] = <a href="../../src/utils/quadfit/ellipsoidfit_residuals.html" class="code" title="function [xp,yp,zp] = ellipsoidfit_residuals(x,y,z, center,radii,R)">ellipsoidfit_residuals</a>(x,<a href="../../src/@y/y.html" class="code" title="">y</a>,z, centre,radii,R);
+0013 pVec = [xp yp zp];
+0014 dVec = [x-xp <a href="../../src/@y/y.html" class="code" title="">y</a>-yp z-zp];    <span class="comment">% normal vector from ellipsoid data point projection</span>
+0015 
+0016 <span class="comment">% projection of the residual vector [x-xp,y-yp,z-zp] on to the</span>
+0017 <span class="comment">% &quot;radius vector&quot;. This gives us the sign of &quot;d&quot; w.r.t. the ellipsoid</span>
+0018 <span class="comment">% surface</span>
+0019 radius = [xp yp zp]-repmat(centre',length(xp),1); <span class="comment">% vector from ellipsoid centre data point projection</span>
+0020 radiusNorm = sqrt(sum(radius.^2,2));
+0021 proj = sum(radius.*dVec,2); <span class="comment">% projection onto the radius</span>
+0022 projSign = proj/abs(proj);
+0023 d = sqrt(sum(dVec.^2,2));
+0024 dOrient = projSign*d;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

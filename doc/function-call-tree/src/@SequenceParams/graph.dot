@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SequenceParams -> SequenceParams;
+  SequenceParams -> buildMapSequences;
+  SequenceParams -> mergeMapSequences;
+  SequenceParams -> seqParams2map;
+
+  SequenceParams [URL="SequenceParams.html"];
+  buildMapSequences [URL="buildMapSequences.html"];
+  mergeMapSequences [URL="mergeMapSequences.html"];
+  seqParams2map [URL="seqParams2map.html"];
+}

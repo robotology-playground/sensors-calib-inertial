@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of MotionSequencer</title>
+  <meta name="keywords" content="MotionSequencer">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotionSequencer -->
+<h1>MotionSequencer
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li><li><a href="run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="seqMap2runner.html" class="code" title="function runSeq = seqMap2runner( obj,seqParamsMap )">seqMap2runner</a>	UNTITLED2 Summary of this function goes here</li><li><a href="../../src/@RemoteControlBoardRemapper/RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li><li><a href="../../src/@SensorDataAcquisition/acquireSensorData.html" class="code" title="function acqSensorDataAccessor = acquireSensorData(task,taskSpecificParams,robotModel,dataPath,calibedParts)">acquireSensorData</a>	task:      this selects the motion sequence parameters</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = MotionSequencer(calibApp,robotModel,sequences,logCmd)</a></li><li><a href="#_sub2" class="code">function aDummyCmd = buildDummyCmd(logCmd)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="MotionSequencer.html" class="code" title="">MotionSequencer</a> &lt; handle
+0002     <span class="comment">% Joint controller reaching each joint position set of a sequence</span>
+0003     <span class="comment">%   This class processes a sequence of position sets, each position set</span>
+0004     <span class="comment">%   defining the set of joint positions to reach in a synchronous way.</span>
+0005     <span class="comment">%   The class methods produce inputs to the remote control board</span>
+0006     <span class="comment">%   remapper moveToPos method.</span>
+0007     
+0008     properties(SetAccess = protected, GetAccess = public)
+0009         calibApp;
+0010         robotModel;
+0011         sequences;
+0012         logCmd;
+0013         dummyCmd;
+0014         ctrlBoardRemap;
+0015     <span class="keyword">end</span>
+0016     
+0017     methods(Access = public)
+0018         <a name="_sub0" href="#_subfunctions" class="code">function obj = MotionSequencer(calibApp,robotModel,sequences,logCmd)</a>
+0019             <span class="comment">% Init class parameters</span>
+0020             obj.calibApp = calibApp;
+0021             obj.robotModel = robotModel;
+0022             <span class="comment">% logger commands</span>
+0023             obj.logCmd = logCmd;
+0024             <span class="comment">% dummy commands (used instead of logger commands if logging is</span>
+0025             <span class="comment">% not applicable</span>
+0026             obj.dummyCmd = obj.buildDummyCmd(logCmd);
+0027             <span class="comment">% Build sequences from maps to MotionSequencer runner format</span>
+0028             obj.sequences = cellfun(<span class="keyword">...</span>
+0029                 @(sequence) obj.seqMap2runner(sequence),<span class="keyword">...</span>
+0030                 sequences,<span class="keyword">...</span>
+0031                 <span class="string">'UniformOutput'</span>,false);
+0032             
+0033             <span class="comment">% create ctrl board remapper</span>
+0034             obj.ctrlBoardRemap = <a href="../../src/@RemoteControlBoardRemapper/RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>(robotModel,calibApp);
+0035         <span class="keyword">end</span>
+0036         
+0037         acqSensorDataAccessor = <a href="run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>(obj);
+0038     <span class="keyword">end</span>
+0039     
+0040     methods(Access = protected)
+0041         runSeq = <a href="seqMap2runner.html" class="code" title="function runSeq = seqMap2runner( obj,seqParamsMap )">seqMap2runner</a>(obj,seqParamsMap);
+0042     <span class="keyword">end</span>
+0043     
+0044     methods(Static = true, Access = protected)
+0045         <a name="_sub1" href="#_subfunctions" class="code">function aDummyCmd = buildDummyCmd(logCmd)</a>
+0046             dummyFunc = @(varargin) {};
+0047             <span class="keyword">for</span> cField = fieldnames(logCmd)'
+0048                 field = cField{:};
+0049                 aDummyCmd.(field) = dummyFunc;
+0050             <span class="keyword">end</span>
+0051         <span class="keyword">end</span>
+0052     <span class="keyword">end</span>
+0053 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

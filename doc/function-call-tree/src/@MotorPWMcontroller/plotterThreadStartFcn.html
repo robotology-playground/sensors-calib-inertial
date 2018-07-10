@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotterThreadStartFcn</title>
+  <meta name="keywords" content="plotterThreadStartFcn">
+  <meta name="description" content="Creates the figure for plotting Tau vs dq">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotorPWMcontroller -->
+<h1>plotterThreadStartFcn
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Creates the figure for plotting Tau vs dq</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function plotterThreadStartFcn( obj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Creates the figure for plotting Tau vs dq
+    Required for friction calibration only.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plotterThreadStartFcn( obj )</a>
+0002 <span class="comment">%Creates the figure for plotting Tau vs dq</span>
+0003 <span class="comment">%    Required for friction calibration only.</span>
+0004 
+0005 <span class="comment">% Figure parameters</span>
+0006 figTitle = <span class="string">'Motor velocity to torque model'</span>;
+0007 xLabel = <span class="string">'Motor velocity (degrees/s)'</span>;
+0008 yLabel = <span class="string">'Motor torque (N.m)'</span>;
+0009 obj.tempPlot.units = System.Const.Degrees;
+0010 xRange = [-60,60]; <span class="comment">% degrees</span>
+0011 yRange = [-10,10]; <span class="comment">% N.m</span>
+0012 
+0013 <span class="comment">% units conversion</span>
+0014 obj.tempPlot.convertFromRad = Math.convertFromRadians(obj.tempPlot.units);
+0015 obj.tempPlot.convertFromDeg = Math.convertFromDegrees(obj.tempPlot.units);
+0016 
+0017 <span class="comment">% create figure</span>
+0018 obj.tempPlot.figH = figure(<span class="string">'Name'</span>,figTitle,<span class="string">'WindowStyle'</span>,<span class="string">'docked'</span>);
+0019 
+0020 <span class="comment">% For displaying an undocked figure in full screen, uncomment the line below.</span>
+0021 <span class="comment">%set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);</span>
+0022 
+0023 <span class="comment">% title, axes labels, legend</span>
+0024 title(figTitle,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0025 xlabel(xLabel,<span class="string">'Fontsize'</span>,12);
+0026 ylabel(yLabel,<span class="string">'Fontsize'</span>,12);
+0027 set(gca,<span class="string">'FontSize'</span>,12);
+0028 <span class="comment">% obj.tempPlot.figH.CurrentAxes.XLim = xRange;</span>
+0029 <span class="comment">% obj.tempPlot.figH.CurrentAxes.YLim = yRange;</span>
+0030 
+0031 <span class="comment">% grid and hold the figure open for further data input</span>
+0032 grid on;
+0033 
+0034 <span class="comment">% define the animated line (the actual plot of the data)</span>
+0035 an = animatedline;
+0036 an.LineStyle = <span class="string">'none'</span>;
+0037 an.Marker = <span class="string">'o'</span>;
+0038 an.MarkerFaceColor = <span class="string">'b'</span>;
+0039 an.Visible = <span class="string">'on'</span>;
+0040 an.Selected = <span class="string">'off'</span>;
+0041 
+0042 obj.tempPlot.an = an;
+0043 
+0044 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

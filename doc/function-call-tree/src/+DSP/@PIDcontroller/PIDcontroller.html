@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of PIDcontroller</title>
+  <meta name="keywords" content="PIDcontroller">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- # +DSP --><!-- menu.html @PIDcontroller -->
+<h1>PIDcontroller
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PIDcontroller.html" class="code" title="">PIDcontroller</a>	</li><li><a href="../../../src/utils/sizes.html" class="code" title="function [ s ] = sizes( varargin )">sizes</a>	Returns the size of each input argument</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="PIDcontroller.html" class="code" title="">PIDcontroller</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = PIDcontroller(Kp,Kd,Ki,max_int,max_output,scale,aFilter)</a></li><li><a href="#_sub2" class="code">function reset(obj,integralTermVecInit)</a></li><li><a href="#_sub3" class="code">function [intSat,outSat,nextCorr] = step(obj,timeStep,desiredX,currentX,currentDx)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="PIDcontroller.html" class="code" title="">PIDcontroller</a> &lt; handle
+0002     <span class="comment">%This class implements a PID correction controller</span>
+0003     <span class="comment">%   Its properties are</span>
+0004     <span class="comment">%   - P,I, and D gains</span>
+0005     <span class="comment">%   - filter for the input signal pre-processing</span>
+0006     <span class="comment">%   - cumulative I(ntegral) term</span>
+0007     
+0008     properties(GetAccess=public, SetAccess=protected)
+0009         Kp@double; <span class="comment">% P gains column vector</span>
+0010         Kd@double; <span class="comment">% D gains column vector</span>
+0011         Ki@double; <span class="comment">% I gains column vector</span>
+0012         max_int@double;    <span class="comment">% maximum integral component value</span>
+0013         max_output@double; <span class="comment">% maximum overall PID output value</span>
+0014         scale@double <span class="comment">% overall scale factor</span>
+0015         I@double;  <span class="comment">% current integral term vector</span>
+0016         nbChannels@uint8; <span class="comment">% number of input channels</span>
+0017         filter@DSP.IDiscreteFilter; <span class="comment">% filter coefficients (same filter for every channel)</span>
+0018     <span class="keyword">end</span>
+0019     
+0020     methods
+0021         <a name="_sub0" href="#_subfunctions" class="code">function obj = PIDcontroller(Kp,Kd,Ki,max_int,max_output,scale,aFilter)</a>
+0022             obj.nbChannels = uint8(numel(Kp));
+0023             <span class="comment">% check dimensions. Input params have to be line or column</span>
+0024             <span class="comment">% vectors of dimension &quot;nbChannels&quot;</span>
+0025             inSizes = sort(cell2mat(<a href="../../../src/utils/sizes.html" class="code" title="function [ s ] = sizes( varargin )">sizes</a>(Kp,Kd,Ki,max_int,max_output,scale)),2);
+0026             <span class="keyword">if</span> ~isequal(inSizes,repmat([1,obj.nbChannels],[6 1]))
+0027                 error(<span class="string">'Kp, Kd, Ki, max integral, max output and scale sizes don''t match!! Please use evenly sized column vectors.'</span>);
+0028             <span class="keyword">end</span>
+0029             <span class="comment">% save properties</span>
+0030             [obj.Kp,obj.Kd,obj.Ki,obj.max_int,obj.max_output,obj.scale,obj.filter] = <span class="keyword">...</span>
+0031                 deal(Kp(:),Kd(:),Ki(:),max_int(:),max_output(:),scale(:),aFilter);
+0032             obj.I = zeros(obj.nbChannels,1);
+0033         <span class="keyword">end</span>
+0034         
+0035         <a name="_sub1" href="#_subfunctions" class="code">function reset(obj,integralTermVecInit)</a>
+0036             <span class="comment">% check dimensions</span>
+0037             <span class="keyword">if</span> ~isequal(size(integralTermVecInit),[obj.nbChannels,1])
+0038                 error([<span class="string">'Input doesn''t match expected dimensions ('</span> num2str(obj.nbChannels) <span class="string">'x1)!!'</span>]);
+0039             <span class="keyword">end</span>
+0040             <span class="comment">% Initialize the integral term</span>
+0041             obj.I = integralTermVecInit;
+0042         <span class="keyword">end</span>
+0043         
+0044         <a name="_sub2" href="#_subfunctions" class="code">function [intSat,outSat,nextCorr] = step(obj,timeStep,desiredX,currentX,currentDx)</a>
+0045             <span class="comment">% Reshape inputs as column vectors</span>
+0046             [desiredX,currentX,currentDx] = deal(desiredX(:),currentX(:),currentDx(:));
+0047             <span class="comment">% Filter current position measurement</span>
+0048             filteredCurrX = obj.filter.procSig(currentX);
+0049             <span class="comment">% Error to desired position</span>
+0050             epsilon = filteredCurrX - desiredX;
+0051             depsilon = currentDx - 0;
+0052             <span class="comment">% proportional and derivative terms</span>
+0053             PD = obj.Kp.*epsilon + obj.Kd.*depsilon;
+0054             <span class="comment">% integral term</span>
+0055             obj.I = obj.I + obj.Ki.*epsilon.*timeStep;
+0056             obj.I = min(obj.I,obj.max_int);
+0057             obj.I = max(obj.I,-obj.max_int);
+0058             intSat = any([obj.I==obj.max_int,obj.I==-obj.max_int]);
+0059             <span class="comment">% output total term</span>
+0060             pidOut = obj.scale.*(PD + obj.I);
+0061             nextCorr = min(pidOut,obj.max_output);
+0062             nextCorr = max(nextCorr,-obj.max_output);
+0063             outSat = any([nextCorr==obj.max_output,nextCorr==-obj.max_output]);
+0064         <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066 <span class="keyword">end</span>
+0067</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

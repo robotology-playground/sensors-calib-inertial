@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getCouplings</title>
+  <meta name="keywords" content="getCouplings">
+  <meta name="description" content="This method retrieves the coupling parameters through the IRemoteVariables debug interface">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoard -->
+<h1>getCouplings
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This method retrieves the coupling parameters through the IRemoteVariables debug interface</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ couplingList ] = getCouplings( obj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">This method retrieves the coupling parameters through the IRemoteVariables debug interface
+   For each set of actually coupled joints, a structure is built, holding:
+   - coupling.invT : the coupling matrix 3x3 or just the integer 1
+   - coupling.coupledJoints : ordered list of coupled joint names
+   - coupling.coupledMotors : ordered list of coupled motor names
+
+ where invT defined as : $$ \dot{m} = T^{-1} \dot{q} $$</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@JointMotorCoupling/JointMotorCoupling.html" class="code" title="">JointMotorCoupling</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ couplingList ] = getCouplings( obj )</a>
+0002 <span class="comment">%This method retrieves the coupling parameters through the IRemoteVariables debug interface</span>
+0003 <span class="comment">%   For each set of actually coupled joints, a structure is built, holding:</span>
+0004 <span class="comment">%   - coupling.invT : the coupling matrix 3x3 or just the integer 1</span>
+0005 <span class="comment">%   - coupling.coupledJoints : ordered list of coupled joint names</span>
+0006 <span class="comment">%   - coupling.coupledMotors : ordered list of coupled motor names</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% where invT defined as : $$ \dot{m} = T^{-1} \dot{q} $$</span>
+0009 <span class="comment">%</span>
+0010 
+0011 <span class="comment">% We get the raw coupling matrix.</span>
+0012 rawCoupling = obj.getRawCoupling();
+0013 <span class="comment">% ... the joint names.</span>
+0014 joints = obj.getAxesNames();
+0015 <span class="comment">% ... the motor names. We assume there is an equal number of joint DoFs and</span>
+0016 <span class="comment">% motors. Motors are named as follows..</span>
+0017 <span class="comment">% 1 DoF joint: l_knee --&gt; motor: l_knee</span>
+0018 <span class="comment">% 3 DoF joint: torso_yaw/torso_roll/torso_pitch --&gt; torso_1/torso_2/torso_3</span>
+0019 motors = obj.getMotorNames();
+0020 <span class="comment">% The PWM fullscale values and gearbox ratios</span>
+0021 fullscalePWMs = obj.getFullscalePWMs();
+0022 gearboxDqM2Jratios = obj.getGearboxDqM2Jratios();
+0023 
+0024 <span class="comment">% This matrix has several joint/motor pair couplings as well as</span>
+0025 <span class="comment">% standalone joint/motor pairs.</span>
+0026 <span class="comment">% We wish to identify the couplings and the standalone degrees of freedom</span>
+0027 
+0028 <span class="comment">%% Set apart the real couplings from the standalone joints</span>
+0029 <span class="comment">%  We model the coupling information as a bipartite graph</span>
+0030 <span class="comment">%  (https://en.wikipedia.org/wiki/Bipartite_graph).</span>
+0031 <span class="comment">%  Identifying the couplings is then trivial.</span>
+0032 
+0033 <span class="comment">% Define the graph 'G' using an weighted adjacency matrix. An element Aij of</span>
+0034 <span class="comment">% such matrix is zero when there is no edge from vertex i to vertex j, and</span>
+0035 <span class="comment">% one when there is one:</span>
+0036 <span class="comment">% (https://en.wikipedia.org/wiki/Adjacency_matrix#Adjacency_matrix_of_a_bipartite_graph):</span>
+0037 <span class="comment">% $$</span>
+0038 <span class="comment">% A =</span>
+0039 <span class="comment">% \begin{bmatrix}</span>
+0040 <span class="comment">% 0_{m,m} &amp; B_{m,q} \\</span>
+0041 <span class="comment">% B_{q,m}^{\top} &amp; 0_{q,q}</span>
+0042 <span class="comment">% \end{bmatrix}</span>
+0043 <span class="comment">% $$</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% Where 'm' is the number of motors and 'q' the number of joints. In our</span>
+0046 <span class="comment">% case, we always have m=q. We define:</span>
+0047 <span class="comment">% B = T_raw</span>
+0048 B = (rawCoupling ~= 0);
+0049 A = [zeros(size(B)) , B ; B' , zeros(size(B))];
+0050 G = graph(A,[motors,joints]); <span class="comment">% create a graph from adjacence matrix and node names</span>
+0051 
+0052 <span class="comment">% Use the graph methods for identifying the couplings. Each coupling is a</span>
+0053 <span class="comment">% connected component.</span>
+0054 couplings = G.conncomp(<span class="string">'OutputForm'</span>,<span class="string">'cell'</span>);
+0055 
+0056 <span class="comment">% Now 'couplings' is a cell array where each cell stands for a couplings</span>
+0057 <span class="comment">% and contains the list of joints and motors names in that coupling.</span>
+0058 <span class="comment">% Create the respective coupling objects.</span>
+0059 couplingList = cell(1,numel(couplings));
+0060 <span class="keyword">for</span> idx = 1:numel(couplings)
+0061     <span class="comment">% coupled joints</span>
+0062     jointsBitmap = ismember(joints,couplings{idx});
+0063     cpldJoints = joints(jointsBitmap);
+0064     
+0065     <span class="comment">% coupled motors, respective PWM fullscale values and gearbox ratios</span>
+0066     motorsBitmap = ismember(motors,couplings{idx});
+0067     cpldMotors = motors(motorsBitmap);
+0068     cpldFullscalePWMs = fullscalePWMs.values(cpldMotors);
+0069     cpldGearboxDqM2Jratios = gearboxDqM2Jratios.values(cpldMotors);
+0070     
+0071     <span class="comment">% coupling matrix</span>
+0072     Tm2j = rawCoupling(jointsBitmap,motorsBitmap);
+0073     
+0074     <span class="comment">% create the coupling object.</span>
+0075     couplingList{idx} = <a href="../../src/@JointMotorCoupling/JointMotorCoupling.html" class="code" title="">JointMotorCoupling</a>(<span class="keyword">...</span>
+0076         Tm2j,cpldJoints,cpldMotors, <span class="keyword">...</span>
+0077         cpldGearboxDqM2Jratios, cpldFullscalePWMs, obj.part);
+0078 <span class="keyword">end</span>
+0079 
+0080 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calibrateSensors</title>
+  <meta name="keywords" content="calibrateSensors">
+  <meta name="description" content="Get calibration map">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @LowlevTauCtrlCalibrator -->
+<h1>calibrateSensors
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Get calibration map</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function calibrateSensors(obj,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Get calibration map</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@SensorsData/SensorsData.html" class="code" title="">SensorsData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@AccelerometersCalibrator/AccelerometersCalibrator.html" class="code" title="">AccelerometersCalibrator</a>	</li><li><a href="../../src/@Calibrator/Calibrator.html" class="code" title="">Calibrator</a>	</li><li><a href="../../src/@JointEncodersCalibrator/JointEncodersCalibrator.html" class="code" title="">JointEncodersCalibrator</a>	</li><li><a href="LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function calibrateSensors(obj,</a><span class="keyword">...</span>
+0002     dataPath,~,measedSensorList,measedPartsList,<span class="keyword">...</span>
+0003     model,taskSpecificParams)
+0004 
+0005 <span class="comment">% Get calibration map</span>
+0006 calibrationMap = model.calibrationMap;
+0007 
+0008 <span class="comment">% Unwrap task specific parameters, defines:</span>
+0009 <span class="comment">% - frictionOrKtau       -&gt; = 'friction' for friction calibration</span>
+0010 <span class="comment">%                           = 'ktau' for ktau calibration</span>
+0011 <span class="comment">% - jointMotorCoupling   -&gt; label for retrieving the currently calibrated</span>
+0012 <span class="comment">%                           joint/motor group info. Refer to jointsDbase</span>
+0013 <span class="comment">%                           class interface.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% a joint/motor group info is formatted as follows:</span>
+0016 <span class="comment">% group.coupledJoints : ordered list of joint names (size 1 or n)</span>
+0017 <span class="comment">% group.coupledMotors : ordered list of MotorFriction object handles (same size)</span>
+0018 <span class="comment">% group.T             : 3x3 matrix or integer 1</span>
+0019 <span class="comment">%</span>
+0020 Init.unWrap(taskSpecificParams);
+0021 
+0022 <span class="comment">% Get the coupling info from the motor name. Each motor belongs to a single coupling set</span>
+0023 jointMotorCoupling = cell(model.jointsDbase.getJMcouplings(<span class="string">'motors'</span>,{motorName})){1};
+0024 
+0025 <span class="comment">%% build input data for calibration</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% build sensor data parser</span>
+0028 dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(<span class="keyword">...</span>
+0029     model,measedSensorList,measedPartsList,<span class="keyword">...</span>
+0030     jointMotorCoupling.coupledJoints);
+0031 
+0032 plot = false; loadJointPos = true;
+0033 data = <a href="../../src/@SensorsData/SensorsData.html" class="code" title="">SensorsData</a>(dataPath,obj.subSamplingSize,<span class="keyword">...</span>
+0034     obj.timeStart,obj.timeStop,plot,<span class="keyword">...</span>
+0035     calibrationMap,obj.filtParams);
+0036 data.buildInputDataSet(loadJointPos,dataLoadingParams);
+0037 
+0038 <span class="comment">%% Fitting process implementation.</span>
+0039 <span class="comment">% Joint encoder velocities and torques, motor PWM measurements can be</span>
+0040 <span class="comment">% retrieved from tha 'data' structure:</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% For N samples of dimension D (group of D coupled joints), we get:</span>
+0043 <span class="comment">%</span>
+0044 <span class="comment">% joint velocities table [DxN] : data.parsedParams.dqMRad_&lt;label&gt;</span>
+0045 <span class="comment">% joint PWM table [DxN]        : data.parsedParams.pwm_&lt;label&gt;</span>
+0046 <span class="comment">% joint torques table [DxN]    : data.parsedParams.tau_&lt;label&gt;</span>
+0047 <span class="comment">%</span>
+0048 <span class="comment">% Parameter names finishing by 's' are the ones recomputed after resampling</span>
+0049 <span class="comment">% (refer to 'subSamplingSize' in lowLevTauCtrlCalibratorDevConfig.m config</span>
+0050 <span class="comment">% file).</span>
+0051 <span class="comment">%</span>
+0052 
+0053 <span class="comment">% Get the calibrated joint index as mapped in the motors control board server.</span>
+0054 <span class="comment">%jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointMotorCoupling.coupledJoints);</span>
+0055 [~,motorIdx] = ismember(motorName,jointMotorCoupling.coupledMotors);
+0056 
+0057 <span class="comment">% Get respective torques (matrix 6xNsamples)</span>
+0058 tauJoints  = data.parsedParams.([<span class="string">'tau_'</span> jointMotorCoupling.part <span class="string">'_state'</span>]);
+0059 
+0060 <span class="comment">% FRICTION parameters</span>
+0061 <span class="comment">%</span>
+0062 <span class="comment">% We express the joint velocities and torques w.r.t. the motor respective</span>
+0063 <span class="comment">% quantities using the coupling matrix Tm2j (motor to joint) and gearbox ratios:</span>
+0064 <span class="comment">%</span>
+0065 <span class="comment">% dq_j = Tm2j * Gm2j * dq_m</span>
+0066 <span class="comment">%</span>
+0067 <span class="comment">% Where Gm2j is a diagonal matrix. We then pose the conservation of</span>
+0068 <span class="comment">% transmission power:</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">% dq_j' * Tau_j = dq_m' * Tau_m</span>
+0071 <span class="comment">%</span>
+0072 <span class="comment">% &lt;=&gt; dq_m' * Gm2j' * Tm2j' * Tau_j = dq_m' * Tau_m  ∀dq_m</span>
+0073 <span class="comment">%</span>
+0074 <span class="comment">% &lt;=&gt; Tau_m = Gm2j' * Tm2j' * Tau_j</span>
+0075 <span class="comment">%</span>
+0076 <span class="comment">% Anyway we consider here the motor and gearbox as a single block, and</span>
+0077 <span class="comment">% the velocity and torque as the outputs of that same block:</span>
+0078 <span class="comment">%</span>
+0079 <span class="comment">% xVar = S * Gm2j * dq_m</span>
+0080 <span class="comment">% yVar = S * Tm2j' * Tau_j</span>
+0081 <span class="comment">%</span>
+0082 <span class="comment">% Where Gm2j is a diagonal matrix whose diagonal terms are represented by</span>
+0083 <span class="comment">% gearboxDqM2Jratios, and S is a selective matrix. So, for motorIdx &quot;i&quot;,</span>
+0084 <span class="comment">% S=[0..0 1 0..0] (ith column set to 1). For any matrix A, we get S * A =</span>
+0085 <span class="comment">% A(i,:), and A * S' = A(:,i). We get or each sample at instant &quot;t&quot;:</span>
+0086 <span class="comment">%</span>
+0087 <span class="comment">% xVar = Gm2j(i,:) * dq_m = gearboxDqM2Jratios(i) * dq_m(i)</span>
+0088 <span class="comment">% yVar = (Tm2j * S')' * Tau_j = Tm2j(:,i)' * Tau_j</span>
+0089 <span class="comment">%</span>
+0090 tauMotorG = jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
+0091 
+0092 <span class="keyword">switch</span> frictionOrKtau
+0093     <span class="keyword">case</span> <span class="string">'friction'</span>
+0094         <span class="comment">% get motor velocity * Gm2j (rad/s) to be the x axis variable</span>
+0095         xVar = <span class="keyword">...</span>
+0096             jointMotorCoupling.gearboxDqM2Jratios{motorIdx} <span class="keyword">...</span>
+0097             * data.parsedParams.([<span class="string">'dqMRad_'</span> jointMotorCoupling.part <span class="string">'_state'</span>])(motorIdx,:);
+0098         
+0099     <span class="keyword">case</span> <span class="string">'ktau'</span>
+0100         <span class="comment">% get motor PWM (% Fullscale) to be the x axis variable</span>
+0101         xVar = data.parsedParams.([<span class="string">'pwm_'</span> jointMotorCoupling.part <span class="string">'_state'</span>])(motorIdx,:);
+0102     <span class="keyword">otherwise</span>
+0103         error(<span class="string">'calibrateSensors: unknown calibration type !!'</span>);
+0104 <span class="keyword">end</span>
+0105 
+0106 <span class="comment">% Fit the model using linear regression in the closed form</span>
+0107 <span class="comment">% (pseudo-inverse). The regression result is returned in 'thetaPosXvar' and</span>
+0108 <span class="comment">% 'thetaNegXvar' following the mapping:</span>
+0109 <span class="comment">% -&gt; thetaPosXvar(1) = fitting model's pos. offset</span>
+0110 <span class="comment">% -&gt; thetaNegXvar(1) = fitting model's neg. offset</span>
+0111 <span class="comment">% -&gt; thetaPosXvar(2) = fitting model's pos. slope</span>
+0112 <span class="comment">% -&gt; thetaNegXvar(2) = fitting model's neg. slope</span>
+0113 <span class="comment">%</span>
+0114 [thetaPosXvar,thetaNegXvar] = Regressors.normalEquationAsym(xVar',tauMotorG');
+0115 
+0116 <span class="comment">%% Convert theta vector to model parameters (motor calibration) and save it to the calibration map</span>
+0117 
+0118 <span class="comment">% Get the motor calibration or create a new one. The method returns a</span>
+0119 <span class="comment">% handle on the MotorTransFunc object.</span>
+0120 calib = MotorTransFunc.GetMotorTransFunc(motorName,calibrationMap);
+0121 
+0122 <span class="keyword">switch</span> frictionOrKtau
+0123     <span class="keyword">case</span> <span class="string">'friction'</span>
+0124         <span class="comment">% Check that the model is symmetrical</span>
+0125         [KcP, KcN, KvP, KvN] = deal(thetaPosXvar(1),thetaNegXvar(1),thetaPosXvar(2),thetaNegXvar(2));
+0126         <span class="keyword">if</span> abs(KcP+KcN)&gt;abs(KcP)/100 || abs(KvP-KvN)&gt;abs(KvP)/100
+0127             warning(<span class="string">'calibrateSensors: The friction model is not symmetrical'</span>);
+0128         <span class="keyword">end</span>
+0129         <span class="comment">% Run a fitting again but matching a single Kc and a single Kv</span>
+0130         <span class="comment">% For non-coupled joints fit also the static friction parameter</span>
+0131         <span class="keyword">if</span>(jointMotorCoupling.Tm2j == 1)
+0132             fittedModel = Regressors.frictionModel2(xVar',tauMotorG');
+0133             calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
+0134             calib.setStiction(fittedModel.theta(3),fittedModel.theta(4));
+0135         <span class="keyword">else</span>
+0136             
+0137             fittedModel = Regressors.frictionModel1Sym(xVar',tauMotorG');
+0138             calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
+0139             calib.setStiction(nan,nan);
+0140         <span class="keyword">end</span>
+0141         
+0142     <span class="keyword">case</span> <span class="string">'ktau'</span>
+0143         <span class="comment">% Check that the model is symmetrical</span>
+0144         [KoffP, KoffN, KpwmP, KpwmN] = deal(thetaPosXvar(1),thetaNegXvar(1),thetaPosXvar(2),thetaNegXvar(2));
+0145         <span class="keyword">if</span> <span class="keyword">...</span>
+0146                 abs(KoffP+KoffN)&gt;abs(KoffP)/100 <span class="keyword">...</span>
+0147                 || abs(KpwmP-KpwmN)&gt;abs(KpwmP)/100
+0148             warning(<span class="string">'calibrateSensors: The Ktau model is not symmetrical'</span>);
+0149         <span class="keyword">end</span>
+0150         <span class="comment">% Run a fitting again but matching a single Ktau</span>
+0151         fittedModel = Regressors.pwmModel1Sym(xVar',tauMotorG');
+0152         <span class="keyword">if</span> abs(fittedModel.theta(1))&gt;1e-3 <span class="comment">% Tau offset</span>
+0153             warning(<span class="string">'calibrateSensors: There is a torque offset in the model PWM to torque !!'</span>);
+0154         <span class="keyword">end</span>
+0155         calib.setKpwm(fittedModel.theta(2));
+0156         
+0157     <span class="keyword">otherwise</span>
+0158         error(<span class="string">'calibrateSensors: unknown calibration type !!'</span>);
+0159 <span class="keyword">end</span>
+0160 
+0161 <span class="comment">% Plot fitted model over acquired data.</span>
+0162 obj.plotModel(frictionOrKtau,fittedModel,xVar,1000);
+0163 
+0164 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

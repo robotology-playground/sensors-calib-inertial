@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nDimGrid</title>
+  <meta name="keywords" content="nDimGrid">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @nDimGrid -->
+<h1>nDimGrid
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="nDimGrid.html" class="code" title="">nDimGrid</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@JointEncodersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="nDimGrid.html" class="code" title="">nDimGrid</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = nDimGrid(dimension,range,resolution)</a></li><li><a href="#_sub2" class="code">function vector = getVector(obj,idx)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="nDimGrid.html" class="code" title="">nDimGrid</a> &lt; handle
+0002     
+0003     <span class="comment">% this class builds a N-dimension grid for specified dimension, range and</span>
+0004     <span class="comment">% resolution. It alows to retrieve a vector from that grid through a</span>
+0005     <span class="comment">% linear index.</span>
+0006     
+0007     properties (SetAccess = public, GetAccess = public)
+0008         grid;
+0009         dimension = 0;
+0010         nbVectors = 0;
+0011     <span class="keyword">end</span>
+0012     
+0013     methods
+0014         <a name="_sub0" href="#_subfunctions" class="code">function obj = nDimGrid(dimension,range,resolution)</a>
+0015             <span class="comment">% define grid</span>
+0016             obj.grid = cell(1,dimension);
+0017             obj.dimension = dimension;
+0018             <span class="comment">% build output string</span>
+0019             outputString = <span class="string">'obj.grid{1}'</span>;
+0020             <span class="keyword">for</span> iter = 2:obj.dimension
+0021                 outputString = [outputString <span class="string">',obj.grid{'</span> num2str(iter) <span class="string">'}'</span>];
+0022             <span class="keyword">end</span>
+0023             <span class="comment">%disp(outputString);</span>
+0024             <span class="comment">% fill the grid</span>
+0025             eval([<span class="string">'['</span> outputString <span class="string">'] = ndgrid('</span> num2str(-range) <span class="string">':'</span> <span class="keyword">...</span>
+0026                                                  num2str(resolution) <span class="string">':'</span> <span class="keyword">...</span>
+0027                                                  num2str(range) <span class="string">');'</span>])
+0028             <span class="comment">% set the total number of vectors that can be generated</span>
+0029             obj.nbVectors = numel(obj.grid{1});
+0030         <span class="keyword">end</span>
+0031         
+0032         <a name="_sub1" href="#_subfunctions" class="code">function vector = getVector(obj,idx)</a>
+0033             vectorT = zeros(length(idx),obj.dimension);
+0034             <span class="keyword">for</span> iter = 1:obj.dimension
+0035                 vectorT(:,iter) = obj.grid{iter}(idx);
+0036             <span class="keyword">end</span>
+0037             vector = vectorT';
+0038         <span class="keyword">end</span>
+0039     <span class="keyword">end</span>
+0040 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

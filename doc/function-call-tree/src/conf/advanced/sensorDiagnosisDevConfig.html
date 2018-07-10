@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sensorDiagnosisDevConfig</title>
+  <meta name="keywords" content="sensorDiagnosisDevConfig">
+  <meta name="description" content="%">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html conf --><!-- menu.html advanced -->
+<h1>sensorDiagnosisDevConfig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>%</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%
+ Init parameters of the sensor data diagnosis for checking sensor
+ calibration or validating the calibration procedure. Advanced users only.
+%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%%</span>
+0002 <span class="comment">% Init parameters of the sensor data diagnosis for checking sensor</span>
+0003 <span class="comment">% calibration or validating the calibration procedure. Advanced users only.</span>
+0004 <span class="comment">%%</span>
+0005 
+0006 <span class="comment">% 'matFile' or 'dumpFile' mode</span>
+0007 loadSource = <span class="string">'dumpFile'</span>;
+0008 saveToCache = false;
+0009 
+0010 iterator = 1; <span class="comment">% default value in case no iterator file exists</span>
+0011               <span class="comment">% For reseting the iterator, just delete the file</span>
+0012               <span class="comment">% ./data/test/iterator.mat .</span>
+0013 
+0014 <span class="comment">% Start and end point of data samples</span>
+0015 timeStart = 1;  <span class="comment">% starting time in capture data file (in seconds)</span>
+0016 timeStop  = -1; <span class="comment">% ending time in capture data file (in seconds). If -1, use</span>
+0017                 <span class="comment">% the end time from log</span>
+0018 <span class="comment">% filtering/subsampling: the main single data bucket of (timeStop-timeStart)/10ms</span>
+0019 <span class="comment">% samples is sub-sampled to 'subSamplingSize' samples for running the ellipsoid fitting.</span>
+0020 subSamplingSize = 1000;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

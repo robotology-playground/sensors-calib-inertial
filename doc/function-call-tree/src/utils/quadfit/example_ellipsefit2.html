@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipsefit2</title>
+  <meta name="keywords" content="example_ellipsefit2">
+  <meta name="description" content="Various ellipse fits to some data points.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipsefit2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Various ellipse fits to some data points.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_ellipsefit2 </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Various ellipse fits to some data points.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>	Generates points along an ellipse.</li><li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>	Fit a quadratic curve to data using consistent algebraic least squares.</li><li><a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function setlinestyle(line, style)</a></li><li><a href="#_sub2" class="code">function legend_add(varargin)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_ellipsefit2</a>
+0002 <span class="comment">% Various ellipse fits to some data points.</span>
+0003 
+0004 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0005 
+0006 <span class="comment">% seed random number generator</span>
+0007 RandStream.setGlobalStream(RandStream(<span class="string">'mt19937ar'</span>,<span class="string">'seed'</span>,9999));
+0008 
+0009 <span class="keyword">if</span> 0
+0010     N = 275;  <span class="comment">% sample count</span>
+0011     sigma_x = 0.2;
+0012     sigma_y = 0.2;
+0013     
+0014     <span class="comment">% generate data points</span>
+0015     [x0,y0] = <a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>(N, 2, 3, 4, 2, pi/6);
+0016 <span class="keyword">else</span>
+0017     N = 275;  <span class="comment">% sample count</span>
+0018     sigma_x = 0.2;
+0019     sigma_y = 0.2;
+0020     cx = 2;
+0021     cy = 3;
+0022     a = 4;
+0023     b = 2;
+0024     phi = pi/6;
+0025     [x0,y0,nx0,ny0] = <a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>(N, cx, cy, a, b, phi); <span class="comment">%#ok&lt;NASGU,ASGLU&gt;</span>
+0026     <span class="comment">%[x0,y0,nx0,ny0] = ellipse(N, 0, 0, 1, 1);</span>
+0027 
+0028     f = x0 &lt; cx &amp; y0 &lt; cy;
+0029     x0 = x0(f);
+0030     y0 = y0(f);
+0031 <span class="keyword">end</span>
+0032 
+0033 <span class="comment">% pollute with noise</span>
+0034 x = x0 + sigma_x * randn(size(x0));
+0035 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + sigma_y * randn(size(x0));
+0036 
+0037 p1 = <a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>(x0,y0);
+0038 <span class="comment">%p2 = ellipsefit(x,y);</span>
+0039 p3 = <a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0040 p4 = <a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0041 
+0042 figure;
+0043 hold all;
+0044 line = plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>);
+0045 <a href="#_sub2" class="code" title="subfunction legend_add(varargin)">legend_add</a>(line, <span class="string">'Data'</span>);
+0046 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p1);
+0047 <a href="#_sub2" class="code" title="subfunction legend_add(varargin)">legend_add</a>(line, <span class="string">'Original'</span>);
+0048 <span class="comment">%line = imconic(p2);</span>
+0049 <span class="comment">%setlinestyle(line, '--');</span>
+0050 <span class="comment">%legend_add(line, 'ML');</span>
+0051 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p3);
+0052 <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">':'</span>);
+0053 <a href="#_sub2" class="code" title="subfunction legend_add(varargin)">legend_add</a>(line, <span class="string">'Koopmans'</span>);
+0054 line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p4);
+0055 <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'-.'</span>);
+0056 <a href="#_sub2" class="code" title="subfunction legend_add(varargin)">legend_add</a>(line, <span class="string">'CALS'</span>);
+0057 hold off;
+0058 
+0059 <span class="keyword">if</span> 0
+0060     sigma_x = 2*sigma_x;
+0061     x = 2*(x + 1000);
+0062     <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a> + 500;
+0063 
+0064     p3 = <a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0065     p4 = <a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma_x,sigma_y);
+0066 
+0067     figure;
+0068     hold all;
+0069     line = plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>);
+0070     <a href="#_sub2" class="code" title="subfunction legend_add(varargin)">legend_add</a>(line, <span class="string">'Data'</span>);
+0071     <span class="comment">%line = imconic(p1);</span>
+0072     <span class="comment">%legend_add(line, 'Original');</span>
+0073     <span class="comment">%line = imconic(p2);</span>
+0074     <span class="comment">%setlinestyle(line, '--');</span>
+0075     <span class="comment">%legend_add(line, 'ML');</span>
+0076     line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p3);
+0077     <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">':'</span>);
+0078     <a href="#_sub2" class="code" title="subfunction legend_add(varargin)">legend_add</a>(line, <span class="string">'Koopmans'</span>);
+0079     line = <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p4);
+0080     <a href="#_sub1" class="code" title="subfunction setlinestyle(line, style)">setlinestyle</a>(line, <span class="string">'-.'</span>);
+0081     <a href="#_sub2" class="code" title="subfunction legend_add(varargin)">legend_add</a>(line, <span class="string">'CALS'</span>);
+0082     hold off;
+0083 <span class="keyword">end</span>
+0084 
+0085 <a name="_sub1" href="#_subfunctions" class="code">function setlinestyle(line, style)</a>
+0086 
+0087 set(findobj(line, <span class="string">'-property'</span>, <span class="string">'LineStyle'</span>), <span class="string">'LineStyle'</span>, style);
+0088 
+0089 <a name="_sub2" href="#_subfunctions" class="code">function legend_add(varargin)</a>
+0090 <span class="comment">% Adds a new legend entry to an existing legend.</span>
+0091 
+0092 narginchk(2,3);
+0093 n = 1;
+0094 
+0095 h = varargin{n};
+0096 validateattributes(h, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>}, n);
+0097 <span class="keyword">if</span> ishandle(h) &amp;&amp; strcmp(<span class="string">'axes'</span>, get(h, <span class="string">'Type'</span>))
+0098     ax = h;
+0099     n = n + 1;
+0100 <span class="keyword">else</span>
+0101     ax = get(gcf,<span class="string">'CurrentAxes'</span>);
+0102 <span class="keyword">end</span>
+0103 
+0104 h = varargin{n};
+0105 validateattributes(h, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>}, n);
+0106 <span class="keyword">if</span> ishandle(h) &amp;&amp; (strcmp(<span class="string">'line'</span>, get(h, <span class="string">'Type'</span>)) || strcmp(<span class="string">'hggroup'</span>, get(h, <span class="string">'Type'</span>)))
+0107     line = h;
+0108     n = n + 1;
+0109 <span class="keyword">else</span>
+0110     error(<span class="string">'legend:add'</span>,<span class="string">'A line object expected.'</span>);
+0111 <span class="keyword">end</span>
+0112 
+0113 text = varargin{n};
+0114 validateattributes(text, {<span class="string">'char'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'row'</span>}, n);
+0115 
+0116 <span class="comment">% get handle of existing legend to add new entry to</span>
+0117 h = legend(ax);
+0118 <span class="keyword">if</span> isempty(h) 
+0119     <span class="comment">% if the figure has no legend, create a new legend</span>
+0120     legend(ax,<span class="string">'show'</span>);
+0121     
+0122     <span class="comment">% do not use the automatically generated text strings</span>
+0123     handles = [];
+0124     strings = {};
+0125 <span class="keyword">else</span>
+0126     <span class="comment">% get object handles</span>
+0127     [~,~,handles,strings] = legend(ax);
+0128 <span class="keyword">end</span>
+0129 
+0130 <span class="comment">% add object with new handle and new legend string to legend</span>
+0131 legend(ax, [handles;line], strings{:}, text);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

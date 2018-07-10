@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad3d_translate</title>
+  <meta name="keywords" content="quad3d_translate">
+  <meta name="description" content="Translates a quadratic surface in implicit form by the given coordinates.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad3d_translate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Translates a quadratic surface in implicit form by the given coordinates.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = quad3d_translate(p,xt,yt,zt) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Translates a quadratic surface in implicit form by the given coordinates.
+
+ Input arguments:
+ p:
+    the parameter vector p corresponding to [x^2, y^2, z^2, x*y, x*z, y*z, x, y, z, 1]
+ xt, yt:
+    the translation vector
+
+ See also: <a href="quad2d_translate.html" class="code" title="function p = quad2d_translate(p,xt,yt)">quad2d_translate</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoid_projections.html" class="code" title="function ellipsoid_projections(x,y,z,varargin)">ellipsoid_projections</a>	Plots ellipsoid projections on the xy, xz and yz planes.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = quad3d_translate(p,xt,yt,zt)</a>
+0002 <span class="comment">% Translates a quadratic surface in implicit form by the given coordinates.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% p:</span>
+0006 <span class="comment">%    the parameter vector p corresponding to [x^2, y^2, z^2, x*y, x*z, y*z, x, y, z, 1]</span>
+0007 <span class="comment">% xt, yt:</span>
+0008 <span class="comment">%    the translation vector</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% See also: quad2d_translate</span>
+0011 
+0012 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0013 
+0014 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0015 p = p(:);
+0016 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[10,1]});
+0017 validateattributes(xt, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0018 validateattributes(yt, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0019 validateattributes(zt, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0020 
+0021 <span class="comment">% Original implicit equation with shifted terms substituted:</span>
+0022 <span class="comment">% 0 = a*(x-xt)^2 + b*(y-yt)^2 + c*(z-zt)^2</span>
+0023 <span class="comment">%   + f*(x-xt)*(y-yt) + g*(x-xt)*(z-zt) + h*(y-yt)*(z-zt)</span>
+0024 <span class="comment">%   + p*(x-xt) + q*(y-yt) + r*(z-zt) + d</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% Equation expanded:</span>
+0027 <span class="comment">% 0 = a*x^2 + a*xt^2 - 2*a*x*xt</span>
+0028 <span class="comment">%   + b*y^2 + b*yt^2 - 2*b*y*yt</span>
+0029 <span class="comment">%   + c*z^2 + c*zt^2 - 2*c*z*zt</span>
+0030 <span class="comment">%   + f*x*y - f*x*yt - f*xt*y + f*xt*yt</span>
+0031 <span class="comment">%   + g*x*z - g*x*zt - g*xt*z + g*xt*zt</span>
+0032 <span class="comment">%   + h*y*z - h*y*zt - h*yt*z + h*yt*zt</span>
+0033 <span class="comment">%   + p*x - p*xt</span>
+0034 <span class="comment">%   + q*y - q*yt</span>
+0035 <span class="comment">%   + r*z - r*zt</span>
+0036 <span class="comment">%   + d</span>
+0037 
+0038 p(:) = <span class="keyword">...</span>
+0039     [ p(1) <span class="keyword">...</span>
+0040     ; p(2) <span class="keyword">...</span>
+0041     ; p(3) <span class="keyword">...</span>
+0042     ; p(4) <span class="keyword">...</span>
+0043     ; p(5) <span class="keyword">...</span>
+0044     ; p(6) <span class="keyword">...</span>
+0045     ; p(7) - 2*p(1)*xt - p(4)*yt - p(5)*zt <span class="keyword">...</span>
+0046     ; p(8) - 2*p(2)*yt - p(4)*xt - p(6)*zt <span class="keyword">...</span>
+0047     ; p(9) - 2*p(3)*zt - p(5)*xt - p(6)*yt <span class="keyword">...</span>
+0048     ; p(10) + p(1)*xt^2 + p(2)*yt^2 + p(3)*zt^2 + p(4)*xt*yt + p(5)*xt*zt + p(6)*yt*zt - p(7)*xt - p(8)*yt - p(9)*zt <span class="keyword">...</span>
+0049     ];</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

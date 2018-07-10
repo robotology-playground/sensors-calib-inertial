@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getJointNames</title>
+  <meta name="keywords" content="getJointNames">
+  <meta name="description" content="getJointNames Get joints names from a given part">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointsDbase -->
+<h1>getJointNames
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>getJointNames Get joints names from a given part</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function jointNameList = getJointNames( obj,part ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getJointNames Get joints names from a given part</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointsDbase.html" class="code" title="">JointsDbase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function jointNameList = getJointNames( obj,part )</a>
+0002 <span class="comment">%getJointNames Get joints names from a given part</span>
+0003 
+0004 <span class="comment">% build query (input properties to match)</span>
+0005 inputProp.format = 1;
+0006 inputProp.data = {<span class="string">'part'</span>,part};
+0007 
+0008 <span class="comment">% query data</span>
+0009 jointNameListDbase = obj.getPropList(inputProp,<span class="string">'jointName'</span>);
+0010 
+0011 <span class="comment">%% WORKAROUND begin:</span>
+0012 <span class="comment">% the joints list 'jointNameList' should be orederd as in the app GUI and</span>
+0013 <span class="comment">% YARP indexes, so we force that order here.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Fine selection of joint encoders:</span>
+0016 <span class="comment">% Select the joints to calibrate through the respective indexes. These indexes match</span>
+0017 <span class="comment">% the joint names listed below, as per the joint naming convention described in</span>
+0018 <span class="comment">% 'http://wiki.icub.org/wiki/ICub_Model_naming_conventions', except for the torso.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%      shoulder pitch roll yaw   |   elbow   |   wrist prosup pitch yaw   |</span>
+0021 <span class="comment">% arm:          0     1    2     |   3       |         4      5     6     |</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">%      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |</span>
+0024 <span class="comment">% leg:          0     1    2     |   3       |         4      5          |</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">%               yaw   roll pitch |</span>
+0027 <span class="comment">% torso:        0     1    2     |</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">%               pitch roll yaw   |</span>
+0030 <span class="comment">% head:         0     1    2     |</span>
+0031 <span class="comment">%</span>
+0032 
+0033 <span class="comment">% static defintion of the joint names</span>
+0034 <span class="keyword">persistent</span> jointsListFromPart;
+0035 
+0036 <span class="comment">% macros for repetitive names and codes between left and right parts</span>
+0037 armJoints = @(side) {<span class="keyword">...</span>
+0038     [side <span class="string">'_shoulder_pitch'</span>],[side <span class="string">'_shoulder_roll'</span>],[side <span class="string">'_shoulder_yaw'</span>],<span class="keyword">...</span>
+0039     [side <span class="string">'_elbow'</span>],[side <span class="string">'_wrist_prosup'</span>],[side <span class="string">'_wrist_pitch'</span>],[side <span class="string">'_wrist_yaw'</span>]};
+0040 
+0041 legJoints = @(side) {<span class="keyword">...</span>
+0042     [side <span class="string">'_hip_pitch'</span>],[side <span class="string">'_hip_roll'</span>],[side <span class="string">'_hip_yaw'</span>], <span class="keyword">...</span>
+0043     [side <span class="string">'_knee'</span>],<span class="keyword">...</span>
+0044     [side <span class="string">'_ankle_pitch'</span>],[side <span class="string">'_ankle_roll'</span>]};
+0045 
+0046 <span class="comment">% Parts list</span>
+0047 parts = {<span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="string">'torso'</span>,<span class="string">'head'</span>};
+0048 
+0049 <span class="comment">% desired ordered joints list</span>
+0050 jointsLists = {<span class="keyword">...</span>
+0051     armJoints(<span class="string">'l'</span>),armJoints(<span class="string">'r'</span>),<span class="keyword">...</span>
+0052     legJoints(<span class="string">'l'</span>),legJoints(<span class="string">'r'</span>),<span class="keyword">...</span>
+0053     {<span class="string">'torso_yaw'</span>,<span class="string">'torso_roll'</span>,<span class="string">'torso_pitch'</span>},<span class="keyword">...</span>
+0054     {<span class="string">'neck_pitch'</span>, <span class="string">'neck_roll'</span>, <span class="string">'neck_yaw'</span>}};
+0055 
+0056 <span class="comment">% Build map table</span>
+0057 jointsListFromPart = containers.Map(parts,jointsLists);
+0058 
+0059 <span class="comment">% query data</span>
+0060 refJointNameList = jointsListFromPart(part);
+0061 jointNameListReorderedBitmap = ismember(refJointNameList,jointNameListDbase);
+0062 reordJointNameList = refJointNameList(jointNameListReorderedBitmap);
+0063 <span class="comment">%% WORKAROUND end.</span>
+0064 
+0065 jointNameList = reordJointNameList(:)';
+0066 
+0067 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

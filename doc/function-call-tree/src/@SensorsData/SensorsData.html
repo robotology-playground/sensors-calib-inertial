@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SensorsData</title>
+  <meta name="keywords" content="SensorsData">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsData -->
+<h1>SensorsData
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorsData.html" class="code" title="">SensorsData</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@AccelerometersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot</li><li><a href="../../src/@JointEncodersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="../../src/@LowlevTauCtrlCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(obj,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="../../src/@LowlevTauCtrlCalibrator/plotTrainingData.html" class="code" title="function plotTrainingData(obj,dataPath,measedSensorList,measedPartsList,model,taskSpecificParams)">plotTrainingData</a>	This function plots the acquired data for the friction or ktau calibration</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li><li><a href="SensorsData.html" class="code" title="">SensorsData</a>	</li><li><a href="../../src/utils/sgolayFiltParamsTuning.html" class="code" title="">sgolayFiltParamsTuning</a>	% clear all variables and close all previous figures</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = SensorsData(dataPath, nSamples, tInit, tEnd, plot, varargin)</a></li><li><a href="#_sub2" class="code">function addMTXsensToData(obj, sensorsDbase, part, sensorLabels, visualize)</a></li><li><a href="#_sub3" class="code">function addEncSensToData(obj, ~, part, jointsNdofs, ctrledJointsIdxes, visualize)</a></li><li><a href="#_sub4" class="code">function setCalibrationMap(obj, calibrationMap)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SensorsData.html" class="code" title="">SensorsData</a> &lt; handle
+0002     <span class="comment">% A SensorsData class object holds all the data capture and sensors parameters</span>
+0003     <span class="comment">% like:</span>
+0004     <span class="comment">% - data start and end timestamps</span>
+0005     <span class="comment">% - number of samples</span>
+0006     <span class="comment">% - data capture file path</span>
+0007     <span class="comment">% - sensors (accelerometers) ids as per iDynTree name convention</span>
+0008     <span class="comment">% - sensor frame invertion and sensor activation flags</span>
+0009     <span class="comment">% - type of sensors (encoder, accelerometer, FT sensor, ...)</span>
+0010     <span class="comment">% - measurements dimensions</span>
+0011     <span class="comment">%</span>
+0012         
+0013     properties (SetAccess = public, GetAccess = public)
+0014         <span class="comment">%% main input parameters</span>
+0015         path         ;
+0016         nSamples  = 0; <span class="comment">%number of samples</span>
+0017         plot      = 0;
+0018         tInit     = 0;    <span class="comment">%seconds to be skipped at the start</span>
+0019         tEnd      = 0;    <span class="comment">%seconds to reach the end of the movement</span>
+0020         diff_imu  = 0;    <span class="comment">%derivate the angular velocity of the IMUs</span>
+0021         diff_q    = 0;    <span class="comment">%derivate the angular velocity of the IMUs</span>
+0022         calibrationMap;
+0023         filtParams;
+0024         
+0025         <span class="comment">%% parsed parameters from files and model</span>
+0026         parts       = {};
+0027         labels      = {};
+0028         frames      = {};
+0029         ndof        = {};
+0030         index       = {};
+0031         
+0032         <span class="comment">%&lt;For mapping MTB pos ids (as they appear in the YARP port</span>
+0033         <span class="comment">% metadata) to MTB labels. These tables are built when loading the</span>
+0034         <span class="comment">% sensor data.</span>
+0035         mapMTBpos2code = {};
+0036         mapMTBlabel2position = {}; <span class="comment">%&gt;</span>
+0037         mapIMUlabel2position = {}; <span class="comment">% for parsing IMU data</span>
+0038         
+0039         type        = {};
+0040         calib       = {};
+0041         visualize   = {};
+0042         parsedParams    ;
+0043         
+0044         nrOfMTBAccs = 0; <span class="comment">% total number of activated MTB acc. or IMU acc.</span>
+0045     <span class="keyword">end</span>
+0046     
+0047     methods
+0048         <a name="_sub0" href="#_subfunctions" class="code">function obj = SensorsData(dataPath, nSamples, tInit, tEnd, plot, varargin)</a>
+0049             <span class="comment">% conditional parameter varargin:</span>
+0050             <span class="comment">% calibrationMap, filtParams</span>
+0051             <span class="comment">%</span>
+0052             <span class="keyword">if</span> nargin&gt;5 &amp;&amp; length(varargin{1})&gt;0
+0053                 obj.calibrationMap = varargin{1};
+0054             <span class="keyword">else</span>
+0055                 obj.calibrationMap = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0056             <span class="keyword">end</span>
+0057             <span class="keyword">if</span> nargin&gt;6 &amp;&amp; length(varargin{2})&gt;0
+0058                 obj.filtParams = varargin{2};
+0059             <span class="keyword">else</span>
+0060                 filtParams.type = <span class="string">'sgolay'</span>;
+0061                 filtParams.sgolayK = 5;
+0062                 filtParams.sgolayF = 601;
+0063                 obj.filtParams = filtParams;
+0064             <span class="keyword">end</span>
+0065             <span class="comment">% main input parameters</span>
+0066             obj.path = dataPath;
+0067             obj.nSamples = nSamples;
+0068             obj.tInit = tInit;
+0069             obj.tEnd = tEnd;
+0070             obj.plot = plot;
+0071         <span class="keyword">end</span>
+0072         
+0073         <a name="_sub1" href="#_subfunctions" class="code">function addMTXsensToData(obj, sensorsDbase, part, sensorLabels, visualize)</a>
+0074             <span class="comment">% Number of activated sensors for current part</span>
+0075             obj.nrOfMTBAccs = obj.nrOfMTBAccs + numel(sensorLabels);
+0076             
+0077             <span class="keyword">for</span> cLabel = sensorLabels(:)'
+0078                 <span class="comment">% Get sensor label frame and type. There is no naming</span>
+0079                 <span class="comment">% convention yet.</span>
+0080                 <span class="comment">% ex of sensor frame: [r_upper_leg_mtb_acc_11b3]</span>
+0081                 <span class="comment">% ex of sensor label: [11b3_acc]</span>
+0082                 sensorLabel = cell2mat(cLabel);
+0083                 sensorFrame = cell2mat(sensorsDbase.getSensorFrames(sensorLabel));
+0084                 sensorType = cell2mat(sensorsDbase.getSensorCadTypes(sensorLabel));
+0085                 <span class="comment">% WORKAROUND begin</span>
+0086                 <span class="keyword">switch</span> sensorType
+0087                     <span class="keyword">case</span> <span class="string">'mtb_acc'</span>
+0088                         sensorType = <span class="string">'inertialMTB'</span>;
+0089                     <span class="keyword">case</span> <span class="string">'imu_acc'</span>
+0090                         sensorType = <span class="string">'inertial'</span>;
+0091                     <span class="keyword">case</span> {<span class="string">'ems_acc'</span>,<span class="string">'mtb_gyro'</span>,<span class="string">'ems_gyro'</span>}
+0092                         error(<span class="string">'Not yet supported type!'</span>);
+0093                     <span class="keyword">otherwise</span>
+0094                         error(<span class="string">'Unsupported type!'</span>);
+0095                 <span class="keyword">end</span>
+0096                 <span class="comment">% WORKAROUND end</span>
+0097                 
+0098                 <span class="comment">% get calibration for this sensor</span>
+0099                 <span class="keyword">if</span> isKey(obj.calibrationMap,sensorFrame)
+0100                     calibMap = obj.calibrationMap(sensorFrame);
+0101                 <span class="keyword">else</span>
+0102                     calibMap.centre=[0 0 0]'; calibMap.radii=[1 1 1]';
+0103                     calibMap.quat=[1 0 0 0]'; calibMap.R=eye(3);
+0104                     calibMap.C=eye(3); <span class="comment">% calibration matrix</span>
+0105                 <span class="keyword">end</span>
+0106                 
+0107                 <span class="comment">% Get the fullscale gain (raw fullscale to m/s^2 conversion)</span>
+0108                 calibMap.gain=cell2mat(sensorsDbase.getSensorFullscaleGains(sensorLabel));
+0109                 
+0110                 <span class="comment">% Add a sensor to the data structure.</span>
+0111                 obj.addSensToData(  part, <span class="keyword">...</span>
+0112                     sensorFrame, <span class="keyword">...</span>
+0113                     sensorLabel, <span class="keyword">...</span>
+0114                     3, <span class="keyword">...</span>
+0115                     [], <span class="keyword">...</span>
+0116                     sensorType, <span class="keyword">...</span>
+0117                     calibMap, <span class="keyword">...</span>
+0118                     visualize &amp;&amp; obj.plot);
+0119             <span class="keyword">end</span>
+0120         <span class="keyword">end</span>
+0121 
+0122         <a name="_sub2" href="#_subfunctions" class="code">function addEncSensToData(obj, ~, part, jointsNdofs, ctrledJointsIdxes, visualize)</a>
+0123             <span class="comment">% define joint calibration string</span>
+0124             mapKey = strcat(<span class="string">'jointsOffsets_'</span>,part);
+0125             <span class="comment">% get calibration for the joint encoders of this part</span>
+0126             <span class="keyword">if</span> isKey(obj.calibrationMap,mapKey)
+0127                 calibMap = obj.calibrationMap(mapKey);
+0128             <span class="keyword">else</span>
+0129                 calibMap = 0;
+0130             <span class="keyword">end</span>
+0131             
+0132             obj.addSensToData(part, <span class="keyword">...</span>
+0133                               <span class="string">''</span>, <span class="keyword">...</span>
+0134                               strcat(part,<span class="string">'_state'</span>), <span class="keyword">...</span>
+0135                               jointsNdofs, <span class="keyword">...</span>
+0136                               ctrledJointsIdxes, <span class="keyword">...</span>
+0137                               <span class="string">'stateExt:o'</span>, <span class="keyword">...</span>
+0138                               calibMap, <span class="keyword">...</span>
+0139                               visualize &amp;&amp; obj.plot);
+0140         <span class="keyword">end</span>
+0141         
+0142         <a name="_sub3" href="#_subfunctions" class="code">function setCalibrationMap(obj, calibrationMap)</a>
+0143             obj.calibrationMap = calibrationMap;
+0144         <span class="keyword">end</span>
+0145         
+0146     <span class="keyword">end</span>
+0147 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of jointsCalibratorSequenceProfile</title>
+  <meta name="keywords" content="jointsCalibratorSequenceProfile">
+  <meta name="description" content="% Home single step sequence">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html conf --><!-- menu.html advanced -->
+<h1>jointsCalibratorSequenceProfile
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Home single step sequence</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Home single step sequence</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 
+0002 <span class="comment">%% Home single step sequence</span>
+0003 
+0004 <span class="comment">% For limbs calibration</span>
+0005 homeCalibLimbs.labels = {<span class="keyword">...</span>
+0006     <span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>;<span class="keyword">...</span>
+0007     <span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>;
+0008     <span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="string">'torso'</span>,<span class="string">'head'</span>};
+0009 homeCalibLimbs.val = {<span class="keyword">...</span>
+0010     [0 45 0 50 0 0 0],<span class="keyword">...</span>
+0011     [0 45 0 50 0 0 0],<span class="keyword">...</span>
+0012     [0 10 0 0 0 0],<span class="keyword">...</span>
+0013     [0 10 0 0 0 0],<span class="keyword">...</span>
+0014     [0 0 0],<span class="keyword">...</span>
+0015     [0 0 0]};
+0016 
+0017 <span class="comment">% For torso calibration</span>
+0018 homeCalibTorso = homeCalibLimbs;
+0019 homeCalibTorso.val = {<span class="keyword">...</span>
+0020     [-30 30 -30 20 0 0 0],<span class="keyword">...</span>
+0021     [-30 30 -30 20 0 0 0],<span class="keyword">...</span>
+0022     [0 10 0 0 0 0],<span class="keyword">...</span>
+0023     [0 10 0 0 0 0],<span class="keyword">...</span>
+0024     [0 0 0],<span class="keyword">...</span>
+0025     [0 0 0]};
+0026 
+0027 <span class="comment">%% Motion sequences</span>
+0028 <span class="comment">% (a single sequence is intended to move all defined parts synchronously,</span>
+0029 <span class="comment">% motions from 2 different sequences should be run asynchronously)</span>
+0030 <span class="comment">% each calibPart should be caibrated within a single sequence.</span>
+0031 
+0032 <span class="comment">% define tables for each limb</span>
+0033 left_arm_seqParams.labels = {<span class="keyword">...</span>
+0034     <span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0035     <span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>      ;<span class="keyword">...</span>
+0036     <span class="string">'left_arm'</span>           ,<span class="string">'left_arm'</span>      ,<span class="string">'left_arm'</span> ,<span class="string">'torso'</span>    ,<span class="string">'left_arm'</span>};
+0037 left_arm_seqParams.val = {<span class="keyword">...</span>
+0038     [  0 45 -23 50 0 0 0],repmat( 4,[1 7]),true       ,true       ,true       ;<span class="keyword">...</span>
+0039     [  0 45  49 50 0 0 0],repmat( 4,[1 7]),true       ,true       ,true       ;<span class="keyword">...</span>
+0040     [  0 45   0 50 0 0 0],repmat( 4,[1 7]),true       ,true       ,true       ;<span class="keyword">...</span>
+0041     [-20 30 -30 90 0 0 0],repmat(10,[1 7]),false      ,false      ,false      ;<span class="keyword">...</span>
+0042     [-20 30 -30  0 0 0 0],repmat( 4,[1 7]),true       ,true       ,true       ;<span class="keyword">...</span>
+0043     [-20 30 -30 90 0 0 0],repmat( 4,[1 7]),true       ,true       ,true       ;<span class="keyword">...</span>
+0044     [ 0  45   0 50 0 0 0],repmat(10,[1 7]),false      ,false      ,false      ;<span class="keyword">...</span>
+0045     [ 0  45   0 50 0 0 0],repmat(10,[1 7]),false      ,false      ,false      };
+0046 
+0047 right_arm_seqParams.labels = {<span class="keyword">...</span>
+0048     <span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>      ;<span class="keyword">...</span>
+0049     <span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>       ;<span class="keyword">...</span>
+0050     <span class="string">'right_arm'</span>          ,<span class="string">'right_arm'</span>     ,<span class="string">'right_arm'</span>,<span class="string">'torso'</span>    ,<span class="string">'right_arm'</span>};
+0051 right_arm_seqParams.val = left_arm_seqParams.val;
+0052 
+0053 left_leg_seqParams.labels = {<span class="keyword">...</span>
+0054     <span class="string">'ctrl'</span>                 ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>    ,<span class="string">'meas'</span>    ;<span class="keyword">...</span>
+0055     <span class="string">'pos'</span>                  ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>   ,<span class="string">'acc'</span>     ;<span class="keyword">...</span>
+0056     <span class="string">'left_leg'</span>             ,<span class="string">'left_leg'</span>      ,<span class="string">'left_leg'</span>,<span class="string">'left_leg'</span>};
+0057 left_leg_seqParams.val = {<span class="keyword">...</span>
+0058     [ 0 45 -60   0   0   0],repmat(10,[1 6]),false     ,false     ;<span class="keyword">...</span>
+0059     [ 0 45  60   0   0   0],repmat( 4,[1 6]),true      ,true      ;<span class="keyword">...</span>
+0060     [80 30   0   0   0   0],repmat(10,[1 6]),false     ,false     ;<span class="keyword">...</span>
+0061     [80 30   0 -80   0   0],repmat( 4,[1 6]),true      ,true      ;<span class="keyword">...</span>
+0062     [80 30   0 -80 -25   0],repmat( 2,[1 6]),true      ,true      ;<span class="keyword">...</span>
+0063     [80 30   0 -80  25   0],repmat( 2,[1 6]),true      ,true      ;<span class="keyword">...</span>
+0064     [80 30   0 -80   0 -20],repmat( 2,[1 6]),true      ,true      ;<span class="keyword">...</span>
+0065     [80 30   0 -80   0  20],repmat( 2,[1 6]),true      ,true      };
+0066     
+0067 right_leg_seqParams.labels = {<span class="keyword">...</span>
+0068     <span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0069     <span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>      ;<span class="keyword">...</span>
+0070     <span class="string">'right_leg'</span>          ,<span class="string">'right_leg'</span>     ,<span class="string">'right_leg'</span>,<span class="string">'right_leg'</span>};
+0071 right_leg_seqParams.val = left_leg_seqParams.val;
+0072 
+0073 torso_seqParams.labels = {<span class="keyword">...</span>
+0074     <span class="string">'ctrl'</span>    ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span> ;<span class="keyword">...</span>
+0075     <span class="string">'pos'</span>     ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>  ;<span class="keyword">...</span>
+0076     <span class="string">'torso'</span>   ,<span class="string">'torso'</span>         ,<span class="string">'torso'</span>    ,<span class="string">'torso'</span>};
+0077 torso_seqParams.val = {<span class="keyword">...</span>
+0078     [  0 0 45],repmat(10,[1 3]),false      ,false  ;<span class="keyword">...</span>
+0079     [-45 0 45],repmat( 4,[1 3]),true       ,true   ;<span class="keyword">...</span>
+0080     [ 45 0 45],repmat( 4,[1 3]),true       ,true   ;<span class="keyword">...</span>
+0081     [-45 0 45],repmat( 4,[1 3]),true       ,true   ;<span class="keyword">...</span>
+0082     [ 45 0 45],repmat( 4,[1 3]),true       ,true   ;<span class="keyword">...</span>
+0083     [  0 0 45],repmat( 4,[1 3]),true       ,true   ;<span class="keyword">...</span>
+0084     [  0 0 45],repmat(10,[1 3]),false      ,false  ;<span class="keyword">...</span>
+0085     [  0 0 45],repmat(10,[1 3]),false      ,false  };
+0086 
+0087 head_seqParams.labels = {<span class="keyword">...</span>
+0088     <span class="string">'ctrl'</span>       ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>;<span class="keyword">...</span>
+0089     <span class="string">'pos'</span>        ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'joint'</span>    ,<span class="string">'imu'</span> ;<span class="keyword">...</span>
+0090     <span class="string">'head'</span>       ,<span class="string">'head'</span>          ,<span class="string">'head'</span>     ,<span class="string">'torso'</span>    ,<span class="string">'head'</span>};
+0091 head_seqParams.val = {<span class="keyword">...</span>
+0092     [  0 -20   0],repmat( 4,[1 3]),true       ,true       ,true  ;<span class="keyword">...</span>
+0093     [  0  20   0],repmat( 4,[1 3]),true       ,true       ,true  ;<span class="keyword">...</span>
+0094     [  0   0   0],repmat( 4,[1 3]),true       ,true       ,true  ;<span class="keyword">...</span>
+0095     [-25   0   0],repmat( 4,[1 3]),true       ,true       ,true  ;<span class="keyword">...</span>
+0096     [-25   0 -45],repmat( 4,[1 3]),true       ,true       ,true  ;<span class="keyword">...</span>
+0097     [-25   0  45],repmat( 4,[1 3]),true       ,true       ,true  ;<span class="keyword">...</span>
+0098     [-25   0   0],repmat( 4,[1 3]),true       ,true       ,true  ;<span class="keyword">...</span>
+0099     [  0   0   0],repmat(10,[1 3]),false      ,false      ,false };
+0100 
+0101 <span class="comment">% define sequences for limbs {1} and torso {2} calibration</span>
+0102 seqHomeParams{1} = homeCalibLimbs;
+0103 seqHomeParams{2} = homeCalibTorso;
+0104 seqEndParams     = homeCalibLimbs;
+0105 
+0106 <span class="comment">% Map parts to sequences and params</span>
+0107 selector.calibedParts = {<span class="keyword">...</span>
+0108     <span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="keyword">...</span>
+0109     <span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="keyword">...</span>
+0110     <span class="string">'torso'</span>,<span class="string">'head'</span>};
+0111 selector.calibedSensors = {<span class="keyword">...</span>
+0112     {<span class="string">'joint'</span>},{<span class="string">'joint'</span>},<span class="keyword">...</span>
+0113     {<span class="string">'joint'</span>},{<span class="string">'joint'</span>},<span class="keyword">...</span>
+0114     {<span class="string">'joint'</span>},{<span class="string">'joint'</span>}};
+0115 selector.setIdx  = {2,2,2,2,1,2}; <span class="comment">% max index must not exceed max index of seqHomePArams</span>
+0116 selector.seqParams = {<span class="keyword">...</span>
+0117     left_arm_seqParams,right_arm_seqParams,<span class="keyword">...</span>
+0118     left_leg_seqParams,right_leg_seqParams,<span class="keyword">...</span>
+0119     torso_seqParams,head_seqParams};</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

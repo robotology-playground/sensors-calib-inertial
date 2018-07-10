@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['m_5fa_5feven',['m_A_even',['../mpolycomps_8m.html#aafed8dc9f31f8eab63454c29edd22b65',1,'mpolycomps.m']]],
+  ['m_5fa_5fodd',['m_A_odd',['../mpolycomps_8m.html#a6d525069862cd5e4735ec2545edb6f55',1,'mpolycomps.m']]],
+  ['m_5finv_5fa_5feven',['m_inv_A_even',['../mpolycomps_8m.html#a59a5799ca1aaf3e37e370bbf698e308e',1,'mpolycomps.m']]],
+  ['m_5finv_5fa_5fodd',['m_inv_A_odd',['../mpolycomps_8m.html#a0c736041d7627e98035b8aa872dbe8d8',1,'mpolycomps.m']]],
+  ['maxdegree',['maxdegree',['../classsympoly.html#a36e510611a85047f61e32a546b0e4ed8',1,'sympoly']]],
+  ['merge',['merge',['../merge_8m.html#a7af6ce6e09573b472fd9d74ee258480b',1,'merge.m']]],
+  ['mindegree',['mindegree',['../classsympoly.html#aaaf4c4eb92441b89e3fa2b5a6b214ac0',1,'sympoly']]],
+  ['minus',['minus',['../classsympoly.html#a8f663e9e086aa4cda5cb7831557c4fdd',1,'sympoly']]],
+  ['mldivide',['mldivide',['../classsympoly.html#a6ddd76760c9ddf72680cef1846a51893',1,'sympoly']]],
+  ['model',['model',['../class_calibrator.html#a7484d30331e4429715e74ded67a5772f',1,'Calibrator']]],
+  ['modexpon',['modexpon',['../classsympoly.html#aad910ba9c03d9b9fab19df830b650444',1,'sympoly']]],
+  ['motionsequencer',['MotionSequencer',['../class_motion_sequencer.html#add0037e16d845ad5cd610c8a4da6cb82',1,'MotionSequencer']]],
+  ['motorpwmcontroller',['MotorPWMcontroller',['../class_motor_p_w_mcontroller.html#ae4d4a6ed6637c9ef1df1ea7f064a2c70',1,'MotorPWMcontroller']]],
+  ['motortransfunc',['MotorTransFunc',['../class_motor_trans_func.html#a2180d442fda529510af770d71d951f4b',1,'MotorTransFunc']]],
+  ['mpolycomp',['mpolycomp',['../mpolycomp_8m.html#a54917acac60be00b0030002099e1463b',1,'mpolycomp.m']]],
+  ['mpolycomps',['mpolycomps',['../mpolycomps_8m.html#afbcc7a9aaccb0ae8545e61acf9b55d0e',1,'mpolycomps.m']]],
+  ['mpolyeig',['mpolyeig',['../mpolyeig_8m.html#adaeaad94dbc844d7a6499df453ca6d2b',1,'mpolyeig.m']]],
+  ['mpolyval',['mpolyval',['../mpolyval_8m.html#a9e73337170024de14e7c7cd1ccf1784d',1,'mpolyval.m']]],
+  ['mpower',['mpower',['../classsympoly.html#a7382a267de4b65302d75cc5dc10f479f',1,'sympoly']]],
+  ['mrdivide',['mrdivide',['../classsympoly.html#a66d6fd2b5ffb2c163f7a40f4d0a6b9b2',1,'sympoly']]],
+  ['mtimes',['mtimes',['../classsympoly.html#ad0d65346500250fd395f749df6beebc9',1,'sympoly']]],
+  ['multiply',['multiply',['../classsympoly.html#acbff985456c5df6c247656575512c516',1,'sympoly']]]
+];

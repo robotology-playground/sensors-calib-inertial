@@ -1,0 +1,340 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sensorSelfCalibratorInit</title>
+  <meta name="keywords" content="sensorSelfCalibratorInit">
+  <meta name="description" content="====================================================================">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html conf -->
+<h1>sensorSelfCalibratorInit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>====================================================================</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">====================================================================
+ This configuration file defines the main application parameters
+====================================================================</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>	UNTITLED6 Summary of this function goes here</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%====================================================================</span>
+0002 <span class="comment">% This configuration file defines the main application parameters</span>
+0003 <span class="comment">%====================================================================</span>
+0004 
+0005 <span class="comment">%% Common model and calibration input parameters</span>
+0006 modelName = <span class="string">'iCubGenova04'</span>; <span class="comment">% as the models defined in 'icub-models' repo</span>
+0007 dataPath  = <span class="string">'../../data/dumper'</span>;
+0008 <span class="comment">%modelPath = '../models/icubSim/icub.urdf';</span>
+0009 modelPath = <span class="string">'../models/iCubGenova04/model.urdf'</span>;
+0010 <span class="comment">%calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';</span>
+0011 calibrationMapFile = <span class="string">'calibrationMap.mat'</span>;
+0012 <span class="comment">%calibrationMapFile = '';</span>
+0013 
+0014 <span class="comment">%% Standard or custom calibration</span>
+0015 calibrationType = <span class="string">'standard'</span>;
+0016 
+0017 <span class="comment">%% standard calibration tasks checklist</span>
+0018 acquireSensorsTestData  = false;
+0019 calibrateAccelerometers = false;
+0020 calibrateJointEncoders  = false;
+0021 calibrateFTsensors      = false;
+0022 calibrateGyroscopes     = false;
+0023 calibrateLowLevTauCtrl  = true;
+0024 
+0025 <span class="comment">%% Diagnosis and visualization</span>
+0026 <a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a> = false;
+0027 
+0028 <span class="comment">%% Common output parameters</span>
+0029 saveCalibration = true;
+0030 defaultSavePlot = true;
+0031 defaultExportPlot = true;
+0032 
+0033 
+0034 <span class="comment">%% Custom calibration sequence</span>
+0035 <span class="comment">% the below structured list defines the tasks sequence and their set of</span>
+0036 <span class="comment">% parameters.</span>
+0037 <span class="comment">%</span>
+0038 <span class="comment">% customCalibSequence = {...</span>
+0039 <span class="comment">%     'acquire'    ,{'seqCfg1','seqCfg2',...,'seqCfgN'};...</span>
+0040 <span class="comment">%     'diag'       ,{'seqCfg1','seqCfg2',...,'seqCfgN'};...</span>
+0041 <span class="comment">%     'calibAccs'  ,'seqCfgX';...</span>
+0042 <span class="comment">%     'calibJoints','seqCfgY';...</span>
+0043 <span class="comment">%     'saveCalib',</span>
+0044 <span class="comment">%     };</span>
+0045 
+0046 
+0047 <span class="comment">%% 'acquireSensorsTestData': Acquire only sensors test data (only accelerometers for now)</span>
+0048 
+0049 <span class="comment">% define the robot limb holding the sensors on which we run the diagnosis.</span>
+0050 acquiredParts = {<span class="string">'torso'</span>};
+0051 <span class="comment">% Profile = ... TBD!!</span>
+0052 
+0053 <span class="comment">% Fine selection of the accelerometers:</span>
+0054 <span class="comment">% Select (set to 'true') the accelerometers to analyse through the respective indexes.</span>
+0055 <span class="comment">%</span>
+0056 <span class="comment">% (Part)           (inertial MTB boards)</span>
+0057 <span class="comment">%</span>
+0058 <span class="comment">%                  (upper)       (forearm)      (hand)</span>
+0059 <span class="comment">% left_arm :       1b10..1b13    1b8..1b9       1b7</span>
+0060 <span class="comment">% right_arm:       2b10..2b13    2b8..2b9       2b7</span>
+0061 <span class="comment">% mtbSensorAct:      10....13      8....9         7</span>
+0062 <span class="comment">%                  (upper)       (lower)        (foot)</span>
+0063 <span class="comment">% left_leg :       10b1..10b7    10b8..10b11    10b12,10b13</span>
+0064 <span class="comment">% right_leg:       11b1..11b7    11b8..11b11    11b12,11b13</span>
+0065 <span class="comment">% mtbSensorAct idx:   1.....7       8.....11       12,   13</span>
+0066 <span class="comment">%</span>
+0067 <span class="comment">% head     :       head_imu 3D accelerometer</span>
+0068 <span class="comment">% mtbSensorAct idx:  1</span>
+0069 <span class="comment">%</span>
+0070 <span class="comment">% torso    :       0b7..0b10</span>
+0071 <span class="comment">% mtbSensorAct idx:  7....10</span>
+0072 <span class="comment">%</span>
+0073 <span class="comment">% some sensors are de-activated because of faulty behaviour</span>
+0074 mtbSensorAct.left_arm = [10:13 8:9 7];
+0075 mtbSensorAct.right_arm = [10:13 8:9 7];
+0076 mtbSensorAct.left_leg = 1:13;
+0077 mtbSensorAct.right_leg = 1:13;
+0078 mtbSensorAct.torso = 7:10;
+0079 mtbSensorAct.head = 1;
+0080 
+0081 <span class="comment">% Save generated figures: if this flag is set to true, all data is saved and figures</span>
+0082 <span class="comment">% printed in a new folder indexed by a unique iteration number. Log</span>
+0083 <span class="comment">% classification information are saved in text format for easier search from</span>
+0084 <span class="comment">% a file explorer.</span>
+0085 <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> = defaultSavePlot;
+0086 exportPlot = defaultExportPlot;
+0087 loadJointPos = true;
+0088 
+0089 <span class="comment">% Motion sequence profile</span>
+0090 <span class="comment">%motionSeqProfile = 'jointsCalibratorSequenceProfile';</span>
+0091 <span class="comment">%motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';</span>
+0092 motionSeqProfile = <span class="string">'gyroscopesCalibratorSequenceProfile2checkCalib'</span>;
+0093 <span class="comment">%motionSeqProfile = 'gyroscopesCalibratorSequenceProfile1checkAlgo';</span>
+0094 
+0095 <span class="comment">% Wrap parameters specific to calibrator or diagnosis functions processing</span>
+0096 taskSpecificParams = struct(<span class="keyword">...</span>
+0097     <span class="string">'mtbSensorAct'</span>,mtbSensorAct,<span class="keyword">...</span>
+0098     <span class="string">'savePlot'</span>,<a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>,<span class="keyword">...</span>
+0099     <span class="string">'exportPlot'</span>,exportPlot,<span class="keyword">...</span>
+0100     <span class="string">'loadJointPos'</span>,loadJointPos,<span class="keyword">...</span>
+0101     <span class="string">'motionSeqProfile'</span>,motionSeqProfile);
+0102 
+0103 <span class="comment">% Sensor data acquisition: ['new'|'last'|&lt;id&gt;]</span>
+0104 sensorDataAcq = {<span class="string">'seq'</span>,53};
+0105 
+0106 <span class="comment">% wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as</span>
+0107 <span class="comment">% a calibrator task)</span>
+0108 sensorsTestDataAcq = struct(<span class="keyword">...</span>
+0109     <span class="string">'calibedParts'</span>,{acquiredParts},<span class="keyword">...</span>
+0110     <span class="string">'taskSpecificParams'</span>,taskSpecificParams,<span class="keyword">...</span>
+0111     <span class="string">'sensorDataAcq'</span>,{sensorDataAcq});
+0112 
+0113 clear acquiredParts mtbSensorAct <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> exportPlot loadJointPos <span class="keyword">...</span>
+0114     sensorDataAcq motionSeqProfile taskSpecificParams;
+0115 
+0116 <span class="comment">%% 'calibrateAccelerometers': MTB/IMU accelerometers gains/offsets calibration</span>
+0117 
+0118 <span class="comment">% Calibrated parts:</span>
+0119 <span class="comment">% Only the accelerometers from these parts (limbs) will be calibrated</span>
+0120 calibedParts = {<span class="string">'torso'</span>,<span class="string">'head'</span>};
+0121 
+0122 <span class="comment">% some sensors are de-activated because of faulty behaviour, bad calibration</span>
+0123 <span class="comment">% or wrong frame definition</span>
+0124 mtbSensorAct.left_arm = [10:13 8:9 7];
+0125 mtbSensorAct.right_arm = [10:13 8:9 7];
+0126 mtbSensorAct.left_leg = 1:13;
+0127 mtbSensorAct.right_leg = 1:13;
+0128 mtbSensorAct.torso = 7:10;
+0129 mtbSensorAct.head = 1;
+0130 
+0131 <span class="comment">% Save generated figures: if this flag is set to true, all data is saved and figures</span>
+0132 <span class="comment">% printed in a new folder indexed by a unique iteration number. Log</span>
+0133 <span class="comment">% classification information are saved in text format for easier search from</span>
+0134 <span class="comment">% a file explorer.</span>
+0135 <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> = defaultSavePlot;
+0136 exportPlot = defaultExportPlot;
+0137 loadJointPos = false;
+0138 
+0139 <span class="comment">% Wrap parameters specific to calibrator or diagnosis functions processing</span>
+0140 taskSpecificParams = struct(<span class="keyword">...</span>
+0141     <span class="string">'mtbSensorAct'</span>,mtbSensorAct,<span class="keyword">...</span>
+0142     <span class="string">'savePlot'</span>,<a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>,<span class="keyword">...</span>
+0143     <span class="string">'exportPlot'</span>,exportPlot,<span class="keyword">...</span>
+0144     <span class="string">'loadJointPos'</span>,loadJointPos);
+0145 
+0146 <span class="comment">% Sensor data acquisition: ['new'|'last'|&lt;id&gt;]</span>
+0147 sensorDataAcq = {<span class="string">'last'</span>};
+0148 
+0149 <span class="comment">% wrap parameters</span>
+0150 accelerometersCalib = struct(<span class="keyword">...</span>
+0151     <span class="string">'calibedParts'</span>,{calibedParts},<span class="keyword">...</span>
+0152     <span class="string">'taskSpecificParams'</span>,taskSpecificParams,<span class="keyword">...</span>
+0153     <span class="string">'sensorDataAcq'</span>,{sensorDataAcq});
+0154 
+0155 clear calibedParts mtbSensorAct <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> exportPlot loadJointPos <span class="keyword">...</span>
+0156     sensorDataAcq taskSpecificParams;
+0157 
+0158 <span class="comment">%% 'calibrateJointEncoders' Joint encoders offsets calibration</span>
+0159 
+0160 <span class="comment">% Calibrated parts:</span>
+0161 <span class="comment">% Only the joint encoders from these parts (limbs) will be calibrated</span>
+0162 calibedParts = {<span class="string">'torso'</span>};
+0163 
+0164 <span class="comment">% Fine selection of joint encoders:</span>
+0165 <span class="comment">% Select the joints to calibrate through the respective indexes. These indexes match</span>
+0166 <span class="comment">% the joint names listed below, as per the joint naming convention described in</span>
+0167 <span class="comment">% 'http://wiki.icub.org/wiki/ICub_Model_naming_conventions', except for the torso.</span>
+0168 <span class="comment">%</span>
+0169 <span class="comment">%      shoulder pitch roll yaw   |   elbow   |   wrist prosup pitch yaw   |</span>
+0170 <span class="comment">% arm:          0     1    2     |   3       |         4      5     6     |</span>
+0171 <span class="comment">%</span>
+0172 <span class="comment">%      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |</span>
+0173 <span class="comment">% leg:          0     1    2     |   3       |         4      5          |</span>
+0174 <span class="comment">%</span>
+0175 <span class="comment">%               yaw   roll pitch |</span>
+0176 <span class="comment">% torso:        0     1    2     |</span>
+0177 <span class="comment">%</span>
+0178 <span class="comment">%               pitch roll yaw   |</span>
+0179 <span class="comment">% head:         0     1    2     |</span>
+0180 <span class="comment">%</span>
+0181 <span class="comment">%=================================================================</span>
+0182 <span class="comment">% !!! Below joint indexes will be ignored for parts not defined in</span>
+0183 <span class="comment">% 'calibedParts' !!!</span>
+0184 <span class="comment">%=================================================================</span>
+0185 calibedJointsIdxes.left_arm = 0:3;
+0186 calibedJointsIdxes.right_arm = 0:3;
+0187 calibedJointsIdxes.left_leg = 0:5;
+0188 calibedJointsIdxes.right_leg = 0:5;
+0189 calibedJointsIdxes.torso = 0:2;
+0190 calibedJointsIdxes.head = 0:2;
+0191 
+0192 <span class="comment">% some sensors are de-activated because of faulty behaviour, bad calibration</span>
+0193 <span class="comment">% or wrong frame definition</span>
+0194 mtbSensorAct.left_arm = [10:13 8:9 7];
+0195 mtbSensorAct.right_arm = [10:13 8:9 7];
+0196 mtbSensorAct.left_leg = 1:13;
+0197 mtbSensorAct.right_leg = 1:13;
+0198 mtbSensorAct.torso = 7:10;
+0199 mtbSensorAct.head = 1;
+0200 
+0201 <span class="comment">% Save generated figures: if this flag is set to true, all data is saved and figures</span>
+0202 <span class="comment">% printed in a new folder indexed by a unique iteration number. Log</span>
+0203 <span class="comment">% classification information are saved in text format for easier search from</span>
+0204 <span class="comment">% a file explorer.</span>
+0205 <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> = defaultSavePlot;
+0206 exportPlot = defaultExportPlot;
+0207 loadJointPos = true;
+0208 
+0209 <span class="comment">% Wrap parameters specific to calibrator or diagnosis functions processing</span>
+0210 taskSpecificParams = struct(<span class="keyword">...</span>
+0211     <span class="string">'calibedJointsIdxes'</span>,calibedJointsIdxes,<span class="keyword">...</span>
+0212     <span class="string">'mtbSensorAct'</span>,mtbSensorAct,<span class="keyword">...</span>
+0213     <span class="string">'savePlot'</span>,<a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>,<span class="keyword">...</span>
+0214     <span class="string">'exportPlot'</span>,exportPlot,<span class="keyword">...</span>
+0215     <span class="string">'loadJointPos'</span>,loadJointPos);
+0216 
+0217 <span class="comment">% Sensor data acquisition: ['new'|'last'|&lt;id&gt;]</span>
+0218 sensorDataAcq = {<span class="string">'seq'</span>,53};
+0219 
+0220 <span class="comment">% wrap parameters</span>
+0221 jointEncodersCalib = struct(<span class="keyword">...</span>
+0222     <span class="string">'calibedParts'</span>,{calibedParts},<span class="keyword">...</span>
+0223     <span class="string">'taskSpecificParams'</span>,taskSpecificParams,<span class="keyword">...</span>
+0224     <span class="string">'sensorDataAcq'</span>,{sensorDataAcq});
+0225 
+0226 clear calibedParts calibedJointsIdxes mtbSensorAct <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> exportPlot loadJointPos <span class="keyword">...</span>
+0227     sensorDataAcq taskSpecificParams;
+0228 
+0229 <span class="comment">%% 'calibrateLowLevTauCtrl' Joint low level torque control parameters calibration</span>
+0230 
+0231 <span class="comment">% Calibrated parts:</span>
+0232 <span class="comment">% Only the joint parameters from these parts (limbs) will be calibrated</span>
+0233 calibedParts = {<span class="string">'right_leg'</span>};
+0234 
+0235 <span class="comment">% Fine selection of joints to calibrate:</span>
+0236 <span class="comment">% Select the joints to calibrate through the respective indexes. These indexes match</span>
+0237 <span class="comment">% the joint names listed below, as per the joint naming convention described in</span>
+0238 <span class="comment">% 'http://wiki.icub.org/wiki/ICub_Model_naming_conventions', except for the torso.</span>
+0239 <span class="comment">%</span>
+0240 <span class="comment">%      shoulder pitch roll yaw   |   elbow   |   wrist prosup pitch yaw   |</span>
+0241 <span class="comment">% arm:          0     1    2     |   3       |         4      5     6     |</span>
+0242 <span class="comment">%</span>
+0243 <span class="comment">%      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |</span>
+0244 <span class="comment">% leg:          0     1    2     |   3       |         4      5          |</span>
+0245 <span class="comment">%</span>
+0246 <span class="comment">%               yaw   roll pitch |</span>
+0247 <span class="comment">% torso:        0     1    2     |</span>
+0248 <span class="comment">%</span>
+0249 <span class="comment">%               pitch roll yaw   |</span>
+0250 <span class="comment">% head:         0     1    2     |</span>
+0251 <span class="comment">%</span>
+0252 <span class="comment">%=================================================================</span>
+0253 <span class="comment">% !!! Below joint indexes will be ignored for parts not defined in</span>
+0254 <span class="comment">% 'calibedParts' !!!</span>
+0255 <span class="comment">%=================================================================</span>
+0256 calibedJointsIdxes.left_arm = 0:3;
+0257 calibedJointsIdxes.right_arm = 0:3;
+0258 calibedJointsIdxes.left_leg = 0:5;
+0259 calibedJointsIdxes.right_leg = 0:5;
+0260 calibedJointsIdxes.torso = 0:2;
+0261 calibedJointsIdxes.head = 0:2;
+0262 
+0263 <span class="comment">% Save generated figures: if this flag is set to true, all data is saved and figures</span>
+0264 <span class="comment">% printed in a new folder indexed by a unique iteration number. Log</span>
+0265 <span class="comment">% classification information are saved in text format for easier search from</span>
+0266 <span class="comment">% a file explorer.</span>
+0267 <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> = defaultSavePlot;
+0268 exportPlot = defaultExportPlot;
+0269 
+0270 <span class="comment">% Wrap parameters specific to calibrator or diagnosis functions processing</span>
+0271 taskSpecificParams = struct(<span class="keyword">...</span>
+0272     <span class="string">'calibedJointsIdxes'</span>,calibedJointsIdxes,<span class="keyword">...</span>
+0273     <span class="string">'savePlot'</span>,<a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a>,<span class="keyword">...</span>
+0274     <span class="string">'exportPlot'</span>,exportPlot);
+0275 
+0276 <span class="comment">% Sensor data acquisition: ['new'|'last'|&lt;id&gt;]</span>
+0277 sensorDataAcq = {<span class="string">'new'</span>};
+0278 
+0279 <span class="comment">% wrap parameters</span>
+0280 lowLevelTauCtrlCalib = struct(<span class="keyword">...</span>
+0281     <span class="string">'calibedParts'</span>,{calibedParts},<span class="keyword">...</span>
+0282     <span class="string">'taskSpecificParams'</span>,taskSpecificParams,<span class="keyword">...</span>
+0283     <span class="string">'sensorDataAcq'</span>,{sensorDataAcq});
+0284 
+0285 clear calibedParts calibedJointsIdxes <a href="../../src/@LowlevTauCtrlCalibrator/savePlot.html" class="code" title="function savePlot( figuresHandler,savePlot,exportPlot,dataPath )">savePlot</a> exportPlot loadJointPos <span class="keyword">...</span>
+0286     sensorDataAcq taskSpecificParams;
+0287 
+0288 <span class="comment">%% FT sensors gains/offsets calibration (TBD)</span>
+0289 
+0290 ftSensorsCalib = struct();
+0291 gyroscopesCalib = struct();
+0292</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

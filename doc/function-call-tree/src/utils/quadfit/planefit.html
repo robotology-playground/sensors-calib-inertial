@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of planefit</title>
+  <meta name="keywords" content="planefit">
+  <meta name="description" content="Plane fit to noisy 3D data points.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>planefit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Plane fit to noisy 3D data points.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,mu,x0,y0,z0] = planefit(x,y,z,sigma_x,sigma_y,sigma_z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plane fit to noisy 3D data points.
+
+ Output arguments:
+ theta:
+    the plane normal vector
+ mu:
+    noise magnitude</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="gsvd_min.html" class="code" title="function [p, s] = gsvd_min(d, c)">gsvd_min</a>	Singular vector belonging to smallest singular value.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_planefit.html" class="code" title="function example_planefit">example_planefit</a>	Demonstration of plane fitting.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,mu,x0,y0,z0] = planefit(x,y,z,sigma_x,sigma_y,sigma_z)</a>
+0002 <span class="comment">% Plane fit to noisy 3D data points.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Output arguments:</span>
+0005 <span class="comment">% theta:</span>
+0006 <span class="comment">%    the plane normal vector</span>
+0007 <span class="comment">% mu:</span>
+0008 <span class="comment">%    noise magnitude</span>
+0009 
+0010 <span class="comment">% Copyright 2008-2011 Levente Hunyadi</span>
+0011 
+0012 <span class="keyword">switch</span> nargin
+0013     <span class="keyword">case</span> {2,4}
+0014         dim = 2;
+0015     <span class="keyword">case</span> {3,6}
+0016         dim = 3;
+0017 <span class="keyword">end</span>
+0018 
+0019 <span class="keyword">switch</span> dim
+0020     <span class="keyword">case</span> 2
+0021         validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0022         validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0023         X = [x(:),<a href="../../../src/@y/y.html" class="code" title="">y</a>(:),ones(numel(x),1)];
+0024         <span class="keyword">if</span> nargin &gt; 2
+0025             validateattributes(sigma_x, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0026             validateattributes(sigma_y, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0027             sigma = [sigma_x,sigma_y];
+0028         <span class="keyword">else</span>
+0029             sigma = [];
+0030         <span class="keyword">end</span>
+0031     <span class="keyword">case</span> 3
+0032         validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0033         validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0034         validateattributes(z, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0035         X = [x(:),<a href="../../../src/@y/y.html" class="code" title="">y</a>(:),z(:),ones(numel(x),1)];
+0036         <span class="keyword">if</span> nargin &gt; 3
+0037             validateattributes(sigma_x, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0038             validateattributes(sigma_y, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0039             validateattributes(sigma_z, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0040             sigma = [sigma_x,sigma_y,sigma_z];
+0041         <span class="keyword">else</span>
+0042             sigma = [];
+0043         <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="keyword">if</span> isempty(sigma)
+0047     [~,s,v] = svd(X,0);
+0048     mu = s(end);
+0049     p = v(:,end);  <span class="comment">% plane normal vector</span>
+0050 <span class="keyword">else</span>
+0051     C = diag(sigma);
+0052     [p,mu] = <a href="gsvd_min.html" class="code" title="function [p, s] = gsvd_min(d, c)">gsvd_min</a>(X,C);
+0053     p = p / norm(p);  <span class="comment">% plane normal vector</span>
+0054 <span class="keyword">end</span>
+0055 
+0056 <span class="comment">% signed distance of points to plane</span>
+0057 d = X * p;
+0058 X0 = X - d * p.';
+0059 
+0060 <span class="comment">% dehomogenize coordinates</span>
+0061 <span class="keyword">switch</span> dim
+0062     <span class="keyword">case</span> 2
+0063         x0 = X0(:,1) ./ X0(:,3);
+0064         y0 = X0(:,2) ./ X0(:,3);
+0065     <span class="keyword">case</span> 3
+0066         x0 = X0(:,1) ./ X0(:,4);
+0067         y0 = X0(:,2) ./ X0(:,4);
+0068         z0 = X0(:,3) ./ X0(:,4);
+0069 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

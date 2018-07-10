@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getMotorsPids</title>
+  <meta name="keywords" content="getMotorsPids">
+  <meta name="description" content="Get the encoders values">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoardRemapper -->
+<h1>getMotorsPids
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Get the encoders values</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [readPids,readPidsMatArray] = getMotorsPids(obj,pidCtrlType,motorsIdxList) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Get the encoders values</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [readPids,readPidsMatArray] = getMotorsPids(obj,pidCtrlType,motorsIdxList)</a>
+0002 
+0003 <span class="comment">% Get the encoders values</span>
+0004 ipids = obj.driver.viewIPidControl();
+0005 readPids = yarp.PidVector();
+0006 readPids.resize(length(motorsIdxList));
+0007 readPid = yarp.Pid();
+0008 <span class="comment">% readPidsMatArray(1:length(motorsIdxList)) = ...</span>
+0009 <span class="comment">%     struct('kp',0,'kd',0,'ki',0,'max_int',0,'max_output',0,'scale',1);</span>
+0010 
+0011 <span class="comment">% Translate requested PID type in vocab</span>
+0012 pidTypeVocab = obj.vocab2pidType(pidCtrlType);
+0013 
+0014 <span class="comment">% get fullscale list from the joints database</span>
+0015 motorsNameList = obj.getMotorsNames(motorsIdxList);
+0016 [~,fullscaleVec] = obj.robotModel.jointsDbase.getMotorGearboxRatioNfullscale(motorsNameList);
+0017 fullscaleVec = cell2mat([fullscaleVec{:}]);
+0018 
+0019 <span class="comment">% Read PID values for each joint/motor and format the data as a structure</span>
+0020 <span class="comment">% array</span>
+0021 <span class="comment">% readPidsMatArray = repmat(struct(...</span>
+0022 <span class="comment">%     'Kp',double(0),'Kd',double(0),'Ki',double(0),...</span>
+0023 <span class="comment">%     'max_int',double(0),'max_output',double(0),'scale',double(0)),[1,length(motorsIdxList)]);</span>
+0024 
+0025 <span class="keyword">for</span> idx = 1:length(motorsIdxList)
+0026     cLikeIdx = idx-1; <span class="comment">% C like index</span>
+0027 <span class="comment">%     ipids.getPid(pidTypeVocab,cLikeIdx,readPid); % (*)</span>
+0028 <span class="comment">%     readPids.setbrace(readPid,cLikeIdx);</span>
+0029 <span class="comment">%     readPidsMatArray(idx) = struct(...</span>
+0030 <span class="comment">%         'Kp',readPid.kp,'Kd',readPid.kd,'Ki',readPid.ki,...</span>
+0031 <span class="comment">%         'max_int',readPid.max_int,'max_output',readPid.max_output,...</span>
+0032 <span class="comment">%         'scale',readPid.scale);</span>
+0033     readPidsMatArray(idx) = struct(<span class="keyword">...</span>
+0034         <span class="string">'Kp'</span>,-4,<span class="string">'Kd'</span>,0,<span class="string">'Ki'</span>,-5,<span class="keyword">...</span>
+0035         <span class="string">'max_int'</span>,4,<span class="string">'max_output'</span>,8,<span class="keyword">...</span>
+0036         <span class="string">'scale'</span>,1);
+0037     
+0038     <span class="comment">% these PID constants were defined for PWM control in dutycycle units, not</span>
+0039     <span class="comment">% fullscale percentage units. So we need to convert these coefficients</span>
+0040     readPidsMatArray(idx) = structfun(<span class="keyword">...</span>
+0041         @(field) field*100/fullscaleVec(idx),readPidsMatArray(idx),<span class="string">'Uniformoutput'</span>,false);
+0042     readPidsMatArray(idx).scale = 1;
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">% (*) 'readPid' should have been a pointer to a yarp.Pid instead a of a</span>
+0048 <span class="comment">% yarp.Pid. Probably Swig replaces it with swig_this(readPid) which returns</span>
+0049 <span class="comment">% the pointer on the object 'readPid'.</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parabolafit_directm</title>
+  <meta name="keywords" content="parabolafit_directm">
+  <meta name="description" content="Direct least squares fitting of parabolas using a pre-processed scatter matrix.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>parabolafit_directm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Direct least squares fitting of parabolas using a pre-processed scatter matrix.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function theta = parabolafit_directm(M) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Direct least squares fitting of parabolas using a pre-processed scatter matrix.
+
+ This private function is not to be used directly, but indirectly via one of the parabola fitting
+ methods.
+
+ Input arguments:
+ M:
+    a full, reduced or noise-compensated scatter matrix
+
+ Output arguments:
+ theta:
+    estimated parameters, which may need normalization
+
+ See also: <a href="parabolafit_cals.html" class="code" title="function [p,mu] = parabolafit_cals(varargin)">parabolafit_cals</a>, <a href="parabolafit_direct.html" class="code" title="function p = parabolafit_direct(x,y)">parabolafit_direct</a>
+
+ References:
+ Matthew Harker, Paul O'Leary and Paul Zsombor-Murray, &quot;Direct type-specific conic fitting and
+    eigenvalue bias correction&quot;, Image and Vision Computing, 26:372-381, 2008.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>	Create a matrix of symbolic variables.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="parabolafit_cals.html" class="code" title="function [p,mu] = parabolafit_cals(varargin)">parabolafit_cals</a>	Fit a parabola using consistent algebraic least squares.</li><li><a href="parabolafit_direct.html" class="code" title="function p = parabolafit_direct(x,y)">parabolafit_direct</a>	Direct least squares fitting of parabolas.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function parabolafit_direct_symbolic</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function theta = parabolafit_directm(M)</a>
+0002 <span class="comment">% Direct least squares fitting of parabolas using a pre-processed scatter matrix.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This private function is not to be used directly, but indirectly via one of the parabola fitting</span>
+0005 <span class="comment">% methods.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Input arguments:</span>
+0008 <span class="comment">% M:</span>
+0009 <span class="comment">%    a full, reduced or noise-compensated scatter matrix</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Output arguments:</span>
+0012 <span class="comment">% theta:</span>
+0013 <span class="comment">%    estimated parameters, which may need normalization</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% See also: parabolafit_cals, parabolafit_direct</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% References:</span>
+0018 <span class="comment">% Matthew Harker, Paul O'Leary and Paul Zsombor-Murray, &quot;Direct type-specific conic fitting and</span>
+0019 <span class="comment">%    eigenvalue bias correction&quot;, Image and Vision Computing, 26:372-381, 2008.</span>
+0020 
+0021 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0022 
+0023 validateattributes(M, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'2d'</span>});
+0024 
+0025 <span class="comment">% solve eigensystem</span>
+0026 [V,E] = eig(M);
+0027 lambda = diag(E);
+0028 
+0029 <span class="comment">% largest magnitude eigenvalue first</span>
+0030 [~,ix] = sort(abs(lambda), <span class="string">'descend'</span>);
+0031 V(:,:) = V(:,ix);
+0032 V(:,:) = V(:,:)';  <span class="comment">% ?</span>
+0033 lambda(:) = lambda(ix);
+0034 
+0035 <span class="comment">% expand (V(2,3) + V(2,2)*s + V(2,1)*t)^2 - 4*(V(1,3) + V(1,2)*s + V(1,1)*t)*(V(3,3) + V(3,2)*s + V(3,1)*t)</span>
+0036 gamma = zeros(6,1);
+0037 gamma(1) = V(2,2)^2 - 4*V(1,2)*V(3,2);                           <span class="comment">% coefficient of s^2</span>
+0038 gamma(2) = 2*V(2,1)*V(2,2) - 4*V(1,1)*V(3,2) - 4*V(1,2)*V(3,1);  <span class="comment">% coefficient of s*t</span>
+0039 gamma(3) = V(2,1)^2 - 4*V(1,1)*V(3,1);                           <span class="comment">% coefficient of t^2</span>
+0040 gamma(4) = 2*V(2,2)*V(2,3) - 4*V(1,2)*V(3,3) - 4*V(1,3)*V(3,2);  <span class="comment">% coefficient of s</span>
+0041 gamma(5) = 2*V(2,1)*V(2,3) - 4*V(1,1)*V(3,3) - 4*V(1,3)*V(3,1);  <span class="comment">% coefficient of t</span>
+0042 gamma(6) = V(2,3)^2 - 4*V(1,3)*V(3,3);                           <span class="comment">% constant term</span>
+0043 
+0044 <span class="keyword">if</span> 0
+0045     <span class="comment">% expression as derived in Harker, O'Leary and Zsombor-Murray</span>
+0046     alpha = zeros(3,1);
+0047     alpha(1) = lambda(1)^2;
+0048     alpha(2) = lambda(2)^2;
+0049     alpha(3) = alpha(1) * alpha(2);
+0050 
+0051     kappa = zeros(8,1);
+0052     kappa(1) = 4*gamma(3)*gamma(6) - gamma(5)^2;
+0053     kappa(2) = gamma(2)*gamma(6) - 0.5*gamma(4)*gamma(5);
+0054     kappa(3) = 0.5*gamma(2)*gamma(5) - gamma(3)*gamma(4);
+0055     kappa(4) = 4*gamma(6)*gamma(1) - gamma(4)^2;
+0056     kappa(5) = 4*gamma(1)*gamma(3) - gamma(2)^2;
+0057     kappa(6) = gamma(2)*gamma(4) - 2*gamma(1)*gamma(5);
+0058     kappa(7) = -4*(gamma(1)*alpha(1) + alpha(2)*gamma(3));
+0059     kappa(8) = gamma(1)*kappa(1) - gamma(2)*kappa(2) + gamma(4)*kappa(3);
+0060 
+0061     Kappa = zeros(5,1);
+0062     Kappa(1) = kappa(5)*kappa(8);                                                                                              <span class="comment">% coefficient of mu^4</span>
+0063     Kappa(2) = 2*kappa(7)*kappa(8);                                                                                            <span class="comment">% coefficient of mu^3</span>
+0064     Kappa(3) = 4*((2*gamma(2)*kappa(2) + 4*kappa(8))*alpha(3) + gamma(1)*kappa(4)*alpha(1)^2 + gamma(3)*Kappa(1)*alpha(2)^2);  <span class="comment">% coefficient of mu^2</span>
+0065     Kappa(4) = -8*alpha(3)*(kappa(1)*alpha(2) + kappa(4)*alpha(1));                                                            <span class="comment">% coefficient of mu</span>
+0066     Kappa(5) = 16*gamma(6)*alpha(3)^2;                                                                                         <span class="comment">% constant term</span>
+0067     
+0068     r = roots(Kappa);
+0069     e = zeros(size(r));
+0070     <span class="keyword">for</span> k = 1 : numel(r)
+0071         mu = r(k);
+0072 
+0073         u = kappa(5)*mu^2 + kappa(7)*mu + 4*alpha(3);
+0074         s = 2*mu/u * (kappa(3)*mu + alpha(1)*gamma(4));
+0075         t = mu/u * (kappa(6)*mu + 2*alpha(2)*gamma(5));
+0076 
+0077         theta = V(:,3) + s*V(:,2) + t*V(:,1);
+0078         e(k) = abs(theta(2)^2 - 4*theta(1)*theta(3));  <span class="comment">% find the root that best fits the constraint b^2 - 4*a*c</span>
+0079     <span class="keyword">end</span>
+0080     [~,ix] = min(e);
+0081     mu = r(ix);
+0082 
+0083     u = kappa(5)*mu^2 + kappa(7)*mu + 4*alpha(3);
+0084     s = 2*mu/u * (kappa(3)*mu + alpha(1)*gamma(4));
+0085     t = mu/u * (kappa(6)*mu + 2*alpha(2)*gamma(5));
+0086     
+0087     <span class="comment">% obtain quadratic part of parabola parameters</span>
+0088     theta = V(:,3) + s*V(:,2) + t*V(:,1);
+0089     theta = theta ./ norm(theta);
+0090 <span class="keyword">elseif</span> 0
+0091     p = V' * [0,0,-2;0,1,0;-2,0,0] * V;
+0092     kappa(1) = lambda(1)*p(1,2)*p(2,2)+p(1,1)*lambda(2)*p(1,2) ;
+0093     kappa(2) = 2*lambda(1)*p(1,2)*p(2,3)+p(1,1)*lambda(2)*p(1,3) ;
+0094     kappa(3) = lambda(1)*p(1,2)*p(3,3) ;
+0095     kappa(4) = (2*p(1,2)^2-p(1,1)*p(2,2))*lambda(2)+p(2,2)^2*lambda(1) ;
+0096     kappa(5) = (-2*p(1,1)*p(2,3)+4*p(1,2)*p(1,3))*lambda(2)+3*p(2,3)*lambda(1)*p(2,2) ;
+0097     kappa(6) = (2*p(2,3)^2+p(3,3)*p(2,2))*lambda(1)+(-p(3,3)*p(1,1)+2*p(1,3)^2)*lambda(2) ;
+0098     kappa(7) = p(3,3)*lambda(1)*p(2,3) ;
+0099     kappa(8) = (2*p(1,2)^2-p(1,1)*p(2,2))*lambda(1)+lambda(2)*p(1,1)^2 ;
+0100     kappa(9) = (2*p(1,2)*p(1,3)-p(1,1)*p(2,3))*lambda(1) ;
+0101 
+0102     Kappa = <span class="keyword">...</span>
+0103         [ -kappa(4)*kappa(8) + kappa(1)^2 <span class="keyword">...</span>
+0104         ; 2*kappa(1)*kappa(2) - kappa(4)*kappa(9) - kappa(5)*kappa(8) <span class="keyword">...</span>
+0105         ; 2*kappa(1)*kappa(3) - kappa(5)*kappa(9) - kappa(6)*kappa(8) + kappa(2)^2 <span class="keyword">...</span>
+0106         ; -kappa(6)*kappa(9) + 2*kappa(2)*kappa(3) - kappa(7)*kappa(8) <span class="keyword">...</span>
+0107         ; -kappa(7)*kappa(9) + kappa(3)^2 <span class="keyword">...</span>
+0108         ];
+0109 
+0110     r = roots(Kappa);
+0111     r(abs(imag(r)) &gt; 0) = [];
+0112     num = -( kappa(1) * r.^2 + kappa(2) * r + kappa(3) );
+0113     den = kappa(8) * r + kappa(9);
+0114     s = num ./ den;
+0115     Theta = V * [ s'; r'; ones(size(r')) ];
+0116     
+0117     e = zeros(size(r));
+0118     <span class="keyword">for</span> k = 1 : numel(r)
+0119         e(k) = Theta(:,k)'*M*Theta(:,k);
+0120     <span class="keyword">end</span>
+0121     [~,ix] = min(e);
+0122     theta = Theta(:,ix);
+0123 <span class="keyword">else</span>
+0124     <span class="comment">% expression as computed by parabolafit_direct_symbolic</span>
+0125     Kappa = zeros(5,1);  <span class="comment">% coefficient of [mu^4, mu^3, mu^2, mu, 1] (the last being the constant term)</span>
+0126     Kappa(1) = 16*gamma(6)*gamma(1)^2*gamma(3)^2 - 4*gamma(1)^2*gamma(3)*gamma(5)^2 - 8*gamma(6)*gamma(1)*gamma(2)^2*gamma(3) + gamma(1)*gamma(2)^2*gamma(5)^2 + 4*gamma(1)*gamma(2)*gamma(3)*gamma(4)*gamma(5) - 4*gamma(1)*gamma(3)^2*gamma(4)^2 + gamma(6)*gamma(2)^4 - gamma(2)^3*gamma(4)*gamma(5) + gamma(2)^2*gamma(3)*gamma(4)^2;
+0127     Kappa(2) = 32*gamma(6)*gamma(1)^2*gamma(3)*lambda(1)^2 - 8*gamma(1)^2*gamma(5)^2*lambda(1)^2 - 8*gamma(6)*gamma(1)*gamma(2)^2*lambda(1)^2 + 8*gamma(1)*gamma(2)*gamma(4)*gamma(5)*lambda(1)^2 + 32*gamma(6)*gamma(1)*gamma(3)^2*lambda(2)^2 - 8*gamma(1)*gamma(3)*gamma(4)^2*lambda(1)^2 - 8*gamma(1)*gamma(3)*gamma(5)^2*lambda(2)^2 - 8*gamma(6)*gamma(2)^2*gamma(3)*lambda(2)^2 + 8*gamma(2)*gamma(3)*gamma(4)*gamma(5)*lambda(2)^2 - 8*gamma(3)^2*gamma(4)^2*lambda(2)^2;
+0128     Kappa(3) = 16*gamma(6)*gamma(1)^2*lambda(1)^4 + 64*gamma(6)*gamma(1)*gamma(3)*lambda(1)^2*lambda(2)^2 - 4*gamma(1)*gamma(4)^2*lambda(1)^4 - 16*gamma(1)*gamma(5)^2*lambda(1)^2*lambda(2)^2 - 8*gamma(6)*gamma(2)^2*lambda(1)^2*lambda(2)^2 + 12*gamma(2)*gamma(4)*gamma(5)*lambda(1)^2*lambda(2)^2 + 16*gamma(6)*gamma(3)^2*lambda(2)^4 - 16*gamma(3)*gamma(4)^2*lambda(1)^2*lambda(2)^2 - 4*gamma(3)*gamma(5)^2*lambda(2)^4;
+0129     Kappa(4) = - 8*gamma(4)^2*lambda(1)^4*lambda(2)^2 - 8*gamma(5)^2*lambda(1)^2*lambda(2)^4 + 32*gamma(1)*gamma(6)*lambda(1)^4*lambda(2)^2 + 32*gamma(3)*gamma(6)*lambda(1)^2*lambda(2)^4;
+0130     Kappa(5) = 16*gamma(6)*lambda(1)^4*lambda(2)^4;
+0131     
+0132     r = roots(Kappa);
+0133     r(abs(imag(r)) &gt; 0) = [];  <span class="comment">% delete imaginary solutions</span>
+0134 
+0135     s = zeros(size(r));
+0136     t = zeros(size(r));
+0137     e = zeros(size(r));
+0138     <span class="keyword">for</span> k = 1 : numel(r)
+0139         <span class="comment">% find the root that best fits the data</span>
+0140         mu = r(k);
+0141         s(k) = -(mu*(gamma(4) - (gamma(2)*gamma(5)*mu)/(2*lambda(1)^2 + 2*gamma(3)*mu)))/(2*lambda(2)^2 + mu*(2*gamma(1) - (gamma(2)^2*mu)/(2*lambda(1)^2 + 2*gamma(3)*mu)));
+0142         t(k) = -(mu*(gamma(5) - (gamma(2)*gamma(4)*mu)/(2*lambda(2)^2 + 2*gamma(1)*mu)))/(2*lambda(1)^2 + mu*(2*gamma(3) - (gamma(2)^2*mu)/(2*lambda(2)^2 + 2*gamma(1)*mu)));
+0143         theta = V(:,3) + s(k)*V(:,2) + t(k)*V(:,1);
+0144         e(k) = abs(theta'*M*theta);
+0145     <span class="keyword">end</span>
+0146     [~,ix] = min(e);
+0147 
+0148     <span class="comment">% obtain quadratic part of parabola parameters</span>
+0149     theta = V(:,3) + s(ix)*V(:,2) + t(ix)*V(:,1);
+0150     theta = theta ./ norm(theta);
+0151 <span class="keyword">end</span>
+0152 
+0153 <a name="_sub1" href="#_subfunctions" class="code">function parabolafit_direct_symbolic</a>
+0154 <span class="comment">% Symbolic derivation of the Lagrangian used for parabola estimation.</span>
+0155 
+0156 <span class="comment">% variables for eigenvector combination</span>
+0157 s = sym(<span class="string">'s'</span>);
+0158 t = sym(<span class="string">'t'</span>);
+0159 
+0160 <span class="comment">% express solution as a combination of eigenvectors</span>
+0161 V = <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>(<span class="string">'V'</span>,3,3);
+0162 expr = expand((V(2,3) + V(2,2)*s + V(2,1)*t)^2 - 4*(V(1,3) + V(1,2)*s + V(1,1)*t)*(V(3,3) + V(3,2)*s + V(3,1)*t));
+0163 expr
+0164 
+0165 <span class="comment">% variables for Lagrange function</span>
+0166 gamma = <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>(<span class="string">'gamma'</span>,6,1);  <span class="comment">% helper coefficients for constraint</span>
+0167 lambda = <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>(<span class="string">'lambda'</span>,3,1);  <span class="comment">% eigenvalues</span>
+0168 C = gamma(1)*s^2 + gamma(2)*s*t + gamma(3)*t^2 + gamma(4)*s + gamma(5)*t + gamma(6);  <span class="comment">% constraint</span>
+0169 D = lambda(3)^2 + lambda(2)^2*s^2 + lambda(1)^2*t^2;  <span class="comment">% delta expression to minimize</span>
+0170 mu = sym(<span class="string">'mu'</span>);  <span class="comment">% Lagrange multiplier</span>
+0171 
+0172 <span class="comment">% Lagrange function and derivatives</span>
+0173 H = D + mu*C;
+0174 dHs = diff(H,s);
+0175 dHt = diff(H,t);
+0176 dHmu = diff(H,mu);
+0177 
+0178 <span class="comment">% express s and t in terms of mu</span>
+0179 ds = simple(solve(subs(dHs, t, solve(dHt, t)), s));
+0180 dt = simple(solve(subs(dHt, s, solve(dHs, s)), t));
+0181 
+0182 <span class="comment">% substitute s and t in constraint expression</span>
+0183 dHmu = subs(dHmu,s,ds);
+0184 dHmu = subs(dHmu,t,dt);
+0185 dHmu = simple(dHmu);
+0186 [dHmu,~] = numden(dHmu);  <span class="comment">% multiply by denominator (allowed since dHmu == 0)</span>
+0187 
+0188 ds
+0189 dt
+0190 [c,t] = coeffs(dHmu,mu)</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

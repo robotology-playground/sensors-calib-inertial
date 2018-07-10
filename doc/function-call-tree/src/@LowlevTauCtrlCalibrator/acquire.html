@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of acquire</title>
+  <meta name="keywords" content="acquire">
+  <meta name="description" content="PHASE-1a/2a Acquire data for friction or Ktau parameters calibration">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @LowlevTauCtrlCalibrator -->
+<h1>acquire
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>PHASE-1a/2a Acquire data for friction or Ktau parameters calibration</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function acquire( obj,frictionOrKtau ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">PHASE-1a/2a Acquire data for friction or Ktau parameters calibration
+ 
+ 1 - Friction (phase 1a): set PWM to 0 for the selected joints/motors group
+     Ktau     (phase 2a): reset calibrated joints/motors to position control
+     
+     In both cases, this behaviour is selected through the 'frictionOrKtau'
+     parameter sent to the acquisition procedure.
+     Calibrated joints/motors coupling label to use = pointed motorName
+
+ 2 - move selected joints and acquire data:
+     Friction (phase 1a), acquired data are:
+       =&gt; selected motors velocity
+       =&gt; selected joints measured torques
+     Ktau (phase 2a), acquired data are:
+       =&gt; selected motors PWM
+       =&gt; selected joints measured torques
+     
+     In both cases this is defined in the acquisition profile, and selected
+     through the 'frictionOrKtau' parameter.
+
+ 3 - Run diagnosis on acquired data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function acquire( obj,frictionOrKtau )</a>
+0002 <span class="comment">%PHASE-1a/2a Acquire data for friction or Ktau parameters calibration</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% 1 - Friction (phase 1a): set PWM to 0 for the selected joints/motors group</span>
+0005 <span class="comment">%     Ktau     (phase 2a): reset calibrated joints/motors to position control</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%     In both cases, this behaviour is selected through the 'frictionOrKtau'</span>
+0008 <span class="comment">%     parameter sent to the acquisition procedure.</span>
+0009 <span class="comment">%     Calibrated joints/motors coupling label to use = pointed motorName</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% 2 - move selected joints and acquire data:</span>
+0012 <span class="comment">%     Friction (phase 1a), acquired data are:</span>
+0013 <span class="comment">%       =&gt; selected motors velocity</span>
+0014 <span class="comment">%       =&gt; selected joints measured torques</span>
+0015 <span class="comment">%     Ktau (phase 2a), acquired data are:</span>
+0016 <span class="comment">%       =&gt; selected motors PWM</span>
+0017 <span class="comment">%       =&gt; selected joints measured torques</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">%     In both cases this is defined in the acquisition profile, and selected</span>
+0020 <span class="comment">%     through the 'frictionOrKtau' parameter.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% 3 - Run diagnosis on acquired data</span>
+0023 <span class="comment">%</span>
+0024 
+0025 <span class="comment">% select motor and respective part</span>
+0026 motorName = obj.expddMotorList{obj.state.currentMotorIdx};
+0027 part = obj.model.jointsDbase.getPartFromMotors(motorName);
+0028 
+0029 <span class="comment">% 1 - set init for the selected motor and respective part</span>
+0030 obj.init.(obj.initSection).taskSpecificParams.motorName = motorName;
+0031 obj.init.(obj.initSection).taskSpecificParams.frictionOrKtau = frictionOrKtau;
+0032 obj.init.(obj.initSection).calibedParts = part;
+0033 
+0034 <span class="comment">% 2 - Get or acquire sensor data</span>
+0035 obj.getOrAcquireData(obj.init,obj.model,obj.lastAcqSensorDataAccessorMap);
+0036 
+0037 <span class="comment">% Save eventual changes of last acquired data accessors to file</span>
+0038 lastAcqSensorDataAccessorMap = obj.lastAcqSensorDataAccessorMap;
+0039 save(<span class="string">'lastAcqSensorDataAccessorMap.mat'</span>,<span class="string">'lastAcqSensorDataAccessorMap'</span>);
+0040 
+0041 <span class="comment">% 3 - Run diagnosis on acquired data.</span>
+0042 <span class="comment">% Diagnosis function: doesn't require 'calibedParts' &amp; 'calibedJointsIdxes'.</span>
+0043 diagFuncH = @(path,~,sensors,parts,model,taskSpec) <span class="keyword">...</span>
+0044     obj.plotTrainingData(<span class="keyword">...</span>
+0045     path,sensors,parts,model,taskSpec); <span class="comment">% actual params passed through the func handle</span>
+0046 <span class="comment">% Run diagnosis plotters for all acquired data, so for each acquired data accessor.</span>
+0047 obj.runCalibratorOrDiagnosis(obj.init,obj.model,diagFuncH,obj.calibedSensorType);
+0048 
+0049 <span class="keyword">end</span>
+0050</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

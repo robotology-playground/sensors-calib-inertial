@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotterThreadUpdateFcn</title>
+  <meta name="keywords" content="plotterThreadUpdateFcn">
+  <meta name="description" content="Plots current joint torque and velocity">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotorPWMcontroller -->
+<h1>plotterThreadUpdateFcn
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Plots current joint torque and velocity</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function plotterThreadUpdateFcn( obj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Plots current joint torque and velocity</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plotterThreadUpdateFcn( obj )</a>
+0002 <span class="comment">%Plots current joint torque and velocity</span>
+0003 
+0004 <span class="comment">% get motor velocity (degrees/s from the robot interface) and convert it to the</span>
+0005 <span class="comment">% units defined in the online plotter</span>
+0006 motorVelDeg = obj.remCtrlBoardRemap.getMotorEncoderSpeeds(obj.pwmCtrledMotor.idx);
+0007 motorVel = obj.tempPlot.convertFromDeg(motorVelDeg);
+0008 
+0009 <span class="comment">% get the motor torque from the respective coupled joints torques</span>
+0010 cpledJointTorques = obj.remCtrlBoardRemap.getJointTorques(obj.couplingJointIdxes);
+0011 <span class="comment">% Refer to ../../src/@LowlevTauCtrlCalibrator/calibrateSensors.m</span>
+0012 motorTorq = <span class="keyword">...</span>
+0013     obj.coupling.Tm2j(:,obj.pwmCtrledMotorBitmapInCoupling)' <span class="keyword">...</span>
+0014     * cpledJointTorques(:);
+0015 jointVel = motorVel*obj.coupling.gearboxDqM2Jratios{obj.pwmCtrledMotorBitmapInCoupling};
+0016 
+0017 <span class="comment">% plot the quantities</span>
+0018 addpoints(obj.tempPlot.an,jointVel,motorTorq);
+0019 drawnow limitrate
+0020 
+0021 <span class="keyword">end</span>
+0022</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

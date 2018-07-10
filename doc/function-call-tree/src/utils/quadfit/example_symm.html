@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_symm</title>
+  <meta name="keywords" content="example_symm">
+  <meta name="description" content="Sample code for matrices in symbolic variables">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_symm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Sample code for matrices in symbolic variables</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_symm </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Sample code for matrices in symbolic variables
+
+ See also: <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>, <a href="symmd.html" class="code" title="function S = symmd(varargin)">symmd</a>, <a href="symms.html" class="code" title="function S = symms(varargin)">symms</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="sym2matlab.html" class="code" title="function c = sym2matlab(c)">sym2matlab</a>	Convert symbolic expression containing matrix entries into MatLab.</li><li><a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>	Create a matrix of symbolic variables.</li><li><a href="symms.html" class="code" title="function S = symms(varargin)">symms</a>	Create a symmetric matrix of symbolic variables.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_symm</a>
+0002 <span class="comment">% Sample code for matrices in symbolic variables</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also: symm, symmd, symms</span>
+0005 
+0006 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0007 
+0008 dim = 3;
+0009 A = <a href="symms.html" class="code" title="function S = symms(varargin)">symms</a>(<span class="string">'A'</span>,dim,dim,<span class="string">'real'</span>);
+0010 b = <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>(<span class="string">'b'</span>,dim,1,<span class="string">'real'</span>);
+0011 c = sym(<span class="string">'c'</span>,<span class="string">'real'</span>);
+0012 x = <a href="symm.html" class="code" title="function S = symm(varargin)">symm</a>(<span class="string">'x'</span>,dim,1,<span class="string">'real'</span>);
+0013 
+0014 Q = expand(x'*A*x + b'*x + c);
+0015 
+0016 <span class="comment">% Expanded terms for dim = 2 are as follows:</span>
+0017 <span class="comment">% A(1,1)*x(1)^2</span>
+0018 <span class="comment">% A(2,2)*x(2)^2</span>
+0019 <span class="comment">% 2*A(2,1)*x(1)*x(2)</span>
+0020 <span class="comment">% b(1)*x(1)</span>
+0021 <span class="comment">% b(2)*x(2)</span>
+0022 <span class="comment">% c</span>
+0023 
+0024 <span class="comment">% Expanded terms for dim = 3 are as follows:</span>
+0025 <span class="comment">% A(1,1)*x(1)^2</span>
+0026 <span class="comment">% A(2,2)*x(2)^2</span>
+0027 <span class="comment">% A(3,3)*x(3)^2</span>
+0028 <span class="comment">% 2*A(2,1)*x(1)*x(2)</span>
+0029 <span class="comment">% 2*A(3,1)*x(1)*x(3)</span>
+0030 <span class="comment">% 2*A(3,2)*x(2)*x(3)</span>
+0031 <span class="comment">% b(1)*x(1)</span>
+0032 <span class="comment">% b(2)*x(2)</span>
+0033 <span class="comment">% b(3)*x(3)</span>
+0034 <span class="comment">% c</span>
+0035 
+0036 disp(<a href="sym2matlab.html" class="code" title="function c = sym2matlab(c)">sym2matlab</a>(Q));</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

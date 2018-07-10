@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipsoid</title>
+  <meta name="keywords" content="example_ellipsoid">
+  <meta name="description" content="A sample ellipsoid.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipsoid
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>A sample ellipsoid.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [x,y,z,x0,y0,z0] = example_ellipsoid </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> A sample ellipsoid.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [x,y,z] = ellipsoid_rotate(x,y,z,Q)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid</a>
+0002 <span class="comment">% A sample ellipsoid.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 <span class="comment">% generate points</span>
+0007 xc = 10;
+0008 yc = 20;
+0009 zc = 10;
+0010 <span class="comment">%xc = 0; yc = 0; zc = 0;</span>
+0011 xr = 30;
+0012 yr = 25;
+0013 zr = 20;
+0014 [x0,y0,z0] = ellipsoid(xc,yc,zc,xr,yr,zr);
+0015 x0 = x0(:);
+0016 y0 = y0(:);
+0017 z0 = z0(:);
+0018 
+0019 <span class="comment">% rotate points</span>
+0020 Q = [ 0.36, 0.48, -0.8 ; -0.8, 0.60, 0 ; 0.48, 0.64, 0.60 ];
+0021 <span class="comment">%Q = eye(3,3);</span>
+0022 [x0,y0,z0] = <a href="#_sub1" class="code" title="subfunction [x,y,z] = ellipsoid_rotate(x,y,z,Q)">ellipsoid_rotate</a>(x0,y0,z0,Q);
+0023 
+0024 <span class="comment">% add noise</span>
+0025 <span class="comment">%RandStream.setDefaultStream(RandStream('mt19937ar','seed',9999));</span>
+0026 x = x0 + randn(size(x0));
+0027 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + randn(size(y0));
+0028 z = z0 + randn(size(z0));
+0029 <span class="comment">%plot3(x,y,z,'.'); return;</span>
+0030 
+0031 <span class="keyword">if</span> nargout &lt; 3
+0032     hold all;
+0033     <span class="comment">%plot3(x,y,z,'.');</span>
+0034     <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0035     hold off;
+0036 <span class="keyword">end</span>
+0037 
+0038 <a name="_sub1" href="#_subfunctions" class="code">function [x,y,z] = ellipsoid_rotate(x,y,z,Q)</a>
+0039 
+0040 X = [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z];
+0041 X = X*Q;
+0042 x = X(:,1);
+0043 <a href="../../../src/@y/y.html" class="code" title="">y</a> = X(:,2);
+0044 z = X(:,3);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of seqParams2map</title>
+  <meta name="keywords" content="seqParams2map">
+  <meta name="description" content="seqParams2map Convert the sequence from input format to map">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SequenceParams -->
+<h1>seqParams2map
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>seqParams2map Convert the sequence from input format to map</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function seqMap = seqParams2map( calibedPart,calibedSensors,seqParams ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">seqParams2map Convert the sequence from input format to map
+   The sequence parameters shall be indexed by pos/part,vel/part and sensor/part keys,
+   actually required for feeding the control board driver and opening the right yarp
+   ports for dumping the sensor data (joints, accelerometers, gyros,
+   etc...).
+   'seqParams' is defined for 1 single part ('calibedPart') and 1 or more
+   sensor modalities ('calibedSensors').</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SequenceParams.html" class="code" title="">SequenceParams</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function seqMap = seqParams2map( calibedPart,calibedSensors,seqParams )</a>
+0002 <span class="comment">%seqParams2map Convert the sequence from input format to map</span>
+0003 <span class="comment">%   The sequence parameters shall be indexed by pos/part,vel/part and sensor/part keys,</span>
+0004 <span class="comment">%   actually required for feeding the control board driver and opening the right yarp</span>
+0005 <span class="comment">%   ports for dumping the sensor data (joints, accelerometers, gyros,</span>
+0006 <span class="comment">%   etc...).</span>
+0007 <span class="comment">%   'seqParams' is defined for 1 single part ('calibedPart') and 1 or more</span>
+0008 <span class="comment">%   sensor modalities ('calibedSensors').</span>
+0009 
+0010 <span class="comment">% if input 'seqParams' is empty, return empty element as well</span>
+0011 <span class="keyword">if</span> isempty(seqParams)
+0012     seqMap = [];
+0013     <span class="keyword">return</span>;
+0014 <span class="keyword">end</span>
+0015 
+0016 <span class="comment">% Split each field (list) of 'seqParams' into columns. Each column will be an</span>
+0017 <span class="comment">% element of the final map.</span>
+0018 labels = num2cell(seqParams.labels,1);
+0019 val = num2cell(seqParams.val,1);
+0020 emptyValColumn = cell(size(val{1}));
+0021 
+0022 <span class="comment">% Add calib label with 'calibedPart' and 'calibedSensors' information</span>
+0023 [calibLabels,calibedVal] = cellfun(<span class="keyword">...</span>
+0024     @(calibedSensor) deal(<span class="keyword">...</span>
+0025     {<span class="string">'calib'</span>; calibedSensor; calibedPart},<span class="keyword">...</span><span class="comment">  % 2-create a 'calib' label</span>
+0026     emptyValColumn),<span class="keyword">...</span><span class="comment">                        % 3-with empty value section</span>
+0027     calibedSensors,<span class="keyword">...</span><span class="comment">             % 1-for each sensor...</span>
+0028     <span class="string">'UniformOutput'</span>, false);       <span class="comment">% 4-don't concatenate lists from iterations</span>
+0029 <span class="comment">% concatenate with 'seqParams'</span>
+0030 val = [val calibedVal];
+0031 labels = [labels calibLabels];
+0032 
+0033 <span class="comment">% Bundle them together.</span>
+0034 values = cellfun(<span class="keyword">...</span>
+0035     @(list1,list2) struct(<span class="string">'labels'</span>,{list1},<span class="string">'val'</span>,{list2}),<span class="keyword">...</span>
+0036     labels,val,<span class="keyword">...</span>
+0037     <span class="string">'UniformOutput'</span>, false);
+0038 
+0039 <span class="comment">% 'labels' is now a list of triples {&lt;action&gt;&lt;sensor&gt;&lt;part&gt;}, each pair being</span>
+0040 <span class="comment">% a unique identifier of a sub-sequence (1 column of 'seqParams')</span>
+0041 keys = cellfun(@(aList) [aList{:}],labels,<span class="string">'UniformOutput'</span>, false);
+0042 <span class="comment">% Update labels dictionary 'SequenceParams.labelKeys2ActSensPart'.</span>
+0043 dict = SequenceParams.labelKeys2ActSensPart; <span class="comment">% invoque the static variable</span>
+0044 <span class="keyword">for</span> iter = 1:numel(keys)
+0045     dict(keys{iter}) = labels{iter};
+0046 <span class="keyword">end</span>
+0047 
+0048 <span class="comment">% build map</span>
+0049 seqMap = containers.Map(keys,values);
+0050 
+0051 <span class="keyword">end</span>
+0052</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

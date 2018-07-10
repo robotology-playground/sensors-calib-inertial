@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_kcrlb</title>
+  <meta name="keywords" content="example_kcrlb">
+  <meta name="description" content="Demonstration of fitting algoritm performance compared to KCR-LB.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_kcrlb
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstration of fitting algoritm performance compared to KCR-LB.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_kcrlb() </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstration of fitting algoritm performance compared to KCR-LB.
+ KCR-LB stands for Kanatani-Cramer-Rao lower bound.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>	Generates points along an ellipse.</li><li><a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a>	Cast ellipse defined with explicit parameters to implicit form.</li><li><a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>	Direct least squares fitting of ellipses.</li><li><a href="ellipsefit_koopmans.html" class="code" title="function [theta,mu] = ellipsefit_koopmans(varargin)">ellipsefit_koopmans</a>	Fit an ellipse to data using the nonlinear Koopmans method.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="is_ellipse.html" class="code" title="function tf = is_ellipse(p)">is_ellipse</a>	Test if implicit parameters represent an ellipse.</li><li><a href="plot_results.html" class="code" title="function plot_results(x, Y, name)">plot_results</a>	Plot several data series against a single data series.</li><li><a href="quad2dfit_hyperaccurate.html" class="code" title="function p = quad2dfit_hyperaccurate(x,y)">quad2dfit_hyperaccurate</a>	General quadratic curve fit with Kanatani's hyperaccurate fit method.</li><li><a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>	General quadratic curve fit with Taubin's method.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function S = estimator(name, fun)</a></li><li><a href="#_sub2" class="code">function D = kcrlb(x,y,u,sigma)</a></li><li><a href="#_sub3" class="code">function pn = normalized(p)</a></li><li><a href="#_sub4" class="code">function u = p2u(p)</a></li><li><a href="#_sub5" class="code">function p = u2p(u)</a></li><li><a href="#_sub6" class="code">function M = cmean(A,dim)</a></li><li><a href="#_sub7" class="code">function m = nanmean(x,dim)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_kcrlb()</a>
+0002 <span class="comment">% Demonstration of fitting algoritm performance compared to KCR-LB.</span>
+0003 <span class="comment">% KCR-LB stands for Kanatani-Cramer-Rao lower bound.</span>
+0004 
+0005 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0006 
+0007 <span class="comment">% seed random generator (reproducible experiments)</span>
+0008 RandStream.setGlobalStream(RandStream(<span class="string">'mt19937ar'</span>,<span class="string">'seed'</span>,123));
+0009 
+0010 <span class="comment">% experiment parameters</span>
+0011 iterationcount = 20;
+0012 sigmas = linspace(0, 0.5, 50);
+0013 <span class="comment">%sigmas = linspace(0.10, 0.20, 50);</span>
+0014 
+0015 <span class="comment">% generate data points</span>
+0016 <span class="keyword">if</span> 1
+0017     N = 875;  <span class="comment">% sample count</span>
+0018     cx = 12;
+0019     cy = 13;
+0020     a = 4;
+0021     b = 2;
+0022     phi = pi/6;
+0023     [x0,y0] = <a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>(N, cx, cy, a, b, phi);
+0024     <span class="comment">%[x0,y0,nx0,ny0] = ellipse(N, 0, 0, 1, 1);</span>
+0025 
+0026     <span class="comment">% confine to range</span>
+0027     f = x0 &lt; 12 &amp; y0 &lt; 12;
+0028     x0 = x0(f);
+0029     y0 = y0(f);
+0030 <span class="keyword">elseif</span> 0
+0031     N = 128;
+0032     cx = 0;
+0033     cy = 0;
+0034     a = 100;
+0035     b = 50;
+0036     phi = 0;
+0037     
+0038     [x0,y0] = <a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>(N, cx, cy, a, b, phi);
+0039 
+0040     <span class="comment">% confine to range</span>
+0041     f = x0 &gt; 0 &amp; y0 &gt; 0;
+0042     x0 = x0(f);
+0043     y0 = y0(f);
+0044     <span class="comment">%plot(x0, y0, '.');</span>
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">% true parameter vector</span>
+0048 p = <a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a>(cx,cy,a,b,phi);
+0049 u = <a href="#_sub3" class="code" title="subfunction pn = normalized(p)">normalized</a>(<a href="#_sub4" class="code" title="subfunction u = p2u(p)">p2u</a>(p));
+0050 
+0051 <span class="comment">% projection matrix for computing orthogonal projection to parameter vector</span>
+0052 Proj = eye(6,6) - u*u';  <span class="comment">% projection to true parameter vector</span>
+0053 
+0054 <span class="comment">% list of estimators</span>
+0055 estimators = {
+0056     <a href="#_sub1" class="code" title="subfunction S = estimator(name, fun)">estimator</a>(<span class="string">'Direct ellipse fit'</span>, @(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma) <a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>)), <span class="keyword">...</span>
+0057     <a href="#_sub1" class="code" title="subfunction S = estimator(name, fun)">estimator</a>(<span class="string">'Taubin fit'</span>, @(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma) <a href="quad2dfit_taubin.html" class="code" title="function p = quad2dfit_taubin(x,y)">quad2dfit_taubin</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>)), <span class="keyword">...</span>
+0058     <a href="#_sub1" class="code" title="subfunction S = estimator(name, fun)">estimator</a>(<span class="string">'Hyperaccurate fit'</span>, @(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma) <a href="quad2dfit_hyperaccurate.html" class="code" title="function p = quad2dfit_hyperaccurate(x,y)">quad2dfit_hyperaccurate</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>)), <span class="keyword">...</span>
+0059     <a href="#_sub1" class="code" title="subfunction S = estimator(name, fun)">estimator</a>(<span class="string">'Constrained fit'</span>, @(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma) <a href="ellipsefit_koopmans.html" class="code" title="function [theta,mu] = ellipsefit_koopmans(varargin)">ellipsefit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma,sigma)), <span class="keyword">...</span>
+0060     <span class="keyword">...</span><span class="comment"> % estimator('Maximum likelihood fit', @(x,y,sigma) ellipsefit(x,y)), ...</span>
+0061 };
+0062 
+0063 D_KCR = zeros(1, numel(sigmas));
+0064 <span class="keyword">for</span> k = 1 : numel(sigmas)
+0065     sigma = sigmas(k);
+0066 
+0067     <span class="comment">% Kanatani-Cramer-Rao lower</span>
+0068     D_KCR(k) = <a href="#_sub2" class="code" title="subfunction D = kcrlb(x,y,u,sigma)">kcrlb</a>(x0,y0,u,sigma);
+0069 <span class="keyword">end</span>
+0070 assignin(<span class="string">'base'</span>, <span class="string">'D_KCR'</span>, D_KCR);
+0071 
+0072 tic
+0073 
+0074 B = zeros(numel(estimators), numel(sigmas));
+0075 D = zeros(numel(estimators), numel(sigmas));
+0076 nonconvergent = zeros(numel(estimators), numel(sigmas));
+0077 <span class="keyword">for</span> k = 1 : numel(sigmas)
+0078     sigma = sigmas(k);
+0079     
+0080     <span class="comment">% parameter estimates</span>
+0081     P = zeros(numel(u),numel(estimators),iterationcount);
+0082     <span class="keyword">for</span> j = 1 : iterationcount
+0083         x = x0 + sigma * randn(size(x0));
+0084         <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + sigma * randn(size(y0));
+0085 
+0086         <span class="keyword">for</span> i = 1 : numel(estimators)
+0087             estimatorfunction = estimators{i}.function;
+0088             P(:,i,j) = <a href="#_sub3" class="code" title="subfunction pn = normalized(p)">normalized</a>(<a href="#_sub4" class="code" title="subfunction u = p2u(p)">p2u</a>(estimatorfunction(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,sigma)));
+0089         <span class="keyword">end</span>
+0090         
+0091         <span class="keyword">if</span> 0
+0092             hold all;
+0093             plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'.'</span>);
+0094             <span class="keyword">for</span> i = 1 : numel(estimators)
+0095                 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(<a href="#_sub5" class="code" title="subfunction p = u2p(u)">u2p</a>(P(:,i,j)), [], [], <span class="string">'Color'</span>, estimatorcolors{i});
+0096             <span class="keyword">end</span>
+0097             <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p, [], [], <span class="string">'Color'</span>, <span class="string">'k'</span>);
+0098             hold off;
+0099         <span class="keyword">end</span>
+0100     <span class="keyword">end</span>
+0101 
+0102     <span class="comment">% discrepancy by the orthogonal component compared to true parameter value</span>
+0103     dP = zeros(size(P));
+0104     nonconv = false(numel(estimators), iterationcount);
+0105     <span class="keyword">for</span> j = 1 : iterationcount
+0106         <span class="keyword">for</span> i = 1 : numel(estimators)
+0107             <span class="keyword">if</span> <a href="is_ellipse.html" class="code" title="function tf = is_ellipse(p)">is_ellipse</a>(<a href="#_sub5" class="code" title="subfunction p = u2p(u)">u2p</a>(P(:,i,j)))
+0108                 dP(:,i,j) = Proj * P(:,i,j);
+0109                 nonconv(i,j) = false;
+0110             <span class="keyword">else</span>
+0111                 dP(:,i,j) = NaN;
+0112                 nonconv(i,j) = true;
+0113             <span class="keyword">end</span>
+0114         <span class="keyword">end</span>
+0115     <span class="keyword">end</span>
+0116 
+0117     <span class="comment">% bias</span>
+0118     bias = zeros(numel(estimators), 1);
+0119     <span class="keyword">for</span> i = 1 : numel(estimators)
+0120         bias(i) = norm(<a href="#_sub7" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(dP(:,i,:), 3));
+0121     <span class="keyword">end</span>
+0122 
+0123     <span class="comment">% root mean square error</span>
+0124     dev = zeros(numel(estimators), 1);
+0125     <span class="keyword">for</span> i = 1 : numel(estimators)
+0126         dev(i) = sqrt(<a href="#_sub7" class="code" title="subfunction m = nanmean(x,dim)">nanmean</a>(sum(dP(:,i,:).^2, 1), 3));
+0127     <span class="keyword">end</span>
+0128     
+0129     B(:,k) = bias;
+0130     D(:,k) = dev;
+0131     nonconvergent(:,k) = sum(nonconv, 2);
+0132 <span class="keyword">end</span>
+0133 
+0134 toc
+0135 nonconvergent
+0136 
+0137 <span class="comment">% plot bias for all estimators</span>
+0138 <a href="plot_results.html" class="code" title="function plot_results(x, Y, name)">plot_results</a>(sigmas, B, <span class="string">'Bias'</span>);
+0139 
+0140 <span class="comment">% plot root means square error for all estimators</span>
+0141 <a href="plot_results.html" class="code" title="function plot_results(x, Y, name)">plot_results</a>(sigmas, D, <span class="string">'Root mean square error'</span>);
+0142 
+0143 assignin(<span class="string">'base'</span>, <span class="string">'B'</span>, B);
+0144 assignin(<span class="string">'base'</span>, <span class="string">'D'</span>, D);
+0145 assignin(<span class="string">'base'</span>, <span class="string">'nonconvergent'</span>, nonconvergent);
+0146 
+0147 <a name="_sub1" href="#_subfunctions" class="code">function S = estimator(name, fun)</a>
+0148 
+0149 <a href="../../../src/@S/S.html" class="code" title="">S</a> = struct(<span class="string">'name'</span>, name, <span class="string">'function'</span>, fun);
+0150 
+0151 <a name="_sub2" href="#_subfunctions" class="code">function D = kcrlb(x,y,u,sigma)</a>
+0152 <span class="comment">% Compute the Kanatani-Cramer-Rao (KCR) lower bound.</span>
+0153 <span class="comment">%</span>
+0154 <span class="comment">% Input arguments:</span>
+0155 <span class="comment">% x,y;</span>
+0156 <span class="comment">%    noise-free x and y coodinates of 2D points</span>
+0157 <span class="comment">% u:</span>
+0158 <span class="comment">%    true parameter vector corresponding to terms x^2, 2xy, y^2, 2x, 2y and 1</span>
+0159 <span class="comment">%</span>
+0160 <span class="comment">% Output arguments:</span>
+0161 <span class="comment">% D:</span>
+0162 <span class="comment">%    Kanatani-Cramer-Rao lower bound</span>
+0163 
+0164 <span class="comment">% References:</span>
+0165 <span class="comment">% Kenichi Kanatani, &quot;Ellipse Fitting with Hyperaccuracy&quot;, IEICE</span>
+0166 <span class="comment">%    Transactions on Information and Systems, vol. E89�D, no. 10, October 2006</span>
+0167 <span class="comment">%    2653--2660</span>
+0168 
+0169 C = zeros(6,6);
+0170 <span class="keyword">for</span> k = 1 : numel(x)
+0171     epsilon = [ x(k)^2 ; 2*x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k) ; <a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2 ; 2*x(k) ; 2*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k) ; 1 ];
+0172     V = <span class="keyword">...</span>
+0173         [    x(k)^2,     x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),         0, x(k),    0, 0 <span class="keyword">...</span>
+0174         ; x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k), x(k)^2+<a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2, x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k), <a href="../../../src/@y/y.html" class="code" title="">y</a>(k), x(k), 0 <span class="keyword">...</span>
+0175         ;         0,     x(k)*<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),    <a href="../../../src/@y/y.html" class="code" title="">y</a>(k)^2,    0, <a href="../../../src/@y/y.html" class="code" title="">y</a>(k), 0 <span class="keyword">...</span>
+0176         ;      x(k),          <a href="../../../src/@y/y.html" class="code" title="">y</a>(k),         0,    1,    0, 0 <span class="keyword">...</span>
+0177         ;         0,          x(k),      <a href="../../../src/@y/y.html" class="code" title="">y</a>(k),    0,    1, 0 <span class="keyword">...</span>
+0178         ;         0,             0,         0,    0,    0, 0 ];
+0179 
+0180     C = C + (epsilon * epsilon') / (u' * V * u);
+0181 <span class="keyword">end</span>
+0182 D = 2 * sigma * sqrt(trace(pinv(C)));
+0183 
+0184 <a name="_sub3" href="#_subfunctions" class="code">function pn = normalized(p)</a>
+0185 
+0186 pn = p ./ norm(p) * sign(p(1));
+0187 
+0188 <a name="_sub4" href="#_subfunctions" class="code">function u = p2u(p)</a>
+0189 
+0190 u = [ p(1); 0.5*p(2); p(3); 0.5*p(4); 0.5*p(5); p(6) ];
+0191 
+0192 <a name="_sub5" href="#_subfunctions" class="code">function p = u2p(u)</a>
+0193 
+0194 p = [ u(1); 2*u(2); u(3); 2*u(4); 2*u(5); u(6) ];
+0195 
+0196 <a name="_sub6" href="#_subfunctions" class="code">function M = cmean(A,dim)</a>
+0197 <span class="comment">% Compute corrected mean value, ignoring the smallest and largest values.</span>
+0198 
+0199 B = sort(A,dim);
+0200 idx = repmat({<span class="string">':'</span>}, 1, ndims(A));
+0201 idx{dim} = (1+5) : (size(A,dim)-5);  <span class="comment">% discard 5 smallest and largest values</span>
+0202 M = mean(B(idx{:}),dim);
+0203 
+0204 <a name="_sub7" href="#_subfunctions" class="code">function m = nanmean(x,dim)</a>
+0205 <span class="comment">% Compute mean value, ignoring NaNs.</span>
+0206 
+0207 <span class="comment">% find NaNs and set them to zero</span>
+0208 nans = isnan(x);
+0209 x(nans) = 0;
+0210 
+0211 <span class="keyword">switch</span> nargin
+0212     <span class="keyword">case</span> 1  <span class="comment">% let the function sum figure out which dimension to use</span>
+0213         <span class="comment">% count up non-NaNs</span>
+0214         n = sum(~nans);
+0215         n(n==0) = NaN;  <span class="comment">% prevent divideByZero warnings</span>
+0216         <span class="comment">% sum up non-NaNs and divide by the number of non-NaNs</span>
+0217         m = sum(x) ./ n;
+0218     <span class="keyword">otherwise</span>
+0219         <span class="comment">% count up non-NaNs</span>
+0220         n = sum(~nans,dim);
+0221         n(n==0) = NaN;  <span class="comment">% prevent divideByZero warnings</span>
+0222         <span class="comment">% sum up non-NaNs, and divide by the number of non-NaNs</span>
+0223         m = sum(x,dim) ./ n;
+0224 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

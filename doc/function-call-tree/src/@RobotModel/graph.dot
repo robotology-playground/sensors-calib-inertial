@@ -1,0 +1,22 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  RobotModel -> RobotModel;
+  RobotModel -> buildDatabase;
+  RobotModel -> buildModelParams;
+  RobotModel -> display;
+  RobotModel -> getRobotEnvNames;
+  RobotModel -> link2part;
+  RobotModel -> loadCalibFromFile;
+  RobotModel -> refreshModelConfig;
+  RobotModel -> saveCalibToFile;
+
+  RobotModel [URL="RobotModel.html"];
+  buildDatabase [URL="buildDatabase.html"];
+  buildModelParams [URL="buildModelParams.html"];
+  display [URL="display.html"];
+  getRobotEnvNames [URL="getRobotEnvNames.html"];
+  link2part [URL="link2part.html"];
+  loadCalibFromFile [URL="loadCalibFromFile.html"];
+  refreshModelConfig [URL="refreshModelConfig.html"];
+  saveCalibToFile [URL="saveCalibToFile.html"];
+}

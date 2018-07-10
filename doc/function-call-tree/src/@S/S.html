@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of S</title>
+  <meta name="keywords" content="S">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @S -->
+<h1>S
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="S.html" class="code" title="">S</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="S.html" class="code" title="">S</a>	</li><li><a href="../../src/utils/quadfit/ellipse_im2ex.html" class="code" title="function varargout = ellipse_im2ex(varargin)">ellipse_im2ex</a>	Cast ellipse defined with implicit parameter vector to explicit form.</li><li><a href="../../src/utils/quadfit/ellipse_im2kepler.html" class="code" title="function varargout = ellipse_im2kepler(varargin)">ellipse_im2kepler</a>	Cast ellipse defined with standard parameter vector to Kepler form.</li><li><a href="../../src/utils/quadfit/ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>	Direct least squares fitting of ellipses.</li><li><a href="../../src/utils/quadfit/ellipsoid_ex2im.html" class="code" title="function p = ellipsoid_ex2im(center, radii, R)">ellipsoid_ex2im</a>	Cast ellipsoid defined with explicit parameters to implicit vector form.</li><li><a href="../../src/utils/quadfit/ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>	Cast ellipsoid defined with implicit parameter vector to explicit form.</li><li><a href="../../src/utils/quadfit/ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li><li><a href="../../src/utils/quadfit/ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>	Direct least squares fitting of ellipsoids under the constraint 4J - I^2 > 0.</li><li><a href="../../src/utils/quadfit/ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>	Simple iterative least squares fitting of ellipsoids under the constraint k*J - I^2 > 0.</li><li><a href="../../src/utils/quadfit/ellipsoidsym.html" class="code" title="function ellipsoidsym">ellipsoidsym</a>	Symbolic expression of ellipsoid in implicit form with center, axes and quaternions.</li><li><a href="../../src/utils/quadfit/example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li><li><a href="../../src/utils/quadfit/quad2d_similarity.html" class="code" title="function [Sx,Sy,S,s] = quad2d_similarity(x,y)">quad2d_similarity</a>	Translate data to place centroid at origin and apply isotropic scaling.</li><li><a href="../../src/utils/quadfit/quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>	Fit a quadratic curve to data using consistent algebraic least squares.</li><li><a href="../../src/utils/quadfit/quad2dfit_leastsquares.html" class="code" title="function [p,r] = quad2dfit_leastsquares(x,y)">quad2dfit_leastsquares</a>	Fit a quadratic curve to a set of 2D data points using least-squares.</li><li><a href="../../src/utils/quadfit/symm.html" class="code" title="function S = symm(varargin)">symm</a>	Create a matrix of symbolic variables.</li><li><a href="../../src/utils/quadfit/symmd.html" class="code" title="function S = symmd(varargin)">symmd</a>	Create a diagonal matrix of symbolic variables.</li><li><a href="../../src/utils/quadfit/symms.html" class="code" title="function S = symms(varargin)">symms</a>	Create a symmetric matrix of symbolic variables.</li><li><a href="../../src/utils/sgolay/sgolay.html" class="code" title="function [B,G] = sgolay(k,F,varargin)">sgolay</a>	SGOLAY Savitzky-Golay Filter Design.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="S.html" class="code" title="">S</a> &lt; uint8
+0002     <span class="comment">%This class defines the possible states of the 'LowlevTauCtrlCalibrator' state machine.</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     enumeration
+0006         stateStart       (1)
+0007         stateAcqFriction (2)
+0008         stateFitFriction (3)
+0009         stateAcqKtau     (4)
+0010         stateFitKtau     (5)
+0011         stateNextGroup   (6)
+0012         stateEnd         (7)
+0013     <span class="keyword">end</span>
+0014     
+0015 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

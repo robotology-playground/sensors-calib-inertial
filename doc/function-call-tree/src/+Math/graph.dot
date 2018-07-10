@@ -1,0 +1,6 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  convertFromDegrees [URL="convertFromDegrees.html"];
+  convertFromRadians [URL="convertFromRadians.html"];
+}

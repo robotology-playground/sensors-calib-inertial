@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of accelerometersCalibratorSequenceProfileWOsuspend</title>
+  <meta name="keywords" content="accelerometersCalibratorSequenceProfileWOsuspend">
+  <meta name="description" content="% Home single step sequence">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html conf --><!-- menu.html advanced -->
+<h1>accelerometersCalibratorSequenceProfileWOsuspend
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>% Home single step sequence</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% Home single step sequence</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@GridGeneratorWOsuspend/GridGeneratorWOsuspend.html" class="code" title="">GridGeneratorWOsuspend</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@SensorDataAcquisition/getSeqProfile.html" class="code" title="function [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams)">getSeqProfile</a>	getSeqProfile Loads the sequence profile parameters from a script ini file</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 
+0002 <span class="comment">%% Home single step sequence</span>
+0003 
+0004 <span class="comment">% For limbs calibration</span>
+0005 homeCalibLimbs.labels = {<span class="keyword">...</span>
+0006     <span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>;<span class="keyword">...</span>
+0007     <span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>;
+0008     <span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="string">'torso'</span>,<span class="string">'head'</span>};
+0009 homeCalibLimbs.val = {<span class="keyword">...</span>
+0010     [0 45 0 0 0 0 0],<span class="keyword">...</span>
+0011     [0 45 0 0 0 0 0],<span class="keyword">...</span>
+0012     [0 10 0 0 0 0],<span class="keyword">...</span>
+0013     [0 10 0 0 0 0],<span class="keyword">...</span>
+0014     [0 0 0],<span class="keyword">...</span>
+0015     [0 0 0]};
+0016 
+0017 <span class="comment">% For torso calibration</span>
+0018 homeCalibTorso = homeCalibLimbs;
+0019 homeCalibTorso.val = {<span class="keyword">...</span>
+0020     [-30 30 -30 80 0 0 0],<span class="keyword">...</span>
+0021     [-30 30 -30 80 0 0 0],<span class="keyword">...</span>
+0022     [0 10 0 0 0 0],<span class="keyword">...</span>
+0023     [0 10 0 0 0 0],<span class="keyword">...</span>
+0024     [0 0 0],<span class="keyword">...</span>
+0025     [0 0 0]};
+0026 
+0027 <span class="comment">%% Motion sequences</span>
+0028 <span class="comment">% (a single sequence is intended to move all defined parts synchronously,</span>
+0029 <span class="comment">% motions from 2 different sequences should be run asynchronously)</span>
+0030 <span class="comment">% each calibPart should be caibrated within a single sequence.</span>
+0031 
+0032 <span class="comment">% define grid motion patterns for each limb</span>
+0033 
+0034 <span class="comment">%% common parameters</span>
+0035 gridBuilder = <a href="../../../src/@GridGeneratorWOsuspend/GridGeneratorWOsuspend.html" class="code" title="">GridGeneratorWOsuspend</a>();
+0036 acqVel = 4; transVel = 4;
+0037 
+0038 <span class="comment">%% Left and right arms</span>
+0039 left_arm_seqParams.labels = {<span class="keyword">...</span>
+0040     <span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0041     <span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>      ;<span class="keyword">...</span>
+0042     <span class="string">'left_arm'</span>           ,<span class="string">'left_arm'</span>      ,<span class="string">'left_arm'</span> ,<span class="string">'torso'</span>    ,<span class="string">'left_arm'</span>};
+0043 
+0044 gridParams = {<span class="keyword">...</span>
+0045     <span class="string">'joint'</span>          ,<span class="string">'qmin'</span>,<span class="string">'qmax'</span>,<span class="string">'nbInterv'</span>;<span class="keyword">...</span>
+0046     <span class="string">'l_shoulder_roll'</span>, 20   , 116   , 6       ;<span class="keyword">...</span>
+0047     <span class="string">'l_shoulder_yaw'</span> ,-23   ,  49   , 6       };
+0048 
+0049 left_arm_seqParams.val = SensorDataAcquisition.setValFromGrid(<span class="keyword">...</span>
+0050     gridBuilder,gridParams,acqVel,transVel,left_arm_seqParams.labels);
+0051 
+0052 right_arm_seqParams.labels = {<span class="keyword">...</span>
+0053     <span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>      ;<span class="keyword">...</span>
+0054     <span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>       ;<span class="keyword">...</span>
+0055     <span class="string">'right_arm'</span>          ,<span class="string">'right_arm'</span>     ,<span class="string">'right_arm'</span>,<span class="string">'torso'</span>    ,<span class="string">'right_arm'</span>};
+0056 
+0057 right_arm_seqParams.val = left_arm_seqParams.val;
+0058 
+0059 <span class="comment">%% Left and right legs</span>
+0060 left_leg_seqParams.labels = {<span class="keyword">...</span>
+0061     <span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>    ;<span class="keyword">...</span>
+0062     <span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>     ;<span class="keyword">...</span>
+0063     <span class="string">'left_leg'</span>           ,<span class="string">'left_leg'</span>      ,<span class="string">'left_leg'</span> ,<span class="string">'left_leg'</span>};
+0064 
+0065 gridParams = {<span class="keyword">...</span>
+0066     <span class="string">'joint'</span>     ,<span class="string">'qmin'</span>,<span class="string">'qmax'</span>,<span class="string">'nbInterv'</span>;<span class="keyword">...</span>
+0067     <span class="string">'l_hip_roll'</span>, 20   , 80   , 6        ;<span class="keyword">...</span>
+0068     <span class="string">'l_hip_yaw'</span> ,-60   , 60   , 6        };
+0069 
+0070 left_leg_seqParams.val = SensorDataAcquisition.setValFromGrid(<span class="keyword">...</span>
+0071     gridBuilder,gridParams,acqVel,transVel,left_leg_seqParams.labels);
+0072 
+0073 right_leg_seqParams.labels = {<span class="keyword">...</span>
+0074     <span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0075     <span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>      ;<span class="keyword">...</span>
+0076     <span class="string">'right_leg'</span>          ,<span class="string">'right_leg'</span>     ,<span class="string">'right_leg'</span>,<span class="string">'right_leg'</span>};
+0077 
+0078 right_leg_seqParams.val = left_leg_seqParams.val;
+0079 
+0080 <span class="comment">%% Torso</span>
+0081 torso_seqParams.labels = {<span class="keyword">...</span>
+0082     <span class="string">'ctrl'</span>       ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span> ;<span class="keyword">...</span>
+0083     <span class="string">'pos'</span>        ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'acc'</span>  ;<span class="keyword">...</span>
+0084     <span class="string">'torso'</span>      ,<span class="string">'torso'</span>         ,<span class="string">'torso'</span>    ,<span class="string">'torso'</span>};
+0085 
+0086 gridParams = {<span class="keyword">...</span>
+0087     <span class="string">'joint'</span>      ,<span class="string">'qmin'</span>,<span class="string">'qmax'</span>,<span class="string">'nbInterv'</span>;<span class="keyword">...</span>
+0088     <span class="string">'torso_pitch'</span>,-14   , 60   , 6        ;<span class="keyword">...</span>
+0089     <span class="string">'torso_yaw'</span>  ,-48   , 48   , 6        };
+0090 
+0091 torso_seqParams.val = SensorDataAcquisition.setValFromGrid(<span class="keyword">...</span>
+0092     gridBuilder,gridParams,acqVel,transVel,torso_seqParams.labels);
+0093 
+0094 <span class="comment">%% Head</span>
+0095 head_seqParams.labels = {<span class="keyword">...</span>
+0096     <span class="string">'ctrl'</span>       ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>;<span class="keyword">...</span>
+0097     <span class="string">'pos'</span>        ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'joint'</span>    ,<span class="string">'imu'</span> ;<span class="keyword">...</span>
+0098     <span class="string">'head'</span>       ,<span class="string">'head'</span>          ,<span class="string">'head'</span>     ,<span class="string">'torso'</span>    ,<span class="string">'head'</span>};
+0099 
+0100 gridParams = {<span class="keyword">...</span>
+0101     <span class="string">'joint'</span>     ,<span class="string">'qmin'</span>,<span class="string">'qmax'</span>,<span class="string">'nbInterv'</span>;<span class="keyword">...</span>
+0102     <span class="string">'neck_pitch'</span>,-25   , 15   , 6        ;<span class="keyword">...</span>
+0103     <span class="string">'neck_yaw'</span>  ,-45   , 45   , 6        };
+0104 
+0105 head_seqParams.val = SensorDataAcquisition.setValFromGrid(<span class="keyword">...</span>
+0106     gridBuilder,gridParams,acqVel,transVel,head_seqParams.labels);
+0107 
+0108 <span class="comment">%% define sequences for limbs {1} and torso {2} calibration</span>
+0109 seqHomeParams{1} = homeCalibLimbs;
+0110 seqHomeParams{2} = homeCalibTorso;
+0111 seqEndParams     = homeCalibLimbs;
+0112 
+0113 <span class="comment">%% Map parts to sequences and params</span>
+0114 selector.calibedParts = {<span class="keyword">...</span>
+0115     <span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="keyword">...</span>
+0116     <span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="keyword">...</span>
+0117     <span class="string">'torso'</span>,<span class="string">'head'</span>};
+0118 selector.calibedSensors = {<span class="keyword">...</span>
+0119     {<span class="string">'acc'</span>},{<span class="string">'acc'</span>},<span class="keyword">...</span>
+0120     {<span class="string">'acc'</span>},{<span class="string">'acc'</span>},<span class="keyword">...</span>
+0121     {<span class="string">'acc'</span>},{<span class="string">'acc'</span>}};
+0122 selector.setIdx  = {1,1,1,1,2,1}; <span class="comment">% max index must not exceed max index of seqHomePArams</span>
+0123 selector.seqParams = {<span class="keyword">...</span>
+0124     left_arm_seqParams,right_arm_seqParams,<span class="keyword">...</span>
+0125     left_leg_seqParams,right_leg_seqParams,<span class="keyword">...</span>
+0126     torso_seqParams,head_seqParams};
+0127</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sympolys</title>
+  <meta name="keywords" content="sympolys">
+  <meta name="description" content="Create multiple symbolic polynomials in the caller workspace.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>sympolys
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Create multiple symbolic polynomials in the caller workspace.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function sympolys(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Create multiple symbolic polynomials in the caller workspace.
+
+ Example:
+    sympolys a b x y      creates sympoly variables with those names in
+                          the caller workspace; this call is equivalent
+                          to 4 separate calls:
+                             a = sympoly('a')
+                             b = sympoly('b')
+                             x = sympoly('x')
+                             y = sympoly('y')
+
+ See also: <a href="sympoly.html" class="code" title="">sympoly</a>.<a href="sympoly.html" class="code" title="">sympoly</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="sympoly.html" class="code" title="">sympoly</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoid_ex2im.html" class="code" title="function p = ellipsoid_ex2im(center, radii, R)">ellipsoid_ex2im</a>	Cast ellipsoid defined with explicit parameters to implicit vector form.</li><li><a href="test_sympoly.html" class="code" title="function test_sympoly">test_sympoly</a>	Test suite for symbolic polynomial manipulation.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function sympolys(varargin)</a>
+0002 <span class="comment">% Create multiple symbolic polynomials in the caller workspace.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Example:</span>
+0005 <span class="comment">%    sympolys a b x y      creates sympoly variables with those names in</span>
+0006 <span class="comment">%                          the caller workspace; this call is equivalent</span>
+0007 <span class="comment">%                          to 4 separate calls:</span>
+0008 <span class="comment">%                             a = sympoly('a')</span>
+0009 <span class="comment">%                             b = sympoly('b')</span>
+0010 <span class="comment">%                             x = sympoly('x')</span>
+0011 <span class="comment">%                             y = sympoly('y')</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% See also: sympoly.sympoly</span>
+0014 
+0015 <span class="comment">% Copyright 2009-2011 Levente Hunyadi</span>
+0016 
+0017 assert(iscellstr(varargin), <span class="keyword">...</span>
+0018     <span class="string">'math:sympolys:ArgumentTypeMismatch'</span>, <span class="keyword">...</span>
+0019     <span class="string">'Multiple symbolic polynomials can be created with &quot;sympolys x y z w&quot;.'</span>);
+0020 assert(nargin &gt; 0, <span class="keyword">...</span>
+0021     <span class="string">'math:sympolys:ArgumentCountMismatch'</span>, <span class="keyword">...</span>
+0022     <span class="string">'Symbolic polynomials are created with the syntax &quot;sympolys x y z w&quot;.'</span>);
+0023 
+0024 <span class="comment">% loop over the inputs</span>
+0025 <span class="keyword">for</span> k = 1 : nargin  <span class="comment">% a list of several variables to create</span>
+0026     inp = varargin{k};
+0027     assignin(<span class="string">'caller'</span>, inp, <a href="sympoly.html" class="code" title="">sympoly</a>(inp));  <span class="comment">% assign variables with this name in the caller workspace</span>
+0028 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getTotalJointDoF</title>
+  <meta name="keywords" content="getTotalJointDoF">
+  <meta name="description" content="getTotalJointDoF Get the total DoF from a given list of joints">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointsDbase -->
+<h1>getTotalJointDoF
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>getTotalJointDoF Get the total DoF from a given list of joints</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function totalDoF = getTotalJointDoF( obj,jointList ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">getTotalJointDoF Get the total DoF from a given list of joints</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointsDbase.html" class="code" title="">JointsDbase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function totalDoF = getTotalJointDoF( obj,jointList )</a>
+0002 <span class="comment">%getTotalJointDoF Get the total DoF from a given list of joints</span>
+0003 
+0004 <span class="comment">% build query (input properties to match)</span>
+0005 inputProp.format = 2;
+0006 inputProp.data = {<span class="string">'jointName'</span>,jointList};
+0007 
+0008 <span class="comment">% query data</span>
+0009 DoFvec = obj.getPropList(inputProp,<span class="string">'DoF'</span>);
+0010 
+0011 <span class="comment">% compute total DoF for the part</span>
+0012 totalDoF = sum(cell2mat(DoFvec));
+0013 
+0014 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

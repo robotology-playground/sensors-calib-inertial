@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mpolyeig</title>
+  <meta name="keywords" content="mpolyeig">
+  <meta name="description" content="Eigenvalues and eigenvectors for matrix polynomial.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>mpolyeig
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Eigenvalues and eigenvectors for matrix polynomial.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [X,e] = mpolyeig(T, sigma) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Eigenvalues and eigenvectors for matrix polynomial.
+ If the original matrix polynomial coefficients are symmetric, the
+ function uses a linearization that maintains symmetry thereby
+ contributing to increased numerical accuracy.
+
+ Input arguments:
+ T:
+    a matrix polynomial as a 3D array
+ sigma:
+    specifies which eigenvalues (and corresponding eigenvectors) to return
+
+ Examples:
+    e = mpolyeig(T)       returns eigenvalues of the matrix polynomial T
+    [X,e] = mpolyeig(T)   returns eigenvalues and eigenvectors
+
+ See also: <a href="mpolycomp.html" class="code" title="function [A,B] = mpolycomp(T)">mpolycomp</a>, <a href="mpolycomps.html" class="code" title="function [R,Rs] = mpolycomps(T)">mpolycomps</a>, polyeig</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="eigsm.html" class="code" title="function [V,E] = eigsm(A,B)">eigsm</a>	Smallest eigenvalue with real eigenvector.</li><li><a href="mpolycomp.html" class="code" title="function [A,B] = mpolycomp(T)">mpolycomp</a>	Matrix polynomial companion form.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>	Fit an ellipsoid to data using the nonlinear Koopmans method.</li><li><a href="parabolafit_cals.html" class="code" title="function [p,mu] = parabolafit_cals(varargin)">parabolafit_cals</a>	Fit a parabola using consistent algebraic least squares.</li><li><a href="quad2dconfit_koopmans.html" class="code" title="function [p,p0,mu0] = quad2dconfit_koopmans(x, y, sigma_x, sigma_y, Q)">quad2dconfit_koopmans</a>	Fit a constrained quadratic curve to data using the nonlinear Koopmans method.</li><li><a href="quad2dfit_cals.html" class="code" title="function [theta,mu] = quad2dfit_cals(varargin)">quad2dfit_cals</a>	Fit a quadratic curve to data using consistent algebraic least squares.</li><li><a href="quad2dfit_koopmans.html" class="code" title="function [theta,mu] = quad2dfit_koopmans(varargin)">quad2dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li><li><a href="quad3dfit_koopmans.html" class="code" title="function [p,mu] = quad3dfit_koopmans(varargin)">quad3dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [X,e] = mpolyeig(T, sigma)</a>
+0002 <span class="comment">% Eigenvalues and eigenvectors for matrix polynomial.</span>
+0003 <span class="comment">% If the original matrix polynomial coefficients are symmetric, the</span>
+0004 <span class="comment">% function uses a linearization that maintains symmetry thereby</span>
+0005 <span class="comment">% contributing to increased numerical accuracy.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Input arguments:</span>
+0008 <span class="comment">% T:</span>
+0009 <span class="comment">%    a matrix polynomial as a 3D array</span>
+0010 <span class="comment">% sigma:</span>
+0011 <span class="comment">%    specifies which eigenvalues (and corresponding eigenvectors) to return</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Examples:</span>
+0014 <span class="comment">%    e = mpolyeig(T)       returns eigenvalues of the matrix polynomial T</span>
+0015 <span class="comment">%    [X,e] = mpolyeig(T)   returns eigenvalues and eigenvectors</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% See also: mpolycomp, mpolycomps, polyeig</span>
+0018 
+0019 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0020 
+0021 <span class="keyword">if</span> nargin &lt; 2
+0022     sigma = [];
+0023 <span class="keyword">end</span>
+0024 
+0025 [~,n,p] = size(T);
+0026 validateattributes(T, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'size'</span>,[n,n,p]});
+0027 p = p - 1;
+0028 
+0029 [A,B] = <a href="mpolycomp.html" class="code" title="function [A,B] = mpolycomp(T)">mpolycomp</a>(T);
+0030 <span class="keyword">if</span> isempty(sigma)
+0031     [X,E] = eig(A,B);
+0032 <span class="keyword">else</span>
+0033     <span class="keyword">switch</span> sigma
+0034         <span class="keyword">case</span> <span class="string">'sm'</span>
+0035             [X,E] = <a href="eigsm.html" class="code" title="function [V,E] = eigsm(A,B)">eigsm</a>(A,B);
+0036     <span class="keyword">end</span>
+0037 <span class="keyword">end</span>
+0038 e = diag(E);
+0039 
+0040 <span class="keyword">if</span> nargout &gt; 1
+0041     <span class="comment">% for each eigenvalue, extract the eigenvector from whichever portion</span>
+0042     <span class="comment">% of the big eigenvector matrix X gives the smallest normalized residual</span>
+0043     V = zeros(n,p);
+0044     <span class="keyword">for</span> j = 1 : size(X,2)  <span class="comment">% p*n for sigma = all eigenvalues</span>
+0045        V(:) = X(:,j);
+0046        R = T(:,:,p+1);
+0047        <span class="keyword">if</span> ~isinf(e(j))
+0048            <span class="keyword">for</span> k = p:-1:1
+0049                R = T(:,:,k) + e(j) * R;
+0050            <span class="keyword">end</span>
+0051        <span class="keyword">end</span>
+0052        R = R * V;
+0053        res = sum(abs(R)) ./ sum(abs(V));  <span class="comment">% normalized residuals</span>
+0054        [~,ix] = min(res);
+0055        X(1:n,j) = V(:,ix) / norm(V(:,ix));  <span class="comment">% eigenvector with unit 2-norm</span>
+0056     <span class="keyword">end</span>
+0057     X = X(1:n,:);
+0058 <span class="keyword">else</span>
+0059     X = e;
+0060 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

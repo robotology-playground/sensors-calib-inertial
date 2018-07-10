@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoid_im2ex</title>
+  <meta name="keywords" content="ellipsoid_im2ex">
+  <meta name="description" content="Cast ellipsoid defined with implicit parameter vector to explicit form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsoid_im2ex
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Cast ellipsoid defined with implicit parameter vector to explicit form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [center,radii,quat,R] = ellipsoid_im2ex(v) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Cast ellipsoid defined with implicit parameter vector to explicit form.
+ The implicit equation of a general ellipse is
+ F(x,y,z) = Ax^2 + By^2 + Cz^2 + 2Dxy + 2Exz + 2Fyz + 2Gx + 2Hy + 2Iz - 1 = 0
+
+ Input arguments:
+ v:
+    the 10 parameters describing the ellipsoid algebraically
+ Output arguments:
+ center:
+    ellispoid center coordinates [cx; cy; cz]
+ ax:
+    ellipsoid semi-axes (radii) [a; b; c]
+ quat:
+    ellipsoid rotation in quaternion representation
+ R:
+    ellipsoid rotation (radii directions as rows of the 3x3 matrix)
+
+ See also: <a href="ellipse_im2ex.html" class="code" title="function varargout = ellipse_im2ex(varargin)">ellipse_im2ex</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="rot2quat.html" class="code" title="function q = rot2quat(A)">rot2quat</a>	Convert rotation matrix to quaternion.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@AccelerometersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot</li><li><a href="ellipsoid_distance.html" class="code" title="function d = ellipsoid_distance(x,y,z,p)">ellipsoid_distance</a>	Distance of points projected onto an ellipsoid.</li><li><a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li><li><a href="example_ellipsoidcomp.html" class="code" title="function example_ellipsoidcomp">example_ellipsoidcomp</a>	Comparative demonstration of fits to random ellipsoids.</li><li><a href="example_ellipsoidfit1.html" class="code" title="function example_ellipsoidfit1">example_ellipsoidfit1</a>	Demonstration of various ellipsoid fits.</li><li><a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>	Plot ellipsoid specified with implicit parameters.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [center,radii,quat,R] = ellipsoid_im2ex(v)</a>
+0002 <span class="comment">% Cast ellipsoid defined with implicit parameter vector to explicit form.</span>
+0003 <span class="comment">% The implicit equation of a general ellipse is</span>
+0004 <span class="comment">% F(x,y,z) = Ax^2 + By^2 + Cz^2 + 2Dxy + 2Exz + 2Fyz + 2Gx + 2Hy + 2Iz - 1 = 0</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input arguments:</span>
+0007 <span class="comment">% v:</span>
+0008 <span class="comment">%    the 10 parameters describing the ellipsoid algebraically</span>
+0009 <span class="comment">% Output arguments:</span>
+0010 <span class="comment">% center:</span>
+0011 <span class="comment">%    ellispoid center coordinates [cx; cy; cz]</span>
+0012 <span class="comment">% ax:</span>
+0013 <span class="comment">%    ellipsoid semi-axes (radii) [a; b; c]</span>
+0014 <span class="comment">% quat:</span>
+0015 <span class="comment">%    ellipsoid rotation in quaternion representation</span>
+0016 <span class="comment">% R:</span>
+0017 <span class="comment">%    ellipsoid rotation (radii directions as rows of the 3x3 matrix)</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% See also: ellipse_im2ex</span>
+0020 
+0021 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0022 
+0023 validateattributes(v, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0024 
+0025 <span class="comment">% eliminate times two from rotation and translation terms</span>
+0026 v = v(:);
+0027 validateattributes(v, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[10,1]});
+0028 v(4:9) = 0.5*v(4:9);
+0029 
+0030 <span class="comment">% find the algebraic form of the ellipsoid (quadratic form matrix)</span>
+0031 Q = [ v(1) v(4) v(5) v(7); <span class="keyword">...</span>
+0032       v(4) v(2) v(6) v(8); <span class="keyword">...</span>
+0033       v(5) v(6) v(3) v(9); <span class="keyword">...</span>
+0034       v(7) v(8) v(9) v(10) ];
+0035 
+0036 <span class="comment">% find the center of the ellipsoid</span>
+0037 center = Q(1:3,1:3) \ -v(7:9);
+0038 
+0039 <span class="keyword">if</span> nargout &gt; 1
+0040     <span class="comment">% form the corresponding translation matrix</span>
+0041     T = eye(4,4);
+0042     T(4, 1:3) = center;
+0043 
+0044     <span class="comment">% translate to the center</span>
+0045     <a href="../../../src/@S/S.html" class="code" title="">S</a> = T * Q * T';
+0046 
+0047     <span class="comment">% check for positive definiteness</span>
+0048     [~,indef] = chol( -<a href="../../../src/@S/S.html" class="code" title="">S</a>(4,4)*<a href="../../../src/@S/S.html" class="code" title="">S</a>(1:3,1:3) );
+0049     <span class="keyword">if</span> indef &gt; 0  <span class="comment">% matrix is not positive definite</span>
+0050         error(<span class="string">'ellipsoid_im2ex:InvalidArgumentValue'</span>, <span class="keyword">...</span>
+0051             <span class="string">'Parameters do not define a real ellipse.'</span>);
+0052     <span class="keyword">end</span>
+0053     
+0054     <span class="comment">% solve the eigenproblem</span>
+0055     [evecs, evals] = eig( <a href="../../../src/@S/S.html" class="code" title="">S</a>(1:3,1:3) );
+0056     radii = realsqrt( -<a href="../../../src/@S/S.html" class="code" title="">S</a>(4,4) ./ diag(evals) );
+0057 
+0058     <span class="comment">% convert rotation matrix to quaternion</span>
+0059     <span class="keyword">if</span> nargout &gt; 2
+0060         quat = <a href="rot2quat.html" class="code" title="function q = rot2quat(A)">rot2quat</a>(evecs);
+0061         R = evecs';
+0062     <span class="keyword">end</span>
+0063 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

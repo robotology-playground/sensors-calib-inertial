@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of buildInputDataSet</title>
+  <meta name="keywords" content="buildInputDataSet">
+  <meta name="description" content="UNTITLED Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsData -->
+<h1>buildInputDataSet
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [sensorsIdxListFile,sensMeasCell] = buildInputDataSet(obj,loadJointPos,modelParams) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [sensorsIdxListFile,sensMeasCell] = buildInputDataSet(</a><span class="keyword">...</span>
+0002     obj,loadJointPos,modelParams)
+0003 <span class="comment">%UNTITLED Summary of this function goes here</span>
+0004 <span class="comment">%   Detailed explanation goes here</span>
+0005 
+0006 <span class="comment">%% Parsing configuration</span>
+0007 <span class="comment">%</span>
+0008 <span class="keyword">for</span> part = 1 : length(modelParams.accMeasedParts)
+0009     <span class="comment">% add mtx sensors (MTB or MTI-imu)</span>
+0010     obj.addMTXsensToData(<span class="keyword">...</span>
+0011         modelParams.sensorsDbase,<span class="keyword">...</span>
+0012         modelParams.accMeasedParts{part},<span class="keyword">...</span>
+0013         modelParams.activeSensorLabels{part},<span class="keyword">...</span>
+0014         true);
+0015 <span class="keyword">end</span>
+0016 
+0017 <span class="keyword">if</span> loadJointPos
+0018     <span class="comment">% add joint measurements</span>
+0019     <span class="keyword">for</span> part = 1 : length(modelParams.jointMeasedParts)
+0020         obj.addEncSensToData(<span class="keyword">...</span>
+0021             modelParams.jointsDbase,<span class="keyword">...</span>
+0022             modelParams.jointMeasedParts{part},<span class="keyword">...</span>
+0023             modelParams.jointsToCalibrate.jointsDofs{part},<span class="keyword">...</span>
+0024             modelParams.jointsToCalibrate.ctrledJointsIdxes{part},<span class="keyword">...</span>
+0025             true);
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% Load data from the file and parse it</span>
+0030 obj.loadData();
+0031 
+0032 
+0033 <span class="comment">%% build input data for calibration or validation of calibration</span>
+0034 <span class="comment">%</span>
+0035 
+0036 <span class="comment">% Go through 'obj.frames', and get measurement variables indexes:</span>
+0037 sensorsIdxListFile = [];
+0038 <span class="keyword">for</span> frame = 1:length(obj.frames)
+0039     <span class="keyword">switch</span> obj.type{frame}
+0040         <span class="keyword">case</span> {<span class="string">'inertialMTB'</span>,<span class="string">'inertial'</span>}
+0041             sensorsIdxListFile = [sensorsIdxListFile frame];
+0042         <span class="keyword">otherwise</span>
+0043     <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045 
+0046 <span class="comment">% get measurement table ys_xxx_acc [3xnSamples] from captured data,</span>
+0047 sensMeasCell = cell(1,length(sensorsIdxListFile));
+0048 <span class="keyword">for</span> acc_i = 1:length(sensorsIdxListFile)
+0049     ys = [<span class="string">'ys_'</span> obj.labels{sensorsIdxListFile(acc_i)}];
+0050     eval([<span class="string">'sensMeas = obj.parsedParams.'</span> ys <span class="string">';'</span>]);
+0051     sensMeasCell{1,acc_i} = sensMeas';
+0052 <span class="keyword">end</span>
+0053 
+0054 
+0055 <span class="keyword">end</span>
+0056</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

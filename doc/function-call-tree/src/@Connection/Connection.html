@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of Connection</title>
+  <meta name="keywords" content="Connection">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Connection -->
+<h1>Connection
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Connection.html" class="code" title="">Connection</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Connection.html" class="code" title="">Connection</a>	</li><li><a href="../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = Connection(from,to,path)</a></li><li><a href="#_sub2" class="code">function delete(obj)</a></li><li><a href="#_sub3" class="code">function isConnected = conn(obj)</a></li><li><a href="#_sub4" class="code">function connect(obj)</a></li><li><a href="#_sub5" class="code">function disconnect(obj)</a></li><li><a href="#_sub6" class="code">function remove(obj)</a></li><li><a href="#_sub7" class="code">function openPort(obj)</a></li><li><a href="#_sub8" class="code">function closePort(obj)</a></li><li><a href="#_sub9" class="code">function status = doesPIDmatchDatadumper(pid)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="Connection.html" class="code" title="">Connection</a> &lt; handle
+0002     <span class="comment">%This class holds the connection configuration between 2 YARP ports</span>
+0003     
+0004     properties(GetAccess=public, SetAccess=protected)
+0005        from@char  = <span class="string">''</span>;  <span class="comment">% source port</span>
+0006        to@char    = <span class="string">''</span>;  <span class="comment">% sink port</span>
+0007        path@char  = <span class="string">''</span>;  <span class="comment">% path to the stored sensor data</span>
+0008        pid@double = [];  <span class="comment">% 'yarpdatadumper' process PID that open the port</span>
+0009     <span class="keyword">end</span>
+0010     
+0011     properties(Constant=true, Access=public)
+0012         connectionList = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0013     <span class="keyword">end</span>
+0014     
+0015     methods
+0016         <span class="comment">% Constructor</span>
+0017         <a name="_sub0" href="#_subfunctions" class="code">function obj = Connection(from,to,path)</a>
+0018             <span class="comment">% get access to the list of created objects</span>
+0019             connectionList = Connection.connectionList;
+0020             <span class="comment">% Check if the connection exists in the common list of connections</span>
+0021             <span class="keyword">if</span> connectionList.isKey([from to])
+0022                 <span class="comment">% just return the handle of the object</span>
+0023                 obj = connectionList([from to]);
+0024                 <span class="keyword">if</span> ~strcmp(obj.path,path)
+0025                     warning(<span class="string">'Duplicate connection requested, keeping original one!'</span>);
+0026                 <span class="keyword">end</span>
+0027             <span class="keyword">else</span>
+0028                 <span class="comment">% Set the properties</span>
+0029                 [obj.from,obj.to,obj.path] = deal(from,to,path);
+0030                 <span class="comment">% save the new object in the common list</span>
+0031                 connectionList([from to]) = obj;
+0032                 <span class="comment">% run yarpdatadumper (it will open the port)</span>
+0033                 obj.openPort();
+0034             <span class="keyword">end</span>
+0035         <span class="keyword">end</span>
+0036         
+0037         <span class="comment">% Destructor</span>
+0038         <a name="_sub1" href="#_subfunctions" class="code">function delete(obj)</a>
+0039             obj.remove();
+0040         <span class="keyword">end</span>
+0041         
+0042         <span class="comment">% Check if port is not connected</span>
+0043         <a name="_sub2" href="#_subfunctions" class="code">function isConnected = conn(obj)</a>
+0044             isConnected = yarp.Network.isConnected(obj.from,obj.to);
+0045         <span class="keyword">end</span>
+0046         
+0047         <span class="comment">% Connect port</span>
+0048         <a name="_sub3" href="#_subfunctions" class="code">function connect(obj)</a>
+0049             <span class="comment">% Check if ports to connect are open</span>
+0050             <span class="keyword">if</span> ~yarp.Network.exists(obj.from) || ~yarp.Network.exists(obj.to)
+0051                 error(<span class="string">'One of the ports to connect crashed or was unexpectedly closed.'</span>);
+0052             <span class="keyword">end</span>
+0053             <span class="comment">% Connect ports</span>
+0054             <span class="keyword">if</span> ~obj.conn() <span class="comment">% if port is not connected</span>
+0055                 <span class="comment">% 'yarp connect &lt;output port&gt; &lt;input port&gt;</span>
+0056                 <span class="keyword">if</span> ~yarp.Network.connect(obj.from,obj.to)
+0057                     error([<span class="string">'couldn''t connect port '</span> obj.to <span class="string">'!'</span>]);
+0058                 <span class="keyword">end</span>
+0059                 disp([<span class="string">'Added connection from port '</span> obj.from <span class="string">' to port '</span> obj.to <span class="string">'.'</span>]);
+0060             <span class="keyword">else</span>
+0061                 disp([<span class="string">'Port '</span> obj.from <span class="string">' ALREADY connected to port '</span> obj.to <span class="string">'.'</span>]);
+0062             <span class="keyword">end</span>
+0063         <span class="keyword">end</span>
+0064         
+0065         <a name="_sub4" href="#_subfunctions" class="code">function disconnect(obj)</a>
+0066             <span class="keyword">if</span> obj.conn() <span class="comment">% if port is connected</span>
+0067                 <span class="comment">% 'yarp disconnect &lt;output port&gt; &lt;input port&gt;</span>
+0068                 <span class="keyword">if</span> ~yarp.Network.disconnect(obj.from,obj.to)
+0069                     error([<span class="string">'couldn''t disconnect port '</span> obj.to <span class="string">'!'</span>]);
+0070                 <span class="keyword">end</span>
+0071                 disp([<span class="string">'Removed connection from port '</span> obj.from <span class="string">' to port '</span> obj.to <span class="string">'.'</span>]);
+0072             <span class="keyword">else</span>
+0073                 disp([<span class="string">'Port '</span> obj.from <span class="string">' and port '</span> obj.to <span class="string">' ALREADY disconnected.'</span>]);
+0074             <span class="keyword">end</span>
+0075         <span class="keyword">end</span>
+0076         
+0077         <a name="_sub5" href="#_subfunctions" class="code">function remove(obj)</a>
+0078             <span class="keyword">if</span> ~isempty(obj.pid) <span class="comment">% if connection was configured</span>
+0079                 <span class="comment">% Disconnect any ongoing connection</span>
+0080                 yarp.Network.disconnect(obj.from,obj.to);
+0081                 <span class="comment">% Close destination port and stop data dumper</span>
+0082                 obj.closePort();
+0083                 <span class="comment">% Remove entry from connection list</span>
+0084                 Connection.connectionList.remove([obj.from obj.to]);
+0085                 <span class="comment">% Connection not configured</span>
+0086                 obj.pid = [];
+0087             <span class="keyword">end</span>
+0088         <span class="keyword">end</span>
+0089     <span class="keyword">end</span>
+0090     
+0091     methods(Access=protected)
+0092         <a name="_sub6" href="#_subfunctions" class="code">function openPort(obj)</a>
+0093             <span class="comment">% run datadumper and get process PID if source port exists and</span>
+0094             <span class="comment">% destination port is yet to be open.</span>
+0095             <span class="keyword">if</span> yarp.Network.exists(obj.from) &amp;&amp; ~yarp.Network.exists(obj.to)
+0096                 [status,dumperPid]=system(<span class="keyword">...</span>
+0097                     [<span class="string">'yarpdatadumper '</span> <span class="keyword">...</span><span class="comment">    % run data dumper</span>
+0098                     <span class="string">'--dir '</span> obj.path <span class="keyword">...</span><span class="comment">    % set output folder</span>
+0099                     <span class="string">' --name '</span> obj.to <span class="string">' --type bottle '</span> <span class="keyword">...</span><span class="comment"> % yarp port, data type</span>
+0100                     <span class="string">'&amp;&gt; /dev/null &amp; '</span> <span class="keyword">...</span><span class="comment">     % redirect all output to garbage and run process on backgroung</span>
+0101                     <span class="string">'echo $!'</span>]);              <span class="comment">% get process PID</span>
+0102                 <span class="keyword">if</span> status
+0103                     error(<span class="string">'Couldn''t run yarpdatadumper!'</span>);
+0104                 <span class="keyword">else</span>
+0105                     disp([<span class="string">'Opened port '</span> obj.to <span class="string">'.'</span>]);
+0106                 <span class="keyword">end</span>
+0107                 obj.pid = str2double(dumperPid); <span class="comment">% convert and store PID (removes trail spaces)</span>
+0108                 <span class="comment">% double check that PID is attached to a yarpdatadumper process</span>
+0109                 <span class="keyword">if</span> ~obj.doesPIDmatchDatadumper(obj.pid)
+0110                     error(<span class="string">'Wrong yarpdatadumper PID!'</span>);
+0111                 <span class="keyword">end</span>
+0112                 <span class="comment">% check that required port is now open</span>
+0113                 <span class="keyword">if</span> ~SensorDataYarpI.waitPortOpen(obj.to,5)
+0114                     error([<span class="string">'Couldn''t open port '</span> obj.to <span class="string">' !!'</span>]);
+0115                 <span class="keyword">end</span>
+0116             <span class="keyword">else</span>
+0117                 <span class="comment">% Some error occurred</span>
+0118                 error([<span class="string">'Source port '</span> obj.from <span class="string">' doesn''t exist or destination port '</span> obj.to <span class="string">' is already open!!'</span>]);
+0119             <span class="keyword">end</span>
+0120         <span class="keyword">end</span>
+0121         
+0122         <a name="_sub7" href="#_subfunctions" class="code">function closePort(obj)</a>
+0123             <span class="keyword">if</span> system([<span class="string">'kill '</span> num2str(obj.pid)])
+0124                 error([<span class="string">'Couldn''t stop yarpdatadumper!'</span> num2str(obj.pid)]);
+0125             <span class="keyword">end</span>
+0126             disp([<span class="string">'Stoped yarpdatadumper and closed dumper port '</span> obj.to <span class="string">'.'</span>]);
+0127         <span class="keyword">end</span>
+0128     <span class="keyword">end</span>
+0129     
+0130     methods(Static=true, Access=protected)
+0131         <a name="_sub8" href="#_subfunctions" class="code">function status = doesPIDmatchDatadumper(pid)</a>
+0132             <span class="comment">% get the matching process (only the command wo the parameters)</span>
+0133             [status,pidCmdRef] = system([<span class="string">'ps -cp '</span> num2str(pid) <span class="string">' -o command'</span>]);
+0134             <span class="keyword">if</span> status
+0135                 warning(<span class="string">'Couldn''t verify the PID'</span>);
+0136                 status = false;
+0137                 <span class="keyword">return</span>;
+0138             <span class="keyword">end</span>
+0139             <span class="comment">% convert the PID information string into a cell array</span>
+0140             <span class="comment">% {'COMMAND'   }</span>
+0141             <span class="comment">% {'yarpserver'}</span>
+0142             pidCmdRef_cols = textscan(pidCmdRef,<span class="string">'%s'</span>);
+0143             status = strcmp(pidCmdRef_cols{1}{2},<span class="string">'yarpdatadumper'</span>);
+0144         <span class="keyword">end</span>
+0145     <span class="keyword">end</span>
+0146 <span class="keyword">end</span>
+0147</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

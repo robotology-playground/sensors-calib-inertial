@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2dproj</title>
+  <meta name="keywords" content="quad2dproj">
+  <meta name="description" content="Projects a set of points onto a quadratic curve.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2dproj
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Projects a set of points onto a quadratic curve.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Wp,rss] = quad2dproj(W, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Projects a set of points onto a quadratic curve.
+ The algorithm is proven to converge and reaches an accuracy of 7-8
+ significant digits, and it takes 4-5 iterations per point, on average.
+
+ Input arguments:
+ W:
+    data points to project to the quadratic curve
+
+ Output arguments:
+ Wp:
+    data points that lie on the quadratic curve
+ rss:
+    residual sum of squares (i.e. the sum of squares of the distances)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipseproj.html" class="code" title="function [Wp,rss] = ellipseproj(W, varargin)">ellipseproj</a>	Projects a set of points onto an ellipse.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipse_distance.html" class="code" title="function [e,d,xf,yf] = ellipse_distance(x, y, p)">ellipse_distance</a>	Distance of points projected onto an ellipse.</li><li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="ellipsefit_foot.html" class="code" title="function [xf,yf] = ellipsefit_foot(x,y)">ellipsefit_foot</a>	Maximum likelihood ellipse fit with foot points.</li><li><a href="example_ellipseproj.html" class="code" title="function example_ellipseproj">example_ellipseproj</a>	Demonstration of projecting points to an ellipse.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Wp,rss] = quad2dproj(W, varargin)</a>
+0002 <span class="comment">% Projects a set of points onto a quadratic curve.</span>
+0003 <span class="comment">% The algorithm is proven to converge and reaches an accuracy of 7-8</span>
+0004 <span class="comment">% significant digits, and it takes 4-5 iterations per point, on average.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input arguments:</span>
+0007 <span class="comment">% W:</span>
+0008 <span class="comment">%    data points to project to the quadratic curve</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Output arguments:</span>
+0011 <span class="comment">% Wp:</span>
+0012 <span class="comment">%    data points that lie on the quadratic curve</span>
+0013 <span class="comment">% rss:</span>
+0014 <span class="comment">%    residual sum of squares (i.e. the sum of squares of the distances)</span>
+0015 
+0016 <span class="comment">% References:</span>
+0017 <span class="comment">% Nikolai Chernov and H. Ma, &quot;Least squares fitting of quadratic curves</span>
+0018 <span class="comment">%    and surfaces&quot;, Computer Vision, 2011, pages 285--302</span>
+0019 <span class="comment">% D. Eberly, &quot;Distance from a point to an ellipse in 2D&quot; (2004), Geometric</span>
+0020 <span class="comment">%    Tools, LLC, http://www.geometrictools.com</span>
+0021 
+0022 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0023 
+0024 <span class="comment">% Currently implements projection only to ellipses</span>
+0025 
+0026 narginchk(2,4);
+0027 validateattributes(W, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'2d'</span>}, mfilename, <span class="string">'W'</span>, 1);
+0028 <span class="keyword">if</span> size(W,1) &gt; size(W,2)
+0029     validateattributes(W, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[NaN,2]}, 1);
+0030 <span class="keyword">else</span>
+0031     validateattributes(W, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[2,NaN]}, 1);
+0032 <span class="keyword">end</span>
+0033 <span class="keyword">if</span> nargin &gt; 2
+0034     narginchk(4,4);
+0035     [center, axes, angle] = varargin{:};
+0036     validateattributes(center, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,2}, mfilename, <span class="string">'center'</span>, 2);
+0037     validateattributes(axes, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,2}, mfilename, <span class="string">'axes'</span>, 3);
+0038     validateattributes(angle, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'scalar'</span>}, mfilename, <span class="string">'angle'</span>, 4);
+0039     center = center(:);
+0040     axes = axes(:);
+0041 <span class="keyword">else</span>
+0042     narginchk(2,2);
+0043     params = varargin{:};
+0044     validateattributes(params, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,5}, mfilename, <span class="string">'p'</span>, 2);
+0045     params = params(:);
+0046     center = params(1:2);
+0047     axes = params(3:4);
+0048     angle = params(5);
+0049 <span class="keyword">end</span>
+0050 
+0051 <span class="keyword">if</span> nargout &gt; 1
+0052     [Wp,rss] = <a href="ellipseproj.html" class="code" title="function [Wp,rss] = ellipseproj(W, varargin)">ellipseproj</a>(W, center, axes, angle);
+0053 <span class="keyword">else</span>
+0054     Wp = <a href="ellipseproj.html" class="code" title="function [Wp,rss] = ellipseproj(W, varargin)">ellipseproj</a>(W, center, axes, angle);
+0055 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

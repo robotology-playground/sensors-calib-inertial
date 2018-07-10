@@ -1,0 +1,42 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  RemoteControlBoardRemapper -> RemoteControlBoardRemapper;
+  RemoteControlBoardRemapper -> getAxes;
+  RemoteControlBoardRemapper -> getEncoders;
+  RemoteControlBoardRemapper -> getJointTorques;
+  RemoteControlBoardRemapper -> getJointsControlMode;
+  RemoteControlBoardRemapper -> getJointsMappedIdxes;
+  RemoteControlBoardRemapper -> getJointsNames;
+  RemoteControlBoardRemapper -> getMotorEncoderSpeeds;
+  RemoteControlBoardRemapper -> getMotorEncoders;
+  RemoteControlBoardRemapper -> getMotorsMappedIdxes;
+  RemoteControlBoardRemapper -> getMotorsNames;
+  RemoteControlBoardRemapper -> getMotorsPWM;
+  RemoteControlBoardRemapper -> getMotorsPids;
+  RemoteControlBoardRemapper -> open;
+  RemoteControlBoardRemapper -> setEncoders;
+  RemoteControlBoardRemapper -> setJointsControlMode;
+  RemoteControlBoardRemapper -> setMotorPWM;
+  RemoteControlBoardRemapper -> setMotorsPWM;
+  RemoteControlBoardRemapper -> waitMotionDone;
+
+  RemoteControlBoardRemapper [URL="RemoteControlBoardRemapper.html"];
+  getAxes [URL="getAxes.html"];
+  getEncoders [URL="getEncoders.html"];
+  getJointTorques [URL="getJointTorques.html"];
+  getJointsControlMode [URL="getJointsControlMode.html"];
+  getJointsMappedIdxes [URL="getJointsMappedIdxes.html"];
+  getJointsNames [URL="getJointsNames.html"];
+  getMotorEncoderSpeeds [URL="getMotorEncoderSpeeds.html"];
+  getMotorEncoders [URL="getMotorEncoders.html"];
+  getMotorsMappedIdxes [URL="getMotorsMappedIdxes.html"];
+  getMotorsNames [URL="getMotorsNames.html"];
+  getMotorsPWM [URL="getMotorsPWM.html"];
+  getMotorsPids [URL="getMotorsPids.html"];
+  open [URL="open.html"];
+  setEncoders [URL="setEncoders.html"];
+  setJointsControlMode [URL="setJointsControlMode.html"];
+  setMotorPWM [URL="setMotorPWM.html"];
+  setMotorsPWM [URL="setMotorsPWM.html"];
+  waitMotionDone [URL="waitMotionDone.html"];
+}

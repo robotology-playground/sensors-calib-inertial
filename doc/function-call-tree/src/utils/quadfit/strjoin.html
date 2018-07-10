@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of strjoin</title>
+  <meta name="keywords" content="strjoin">
+  <meta name="description" content="Concatenate a cell array of strings.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>strjoin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Concatenate a cell array of strings.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function string = strjoin(items, adjoiner) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Concatenate a cell array of strings.
+
+ Input arguments:
+ items:
+    a vector of items to join
+ adjoiner:
+    string separating each neighboring element
+
+ See also: cell2mat</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="sym2matlab.html" class="code" title="function c = sym2matlab(c)">sym2matlab</a>	Convert symbolic expression containing matrix entries into MatLab.</li><li><a href="sympoly.html" class="code" title="">sympoly</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function string = strjoin(items, adjoiner)</a>
+0002 <span class="comment">% Concatenate a cell array of strings.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% items:</span>
+0006 <span class="comment">%    a vector of items to join</span>
+0007 <span class="comment">% adjoiner:</span>
+0008 <span class="comment">%    string separating each neighboring element</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% See also: cell2mat</span>
+0011 
+0012 <span class="comment">% Copyright 2008-2011 Levente Hunyadi</span>
+0013 
+0014 narginchk(1, 2);
+0015 assert(isempty(items) || isvector(items), <span class="keyword">...</span>
+0016     <span class="string">'string:strjoin:DimensionMismatch'</span>, <span class="keyword">...</span>
+0017     <span class="string">'Only vectors are supported for string concatenation but argument has dimensions [%s].'</span>, int2str(size(items)));
+0018 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~isempty(adjoiner)
+0019     validateattributes(adjoiner, {<span class="string">'char'</span>}, {<span class="string">'row'</span>});
+0020 <span class="keyword">else</span>
+0021     adjoiner = <span class="string">''</span>;
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">if</span> iscellstr(items)
+0025     p = items;
+0026 <span class="keyword">elseif</span> isnumeric(items)
+0027     <span class="keyword">if</span> all(items == floor(items))
+0028         p = arrayfun(@int2str, items, <span class="string">'UniformOutput'</span>, false);
+0029     <span class="keyword">else</span>
+0030         p = arrayfun(@num2str, items, <span class="string">'UniformOutput'</span>, false);
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">else</span>
+0033     error(<span class="string">'string:strjoin:ArgumentTypeMismatch'</span>, <span class="keyword">...</span>
+0034         <span class="string">'Type &quot;%s&quot; is not supported for string concatenation.'</span>, class(items));
+0035 <span class="keyword">end</span>
+0036 
+0037 <span class="comment">% arrange substrings into cell array of strings</span>
+0038 parts = cell(1,2*numel(items)-1);  <span class="comment">% must be row vector</span>
+0039 parts(1:2:end) = p;
+0040 parts(2:2:end) = {adjoiner};
+0041 
+0042 <span class="comment">% concatenate substrings preserving spaces</span>
+0043 string = cell2mat(parts);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of convertCalibrationMap2table</title>
+  <meta name="keywords" content="convertCalibrationMap2table">
+  <meta name="description" content="UNTITLED Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html +UI -->
+<h1>convertCalibrationMap2table
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ aTable ] = convertCalibrationMap2table( calibMap ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ aTable ] = convertCalibrationMap2table( calibMap )</a>
+0002 <span class="comment">%UNTITLED Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% convert to struct array</span>
+0006 structArray = cellfun(@(elem) struct(elem),calibMap.values,<span class="string">'UniformOutput'</span>,true);
+0007 
+0008 <span class="comment">% convert units</span>
+0009 <span class="comment">% convertedKc = arrayfun(@(elem) elem.Kc*32000/100,structArray,'UniformOutput',false);</span>
+0010 <span class="comment">% [structArray.Kc] = deal(convertedKc{:});</span>
+0011 <span class="comment">% convertedKv = arrayfun(@(elem) elem.Kv*pi/180,structArray,'UniformOutput',false);</span>
+0012 <span class="comment">% [structArray.Kv] = deal(convertedKv{:});</span>
+0013 
+0014 <span class="comment">% convert to table</span>
+0015 aTable = struct2table(structArray);
+0016 aTable.Properties.VariableUnits = {<span class="string">''</span>,<span class="string">'Nm/dutycycle%'</span>,<span class="string">'Nm'</span>,<span class="string">'Nm/rad.s-1'</span>,<span class="string">'Nm'</span>,<span class="string">'Nm'</span>};
+0017 
+0018 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

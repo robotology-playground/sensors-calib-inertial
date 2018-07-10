@@ -1,0 +1,201 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mpolycomps</title>
+  <meta name="keywords" content="mpolycomps">
+  <meta name="description" content="Transforms a matrix polynomial into a (symmetric) linearized form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>mpolycomps
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Transforms a matrix polynomial into a (symmetric) linearized form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [R,Rs] = mpolycomps(T) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Transforms a matrix polynomial into a (symmetric) linearized form.
+ The matrix polynomial has the general form
+ T_0 + s T_1 + ... + s^{n-1} T_{n-1} + s^n T_n
+ while the linearized form is
+ R_1 s + R_0
+ The transformation preserves symmetry.
+
+ Input arguments:
+ Ts:
+    a (cell array of) matrix coefficients in the order T_0 ... T_n.
+
+ See also: mpolycompan, eig
+
+ References:
+ E. N. Antoniou and S. Vologiannidis, &quot;Linearizations of polynomial
+    matrices with symmetries and their applications&quot;, Electronic Journal
+    of Linear Algebra, Volume 15, pp107--114, February 2006
+ E. N. Antoniou and S. Vologiannidis, &quot;A new family of companion forms of
+    polynomial matrices&quot;, Electronic Journal of Linear Algebra, Volume 11,
+    pp78--87, April 2004</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function A = m_A_odd(T)</a></li><li><a href="#_sub2" class="code">function A = m_inv_A_odd(T)</a></li><li><a href="#_sub3" class="code">function A = m_A_even(T)</a></li><li><a href="#_sub4" class="code">function A = m_inv_A_even(T)</a></li><li><a href="#_sub5" class="code">function tf = iseven(n)</a></li><li><a href="#_sub6" class="code">function tf = isodd(n)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [R,Rs] = mpolycomps(T)</a>
+0002 <span class="comment">% Transforms a matrix polynomial into a (symmetric) linearized form.</span>
+0003 <span class="comment">% The matrix polynomial has the general form</span>
+0004 <span class="comment">% T_0 + s T_1 + ... + s^{n-1} T_{n-1} + s^n T_n</span>
+0005 <span class="comment">% while the linearized form is</span>
+0006 <span class="comment">% R_1 s + R_0</span>
+0007 <span class="comment">% The transformation preserves symmetry.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% Input arguments:</span>
+0010 <span class="comment">% Ts:</span>
+0011 <span class="comment">%    a (cell array of) matrix coefficients in the order T_0 ... T_n.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% See also: mpolycompan, eig</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% References:</span>
+0016 <span class="comment">% E. N. Antoniou and S. Vologiannidis, &quot;Linearizations of polynomial</span>
+0017 <span class="comment">%    matrices with symmetries and their applications&quot;, Electronic Journal</span>
+0018 <span class="comment">%    of Linear Algebra, Volume 15, pp107--114, February 2006</span>
+0019 <span class="comment">% E. N. Antoniou and S. Vologiannidis, &quot;A new family of companion forms of</span>
+0020 <span class="comment">%    polynomial matrices&quot;, Electronic Journal of Linear Algebra, Volume 11,</span>
+0021 <span class="comment">%    pp78--87, April 2004</span>
+0022 
+0023 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0024 
+0025 [~,~,n] = size(T);
+0026 cond0 = rcond(T(:,:,1));
+0027 condn = rcond(T(:,:,n));
+0028 assert(max(cond0,condn) &gt; eps, <span class="keyword">...</span>
+0029     <span class="string">'math:mpolysymlin:InaccurateValue'</span>, <span class="keyword">...</span>
+0030     <span class="string">'Problem is ill-conditioned: both leading and trailing coefficients cannot be singular.'</span>);
+0031 rev = cond0 &lt; eps;  <span class="comment">% whether to reverse coefficient order</span>
+0032 <span class="keyword">if</span> rev  <span class="comment">% ensure that leading coefficient is not singular</span>
+0033     T = T(:,:,end:-1:1);
+0034 <span class="keyword">end</span>
+0035 
+0036 n = n - 1;
+0037 <span class="keyword">if</span> <a href="#_sub6" class="code" title="subfunction tf = isodd(n)">isodd</a>(n)  <span class="comment">% no matrix inversion is necessary</span>
+0038     B = <a href="#_sub4" class="code" title="subfunction A = m_inv_A_even(T)">m_inv_A_even</a>(T);
+0039     A = -<a href="#_sub1" class="code" title="subfunction A = m_A_odd(T)">m_A_odd</a>(T);
+0040 <span class="keyword">else</span>
+0041     B = <a href="#_sub2" class="code" title="subfunction A = m_inv_A_odd(T)">m_inv_A_odd</a>(T);
+0042     A = -<a href="#_sub3" class="code" title="subfunction A = m_A_even(T)">m_A_even</a>(T);
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">if</span> rev  <span class="comment">% solution to eigenproblem eig(A,B)</span>
+0045     R = A;
+0046     Rs = B;
+0047 <span class="keyword">else</span>  <span class="comment">% solution to eigenproblem eig(B,A)</span>
+0048     Rs = A;
+0049     R = B;
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">% Assembles the A_{odd} part of the companion form</span>
+0053 <span class="comment">% R(s) = s A^{-1}_{even} - A_{odd}  for n odd</span>
+0054 <span class="comment">% for T(s) using matrix composition.</span>
+0055 <a name="_sub1" href="#_subfunctions" class="code">function A = m_A_odd(T)</a>
+0056 
+0057 [~,p,n] = size(T);
+0058 n = n - 1;
+0059 <span class="comment">%validateattributes(n, {'numeric'}, {'odd','nonnegative','integer'});</span>
+0060 A = zeros(n*p, n*p);
+0061 
+0062 <span class="keyword">for</span> k = 1 : 2 : n-2
+0063     Tk = T(:,:,k+1);  <span class="comment">% T_1, T_3, T_5, ...</span>
+0064     Ck = [ -Tk, eye(p,p) <span class="keyword">...</span>
+0065          ; eye(p,p), zeros(p,p) <span class="keyword">...</span>
+0066          ];
+0067     A((k-1)*p+1:(k+1)*p, (k-1)*p+1:(k+1)*p) = Ck;
+0068 <span class="keyword">end</span>
+0069 A((n-1)*p+1:n*p, (n-1)*p+1:n*p) = -T(:,:,n+1);  <span class="comment">% T_n  for n odd</span>
+0070 
+0071 <span class="comment">% Assembles the A^{-1}_{odd} part of the companion form</span>
+0072 <span class="comment">% R(s) = s A^{-1}_{odd} - A_{even}  for n even</span>
+0073 <span class="comment">% for T(s) using matrix composition.</span>
+0074 <a name="_sub2" href="#_subfunctions" class="code">function A = m_inv_A_odd(T)</a>
+0075 
+0076 [~,p,n] = size(T);
+0077 n = n - 1;
+0078 <span class="comment">%validateattributes(n, {'numeric'}, {'even','nonnegative','integer'});</span>
+0079 A = zeros(n*p, n*p);
+0080 
+0081 <span class="keyword">for</span> k = 1 : 2 : n-1
+0082     Tk = T(:,:,k+1);  <span class="comment">% T_1, T_3, T_5</span>
+0083     Ck = [ zeros(p,p), eye(p,p) <span class="keyword">...</span><span class="comment">  % arrangement corresponding to inverse</span>
+0084          ; eye(p,p), Tk <span class="keyword">...</span>
+0085          ];
+0086     A((k-1)*p+1:(k+1)*p, (k-1)*p+1:(k+1)*p) = Ck;
+0087 <span class="keyword">end</span>
+0088 
+0089 <span class="comment">% Assembles the A_{even} part of the companion form</span>
+0090 <span class="comment">% R(s) = s A^{-1}_{odd} - A_{even}  for n even</span>
+0091 <span class="comment">% for T(s) using matrix composition.</span>
+0092 <a name="_sub3" href="#_subfunctions" class="code">function A = m_A_even(T)</a>
+0093 
+0094 [~,p,n] = size(T);
+0095 n = n - 1;
+0096 <span class="comment">%validateattributes(n, {'numeric'}, {'even','nonnegative','integer'});</span>
+0097 A = zeros(n*p, n*p);
+0098 
+0099 A(1:p,1:p) = inv( T(:,:,1) );  <span class="comment">% T_0</span>
+0100 <span class="keyword">for</span> k = 2 : 2 : n-2
+0101     Tk = T(:,:,k+1);  <span class="comment">% T_2, T_4, T_6, ...</span>
+0102     Ck = [ -Tk, eye(p,p) <span class="keyword">...</span>
+0103          ; eye(p,p), zeros(p,p) <span class="keyword">...</span>
+0104          ];
+0105     A((k-1)*p+1:(k+1)*p, (k-1)*p+1:(k+1)*p) = Ck;
+0106 <span class="keyword">end</span>
+0107 A((n-1)*p+1:n*p, (n-1)*p+1:n*p) = -T(:,:,n+1);  <span class="comment">% T_n  for n even</span>
+0108 
+0109 <span class="comment">% Assembles the A^{-1}_{even} part of the companion form</span>
+0110 <span class="comment">% R(s) = s A^{-1}_{even} - A_{odd}  for n odd</span>
+0111 <span class="comment">% for T(s) using matrix composition.</span>
+0112 <a name="_sub4" href="#_subfunctions" class="code">function A = m_inv_A_even(T)</a>
+0113 
+0114 [~,p,n] = size(T);
+0115 n = n - 1;
+0116 <span class="comment">%validateattributes(n, {'numeric'}, {'odd','nonnegative','integer'});</span>
+0117 A = zeros(n*p, n*p);
+0118 
+0119 A(1:p,1:p) = T(:,:,1);  <span class="comment">% T_0</span>
+0120 <span class="keyword">for</span> k = 2 : 2 : n-1
+0121     Tk = T(:,:,k+1);  <span class="comment">% T_2, T_4, T_6, ...</span>
+0122     Ck = [ zeros(p,p), eye(p,p) <span class="keyword">...</span>
+0123          ; eye(p,p), Tk <span class="keyword">...</span>
+0124          ];
+0125     A((k-1)*p+1:(k+1)*p, (k-1)*p+1:(k+1)*p) = Ck;
+0126 <span class="keyword">end</span>
+0127 
+0128 <a name="_sub5" href="#_subfunctions" class="code">function tf = iseven(n) </a><span class="comment">%#ok&lt;DEFNU&gt;</span>
+0129 
+0130 tf = mod(n, 2) == 0;
+0131 
+0132 <a name="_sub6" href="#_subfunctions" class="code">function tf = isodd(n)</a>
+0133 
+0134 tf = mod(n, 2) == 1;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

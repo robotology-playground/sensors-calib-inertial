@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of JointEncodersCalibrator</title>
+  <meta name="keywords" content="JointEncodersCalibrator">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointEncodersCalibrator -->
+<h1>JointEncodersCalibrator
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@AccelerometersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot</li><li><a href="../../src/@Calibrator/Calibrator.html" class="code" title="">Calibrator</a>	</li><li><a href="JointEncodersCalibrator.html" class="code" title="">JointEncodersCalibrator</a>	</li><li><a href="calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="getOptimConfig.html" class="code" title="function [optimFunc,options] = getOptimConfig()">getOptimConfig</a>	UNTITLED3 Summary of this function goes here</li><li><a href="plotJointsOffsets.html" class="code" title="function plotJointsOffsets(mean_optDq,std_optDq)">plotJointsOffsets</a>	</li><li><a href="../../src/@LowlevTauCtrlCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(obj,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointEncodersCalibrator.html" class="code" title="">JointEncodersCalibrator</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = JointEncodersCalibrator()</a></li><li><a href="#_sub2" class="code">function theInstance = instance()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="JointEncodersCalibrator.html" class="code" title="">JointEncodersCalibrator</a> &lt; <a href="../../src/@Calibrator/Calibrator.html" class="code" title="">Calibrator</a>
+0002     <span class="comment">%JointEncodersCalibrator Holds all methods for joint encoders calibration</span>
+0003     <span class="comment">%   'calibrateSensors()' is the main procedure for calibrating the</span>
+0004     <span class="comment">%   joint encoders. 'getOptimConfig()' configures the lsqnonlin non</span>
+0005     <span class="comment">%   linear solver for the least squares optimization run by the main</span>
+0006     <span class="comment">%   procedure.</span>
+0007     
+0008     properties(Constant=true, Access=protected)
+0009         singletonObj = <a href="JointEncodersCalibrator.html" class="code" title="">JointEncodersCalibrator</a>();
+0010     <span class="keyword">end</span>
+0011     
+0012     properties(Constant=true, Access=public)
+0013         task@char = <span class="string">'jointEncodersCalibrator'</span>;
+0014         
+0015         initSection@char = <span class="string">'jointEncodersCalib'</span>;
+0016         
+0017         calibedSensorType@char = <span class="string">'joint'</span>;
+0018     <span class="keyword">end</span>
+0019     
+0020     methods(Access=protected)
+0021         <a name="_sub0" href="#_subfunctions" class="code">function obj = JointEncodersCalibrator()</a>
+0022         <span class="keyword">end</span>
+0023         
+0024         <a href="calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>(obj,<span class="keyword">...</span>
+0025             dataPath,calibedParts,measedSensorList,measedPartsList,<span class="keyword">...</span>
+0026             model,taskSpecificParams);
+0027     <span class="keyword">end</span>
+0028     
+0029     methods(Static=true, Access=public)
+0030         <span class="comment">% this function should initialize properly the shared attribute</span>
+0031         <span class="comment">% 'singletonObj' and returns the handler to the caller</span>
+0032         <a name="_sub1" href="#_subfunctions" class="code">function theInstance = instance()</a>
+0033             theInstance = JointEncodersCalibrator.singletonObj;
+0034         <span class="keyword">end</span>
+0035     <span class="keyword">end</span>
+0036     
+0037     methods(Static=true, Access=protected)
+0038         [optimFunction,options] = <a href="getOptimConfig.html" class="code" title="function [optimFunc,options] = getOptimConfig()">getOptimConfig</a>();
+0039         
+0040         <a href="plotJointsOffsets.html" class="code" title="function plotJointsOffsets(mean_optDq,std_optDq)">plotJointsOffsets</a>(mean_optDq,std_optDq);
+0041     <span class="keyword">end</span>
+0042     
+0043 <span class="keyword">end</span>
+0044</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

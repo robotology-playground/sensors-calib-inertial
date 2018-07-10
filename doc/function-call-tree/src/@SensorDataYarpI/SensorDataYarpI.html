@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SensorDataYarpI</title>
+  <meta name="keywords" content="SensorDataYarpI">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDataYarpI -->
+<h1>SensorDataYarpI
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@Connection/Connection.html" class="code" title="">Connection</a>	</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li><li><a href="waitPortOpen.html" class="code" title="function [ ok ] = waitPortOpen( port,timeout )">waitPortOpen</a>	Waits for specified port to open.</li><li><a href="../../src/@SensorLogDatabase/SensorLogDatabase.html" class="code" title="">SensorLogDatabase</a>	</li><li><a href="../../src/models/iCubGenova04/yarpPortNameRules.html" class="code" title="">yarpPortNameRules</a>	definition of the Yarp ports where joint sensors and motion sensors</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@SensorDataAcquisition/acquireSensorData.html" class="code" title="function acqSensorDataAccessor = acquireSensorData(task,taskSpecificParams,robotModel,dataPath,calibedParts)">acquireSensorData</a>	task:      this selects the motion sequence parameters</li><li><a href="SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = SensorDataYarpI(robotEnvNames,dataFolderPath)</a></li><li><a href="#_sub2" class="code">function delete(obj)</a></li><li><a href="#_sub3" class="code">function scheduleNewAcquisition(obj)</a></li><li><a href="#_sub4" class="code">function logFolderRelativePath = newLog(obj,dataLogInfo,sensorList,partsList)</a></li><li><a href="#_sub5" class="code">function closeLog(obj)</a></li><li><a href="#_sub6" class="code">function connect(obj,sensorList,partsList)</a></li><li><a href="#_sub7" class="code">function disconnect(obj,sensorList,partsList)</a></li><li><a href="#_sub8" class="code">function print(obj)</a></li><li><a href="#_sub9" class="code">function buildSensType2portNgetter(obj)</a></li><li><a href="#_sub10" class="code">function [newKeyList,newPortList] = newPortEntries(obj,sensor,parts)</a></li><li><a href="#_sub11" class="code">function logFolderRelativePath = newDataSubFolderPath(obj,dataLogInfo)</a></li><li><a href="#_sub12" class="code">function connPorts(obj,portKeys)</a></li><li><a href="#_sub13" class="code">function discPorts(obj,portKeys)</a></li><li><a href="#_sub14" class="code">function portKeys = sensorsPartsLists2keys(sensorList,partsList)</a></li><li><a href="#_sub15" class="code">function clean()</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a> &lt; handle
+0002     <span class="comment">% Interface for accessing YARP interface.</span>
+0003     <span class="comment">%   This class handles the logging of sensor data from YARP ports or</span>
+0004     <span class="comment">%   just the access to and loading of previously logged data into</span>
+0005     <span class="comment">%   Matlab structures.</span>
+0006     <span class="comment">%   The logging is done through the YARP data dumper service:</span>
+0007     <span class="comment">%   - opening/closing of the YARP ports for the set of sensors requested by the client</span>
+0008     <span class="comment">%   - connection or disconnection of the ports</span>
+0009     <span class="comment">%   - mapping of the logged data folder tree structure</span>
+0010     <span class="comment">%   - loading of logged data into Matlab structure</span>
+0011     
+0012     properties(SetAccess = protected, GetAccess = public)
+0013         robotEnvNames = <span class="string">''</span>;
+0014         dataFolderPath = <span class="string">''</span>;      <span class="comment">% where to create /log_xxxx/dumper/ folder</span>
+0015         seqDataFolderPath = <span class="string">''</span>;
+0016         dataLogInfoMap = [];
+0017         sensorType2portNameGetter = {}; <span class="comment">% funcs mapping sensor type to port name</span>
+0018         openports = containers.Map();      <span class="comment">% current open ports with info to,from,connected</span>
+0019         uninitYarpAtDelete = false;
+0020     <span class="keyword">end</span>
+0021     
+0022     methods(Access = public)
+0023         <a name="_sub0" href="#_subfunctions" class="code">function obj = SensorDataYarpI(robotEnvNames,dataFolderPath)</a>
+0024             <span class="comment">% Create YARP Network device, for initializing YARP classes for</span>
+0025             <span class="comment">% communication, if not yet initialized</span>
+0026             <span class="keyword">if</span> ~yarp.Network.initialized
+0027                 yarp.Network.init();
+0028                 obj.uninitYarpAtDelete = true;
+0029             <span class="keyword">end</span>
+0030             
+0031             <span class="comment">% Save parameters, robot name and data file path</span>
+0032             obj.robotEnvNames = robotEnvNames;
+0033             obj.dataFolderPath = dataFolderPath;
+0034             <span class="comment">% build funcs mapping sensor type to port name, save func handles</span>
+0035             obj.buildSensType2portNgetter();
+0036             <span class="comment">% map for storing sensor data log context information</span>
+0037             obj.dataLogInfoMap = <a href="../../src/@SensorLogDatabase/SensorLogDatabase.html" class="code" title="">SensorLogDatabase</a>(obj.dataFolderPath);
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub1" href="#_subfunctions" class="code">function delete(obj)</a>
+0041             <span class="comment">% disconnect and close open ports</span>
+0042             obj.closeLog();
+0043             <span class="keyword">if</span> obj.uninitYarpAtDelete
+0044                 yarp.Network.fini();
+0045             <span class="keyword">end</span>
+0046         <span class="keyword">end</span>
+0047         
+0048         <a name="_sub2" href="#_subfunctions" class="code">function scheduleNewAcquisition(obj)</a>
+0049             obj.dataLogInfoMap.scheduleNewAcquisition();
+0050         <span class="keyword">end</span>
+0051         
+0052         <a name="_sub3" href="#_subfunctions" class="code">function logFolderRelativePath = newLog(obj,dataLogInfo,sensorList,partsList)</a>
+0053             <span class="comment">% close any open ports and log</span>
+0054             obj.closeLog();
+0055             
+0056             <span class="comment">% check sensor/parts lists</span>
+0057             <span class="keyword">if</span> isempty(sensorList) || isempty(partsList)
+0058                 error(<span class="string">'List of parts or list of sensors is empty!'</span>);
+0059             <span class="keyword">end</span>
+0060             
+0061             <span class="comment">% set folder name for the data dumper and update log database</span>
+0062             logFolderRelativePath = obj.newDataSubFolderPath(dataLogInfo);
+0063             
+0064             <span class="comment">% create ports mapping (needs the folder name for the data</span>
+0065             <span class="comment">% dumper because it stores the subfolders names)</span>
+0066             [newKeyList,newPortList] = cellfun(<span class="keyword">...</span>
+0067                 @(sensor,parts) obj.newPortEntries(sensor,parts),<span class="keyword">...</span><span class="comment"> % create objects and return keys</span>
+0068                 sensorList,partsList,<span class="keyword">...</span><span class="comment">                         % applied to each sensor|parts</span>
+0069                 <span class="string">'UniformOutput'</span>,false);                          <span class="comment">% return encapsulated output</span>
+0070             obj.openports = containers.Map([newKeyList{:}],[newPortList{:}]);
+0071         <span class="keyword">end</span>
+0072         
+0073         <a name="_sub4" href="#_subfunctions" class="code">function closeLog(obj)</a>
+0074             <span class="keyword">if</span> ~isempty(obj.openports)
+0075                 <span class="comment">% Disconnect and close all previously open ports</span>
+0076                 <span class="comment">% For each key entry, erase respective connection</span>
+0077                 <span class="comment">% configuration. The method handles redundant handlers.</span>
+0078                 <span class="keyword">for</span> key = obj.openports.keys
+0079                     connectionSetup = obj.openports(key{1});
+0080                     <span class="comment">% Erase pointed connection configuration</span>
+0081                     <span class="comment">% - disconnects any connected port</span>
+0082                     <span class="comment">% - stops the yarpdatadumper instance if it exists and</span>
+0083                     <span class="comment">% closes the respective dumper port</span>
+0084                     <span class="comment">% - removes the tracking of the connection from the</span>
+0085                     <span class="comment">% common connection list</span>
+0086                     connectionSetup.remove();
+0087                     <span class="comment">% Remove the connection handler (pointer) from the map</span>
+0088                     <span class="comment">% (pair {key/handler}. A given connection will actually</span>
+0089                     <span class="comment">% be deleted if all pointing handlers have been</span>
+0090                     <span class="comment">% deleted.</span>
+0091                     obj.openports.remove(key{1});
+0092                 <span class="keyword">end</span>
+0093             <span class="keyword">end</span>
+0094         <span class="keyword">end</span>
+0095         
+0096         <a name="_sub5" href="#_subfunctions" class="code">function connect(obj,sensorList,partsList)</a>
+0097             <span class="comment">% generate the keys from the input lists</span>
+0098             keys = obj.sensorsPartsLists2keys(sensorList,partsList);
+0099             <span class="comment">% connect ports</span>
+0100             obj.connPorts(keys);
+0101         <span class="keyword">end</span>
+0102         
+0103         <a name="_sub6" href="#_subfunctions" class="code">function disconnect(obj,sensorList,partsList)</a>
+0104             <span class="comment">% generate the keys from the input lists</span>
+0105             keys = obj.sensorsPartsLists2keys(sensorList,partsList);
+0106             <span class="comment">% disconnect ports</span>
+0107             obj.discPorts(keys);
+0108         <span class="keyword">end</span>
+0109         
+0110         <a name="_sub7" href="#_subfunctions" class="code">function print(obj)</a>
+0111             <span class="comment">% Print the sensor data log file located in the logged data folder</span>
+0112             fileID = fopen(<span class="string">'dataLogInfoMap.txt'</span>,<span class="string">'w'</span>);
+0113             fprintf(fileID,<span class="string">'%s'</span>,obj.dataLogInfoMap.toString());
+0114             fclose(fileID);
+0115         <span class="keyword">end</span>
+0116     <span class="keyword">end</span>
+0117     
+0118     <span class="comment">%%===============  PROTECTED METHODS  ================================</span>
+0119     
+0120     methods(Access = protected)
+0121         <span class="comment">% only this class and derivates should build the port mapping from</span>
+0122         <span class="comment">% the configuration file</span>
+0123         <a name="_sub8" href="#_subfunctions" class="code">function buildSensType2portNgetter(obj)</a>
+0124             <span class="comment">% init parameters from config file</span>
+0125             <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="../../src/models/iCubGenova04/yarpPortNameRules.html" class="code" title="">yarpPortNameRules</a>;
+0126             sensorType = {<span class="keyword">...</span>
+0127                 <span class="string">'joint_from'</span>,<span class="string">'acc_from'</span>,<span class="string">'gyro8_from'</span>,<span class="string">'gyro9_from'</span>,<span class="string">'imu_from'</span>,<span class="string">'xsens_from'</span>,<span class="string">'fts_from'</span>,<span class="string">'jtorq_from'</span>,<span class="keyword">...</span>
+0128                 <span class="string">'joint_to'</span>,<span class="string">'acc_to'</span>,<span class="string">'gyro8_to'</span>,<span class="string">'gyro9_to'</span>,<span class="string">'imu_to'</span>,<span class="string">'xsens_to'</span>,<span class="string">'fts_to'</span>,<span class="string">'jtorq_to'</span>,<span class="keyword">...</span>
+0129                 <span class="string">'joint_path'</span>,<span class="string">'acc_path'</span>,<span class="string">'gyro8_path'</span>,<span class="string">'gyro9_path'</span>,<span class="string">'imu_path'</span>,<span class="string">'xsens_path'</span>,<span class="string">'fts_path'</span>,<span class="string">'jtorq_path'</span>};
+0130             portNamingRule = {<span class="keyword">...</span>
+0131                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> joints_port_rule_icub]),<span class="keyword">...</span>
+0132                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> accSensors_port_rule_icub]),<span class="keyword">...</span>
+0133                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> gyro8Sensors_port_rule_icub]),<span class="keyword">...</span>
+0134                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> gyro9Sensors_port_rule_icub]),<span class="keyword">...</span>
+0135                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> imuSensors_port_rule_icub]),<span class="keyword">...</span>
+0136                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> xsensSensors_port_rule_icub]),<span class="keyword">...</span>
+0137                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> FTSensors_port_rule_icub]),<span class="keyword">...</span>
+0138                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> joints_port_rule_icub]),<span class="keyword">...</span>
+0139                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> joints_port_rule_dumper]),<span class="keyword">...</span>
+0140                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> accSensors_port_rule_dumper]),<span class="keyword">...</span>
+0141                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> gyro8Sensors_port_rule_dumper]),<span class="keyword">...</span>
+0142                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> gyro9Sensors_port_rule_dumper]),<span class="keyword">...</span>
+0143                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> imuSensors_port_rule_dumper]),<span class="keyword">...</span>
+0144                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> xsensSensors_port_rule_dumper]),<span class="keyword">...</span>
+0145                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> FTSensors_port_rule_dumper]),<span class="keyword">...</span>
+0146                 eval([<span class="string">'@(robotYarpPortPrefix,part)'</span> joints_port_rule_dumper]),<span class="keyword">...</span>
+0147                 eval([<span class="string">'@(datapath,part)'</span> joints_folder_rule_dumper]),<span class="keyword">...</span>
+0148                 eval([<span class="string">'@(datapath,part)'</span> accSensors_folder_rule_dumper]),<span class="keyword">...</span>
+0149                 eval([<span class="string">'@(datapath,part)'</span> gyro8Sensors_folder_rule_dumper]),<span class="keyword">...</span>
+0150                 eval([<span class="string">'@(datapath,part)'</span> gyro9Sensors_folder_rule_dumper]),<span class="keyword">...</span>
+0151                 eval([<span class="string">'@(datapath,part)'</span> imuSensors_folder_rule_dumper]),<span class="keyword">...</span>
+0152                 eval([<span class="string">'@(datapath,part)'</span> xsensSensors_folder_rule_dumper]),<span class="keyword">...</span>
+0153                 eval([<span class="string">'@(datapath,part)'</span> FTSensors_folder_rule_dumper]),<span class="keyword">...</span>
+0154                 eval([<span class="string">'@(datapath,part)'</span> joints_folder_rule_dumper])};
+0155             obj.sensorType2portNameGetter = containers.Map(sensorType,portNamingRule);
+0156         <span class="keyword">end</span>
+0157         
+0158         <a name="_sub9" href="#_subfunctions" class="code">function [newKeyList,newPortList] = newPortEntries(obj,sensor,parts)</a>
+0159             <span class="comment">%% each port(yarp link) entry is a structure with following fields:</span>
+0160             <span class="comment">%  - from: source port</span>
+0161             <span class="comment">%  - to  : sink port</span>
+0162             <span class="comment">%  - path: path to the stored sensor data (*)</span>
+0163             <span class="comment">%  - conn: true if connected, false if not</span>
+0164             <span class="comment">%  - pid : 'yarpdatadumper' process PID that open the port</span>
+0165             <span class="comment">% Note(*): When this method is called, the data folder root</span>
+0166             <span class="comment">% 'dataFolderPath' has already been set.</span>
+0167             
+0168             <span class="comment">% get rules for 'from' and 'to' port naming</span>
+0169             portNamingRuleFrom = obj.sensorType2portNameGetter([sensor <span class="string">'_from'</span>]);
+0170             portNamingRuleTo = obj.sensorType2portNameGetter([sensor <span class="string">'_to'</span>]);
+0171             portNamingRulePath = obj.sensorType2portNameGetter([sensor <span class="string">'_path'</span>]);
+0172             
+0173             <span class="keyword">switch</span> sensor
+0174                 <span class="keyword">case</span> <span class="string">'acc'</span>
+0175                     convert = containers.Map(<span class="keyword">...</span>
+0176                         {<span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="string">'torso'</span>,<span class="string">'head'</span>},<span class="keyword">...</span>
+0177                         {<span class="string">'left_hand'</span>,<span class="string">'right_hand'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="string">'torso'</span>,<span class="string">'head'</span>});
+0178                 <span class="keyword">otherwise</span>
+0179                     convert = @(part) part;
+0180             <span class="keyword">end</span>
+0181             
+0182             <span class="comment">% for each part in the parts list, create a port entry</span>
+0183             [newKeyList,newPortList] = cellfun(<span class="keyword">...</span>
+0184                 @(part) deal([sensor part],<span class="keyword">...</span><span class="comment">          % 2-create a key</span>
+0185                 <a href="../../src/@Connection/Connection.html" class="code" title="">Connection</a>(<span class="keyword">...</span><span class="comment">                          % 3-port naming rules for...</span>
+0186                 portNamingRuleFrom(obj.robotEnvNames.yarpPortPrefix,convert(part)),<span class="keyword">...</span><span class="comment"> % 'from': source port</span>
+0187                 portNamingRuleTo(obj.robotEnvNames.yarpPortPrefix,part),<span class="keyword">...</span><span class="comment">            % 'to'  : sink port</span>
+0188                 portNamingRulePath(obj.seqDataFolderPath,part))),<span class="keyword">...</span><span class="comment">  % 'path': to the stored sensor data</span>
+0189                 parts,<span class="keyword">...</span><span class="comment">                               % 1-for each part...</span>
+0190                 <span class="string">'UniformOutput'</span>,false);                 <span class="comment">% 5-don't concatenate lists from iterations</span>
+0191         <span class="keyword">end</span>
+0192         
+0193         <a name="_sub10" href="#_subfunctions" class="code">function logFolderRelativePath = newDataSubFolderPath(obj,dataLogInfo)</a>
+0194             <span class="comment">%% update Map with log info and create folder where to store sensor data</span>
+0195             
+0196             <span class="comment">% Add new log entry with log info (will be associated to a new</span>
+0197             <span class="comment">% unique iterator in 'dataLogInfoMap')</span>
+0198             logFolderRelativePath = obj.dataLogInfoMap.add(obj.robotEnvNames.modelName,dataLogInfo);
+0199             
+0200             <span class="comment">% create folder. We use system() instead of the built'in</span>
+0201             <span class="comment">% function because the answer is more accurate: 'false' if the</span>
+0202             <span class="comment">% folder already exists.</span>
+0203             obj.seqDataFolderPath = [obj.dataFolderPath <span class="string">'/'</span> logFolderRelativePath];
+0204             <span class="keyword">if</span> system([<span class="string">'mkdir '</span> obj.seqDataFolderPath],<span class="string">'-echo'</span>)
+0205                 error(<span class="string">'Couldn''t create log files folder!'</span>);
+0206             <span class="keyword">end</span>
+0207         <span class="keyword">end</span>
+0208         
+0209         <a name="_sub11" href="#_subfunctions" class="code">function connPorts(obj,portKeys)</a>
+0210             <span class="comment">% return error if some ports to connect are still closed or no</span>
+0211             <span class="comment">% connection preconfiguration exists</span>
+0212             stillClosedPorts = ~isKey(obj.openports,portKeys);
+0213             <span class="keyword">if</span> sum(stillClosedPorts)&gt;0
+0214                 error([<span class="string">'Trying to activate unconfigured connections to ports: '</span> portsKeys(stillClosedPorts)]);
+0215             <span class="keyword">end</span>
+0216             
+0217             <span class="comment">% connect ports</span>
+0218             <span class="keyword">for</span> connectionSetup = obj.openports.values(portKeys)
+0219                 connectionSetup{1}.connect();
+0220             <span class="keyword">end</span>
+0221         <span class="keyword">end</span>
+0222         
+0223         <a name="_sub12" href="#_subfunctions" class="code">function discPorts(obj,portKeys)</a>
+0224             <span class="comment">% do nothing for ports already closed</span>
+0225             stillOpenPorts = isKey(obj.openports,portKeys);
+0226             
+0227             <span class="comment">% disconnect ports</span>
+0228             <span class="keyword">for</span> connectionSetup = obj.openports.values(portKeys(stillOpenPorts))
+0229                 connectionSetup{1}.disconnect();
+0230             <span class="keyword">end</span>
+0231         <span class="keyword">end</span>
+0232     <span class="keyword">end</span>
+0233     
+0234     <span class="comment">%% ===============  STATIC PROTECTED METHODS  ======================</span>
+0235     
+0236     methods(Static = true,Access = protected)
+0237         <a name="_sub13" href="#_subfunctions" class="code">function portKeys = sensorsPartsLists2keys(sensorList,partsList)</a>
+0238             <span class="comment">% generate keys for one sensor</span>
+0239             genKeys4oneSensor = @(sensor,parts) cellfun(<span class="keyword">...</span>
+0240                 @(part) [sensor part],<span class="keyword">...</span><span class="comment"> % concatenate key '&lt;sensor&gt;&lt;part&gt;'</span>
+0241                 parts,<span class="keyword">...</span><span class="comment">                 % for each part do...</span>
+0242                 <span class="string">'UniformOutput'</span>,false);   <span class="comment">% output cells {[key1] key2] ..}</span>
+0243             <span class="comment">% generate keys for the whole sensor list</span>
+0244             portKeys = cellfun(<span class="keyword">...</span>
+0245                 @(sensor,parts) genKeys4oneSensor(sensor,parts),<span class="keyword">...</span><span class="comment"> % all keys for 1 sensor</span>
+0246                 sensorList,partsList,<span class="keyword">...</span><span class="comment">             % go through all sensors n parts</span>
+0247                 <span class="string">'UniformOutput'</span>,false);              <span class="comment">% cannot concatenate lists from iterations</span>
+0248             portKeys = [portKeys{:}];                <span class="comment">% concatenate them here!</span>
+0249         <span class="keyword">end</span>
+0250     <span class="keyword">end</span>
+0251     
+0252     <span class="comment">%% ===============  STATIC METHODS  ================================</span>
+0253 
+0254     methods(Static = true,Access = public)
+0255         [ok] = <a href="waitPortOpen.html" class="code" title="function [ ok ] = waitPortOpen( port,timeout )">waitPortOpen</a>(port,timeout);
+0256         
+0257         <a name="_sub14" href="#_subfunctions" class="code">function clean()</a>
+0258             <span class="comment">% clean yarp ports</span>
+0259             system(<span class="string">'yarp clean'</span>);
+0260         <span class="keyword">end</span>
+0261     <span class="keyword">end</span>
+0262 <span class="keyword">end</span>
+0263 
+0264</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

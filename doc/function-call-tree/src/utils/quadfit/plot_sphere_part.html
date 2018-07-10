@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_sphere_part</title>
+  <meta name="keywords" content="plot_sphere_part">
+  <meta name="description" content="Partial sphere surface.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>plot_sphere_part
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Partial sphere surface.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function plot_sphere_part(n, radius, center, x, y, z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Partial sphere surface.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="nntrifaces.html" class="code" title="function f = nntrifaces(F, nn, x, y, z)">nntrifaces</a>	Nearest-neighbor triangle face vertex indices.</li><li><a href="sphere_gd.html" class="code" title="function F = sphere_gd(n, radius, center)">sphere_gd</a>	Construct a geodesic sphere.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_spherefit.html" class="code" title="function example_spherefit">example_spherefit</a>	Demonstration of least-squares sphere fit.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plot_sphere_part(n, radius, center, x, y, z)</a>
+0002 <span class="comment">% Partial sphere surface.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 validateattributes(n, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'integer'</span>,<span class="string">'scalar'</span>,<span class="string">'&gt;='</span>,2});
+0007 validateattributes(radius, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0008 validateattributes(center, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0009 center = center(:);
+0010 validateattributes(center, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[3,1]});
+0011 
+0012 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0013 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0014 validateattributes(z, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0015 
+0016 <span class="comment">% number of nearest-neighbor triangle vertices</span>
+0017 nn = 8;
+0018 
+0019 <span class="comment">% get triangle face vertices of sphere surface</span>
+0020 F = <a href="sphere_gd.html" class="code" title="function F = sphere_gd(n, radius, center)">sphere_gd</a>(n, radius, center);
+0021 
+0022 <span class="comment">% find nearest neighbor face vertices on sphere surface</span>
+0023 f = <a href="nntrifaces.html" class="code" title="function f = nntrifaces(F, nn, x, y, z)">nntrifaces</a>(F, nn, x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, z);
+0024 
+0025 <span class="comment">% drop unused triangles</span>
+0026 vertices = reshape(1:3*size(F,3),3,size(F,3));  <span class="comment">% 3xn matrix of face indices</span>
+0027 vertices = vertices(:,f);
+0028 
+0029 <span class="keyword">if</span> nargout &lt; 1
+0030     <span class="comment">% draw partial surface</span>
+0031     x0 = F(1,:,:);
+0032     y0 = F(2,:,:);
+0033     z0 = F(3,:,:);
+0034     trisurf(transpose(vertices),x0(:),y0(:),z0(:),zeros(size(x0)));
+0035 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

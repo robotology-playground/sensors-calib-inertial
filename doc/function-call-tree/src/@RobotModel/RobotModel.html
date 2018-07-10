@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RobotModel</title>
+  <meta name="keywords" content="RobotModel">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RobotModel -->
+<h1>RobotModel
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@JointsDbase/JointsDbase.html" class="code" title="">JointsDbase</a>	</li><li><a href="RobotModel.html" class="code" title="">RobotModel</a>	</li><li><a href="buildDatabase.html" class="code" title="function buildDatabase( obj )">buildDatabase</a>	buildDatabse Rebuild the databases from the current loaded parameters</li><li><a href="buildModelParams.html" class="code" title="function modelParams = buildModelParams(obj,measedSensorList,measedPartsList,calibedParts,calibedJointsIdxes,mtbSensorAct)">buildModelParams</a>	buildModelParams Build old interface structure</li><li><a href="display.html" class="code" title="function display(obj)">display</a>	display Redefine the display function</li><li><a href="getRobotEnvNames.html" class="code" title="function [ robotEnvNames ] = getRobotEnvNames( modelName )">getRobotEnvNames</a>	UNTITLED3 Summary of this function goes here</li><li><a href="link2part.html" class="code" title="function part = link2part( obj,link )">link2part</a>	link2part Get the part (left_leg,right_arm) the link belongs to</li><li><a href="loadCalibFromFile.html" class="code" title="function loadCalibFromFile(obj)">loadCalibFromFile</a>	loadCalibFromFile Loads the calibration map from the file name set at the</li><li><a href="refreshModelConfig.html" class="code" title="function refreshModelConfig( obj,modelName )">refreshModelConfig</a>	UNTITLED5 Summary of this function goes here</li><li><a href="saveCalibToFile.html" class="code" title="function saveCalibToFile(obj)">saveCalibToFile</a>	saveCalibToFile Saves the calibration map to the file name set at the</li><li><a href="../../src/@SensorsDbase/SensorsDbase.html" class="code" title="">SensorsDbase</a>	======================================================================</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@LowlevTauCtrlCalibrator/LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li><li><a href="RobotModel.html" class="code" title="">RobotModel</a>	</li><li><a href="../../src/app/sensorSelfCalibrator.html" class="code" title="">sensorSelfCalibrator</a>	Calibrates accelerometers, joint encoders using only self sensors</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = RobotModel(modelName,urdfModelFile,calibrationMapFile)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="RobotModel.html" class="code" title="">RobotModel</a> &lt; handle
+0002     <span class="comment">%RobotModel This class holds all the properties of the model</span>
+0003     <span class="comment">%   The class constructor retrieves the model parameters from the URDF</span>
+0004     <span class="comment">%   file: joints list, links list, sensor frames and types, DOFs of</span>
+0005     <span class="comment">%   each joint. For that purpose, an iDynTree model 'iDynTree::Model'</span>
+0006     <span class="comment">%   is created and populated by the main app script through the</span>
+0007     <span class="comment">%   iDynTree bindings.</span>
+0008     <span class="comment">%   It then associates the sensor frames to labels as an abstraction</span>
+0009     <span class="comment">%   between the model specific frame names and the names used in the</span>
+0010     <span class="comment">%   application interface.</span>
+0011     <span class="comment">%   It then creates the associations 'part/limb' &lt;--&gt; (sensor frames,</span>
+0012     <span class="comment">%   joints list, part DOF, ...)</span>
+0013     <span class="comment">%   For the accelerometers calibration, we need to retrieve the sensor</span>
+0014     <span class="comment">%   frame names from the URDF model for a later association to the</span>
+0015     <span class="comment">%   'iDynTree.ExtWrenchesAndJointTorquesEstimator' for computing the</span>
+0016     <span class="comment">%   predicted link accelerations.</span>
+0017     <span class="comment">%   The model also holds the sensor calibration parameters and the</span>
+0018     <span class="comment">%   joint/motor parameters (PWM to torque rate, friction parameters, ...).</span>
+0019     
+0020     properties(GetAccess = public, SetAccess = protected)
+0021         robotEnvNames@struct;
+0022         urdfModelFile@char;
+0023         link2partMapping@struct;
+0024         calibrationMapFile@char;
+0025         calibrationMap@containers.Map;
+0026         estimator@iDynTree.ExtWrenchesAndJointTorquesEstimator;
+0027         jointsDbase@<a href="../../src/@JointsDbase/JointsDbase.html" class="code" title="">JointsDbase</a>;  <span class="comment">% Joint database built from iDynTree model parameters</span>
+0028         sensorsDbase@<a href="../../src/@SensorsDbase/SensorsDbase.html" class="code" title="">SensorsDbase</a>; <span class="comment">% Sensor database built from iDynTree model parameters</span>
+0029     <span class="keyword">end</span>
+0030     
+0031     methods(Access = public)
+0032         <span class="comment">% Constructor</span>
+0033         <a name="_sub0" href="#_subfunctions" class="code">function obj = RobotModel(modelName,urdfModelFile,calibrationMapFile)</a>
+0034             <span class="comment">% Refresh model configuration files</span>
+0035             obj.refreshModelConfig(modelName);
+0036             
+0037             <span class="comment">% Set robot environment names from the model name (yarp port prefix, yarp</span>
+0038             <span class="comment">% robot name)</span>
+0039             obj.robotEnvNames = obj.getRobotEnvNames(modelName);
+0040 
+0041             <span class="comment">% Set parameters from environment if needed</span>
+0042             <span class="keyword">if</span> isempty(urdfModelFile)
+0043                 <span class="comment">% Let Yarp resource finder get the model path for the respective Yarp</span>
+0044                 <span class="comment">% robot name. Trash the error/warning output and get only the result path</span>
+0045                 setenv(<span class="string">'YARP_ROBOT_NAME'</span>,obj.robotEnvNames.yarpRobotName);
+0046                 [status,path] = system(<span class="string">'yarp resource --find model.urdf 2&gt; /dev/null'</span>);
+0047                 <span class="keyword">if</span> status
+0048                     error(<span class="string">'robot model not found !!'</span>);
+0049                 <span class="keyword">end</span>
+0050                 path = strip(path); <span class="comment">% remove spaces from the sides of the string</span>
+0051                 urdfModelFile = strip(path,<span class="string">'&quot;'</span>); <span class="comment">% remove the quotation marks</span>
+0052             <span class="keyword">end</span>
+0053             <span class="keyword">if</span> isempty(calibrationMapFile)
+0054                 calibrationMapFile = [<span class="string">'../../data/calibration/'</span> modelName <span class="string">'_calibrationMap.mat'</span>];
+0055             <span class="keyword">end</span>
+0056             
+0057             <span class="comment">% set remaining class attributes</span>
+0058             obj.urdfModelFile = urdfModelFile;
+0059             obj.calibrationMapFile = calibrationMapFile;
+0060             
+0061             <span class="comment">% Load existing sensors calibration (joint encoders, inertial &amp; FT sensors, etc)</span>
+0062             obj.loadCalibFromFile();
+0063             
+0064             <span class="comment">%% Create the iDynTree estimator and model...</span>
+0065             <span class="comment">%</span>
+0066             <span class="comment">% Create an estimator class, load the respective model from URDF file</span>
+0067             
+0068             <span class="comment">% Create estimator class</span>
+0069             obj.estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
+0070             
+0071             <span class="comment">% Load model and sensors from the URDF file</span>
+0072             obj.estimator.loadModelAndSensorsFromFile(urdfModelFile);
+0073             
+0074             <span class="comment">% Build a typical database from the URDF model parameters</span>
+0075             <span class="comment">% previously loaded in iDynTree, allowing to query elements</span>
+0076             <span class="comment">% matching specified properties.</span>
+0077             obj.jointsDbase = <a href="../../src/@JointsDbase/JointsDbase.html" class="code" title="">JointsDbase</a>(obj.estimator.model,@obj.link2part,obj.robotEnvNames.yarpPortPrefix);
+0078             obj.sensorsDbase = <a href="../../src/@SensorsDbase/SensorsDbase.html" class="code" title="">SensorsDbase</a>(obj.estimator.sensors,@obj.link2part);
+0079         <span class="keyword">end</span>
+0080         
+0081         <span class="comment">% Load all sensors calibration parameters from the file path set at</span>
+0082         <span class="comment">% model object instantiation.</span>
+0083         <a href="loadCalibFromFile.html" class="code" title="function loadCalibFromFile(obj)">loadCalibFromFile</a>(obj);
+0084         
+0085         <span class="comment">% Save all sensors calibration parameters to the file path set at</span>
+0086         <span class="comment">% model object instantiation.</span>
+0087         <a href="saveCalibToFile.html" class="code" title="function saveCalibToFile(obj)">saveCalibToFile</a>(obj);
+0088         
+0089         <span class="comment">% Refined display of the object</span>
+0090         <a href="display.html" class="code" title="function display(obj)">display</a>(obj);
+0091         
+0092         <span class="comment">% Build old interface structure such that RobotModel class</span>
+0093         <span class="comment">% introduction doesn't impact the calibrators and the yarp data</span>
+0094         <span class="comment">% parsing current design.</span>
+0095         modelParams = <a href="buildModelParams.html" class="code" title="function modelParams = buildModelParams(obj,measedSensorList,measedPartsList,calibedParts,calibedJointsIdxes,mtbSensorAct)">buildModelParams</a>(obj,<span class="keyword">...</span>
+0096             measedSensorList,measedPartsList,<span class="keyword">...</span>
+0097             calibedParts,calibedJointsIdxes,<span class="keyword">...</span>
+0098             mtbSensorAct);
+0099         
+0100         <span class="comment">% Rebuild the 'jointsDbase' and 'sensorsDbase' databases.</span>
+0101         <a href="buildDatabase.html" class="code" title="function buildDatabase( obj )">buildDatabase</a>(obj);
+0102         
+0103         <span class="comment">% Get the part the link is attached to</span>
+0104         part = <a href="link2part.html" class="code" title="function part = link2part( obj,link )">link2part</a>(obj,link);
+0105     <span class="keyword">end</span>
+0106     
+0107     methods(Access=protected)
+0108         <span class="comment">% Update Matlab path with model path and reload model configuration</span>
+0109         <span class="comment">% data from the model folder</span>
+0110         <a href="refreshModelConfig.html" class="code" title="function refreshModelConfig( obj,modelName )">refreshModelConfig</a>(obj,modelName);
+0111     <span class="keyword">end</span>
+0112     
+0113     methods(Static = true, Access = public)
+0114         robotEnvNames = <a href="getRobotEnvNames.html" class="code" title="function [ robotEnvNames ] = getRobotEnvNames( modelName )">getRobotEnvNames</a>(modelName);
+0115     <span class="keyword">end</span>
+0116 <span class="keyword">end</span>
+0117</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

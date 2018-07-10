@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipsoidfit2</title>
+  <meta name="keywords" content="example_ellipsoidfit2">
+  <meta name="description" content="Demonstration of fits to various special ellipsoids.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipsoidfit2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstration of fits to various special ellipsoids.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_ellipsoidfit2 </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstration of fits to various special ellipsoids.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li><li><a href="ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>	Direct least squares fitting of ellipsoids under the constraint 4J - I^2 > 0.</li><li><a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>	Fit an ellipsoid to data using the nonlinear Koopmans method.</li><li><a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>	Plot ellipsoid specified with implicit parameters.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function plot_ellipsoid_fit(varargin)</a></li><li><a href="#_sub2" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_long_thin</a></li><li><a href="#_sub3" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_short_fat</a></li><li><a href="#_sub4" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_band</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_ellipsoidfit2</a>
+0002 <span class="comment">% Demonstration of fits to various special ellipsoids.</span>
+0003 
+0004 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0005 
+0006 <span class="keyword">if</span> 1
+0007     [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z] = <a href="#_sub2" class="code" title="subfunction [x,y,z,x0,y0,z0] = example_ellipsoid_long_thin">example_ellipsoid_long_thin</a>;
+0008     <a href="#_sub1" class="code" title="subfunction plot_ellipsoid_fit(varargin)">plot_ellipsoid_fit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,[-72 -118 62]);
+0009     set(gcf,<span class="string">'Name'</span>,<span class="string">'Long thin ellipsoid'</span>);
+0010 <span class="keyword">end</span>
+0011 
+0012 <span class="keyword">if</span> 1
+0013     [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z] = <a href="#_sub3" class="code" title="subfunction [x,y,z,x0,y0,z0] = example_ellipsoid_short_fat">example_ellipsoid_short_fat</a>;
+0014     <a href="#_sub1" class="code" title="subfunction plot_ellipsoid_fit(varargin)">plot_ellipsoid_fit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,[-72 -118 62]);
+0015     set(gcf,<span class="string">'Name'</span>,<span class="string">'Short fat ellipsoid'</span>);
+0016 <span class="keyword">end</span>
+0017 
+0018 <span class="keyword">if</span> 1
+0019     [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z] = <a href="#_sub4" class="code" title="subfunction [x,y,z,x0,y0,z0] = example_ellipsoid_band">example_ellipsoid_band</a>;
+0020     <a href="#_sub1" class="code" title="subfunction plot_ellipsoid_fit(varargin)">plot_ellipsoid_fit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,[-72 -118 62]);
+0021     <span class="comment">%[x,y,z,x0,y0,z0] = example_ellipsoid_band;</span>
+0022     <span class="comment">%plot_ellipsoid_fit(x,y,z,x0,y0,z0,[-72 -118 62]);</span>
+0023     set(gcf,<span class="string">'Name'</span>,<span class="string">'Ellipsoid band'</span>);
+0024 <span class="keyword">end</span>
+0025 
+0026 <a name="_sub1" href="#_subfunctions" class="code">function plot_ellipsoid_fit(varargin)</a>
+0027 
+0028 narginchk(3,7);
+0029 <span class="keyword">switch</span> nargin
+0030     <span class="keyword">case</span> 3
+0031         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z] = varargin{:};
+0032         x0 = []; y0 = []; z0 = [];
+0033     <span class="keyword">case</span> 4
+0034         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,cp] = varargin{:};
+0035         x0 = []; y0 = []; z0 = [];
+0036     <span class="keyword">case</span> 6
+0037         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,x0,y0,z0] = varargin{:};
+0038     <span class="keyword">case</span> 7
+0039         [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,x0,y0,z0,cp] = varargin{:};
+0040     <span class="keyword">otherwise</span>  <span class="comment">% impossible combination</span>
+0041         narginchk(4,4);
+0042 <span class="keyword">end</span>
+0043 
+0044 figure;
+0045 hold on;
+0046 plot3(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,<span class="string">'k.'</span>);
+0047 xlabel(<span class="string">'x'</span>);
+0048 ylabel(<span class="string">'y'</span>);
+0049 zlabel(<span class="string">'z'</span>);
+0050 <span class="comment">%plot3(x0,y0,z0,'r.');</span>
+0051 hold off;
+0052 
+0053 <span class="keyword">if</span> 0
+0054     p_direct = <a href="ellipsoidfit_direct.html" class="code" title="function p = ellipsoidfit_direct(x,y,z)">ellipsoidfit_direct</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0055     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_direct,<span class="string">'EdgeColor'</span>,<span class="string">'blue'</span>);
+0056 <span class="keyword">end</span>
+0057 
+0058 <span class="keyword">if</span> 1
+0059     p_koopmans = <a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0060     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_koopmans,<span class="string">'EdgeColor'</span>,<span class="string">'red'</span>);
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="keyword">if</span> ~isempty(x0) &amp;&amp; ~isempty(y0) &amp;&amp; ~isempty(z0)
+0064     p_ml = <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x0,y0,z0);
+0065     <span class="comment">%plot_ellipsoid_im(p_ml,x0,y0,z0);</span>
+0066     <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_ml);
+0067 <span class="keyword">end</span>
+0068 
+0069 campos(cp);
+0070 axis equal;
+0071 
+0072 <a name="_sub2" href="#_subfunctions" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_long_thin</a>
+0073 <span class="comment">% A long thin ellipsoid.</span>
+0074 
+0075 <span class="comment">% generate points</span>
+0076 xc = 0; yc = 0; zc = 0;
+0077 xr = 10;
+0078 yr = 2;
+0079 zr = 1;
+0080 [x0,y0,z0] = ellipsoid(xc,yc,zc,xr,yr,zr,50);
+0081 x0 = x0(:); y0 = y0(:); z0 = z0(:);
+0082 
+0083 <span class="comment">% filter points</span>
+0084 f = x0 &lt; -5;
+0085 x0 = x0(f); y0 = y0(f); z0 = z0(f);
+0086 
+0087 <span class="comment">% add noise</span>
+0088 mu = 0.05;
+0089 <span class="comment">%RandStream.setDefaultStream(RandStream('mt19937ar','seed',9999));</span>
+0090 x = x0 + mu*randn(size(x0));
+0091 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + mu*randn(size(y0));
+0092 z = z0 + mu*randn(size(z0));
+0093 
+0094 <span class="keyword">if</span> nargout &lt; 3
+0095     hold all;
+0096     <span class="comment">%plot3(x,y,z,'.');</span>
+0097     <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0098     hold off;
+0099 <span class="keyword">end</span>
+0100 
+0101 <a name="_sub3" href="#_subfunctions" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_short_fat</a>
+0102 <span class="comment">% A compressed (short fat) ellipsoid.</span>
+0103 
+0104 <span class="comment">% generate points</span>
+0105 xc = 0; yc = 0; zc = 0;
+0106 xr = 10;
+0107 yr = 8;
+0108 zr = 1.5;
+0109 [x0,y0,z0] = ellipsoid(xc,yc,zc,xr,yr,zr,50);
+0110 x0 = x0(:); y0 = y0(:); z0 = z0(:);
+0111 
+0112 <span class="comment">% filter points</span>
+0113 f = x0 &lt; -5;
+0114 x0 = x0(f); y0 = y0(f); z0 = z0(f);
+0115 
+0116 <span class="comment">% add noise</span>
+0117 mu = 0.05;
+0118 <span class="comment">%RandStream.setDefaultStream(RandStream('mt19937ar','seed',9999));</span>
+0119 x = x0 + mu*randn(size(x0));
+0120 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + mu*randn(size(y0));
+0121 z = z0 + mu*randn(size(z0));
+0122 
+0123 <span class="keyword">if</span> nargout &lt; 3
+0124     hold all;
+0125     <span class="comment">%plot3(x,y,z,'.');</span>
+0126     <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0127     hold off;
+0128 <span class="keyword">end</span>
+0129 
+0130 <a name="_sub4" href="#_subfunctions" class="code">function [x,y,z,x0,y0,z0] = example_ellipsoid_band</a>
+0131 <span class="comment">% Points sampled in a band along an ellipsoid.</span>
+0132 
+0133 <span class="comment">% generate points</span>
+0134 xc = 0; yc = 0; zc = 0;
+0135 xr = 20;
+0136 yr = 10;
+0137 zr = 5;
+0138 [x0,y0,z0] = ellipsoid(xc,yc,zc,xr,yr,zr,50);
+0139 x0 = x0(:); y0 = y0(:); z0 = z0(:);
+0140 
+0141 <span class="comment">% filter points</span>
+0142 f = x0 &gt; -10 &amp; x0 &lt; 0;
+0143 x0 = x0(f); y0 = y0(f); z0 = z0(f);
+0144 
+0145 <span class="comment">% add noise</span>
+0146 mu = 0.25;
+0147 <span class="comment">%RandStream.setDefaultStream(RandStream('mt19937ar','seed',9999));</span>
+0148 x = x0 + mu*randn(size(x0));
+0149 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + mu*randn(size(y0));
+0150 z = z0 + mu*randn(size(z0));
+0151 
+0152 <span class="keyword">if</span> nargout &lt; 3
+0153     hold all;
+0154     <span class="comment">%plot3(x,y,z,'.');</span>
+0155     <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0156     hold off;
+0157 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

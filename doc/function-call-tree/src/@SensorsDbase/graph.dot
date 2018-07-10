@@ -1,0 +1,20 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SensorsDbase -> SensorsDbase;
+  SensorsDbase -> frame2cadType;
+  SensorsDbase -> frame2hwId;
+  SensorsDbase -> getSensorCadTypes;
+  SensorsDbase -> getSensorFrames;
+  SensorsDbase -> getSensorFullscaleGains;
+  SensorsDbase -> getSensorProps;
+  SensorsDbase -> getSensorlabels;
+
+  SensorsDbase [URL="SensorsDbase.html"];
+  frame2cadType [URL="frame2cadType.html"];
+  frame2hwId [URL="frame2hwId.html"];
+  getSensorCadTypes [URL="getSensorCadTypes.html"];
+  getSensorFrames [URL="getSensorFrames.html"];
+  getSensorFullscaleGains [URL="getSensorFullscaleGains.html"];
+  getSensorProps [URL="getSensorProps.html"];
+  getSensorlabels [URL="getSensorlabels.html"];
+}

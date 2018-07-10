@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RemoteControlBoard</title>
+  <meta name="keywords" content="RemoteControlBoard">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoard -->
+<h1>RemoteControlBoard
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>	</li><li><a href="getCouplings.html" class="code" title="function [ couplingList ] = getCouplings( obj )">getCouplings</a>	This method retrieves the coupling parameters through the IRemoteVariables debug interface</li><li><a href="getJointsMappedIdxes.html" class="code" title="function [ jointsIdxList,matchingBitmap ] = getJointsMappedIdxes( obj,jointNameList )">getJointsMappedIdxes</a>	UNTITLED7 Summary of this function goes here</li><li><a href="getRawCoupling.html" class="code" title="function [ rawCouplingInfo ] = getRawCoupling( obj )">getRawCoupling</a>	This method retrieves the raw coupling parameters from a local config file</li><li><a href="../../src/@RemoteControlBoardRemapper/getJointsMappedIdxes.html" class="code" title="function [jointsIdxList,matchingBitmap] = getJointsMappedIdxes( obj,jointNameList )">getJointsMappedIdxes</a>	Get joints indexes as per the control board remapper mapping</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@JointsDbase/getJMcouplingFromCtrlBoard.html" class="code" title="function [ parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM ] =getJMcouplingFromCtrlBoard( joint2coupling,robotYarpPortPrefix,part,jointName )">getJMcouplingFromCtrlBoard</a>	Get the joint/motor coupling info from the control board server.</li><li><a href="RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>	</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = RemoteControlBoard(robotYarpPortPrefix,part)</a></li><li><a href="#_sub2" class="code">function delete(obj)</a></li><li><a href="#_sub3" class="code">function nbAxes = getAxes(obj)</a></li><li><a href="#_sub4" class="code">function axesNames = getAxesNames(obj)</a></li><li><a href="#_sub5" class="code">function motorNames = getMotorNames(obj)</a></li><li><a href="#_sub6" class="code">function fullscalePWMs = getFullscalePWMs(obj)</a></li><li><a href="#_sub7" class="code">function gearboxDqM2Jratios = getGearboxDqM2Jratios(obj)</a></li><li><a href="#_sub8" class="code">function fullVector = setFullFromSubvector(obj,subVector,defaultFullVector)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a> &lt; handle
+0002     <span class="comment">%This class retrieves information from the running control board servers</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties(SetAccess = protected, GetAccess = public)
+0006         robotYarpPortPrefix;
+0007         part;
+0008         hardwareMechanicals;
+0009         hwMechanials2robotInterAxesNamesMapping;
+0010         jointsList={};
+0011         robotInterAxesNames;
+0012         options;
+0013         driver;
+0014     <span class="keyword">end</span>
+0015     
+0016     methods(Access=public)
+0017         <span class="comment">% Constructor</span>
+0018         <a name="_sub0" href="#_subfunctions" class="code">function obj = RemoteControlBoard(robotYarpPortPrefix,part)</a>
+0019             <span class="comment">% Create YARP Network device if not yet done, to initialize</span>
+0020             <span class="comment">% YARP classes for communication.</span>
+0021             <span class="keyword">if</span> ~yarp.Network.initialized
+0022                 yarp.Network.init();
+0023             <span class="keyword">end</span>
+0024             <span class="comment">% Save parameters</span>
+0025             obj.robotYarpPortPrefix = robotYarpPortPrefix;
+0026             obj.part = part;
+0027             
+0028             <span class="comment">% Create the remote control board device associated to the</span>
+0029             <span class="comment">% robot part 'part', and open the driver.</span>
+0030             obj.options = yarp.Property(<span class="string">'(device remote_controlboard)'</span>);
+0031             obj.options.put(<span class="string">'remote'</span>,[<span class="string">'/'</span> robotYarpPortPrefix <span class="string">'/'</span> part]);
+0032             obj.options.put(<span class="string">'local'</span>,[<span class="string">'/AxisInfoCollector/'</span> robotYarpPortPrefix <span class="string">'/'</span> part]);
+0033             <span class="comment">% Check that port is registered</span>
+0034             <span class="keyword">if</span> system([<span class="string">'yarp name query /'</span> robotYarpPortPrefix <span class="string">'/'</span> part <span class="string">'/stateExt:o'</span>])
+0035                 warning(<span class="string">'Port not registered!! skipping...'</span>);
+0036                 obj.driver = [];
+0037             <span class="keyword">else</span>
+0038                 obj.driver = yarp.PolyDriver();
+0039                 <span class="keyword">if</span> (~obj.driver.open(obj.options))
+0040                     error([<span class="string">'AxisInfoCollector: Couldn''t open the driver for part '</span> part]);
+0041                 <span class="keyword">end</span>
+0042             <span class="keyword">end</span>
+0043             
+0044             <span class="comment">% Get config from hardcoded mechanicals config file. This will</span>
+0045             <span class="comment">% be compared against the config retrieved from the robot</span>
+0046             <span class="comment">% interface.</span>
+0047             hwMechConfigAllParts = Init.load(<span class="string">'hardwareMechanicalsConfig'</span>);
+0048             obj.hardwareMechanicals = hwMechConfigAllParts.(part);
+0049             
+0050             <span class="comment">% Get axes names from the robot interface</span>
+0051             obj.robotInterAxesNames = obj.getAxesNames();
+0052             
+0053             <span class="comment">% Get axes (joints) names from config file</span>
+0054             hwMechanialsAxesNames = obj.hardwareMechanicals.jointNames;
+0055             
+0056             <span class="comment">% compute bitmap</span>
+0057             [~,obj.hwMechanials2robotInterAxesNamesMapping] = <span class="keyword">...</span>
+0058                 ismember(hwMechanialsAxesNames,obj.robotInterAxesNames);
+0059             
+0060             <span class="comment">% Through warning if order of matching axes differ from the</span>
+0061             <span class="comment">% order in the hardwareMechanicalsDevConfig file.</span>
+0062             <span class="keyword">if</span> ~issorted(obj.hwMechanials2robotInterAxesNamesMapping,<span class="string">'ascend'</span>)
+0063                 warning([<span class="string">'joint names ordering in the config file differs from '</span> <span class="keyword">...</span>
+0064                 <span class="string">'the one given by the robot interface!'</span>]);
+0065             <span class="keyword">end</span>
+0066         <span class="keyword">end</span>
+0067         
+0068         <span class="comment">% Destructor</span>
+0069         <a name="_sub1" href="#_subfunctions" class="code">function delete(obj)</a>
+0070             <span class="keyword">if</span> ~isempty(obj.driver)
+0071                 obj.driver.close();
+0072             <span class="keyword">end</span>
+0073         <span class="keyword">end</span>
+0074         
+0075         <span class="comment">% Get number of axes</span>
+0076         <a name="_sub2" href="#_subfunctions" class="code">function nbAxes = getAxes(obj)</a>
+0077             ipos = obj.driver.viewIPositionControl();
+0078             nbAxes = ipos.getAxes();
+0079         <span class="keyword">end</span>
+0080         
+0081         <span class="comment">% Get Axes list</span>
+0082         <a name="_sub3" href="#_subfunctions" class="code">function axesNames = getAxesNames(obj)</a>
+0083             <span class="comment">% Get joint names from robot interface</span>
+0084             nbAxes = obj.getAxes();
+0085             iaxis = obj.driver.viewIAxisInfo();
+0086             axesNames = cell(1,nbAxes);
+0087             <span class="keyword">for</span> axisIdx = 1:nbAxes
+0088                 axesNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
+0089             <span class="keyword">end</span>
+0090         <span class="keyword">end</span>
+0091         
+0092         <span class="comment">% Get Motors list from 'mechanicals' config file</span>
+0093         <a name="_sub4" href="#_subfunctions" class="code">function motorNames = getMotorNames(obj)</a>
+0094             <span class="comment">% Motor names from axes not listed in the config file will</span>
+0095             <span class="comment">% be set from 'robotInterAxesNames'</span>
+0096             dfltMotorNamesVec = cellfun(@(elem) [elem <span class="string">'_m'</span>],obj.robotInterAxesNames,<span class="string">'UniformOutput'</span>,false);
+0097             motorNames = obj.setFullFromSubvector(obj.hardwareMechanicals.motorNames,dfltMotorNamesVec);
+0098         <span class="keyword">end</span>
+0099         
+0100         <span class="comment">% Get the digested coupling information</span>
+0101         couplingList = <a href="getCouplings.html" class="code" title="function [ couplingList ] = getCouplings( obj )">getCouplings</a>(obj);
+0102         
+0103         <span class="comment">% Get joints indexes as per the control board server mapping</span>
+0104         [jointsIdxList,matchingBitmap] = <a href="getJointsMappedIdxes.html" class="code" title="function [ jointsIdxList,matchingBitmap ] = getJointsMappedIdxes( obj,jointNameList )">getJointsMappedIdxes</a>(obj,jointNameList);
+0105     <span class="keyword">end</span>
+0106     
+0107     methods(Access=protected)
+0108         <span class="comment">% Get parameters from 'mechanicals' config file</span>
+0109         rawCouplingInfo = <a href="getRawCoupling.html" class="code" title="function [ rawCouplingInfo ] = getRawCoupling( obj )">getRawCoupling</a>(obj);
+0110         
+0111         <a name="_sub5" href="#_subfunctions" class="code">function fullscalePWMs = getFullscalePWMs(obj)</a>
+0112             dfltFullscalePWM = obj.hardwareMechanicals.fullscalePWM{1};
+0113             dfltFullscaleVec = num2cell(ones(size(obj.robotInterAxesNames))*dfltFullscalePWM);
+0114             <span class="comment">% Return the mapping from motor names to fullscalePWM values</span>
+0115             fullscalePWMvalues = obj.setFullFromSubvector(obj.hardwareMechanicals.fullscalePWM,dfltFullscaleVec);
+0116             fullscalePWMs = containers.Map(obj.getMotorNames(),fullscalePWMvalues);
+0117         <span class="keyword">end</span>
+0118         
+0119         <a name="_sub6" href="#_subfunctions" class="code">function gearboxDqM2Jratios = getGearboxDqM2Jratios(obj)</a>
+0120             dfltGearboxRatio = obj.hardwareMechanicals.Gearbox_M2J{1};
+0121             dfltGearboxRatiosVector = num2cell(ones(size(obj.robotInterAxesNames))*dfltGearboxRatio);
+0122             <span class="comment">% Return the mapping from motor names to Gearbox ratios</span>
+0123             gearboxDqM2JratioValues = num2cell(cell2mat(obj.setFullFromSubvector(obj.hardwareMechanicals.Gearbox_M2J,dfltGearboxRatiosVector)).^-1);
+0124             gearboxDqM2Jratios = containers.Map(obj.getMotorNames(),gearboxDqM2JratioValues);
+0125         <span class="keyword">end</span>
+0126         
+0127         <a name="_sub7" href="#_subfunctions" class="code">function fullVector = setFullFromSubvector(obj,subVector,defaultFullVector)</a>
+0128             <span class="comment">% values not set from subVecor will be set from the default</span>
+0129             <span class="comment">% fullVector</span>
+0130             nbAxes = obj.getAxes();
+0131             fullVector(1,1:nbAxes) = defaultFullVector;
+0132             fullVector(1,obj.hwMechanials2robotInterAxesNamesMapping) = subVector;
+0133         <span class="keyword">end</span>
+0134     <span class="keyword">end</span>
+0135     
+0136 <span class="keyword">end</span>
+0137</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

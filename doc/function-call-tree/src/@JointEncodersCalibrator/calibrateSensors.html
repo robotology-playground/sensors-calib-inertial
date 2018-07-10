@@ -1,0 +1,297 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calibrateSensors</title>
+  <meta name="keywords" content="calibrateSensors">
+  <meta name="description" content="Get calibration map">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointEncodersCalibrator -->
+<h1>calibrateSensors
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Get calibration map</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Get calibration map</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@CalibrationContextBuilder/CalibrationContextBuilder.html" class="code" title="">CalibrationContextBuilder</a>	</li><li><a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="../../src/@SensorsData/SensorsData.html" class="code" title="">SensorsData</a>	</li><li><a href="../../src/@nDimGrid/nDimGrid.html" class="code" title="">nDimGrid</a>	</li><li><a href="../../src/conf/advanced/jointEncodersCalibratorDevConfig.html" class="code" title="">jointEncodersCalibratorDevConfig</a>	%</li><li><a href="../../src/utils/lengths.html" class="code" title="function [ l ] = lengths( varargin )">lengths</a>	Returns the size of each input argument</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@AccelerometersCalibrator/AccelerometersCalibrator.html" class="code" title="">AccelerometersCalibrator</a>	</li><li><a href="../../src/@Calibrator/Calibrator.html" class="code" title="">Calibrator</a>	</li><li><a href="JointEncodersCalibrator.html" class="code" title="">JointEncodersCalibrator</a>	</li><li><a href="../../src/@LowlevTauCtrlCalibrator/LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function calibrateSensors(~,</a><span class="keyword">...</span>
+0002     dataPath,calibedParts,measedSensorList,measedPartsList,<span class="keyword">...</span>
+0003     model,taskSpecificParams)
+0004 
+0005 <span class="comment">% Get calibration map</span>
+0006 calibrationMap = model.calibrationMap;
+0007 
+0008 <span class="comment">% Unwrap task specific parameters (defines 'calibedJointsIdxes')</span>
+0009 Init.unWrap(taskSpecificParams);
+0010 
+0011 <span class="comment">% Convert 'calibedJointsIdxes' (just unwrapped) to matlab indexes</span>
+0012 calibedJointsIdxes = structfun(<span class="keyword">...</span>
+0013     @(field) field+1,calibedJointsIdxes,<span class="string">'UniformOutput'</span>,false);
+0014 
+0015 <span class="comment">% Advanced interface parameters</span>
+0016 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="../../src/conf/advanced/jointEncodersCalibratorDevConfig.html" class="code" title="">jointEncodersCalibratorDevConfig</a>;
+0017 
+0018 <span class="comment">% Set the init vector Dq0 for the optimisation</span>
+0019 model.jointsDbase.setAllJointsMaxCalibDq0(calibedJointsMaxDq0);
+0020 
+0021 [optimFunction,options] = JointEncodersCalibrator.getOptimConfig();
+0022 
+0023 <span class="comment">% Build joint encoders and inertial sensors parameters</span>
+0024 modelParams = model.buildModelParams(<span class="keyword">...</span>
+0025     measedSensorList,measedPartsList,<span class="keyword">...</span>
+0026     calibedParts,calibedJointsIdxes,<span class="keyword">...</span>
+0027     mtbSensorAct);
+0028 
+0029 <span class="comment">% in target mode, don't apply any prior offsets</span>
+0030 <span class="keyword">if</span> strcmp(loadSource,<span class="string">'dumpFile'</span>)
+0031     offsetsGridRange = 0;
+0032     offsetedQsIdxs = 1;
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">% create the calibration context implementing the cost function</span>
+0036 myCalibContext = <a href="../../src/@CalibrationContextBuilder/CalibrationContextBuilder.html" class="code" title="">CalibrationContextBuilder</a>(model.estimator);
+0037 <span class="comment">% % DEBUG</span>
+0038 <span class="comment">% waitforbuttonpress;</span>
+0039 <span class="comment">% list_kHsens = myCalibContext.getListTransforms('base_link');</span>
+0040 <span class="comment">% importFrames;</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">% list_kHsens_left_leg = list_kHsens(3+[1:7 9:14],1);</span>
+0043 <span class="comment">% list_kHsens_left_leg_idx = 3+[1:7 9:14]-1;</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% for iterList = 1:13</span>
+0046 <span class="comment">%     myCalibContext.estimator.sensors.getAccelerometerSensor(list_kHsens_left_leg_idx(iterList)).getName</span>
+0047 <span class="comment">%     sum(sum(abs(list_kHsens_fromCREO{iterList}-list_kHsens_left_leg{iterList})))</span>
+0048 <span class="comment">% end</span>
+0049 
+0050 <span class="comment">%%</span>
+0051 
+0052 <span class="comment">% Cost Function used to optimise the offsets</span>
+0053 eval([<span class="string">'costFunction = @myCalibContext.'</span> costFunctionSelect]);
+0054 
+0055 
+0056 <span class="comment">%% build input data for calibration</span>
+0057 <span class="comment">%</span>
+0058 
+0059 <span class="keyword">switch</span> loadSource
+0060     <span class="keyword">case</span> <span class="string">'cache'</span>
+0061         load([dataPath <span class="string">'/dataCache.mat'</span>],<span class="string">'data'</span>);
+0062         
+0063     <span class="keyword">case</span> <span class="string">'dumpFile'</span>
+0064         <span class="comment">% build sensor data parser</span>
+0065         plot = false; loadJointPos = true;
+0066         data = <a href="../../src/@SensorsData/SensorsData.html" class="code" title="">SensorsData</a>(dataPath,<span class="string">''</span>,subSamplingSize,<span class="keyword">...</span>
+0067             timeStart,timeStop,plot,calibrationMap);
+0068         data.buildInputDataSet(loadJointPos,modelParams);
+0069         
+0070         <span class="comment">% Save data in a Matlab file for faster access in further runs</span>
+0071         <span class="keyword">if</span> saveToCache
+0072             save([dataPath <span class="string">'/dataCache.mat'</span>],<span class="string">'data'</span>);
+0073         <span class="keyword">end</span>
+0074         
+0075     <span class="keyword">otherwise</span>
+0076         disp(<span class="string">'Unknown data source !!'</span>)
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">%% init joints and sensors lists. The order in modelParams.jointMeasedParts sets</span>
+0080 <span class="comment">%  the order in which the joints lists for all parts are concatenated, as well as</span>
+0081 <span class="comment">%  Dq0 and Dq.</span>
+0082 Dq0 = myCalibContext.buildSensorsNjointsIDynTreeListsForActivePart(data,modelParams);
+0083 
+0084 
+0085 <span class="comment">%% OPTIMIZATION</span>
+0086 <span class="comment">%</span>
+0087 
+0088 <span class="comment">% Note: below init variables are considered independent from the offsets</span>
+0089 <span class="comment">%</span>
+0090 <span class="comment">% selecting a subset of samples (time series vector)</span>
+0091 subsetVec_size = round(data.nSamples*subsetVec_size_frac);
+0092 subsetVec_idx = round(linspace(1,data.nSamples,subsetVec_size));
+0093 <span class="comment">% Starting point for optimization and boundaries. The format of Dq is</span>
+0094 <span class="comment">% defined by Dq0. Dq0</span>
+0095 lowerBoundary = Dq0 - startPoint2Boundary;
+0096 upperBoundary = Dq0 + startPoint2Boundary;
+0097 
+0098 <span class="comment">% Build the offsets grid</span>
+0099 offsetsConfigGrid = <a href="../../src/@nDimGrid/nDimGrid.html" class="code" title="">nDimGrid</a>(length(offsetedQsIdxs), <span class="keyword">...</span>
+0100                              offsetsGridRange, <span class="keyword">...</span>
+0101                              offsetsGridResolution)
+0102 
+0103 optimalDq = zeros(length(Dq0),number_of_subset_init,offsetsConfigGrid.nbVectors);
+0104 resnorm = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
+0105 exitflag = zeros(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
+0106 output = cell(1,number_of_subset_init,offsetsConfigGrid.nbVectors);
+0107 
+0108 <span class="comment">% pre-computed optimal joint offsets (TO BE REMOVED)</span>
+0109 averageOptimalDq = 0;
+0110 
+0111 <span class="comment">% iterate over the joints offsets grid values</span>
+0112 <span class="keyword">for</span> offsetsConfigIdx = 1:offsetsConfigGrid.nbVectors
+0113     
+0114     <span class="comment">% set the offsets from grid</span>
+0115     myCalibContext.DqiEnc(offsetedQsIdxs) = offsetsConfigGrid.getVector(offsetsConfigIdx);
+0116     
+0117     <span class="comment">% run minimisation for every random subset of data.</span>
+0118     <span class="comment">% 1 subset &lt;=&gt; all measurements for a given timestamp &lt;=&gt;1 column index of</span>
+0119     <span class="comment">% table `q_xxx`, `dq_xxx`, `ddq_xxx`, `y_xxx_acc`, ...</span>
+0120     <span class="comment">%</span>
+0121     <span class="comment">% Define a random subset: X % of the total set of instants</span>
+0122     <span class="comment">% We first shuffle the data. Then, at each loop iteration i,</span>
+0123     <span class="comment">% we select the samples i to i+n, where n = subsetVec_size.</span>
+0124     
+0125     <span class="comment">% Load existing indexes permutation</span>
+0126     <span class="keyword">if</span> loadRandomDataIdxes
+0127         <span class="keyword">if</span> exist(randomDataIdxesFile,<span class="string">'file'</span>) == 2
+0128             load(randomDataIdxesFile,<span class="string">'subsetVec'</span>);
+0129         <span class="keyword">end</span>
+0130         
+0131         <span class="keyword">if</span> ~exist(<span class="string">'subsetVec'</span>,<span class="string">'var'</span>)
+0132             error(<span class="string">'subsetVec not found'</span>);
+0133         <span class="keyword">end</span>
+0134     <span class="keyword">else</span>
+0135         subsetVec = randperm(data.nSamples);
+0136     <span class="keyword">end</span>
+0137     
+0138     <span class="keyword">if</span> saveRandomDataIdxes
+0139         save(randomDataIdxesFile,<span class="string">'subsetVec'</span>);
+0140     <span class="keyword">end</span>
+0141     
+0142     <span class="comment">%%</span>
+0143     <span class="keyword">for</span> i = 1 : number_of_subset_init
+0144         <span class="comment">% select the samples i to i+n</span>
+0145         idxOffset = (i-1)*subsetVec_size;
+0146         <span class="keyword">if</span> shuffle
+0147             subsetVec_idx = subsetVec(idxOffset+1:min(idxOffset+subsetVec_size,data.nSamples));
+0148         <span class="keyword">else</span>
+0149             subsetVec_idx = idxOffset+1:min(idxOffset+subsetVec_size,data.nSamples);
+0150         <span class="keyword">end</span>
+0151         
+0152         <span class="comment">% load joint positions</span>
+0153         myCalibContext.loadJointNsensorsDataSubset(subsetVec_idx);
+0154         
+0155         <span class="comment">% cost before optimisation</span>
+0156         initialCost = costFunction(zeros(size(Dq0)),data,subsetVec_idx,@lsqnonlin,false,<span class="string">''</span>);
+0157         fprintf(<span class="string">'Mean cost before optimization (in (m.s^{-2})^2):\n'</span>);
+0158         (initialCost'*initialCost)/(data.nrOfMTBAccs*length(subsetVec_idx))
+0159         
+0160         <span class="comment">% optimize</span>
+0161         <span class="comment">%</span>
+0162         <span class="comment">% Important note:</span>
+0163         <span class="comment">% - Dq0 is the init vector for the optimization</span>
+0164         <span class="comment">% - Dq is the main optimization variable (format set by Dq0)</span>
+0165         <span class="comment">%</span>
+0166         funcProps = functions(optimFunction);
+0167         funcName = funcProps.function;
+0168         <span class="keyword">switch</span> funcName
+0169             <span class="keyword">case</span> <span class="string">'fminunc'</span>
+0170                 [optimalDq(:,i,offsetsConfigIdx),  resnorm(1,i,offsetsConfigIdx), <span class="keyword">...</span>
+0171                     exitflag(1,i,offsetsConfigIdx), output{1,i,offsetsConfigIdx}] <span class="keyword">...</span>
+0172                     = optimFunction(@(Dq) costFunction(Dq,data,subsetVec_idx,optimFunction,false,<span class="string">''</span>), <span class="keyword">...</span>
+0173                     Dq0, options);
+0174             <span class="keyword">case</span> <span class="string">'lsqnonlin'</span>
+0175                 [optimalDq(:,i,offsetsConfigIdx), resnorm(1,i,offsetsConfigIdx), ~, <span class="keyword">...</span>
+0176                     exitflag(1,i,offsetsConfigIdx), output{1,i,offsetsConfigIdx}, ~] <span class="keyword">...</span>
+0177                     = optimFunction(@(Dq) costFunction(Dq,data,subsetVec_idx,optimFunction,false,<span class="string">''</span>), <span class="keyword">...</span>
+0178                     Dq0, [], [], options);
+0179             <span class="keyword">otherwise</span>
+0180                 <span class="comment">% We are not computing optimalDq, but just using a previous</span>
+0181                 <span class="comment">% result for a performance evaluation</span>
+0182                 optimalDq(:,i,offsetsConfigIdx) = averageOptimalDq;
+0183         <span class="keyword">end</span>
+0184         optimalDq(:,i,offsetsConfigIdx) = mod(optimalDq(:,i,offsetsConfigIdx)+pi, 2*pi)-pi;
+0185         <span class="comment">% computed Dq and known a priori offset (offsetsConfigGrid.getVector(offsetsConfigIdx))</span>
+0186         <span class="comment">% added to ground truth q in simulation, are opposite. Add them</span>
+0187         <span class="comment">% and check the result is null.</span>
+0188         optimalDq(:,i,offsetsConfigIdx) = optimalDq(:,i,offsetsConfigIdx) + myCalibContext.DqiEnc;
+0189         
+0190         <span class="comment">% cost after optimisation</span>
+0191         optimCost = costFunction(optimalDq(:,i,offsetsConfigIdx),data,subsetVec_idx,@lsqnonlin,false,<span class="string">'Optim'</span>);
+0192         fprintf(<span class="string">'Mean cost after optimization (in (m.s^{-2})^2):\n'</span>);
+0193         (optimCost'*optimCost)/(data.nrOfMTBAccs*length(subsetVec_idx))
+0194     <span class="keyword">end</span>
+0195 <span class="keyword">end</span>
+0196 
+0197 <span class="comment">% convert to degrees</span>
+0198 optimalDq = optimalDq*180/pi
+0199 averageOptimalDq = mean(optimalDq,2);
+0200 <span class="comment">% Standard deviation across offsets grid</span>
+0201 std_optDq_offsetsGrid = std(optimalDq,0,3);
+0202 <span class="comment">% Standard deviation across random subsets</span>
+0203 std_optDq_subsets = std(optimalDq,0,2);
+0204 
+0205 
+0206 <span class="comment">% Display the results</span>
+0207 fprintf(<span class="string">'Final optimization results. Each column stands for a random init of the data subset.\n'</span>);
+0208 fprintf(<span class="string">'Optimal offsets Dq (in degrees):\n'</span>);
+0209 optimalDq
+0210 fprintf(<span class="string">'Mean cost (in (m.s^{-2})^2):\n'</span>);
+0211 resnorm/(data.nrOfMTBAccs*length(subsetVec_idx))
+0212 fprintf(<span class="string">'optimization function exit flag:\n'</span>);
+0213 exitflag
+0214 fprintf(<span class="string">'other optimization info:\n'</span>);
+0215 output
+0216 fprintf(<span class="string">'Mean optimal offsets Dq (in degrees):\n'</span>);
+0217 averageOptimalDq
+0218 fprintf(<span class="string">'Standard deviation across offsets grid:\n'</span>);
+0219 std_optDq_offsetsGrid
+0220 fprintf(<span class="string">'Standard deviation across random subsets:\n'</span>);
+0221 std_optDq_subsets
+0222 
+0223 <span class="comment">% Plot the results</span>
+0224 JointEncodersCalibrator.plotJointsOffsets(averageOptimalDq,std_optDq_subsets);
+0225 
+0226 <span class="comment">%% Format and save calibration in the main calibration map</span>
+0227 <span class="comment">%</span>
+0228 
+0229 <span class="comment">% Merge new calibrated joint offsets with old 'calibrationMap'.</span>
+0230 <span class="comment">% The result matrix optimalDq has the same format as Dq and Dq0.</span>
+0231 <span class="comment">% Dq0 results from the concatenation of the modelParams.jointsToCalibrate.calibedJointsDq0</span>
+0232 <span class="comment">% matrices.</span>
+0233 [~,calibedPartsIdxes] = ismember(modelParams.calibedParts,modelParams.jointMeasedParts);
+0234 
+0235 <span class="comment">% Split computed offsets matrix into part wise cells</span>
+0236 calib = mat2cell(averageOptimalDq,<a href="../../src/utils/lengths.html" class="code" title="function [ l ] = lengths( varargin )">lengths</a>(modelParams.jointsToCalibrate.calibedJointsDq0{calibedPartsIdxes}));
+0237 
+0238 <span class="keyword">for</span> iter = calibedPartsIdxes
+0239     mapKey = strcat(<span class="string">'jointsOffsets_'</span>,modelParams.jointMeasedParts{iter}); <span class="comment">% set map key</span>
+0240     <span class="comment">% get current value or set a default one (zeros)</span>
+0241     <span class="keyword">if</span> isKey(calibrationMap,mapKey)
+0242         mapValue = calibrationMap(mapKey); <span class="comment">% get current value</span>
+0243     <span class="keyword">else</span>
+0244         mapValue = zeros(modelParams.jointsToCalibrate.jointsDofs{iter},1); <span class="comment">% init default value</span>
+0245     <span class="keyword">end</span>
+0246     mapValue(modelParams.jointsToCalibrate.calibedJointsIdxes{iter}) = <span class="keyword">...</span>
+0247         mapValue(modelParams.jointsToCalibrate.calibedJointsIdxes{iter}) + calib{iter}; <span class="comment">% add calibrated values</span>
+0248     calibrationMap(mapKey) = mapValue; <span class="comment">% add or overwrite element in the map</span>
+0249 <span class="keyword">end</span>
+0250 
+0251 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of link2partMappingIni</title>
+  <meta name="keywords" content="link2partMappingIni">
+  <meta name="description" content="Maps the a link (left_leg,right_arm) to the part the link belongs to.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- # models --><!-- menu.html iCubGenova04 -->
+<h1>link2partMappingIni
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Maps the a link (left_leg,right_arm) to the part the link belongs to.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Maps the a link (left_leg,right_arm) to the part the link belongs to.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Maps the a link (left_leg,right_arm) to the part the link belongs to.</span>
+0002 
+0003 arm_links = @(side) {<span class="keyword">...</span>
+0004     [side <span class="string">'_shoulder_1'</span>],[side <span class="string">'_shoulder_2'</span>],[side <span class="string">'_shoulder_3'</span>],<span class="keyword">...</span>
+0005     [side <span class="string">'_upper_arm'</span>],[side <span class="string">'_elbow_1'</span>],[side <span class="string">'_forearm'</span>],<span class="keyword">...</span>
+0006     [side <span class="string">'_wrist_1'</span>],[side <span class="string">'_hand'</span>]};
+0007 leg_links = @(side) {<span class="keyword">...</span>
+0008     [side <span class="string">'_hip_1'</span>],[side <span class="string">'_hip_2'</span>],[side <span class="string">'_hip_3'</span>],<span class="keyword">...</span>
+0009     [side <span class="string">'_upper_leg'</span>],[side <span class="string">'_lower_leg'</span>],<span class="keyword">...</span>
+0010     [side <span class="string">'_ankle_1'</span>],[side <span class="string">'_ankle_2'</span>],[side <span class="string">'_foot'</span>]};
+0011 
+0012 left_arm_links = arm_links(<span class="string">'l'</span>);
+0013 right_arm_links = arm_links(<span class="string">'r'</span>);
+0014 left_leg_links = leg_links(<span class="string">'l'</span>);
+0015 right_leg_links = leg_links(<span class="string">'r'</span>);
+0016 torso_links = {<span class="string">'root_link'</span>,<span class="string">'torso_1'</span>,<span class="string">'torso_2'</span>,<span class="string">'chest'</span>};
+0017 head_links = {<span class="string">'neck_1'</span>,<span class="string">'neck_2'</span>,<span class="string">'head'</span>};
+0018 
+0019 mappingInHeader = {<span class="string">'link'</span> <span class="string">'part'</span>};
+0020 
+0021 mappingInLA = left_arm_links'; mappingInLA(:,2) = {<span class="string">'left_arm'</span>};
+0022 mappingInRA = right_arm_links'; mappingInRA(:,2) = {<span class="string">'right_arm'</span>};
+0023 mappingInLL = left_leg_links'; mappingInLL(:,2) = {<span class="string">'left_leg'</span>};
+0024 mappingInRL = right_leg_links'; mappingInRL(:,2) = {<span class="string">'right_leg'</span>};
+0025 mappingInTO = torso_links'; mappingInTO(:,2) = {<span class="string">'torso'</span>};
+0026 mappingInHD = head_links'; mappingInHD(:,2) = {<span class="string">'head'</span>};
+0027 
+0028 mappingIn = [<span class="keyword">...</span>
+0029     mappingInHeader;<span class="keyword">...</span>
+0030     mappingInLA;<span class="keyword">...</span>
+0031     mappingInRA;<span class="keyword">...</span>
+0032     mappingInLL;<span class="keyword">...</span>
+0033     mappingInRL;<span class="keyword">...</span>
+0034     mappingInTO;<span class="keyword">...</span>
+0035     mappingInHD];</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

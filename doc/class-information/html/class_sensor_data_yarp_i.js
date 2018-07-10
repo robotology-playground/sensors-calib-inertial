@@ -1,0 +1,27 @@
+var class_sensor_data_yarp_i =
+[
+    [ "SensorDataYarpI", "class_sensor_data_yarp_i.html#a3c3974d6867fbf523054e780ae1b9f3c", null ],
+    [ "buildSensType2portNgetter", "class_sensor_data_yarp_i.html#a91bef5c8114c74d20fc5de907d3fd938", null ],
+    [ "checkPortIsOpen", "class_sensor_data_yarp_i.html#a47de0ad692ae0d87b0d8891b23ea7f29", null ],
+    [ "clean", "class_sensor_data_yarp_i.html#a7964001347dd291fd56c46f1612e9055", null ],
+    [ "closeLog", "class_sensor_data_yarp_i.html#ac82581d96aa0b95592efce049da9a10e", null ],
+    [ "connect", "class_sensor_data_yarp_i.html#a81ba0b654a8d35d993a38f6eca5a199d", null ],
+    [ "connPorts", "class_sensor_data_yarp_i.html#a4fa7d7929bff6810932413d49815bcd4", null ],
+    [ "delete", "class_sensor_data_yarp_i.html#aaf5ce30c4f84ac29151c22be246c794e", null ],
+    [ "disconnect", "class_sensor_data_yarp_i.html#aadf71961222dd2c38000d5cc63b139dd", null ],
+    [ "discPorts", "class_sensor_data_yarp_i.html#a475d4f62a1f6daefc4a41a5d474569e1", null ],
+    [ "newDataSubFolderPath", "class_sensor_data_yarp_i.html#a1db2dae29491855b1eafcbcae06aa44e", null ],
+    [ "newLog", "class_sensor_data_yarp_i.html#a7d9fec9c80a3b2d1d0fda889fc5a8085", null ],
+    [ "newPortEntries", "class_sensor_data_yarp_i.html#a7be3e6f50a9c0272a6af37b926aa87e2", null ],
+    [ "print", "class_sensor_data_yarp_i.html#a4048c9cd5b40ff7269e4cb7993916aee", null ],
+    [ "scheduleNewAcquisition", "class_sensor_data_yarp_i.html#a0d9ccc82f2c7521865201c6f661cc7c2", null ],
+    [ "sensorsPartsLists2keys", "class_sensor_data_yarp_i.html#a63a07301c5897daa2088fc1b8ba46fc0", null ],
+    [ "waitPortOpen", "class_sensor_data_yarp_i.html#a19a4b9da578fc8ed7d9dd1a128818629", null ],
+    [ "dataFolderPath", "class_sensor_data_yarp_i.html#ac8f36e1fd2e1eb28618578a1aecc935a", null ],
+    [ "dataLogInfoMap", "class_sensor_data_yarp_i.html#aac16ea915f91fae7b955ea910d8a385d", null ],
+    [ "openports", "class_sensor_data_yarp_i.html#acdd179ec1a7341f5d727ef7e3e930c26", null ],
+    [ "robotEnvNames", "class_sensor_data_yarp_i.html#af556ae7399b560201825cb9c932103c0", null ],
+    [ "sensorType2portNameGetter", "class_sensor_data_yarp_i.html#aa68c89c806b71108f87ff1531065d8c8", null ],
+    [ "seqDataFolderPath", "class_sensor_data_yarp_i.html#af78a7b76a04e66961a1868a887cf5db3", null ],
+    [ "uninitYarpAtDelete", "class_sensor_data_yarp_i.html#a2e537a28f19a8ca22c9749ed40431d74", null ]
+];

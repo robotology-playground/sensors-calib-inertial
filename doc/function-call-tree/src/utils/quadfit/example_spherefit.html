@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_spherefit</title>
+  <meta name="keywords" content="example_spherefit">
+  <meta name="description" content="Demonstration of least-squares sphere fit.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_spherefit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstration of least-squares sphere fit.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_spherefit </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstration of least-squares sphere fit.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="plot_sphere_part.html" class="code" title="function plot_sphere_part(n, radius, center, x, y, z)">plot_sphere_part</a>	Partial sphere surface.</li><li><a href="spherefit.html" class="code" title="function [center,radius,residuals] = spherefit(x,y,z)">spherefit</a>	Fit a sphere to data using the least squares approach.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [x,y,z,x0,y0,z0] = example_sphere</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_spherefit</a>
+0002 <span class="comment">% Demonstration of least-squares sphere fit.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 <a href="#_sub1" class="code" title="subfunction [x,y,z,x0,y0,z0] = example_sphere">example_sphere</a>;
+0007 
+0008 <a name="_sub1" href="#_subfunctions" class="code">function [x,y,z,x0,y0,z0] = example_sphere</a>
+0009 <span class="comment">% A sample sphere.</span>
+0010 
+0011 <span class="comment">% generate points</span>
+0012 xc = 10;
+0013 yc = 20;
+0014 zc = 10;
+0015 <span class="comment">%xc = 0; yc = 0; zc = 0;</span>
+0016 r = 30;
+0017 [x0,y0,z0] = ellipsoid(xc,yc,zc,r,r,r);
+0018 x0 = x0(:);
+0019 y0 = y0(:);
+0020 z0 = z0(:);
+0021 
+0022 <span class="comment">% add noise</span>
+0023 <span class="comment">%RandStream.setDefaultStream(RandStream('mt19937ar','seed',9999));</span>
+0024 x = x0 + randn(size(x0));
+0025 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + randn(size(y0));
+0026 z = z0 + randn(size(z0));
+0027 <span class="comment">%plot3(x,y,z,'.'); return;</span>
+0028 
+0029 ix = x &gt; 0 &amp; <a href="../../../src/@y/y.html" class="code" title="">y</a> &gt; 0 &amp; z &gt; 0;
+0030 x = x(ix);
+0031 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(ix);
+0032 z = z(ix);
+0033 
+0034 <span class="keyword">if</span> nargout &lt; 3
+0035     hold all;
+0036     axis equal;
+0037     plot3(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,<span class="string">'.'</span>);
+0038     [center,radius] = <a href="spherefit.html" class="code" title="function [center,radius,residuals] = spherefit(x,y,z)">spherefit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0039     <a href="plot_sphere_part.html" class="code" title="function plot_sphere_part(n, radius, center, x, y, z)">plot_sphere_part</a>(6,radius,center,x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0040        <span class="comment">%sphere_gd(6,radius,center);</span>
+0041     hold off;
+0042 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

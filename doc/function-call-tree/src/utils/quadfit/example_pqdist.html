@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_pqdist</title>
+  <meta name="keywords" content="example_pqdist">
+  <meta name="description" content="Sample code for distance of quadratic curve and point.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_pqdist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Sample code for distance of quadratic curve and point.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_pqdist </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Sample code for distance of quadratic curve and point.
+
+ See also: <a href="pqdist.html" class="code" title="function [dst,X] = pqdist(Y, a, b, c)">pqdist</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>	Rotates a conic section given as an implicit equation.</li><li><a href="pqdist.html" class="code" title="function [dst,X] = pqdist(Y, a, b, c)">pqdist</a>	Distance of point(s) and quadratic curve or quadric surface.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_pqdist</a>
+0002 <span class="comment">% Sample code for distance of quadratic curve and point.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% See also: pqdist</span>
+0005 
+0006 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0007 
+0008 <span class="comment">% ellipse</span>
+0009 p = <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([9 0 16 90 -64 145], pi/6);
+0010 
+0011 P = transpose([0,1 ; -3,-6 ; -7,-3 ; -7,0]);  <span class="comment">% each P = ( Px,Py )</span>
+0012 [dst,F] = <a href="pqdist.html" class="code" title="function [dst,X] = pqdist(Y, a, b, c)">pqdist</a>(P, p); <span class="comment">%#ok&lt;ASGLU&gt;</span>
+0013 
+0014 figure(<span class="string">'Name'</span>, <span class="string">'Distance of points from ellipse'</span>);
+0015 hold(<span class="string">'all'</span>);
+0016 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p);
+0017 <span class="keyword">for</span> k = 1 : size(F,2)
+0018     plot([P(1,k) F(1,k)],[P(2,k) F(2,k)],<span class="string">'r'</span>);
+0019 <span class="keyword">end</span>
+0020 axis equal
+0021 hold(<span class="string">'off'</span>);
+0022 
+0023 <span class="comment">% hyperbola</span>
+0024 p = <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1 0 -1 0 0 -1], 7*pi/8);
+0025 
+0026 P = transpose([0,1 ; -3,-6 ; -7,-3 ; -7,0 ; 10,5 ; 10,-10 ; 0,15]);  <span class="comment">% each P = ( Px,Py )</span>
+0027 [dst,F] = <a href="pqdist.html" class="code" title="function [dst,X] = pqdist(Y, a, b, c)">pqdist</a>(P, p); <span class="comment">%#ok&lt;ASGLU&gt;</span>
+0028 
+0029 figure(<span class="string">'Name'</span>, <span class="string">'Distance of points from hyperbola'</span>);
+0030 hold(<span class="string">'all'</span>);
+0031 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p);
+0032 <span class="keyword">for</span> k = 1 : size(F,2)
+0033     plot([P(1,k) F(1,k)],[P(2,k) F(2,k)],<span class="string">'r'</span>);
+0034 <span class="keyword">end</span>
+0035 axis equal
+0036 hold(<span class="string">'off'</span>);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

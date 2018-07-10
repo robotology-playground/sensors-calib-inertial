@@ -5,7 +5,7 @@ dumper/
 *.pdf
 *.mat
 data/
-html/
+src/\@CalibrationContextBuilder/html
 tmp/
 wiki/
 matlab-workspace

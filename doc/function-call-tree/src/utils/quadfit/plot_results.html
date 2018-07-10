@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plot_results</title>
+  <meta name="keywords" content="plot_results">
+  <meta name="description" content="Plot several data series against a single data series.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>plot_results
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Plot several data series against a single data series.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function plot_results(x, Y, name) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Plot several data series against a single data series.
+
+ Input arguments:
+ x:
+    the data series to plot other data series against (i.e. &quot;independent axis&quot;)
+ Y:
+    the several data series to plot against the same (&quot;independent&quot;) series (i.e. &quot;dependent axis&quot;)
+ name:
+    the title of the figure</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plot_results(x, Y, name)</a>
+0002 <span class="comment">% Plot several data series against a single data series.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x:</span>
+0006 <span class="comment">%    the data series to plot other data series against (i.e. &quot;independent axis&quot;)</span>
+0007 <span class="comment">% Y:</span>
+0008 <span class="comment">%    the several data series to plot against the same (&quot;independent&quot;) series (i.e. &quot;dependent axis&quot;)</span>
+0009 <span class="comment">% name:</span>
+0010 <span class="comment">%    the title of the figure</span>
+0011 
+0012 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0013 
+0014 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0015 validateattributes(Y, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'2d'</span>,<span class="string">'size'</span>,[NaN,numel(x)]});
+0016 colors = {<span class="string">'k'</span>,<span class="string">'b'</span>,<span class="string">'g'</span>,<span class="string">'r'</span>,<span class="string">'c'</span>,<span class="string">'m'</span>};
+0017 <span class="comment">% markers = {'+','o','*','x','^','v','&lt;','&gt;'};</span>
+0018 styles = {<span class="string">'-'</span>,<span class="string">'--'</span>,<span class="string">'-.'</span>,<span class="string">':'</span>};
+0019 
+0020 figure(<span class="string">'Name'</span>, name);
+0021 hold(<span class="string">'all'</span>);
+0022 <span class="keyword">for</span> i = 1 : size(Y,1)
+0023     plot(x, Y(i,:), <span class="keyword">...</span>
+0024         <span class="string">'Color'</span>, colors{mod(i-1,numel(colors))+1}, <span class="keyword">...</span><span class="comment">   % cycle through available colors</span>
+0025         <span class="keyword">...</span><span class="comment"> % 'Marker', markers{mod(i-1,numel(markers))+1}, ...  % cycle through available markers</span>
+0026         <span class="string">'LineStyle'</span>, styles{mod(i-1,numel(styles))+1}, <span class="keyword">...</span><span class="comment">  % cycle through available line styles</span>
+0027         <span class="string">'LineWidth'</span>, 2 <span class="keyword">...</span>
+0028     );
+0029 <span class="keyword">end</span>
+0030 hold(<span class="string">'off'</span>);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

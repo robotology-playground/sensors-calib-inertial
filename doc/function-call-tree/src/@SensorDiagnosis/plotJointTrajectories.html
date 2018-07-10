@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotJointTrajectories</title>
+  <meta name="keywords" content="plotJointTrajectories">
+  <meta name="description" content="compute time series">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDiagnosis -->
+<h1>plotJointTrajectories
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>compute time series</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function plotJointTrajectories(data,modelParams,figuresHandler) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> compute time series</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plotJointTrajectories(data,modelParams,figuresHandler)</a>
+0002 
+0003 <span class="comment">% compute time series</span>
+0004 time = data.ac.tInit + data.ac.parsedParams.time(:);
+0005 
+0006 <span class="comment">%% Plot joint trajectories</span>
+0007 figH = figure(<span class="string">'Name'</span>,<span class="string">'chain joint positions q'</span>,<span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0008 
+0009 figuresHandler.addFigure(figH,<span class="string">'jointTraject'</span>); <span class="comment">% Add figure to the figure handler</span>
+0010 
+0011 <span class="comment">% If the figure is not docked, use the below command to display it full</span>
+0012 <span class="comment">% screen.</span>
+0013 <span class="comment">%set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);</span>
+0014 title(<span class="string">'chain joint positions q'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0015 hold on
+0016 myColors = {<span class="string">'b'</span>,<span class="string">'g'</span>,<span class="string">'r'</span>,<span class="string">'c'</span>,<span class="string">'m'</span>,<span class="string">'y'</span>};
+0017 colorIdx = 1;
+0018 eval([<span class="string">'qsRad = data.bc.parsedParams.qsRad_'</span> modelParams.jointMeasedParts{1} <span class="string">'_state;'</span>]); qsRad = qsRad';
+0019 <span class="keyword">for</span> qIdx = 1:size(qsRad,2)
+0020     plot(time,qsRad(:,qIdx)*180/pi,myColors{colorIdx},<span class="string">'lineWidth'</span>,2.0);
+0021     colorIdx = colorIdx+1;
+0022 <span class="keyword">end</span>
+0023 hold off
+0024 grid ON;
+0025 xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0026 ylabel(<span class="string">'Joints positions (degrees)'</span>,<span class="string">'Fontsize'</span>,12);
+0027 legend(<span class="string">'Location'</span>,<span class="string">'BestOutside'</span>,modelParams.jointsToCalibrate.ctrledJoints{1});
+0028 set(gca,<span class="string">'FontSize'</span>,12);
+0029</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

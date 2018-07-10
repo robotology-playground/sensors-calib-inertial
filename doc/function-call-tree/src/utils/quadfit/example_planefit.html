@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_planefit</title>
+  <meta name="keywords" content="example_planefit">
+  <meta name="description" content="Demonstration of plane fitting.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_planefit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstration of plane fitting.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_planefit </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstration of plane fitting.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="planefit.html" class="code" title="function [p,mu,x0,y0,z0] = planefit(x,y,z,sigma_x,sigma_y,sigma_z)">planefit</a>	Plane fit to noisy 3D data points.</li><li><a href="plotconvhull.html" class="code" title="function plotconvhull(x,y,z)">plotconvhull</a>	Plot convex hull of a set of data points.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_planefit</a>
+0002 <span class="comment">% Demonstration of plane fitting.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 x0 = 4*rand(1,100);
+0007 y0 = 4*rand(size(x0));
+0008 z0 = 2 * x0 - 3 * y0 + 15;
+0009 
+0010 x = x0 + 0.1*randn(size(x0));
+0011 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + 0.1*randn(size(y0));
+0012 z = z0 + 0.1*randn(size(z0));
+0013 
+0014 [~,~,xf,yf,zf] = <a href="planefit.html" class="code" title="function [p,mu,x0,y0,z0] = planefit(x,y,z,sigma_x,sigma_y,sigma_z)">planefit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0015 
+0016 hold all;
+0017 plot3(x0,y0,z0,<span class="string">'.'</span>);
+0018 plot3(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,<span class="string">'.'</span>);
+0019 <a href="plotconvhull.html" class="code" title="function plotconvhull(x,y,z)">plotconvhull</a>(x0,y0,z0);
+0020 <a href="plotconvhull.html" class="code" title="function plotconvhull(x,y,z)">plotconvhull</a>(xf,yf,zf);
+0021 hold off;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

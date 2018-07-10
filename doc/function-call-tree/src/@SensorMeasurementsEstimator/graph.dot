@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SensorMeasurementsEstimator -> SensorMeasurementsEstimator;
+  SensorMeasurementsEstimator -> addSensors;
+  SensorMeasurementsEstimator -> changeFixedBase;
+  SensorMeasurementsEstimator -> getEstimatedMeasurements;
+
+  SensorMeasurementsEstimator [URL="SensorMeasurementsEstimator.html"];
+  addSensors [URL="addSensors.html"];
+  changeFixedBase [URL="changeFixedBase.html"];
+  getEstimatedMeasurements [URL="getEstimatedMeasurements.html"];
+}

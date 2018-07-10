@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of DiagPlotFiguresHandler</title>
+  <meta name="keywords" content="DiagPlotFiguresHandler">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @DiagPlotFiguresHandler -->
+<h1>DiagPlotFiguresHandler
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DiagPlotFiguresHandler.html" class="code" title="">DiagPlotFiguresHandler</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DiagPlotFiguresHandler.html" class="code" title="">DiagPlotFiguresHandler</a>	</li><li><a href="../../src/@LowlevTauCtrlCalibrator/plotTrainingData.html" class="code" title="function plotTrainingData(obj,dataPath,measedSensorList,measedPartsList,model,taskSpecificParams)">plotTrainingData</a>	This function plots the acquired data for the friction or ktau calibration</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = DiagPlotFiguresHandler(dataFolder)</a></li><li><a href="#_sub2" class="code">function addFigure(obj,figH,figLabel)</a></li><li><a href="#_sub3" class="code">function figH = getFigure(obj,figLabel)</a></li><li><a href="#_sub4" class="code">function addDistribLog(obj,ditribLogString,distribLogLabel)</a></li><li><a href="#_sub5" class="code">function [figsFolder,iterator] = saveFigures(obj,export)</a></li><li><a href="#_sub6" class="code">function figureHandleList = loadFigures(obj)</a></li><li><a href="#_sub7" class="code">function exportFigures(obj)</a></li><li><a href="#_sub8" class="code">function iterator = updateIterator(obj)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="DiagPlotFiguresHandler.html" class="code" title="">DiagPlotFiguresHandler</a> &lt; handle
+0002     <span class="comment">%DiaPlotFiguresList Holds all properties and methods for handling the</span>
+0003     <span class="comment">%figures created by the diagnosis process</span>
+0004     
+0005     properties(SetAccess = protected, GetAccess = public)
+0006         dataFolder = <span class="string">''</span>;
+0007         figsFolder = <span class="string">''</span>;
+0008         figuresMap = [];
+0009         distribLogMap = [];
+0010     <span class="keyword">end</span>
+0011     
+0012     methods(Access = public)
+0013         <a name="_sub0" href="#_subfunctions" class="code">function obj = DiagPlotFiguresHandler(dataFolder)</a>
+0014             obj.dataFolder = dataFolder;
+0015             obj.figuresMap = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0016             obj.distribLogMap = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0017         <span class="keyword">end</span>
+0018         
+0019         <a name="_sub1" href="#_subfunctions" class="code">function addFigure(obj,figH,figLabel)</a>
+0020             obj.figuresMap(figLabel) = figH;
+0021         <span class="keyword">end</span>
+0022         
+0023         <a name="_sub2" href="#_subfunctions" class="code">function figH = getFigure(obj,figLabel)</a>
+0024             figH = obj.figuresMap(figLabel);
+0025         <span class="keyword">end</span>
+0026         
+0027         <a name="_sub3" href="#_subfunctions" class="code">function addDistribLog(obj,ditribLogString,distribLogLabel)</a>
+0028             obj.distribLogMap(distribLogLabel) = ditribLogString;
+0029         <span class="keyword">end</span>
+0030         
+0031         <a name="_sub4" href="#_subfunctions" class="code">function [figsFolder,iterator] = saveFigures(obj,export)</a>
+0032             <span class="comment">% create data folder</span>
+0033             <span class="keyword">if</span> ~exist(obj.dataFolder,<span class="string">'dir'</span>)
+0034                 mkdir(obj.dataFolder);
+0035             <span class="keyword">end</span>
+0036             
+0037             <span class="comment">% handle iterator and return its value to the caller</span>
+0038             iterator = obj.updateIterator();
+0039             
+0040             <span class="comment">% create figures folder and return its name to the caller</span>
+0041             obj.figsFolder = [obj.dataFolder <span class="string">'/log_'</span> num2str(iterator)];
+0042             mkdir(obj.figsFolder);
+0043             figsFolder = obj.figsFolder;
+0044             
+0045             <span class="comment">% save figures</span>
+0046             figuresList = obj.figuresMap.values;
+0047             savefig([figuresList{:}],[obj.figsFolder <span class="string">'/allFigures.fig'</span>]);
+0048             savedObj = obj;
+0049             save([obj.figsFolder <span class="string">'/allFigures.mat'</span>],<span class="string">'savedObj'</span>);
+0050             <span class="comment">% save the log string with the distribution parameters</span>
+0051             <span class="keyword">for</span> logLabel = obj.distribLogMap.keys
+0052                 label = logLabel{:};
+0053                 FID = fopen([obj.figsFolder <span class="string">'/'</span> label <span class="string">'.txt'</span>],<span class="string">'w'</span>);
+0054                 fprintf(FID,obj.distribLogMap(label));
+0055             <span class="keyword">end</span>
+0056             <span class="comment">% export figures in PNG format</span>
+0057             <span class="keyword">if</span> export
+0058                 obj.exportFigures();
+0059             <span class="keyword">end</span>
+0060         <span class="keyword">end</span>
+0061         
+0062         <a name="_sub5" href="#_subfunctions" class="code">function figureHandleList = loadFigures(obj)</a>
+0063             figureHandleList = loadFig(<span class="string">'allFigures.fig'</span>);
+0064             load(<span class="string">'allFigures.mat'</span>,<span class="string">'savedObj'</span>);
+0065             <span class="keyword">for</span> prop = properties(savedObj)
+0066                 obj.(prop) = savedObj.(prop);
+0067             <span class="keyword">end</span>
+0068             clear savedObj;
+0069         <span class="keyword">end</span>
+0070         
+0071         <a name="_sub6" href="#_subfunctions" class="code">function exportFigures(obj)</a>
+0072             <span class="keyword">for</span> figLabel = obj.figuresMap.keys
+0073                 label = figLabel{:};
+0074                 figure(obj.figuresMap(label));
+0075                 set(obj.figuresMap(label),<span class="string">'PaperPositionMode'</span>,<span class="string">'auto'</span>);
+0076                 print(<span class="string">'-dpng'</span>,<span class="string">'-r300'</span>,<span class="string">'-opengl'</span>,[obj.figsFolder <span class="string">'/'</span> label]);
+0077             <span class="keyword">end</span>
+0078         <span class="keyword">end</span>
+0079     <span class="keyword">end</span>
+0080     
+0081     methods(Access = protected)
+0082         <a name="_sub7" href="#_subfunctions" class="code">function iterator = updateIterator(obj)</a>
+0083             <span class="comment">% First iterator definition</span>
+0084             iterator = 0;
+0085             <span class="comment">% If an iterator has already been created and saved,</span>
+0086             <span class="comment">% load it, overwriting the default one.</span>
+0087             <span class="keyword">if</span> exist([obj.dataFolder <span class="string">'/iterator.mat'</span>],<span class="string">'file'</span>)
+0088                 load([obj.dataFolder <span class="string">'/iterator.mat'</span>],<span class="string">'iterator'</span>);
+0089             <span class="keyword">end</span>
+0090             <span class="comment">% increment it and save it back</span>
+0091             iterator = iterator+1;
+0092             save([obj.dataFolder <span class="string">'/iterator.mat'</span>],<span class="string">'iterator'</span>);
+0093         <span class="keyword">end</span>
+0094     <span class="keyword">end</span>
+0095     
+0096 <span class="keyword">end</span>
+0097</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

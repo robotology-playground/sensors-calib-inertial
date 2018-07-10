@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoidfit_iterative</title>
+  <meta name="keywords" content="ellipsoidfit_iterative">
+  <meta name="description" content="Iterative least squares fitting of ellipsoids under the constraint k*J - I^2 &gt; 0.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsoidfit_iterative
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Iterative least squares fitting of ellipsoids under the constraint k*J - I^2 &gt; 0.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = ellipsoidfit_iterative(fitfunc, R, k) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Iterative least squares fitting of ellipsoids under the constraint k*J - I^2 &gt; 0.
+
+ This is a utility function and is not meant to be used directly.
+
+ Input arguments:
+ fitfunc:
+    the handle of the function that fits data
+ R:
+    a full, reduced or noise-compensated data covariance matrix
+ k:
+    the initial value of k in k*J - I^2 &gt; 0
+
+ Output arguments:
+ p:
+    a 10-parameter vector of the algebraic ellipsoid fit
+
+ See also: <a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>, <a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>
+
+ References:
+ Qingde Li and John G. Griffiths, &quot;Least Squares Ellipsoid Specific Fitting&quot;,
+    Proceedings of the Geometric Modeling and Processing, 2004.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="is_ellipsoid.html" class="code" title="function tf = is_ellipsoid(p)">is_ellipsoid</a>	Test if implicit parameters represent an ellipsoid.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>	Fit an ellipsoid to data using the nonlinear Koopmans method.</li><li><a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>	Simple iterative least squares fitting of ellipsoids under the constraint k*J - I^2 > 0.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = ellipsoidfit_iterative(fitfunc, R, k)</a>
+0002 <span class="comment">% Iterative least squares fitting of ellipsoids under the constraint k*J - I^2 &gt; 0.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% This is a utility function and is not meant to be used directly.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Input arguments:</span>
+0007 <span class="comment">% fitfunc:</span>
+0008 <span class="comment">%    the handle of the function that fits data</span>
+0009 <span class="comment">% R:</span>
+0010 <span class="comment">%    a full, reduced or noise-compensated data covariance matrix</span>
+0011 <span class="comment">% k:</span>
+0012 <span class="comment">%    the initial value of k in k*J - I^2 &gt; 0</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Output arguments:</span>
+0015 <span class="comment">% p:</span>
+0016 <span class="comment">%    a 10-parameter vector of the algebraic ellipsoid fit</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">% See also: ellipsoidfit_simple, ellipsoidfit_koopmans</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% References:</span>
+0021 <span class="comment">% Qingde Li and John G. Griffiths, &quot;Least Squares Ellipsoid Specific Fitting&quot;,</span>
+0022 <span class="comment">%    Proceedings of the Geometric Modeling and Processing, 2004.</span>
+0023 
+0024 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0025 
+0026 validateattributes(fitfunc, {<span class="string">'function_handle'</span>}, {<span class="string">'scalar'</span>});
+0027 validateattributes(R, {<span class="string">'numeric'</span>}, {<span class="string">'2d'</span>,<span class="string">'nonempty'</span>});
+0028 
+0029 narginchk(2,3);
+0030 <span class="keyword">if</span> nargin &gt; 2
+0031     <span class="comment">% sufficient condition for the parameter vector to define an ellipse is k = 4</span>
+0032     validateattributes({<span class="string">'numeric'</span>}, {<span class="string">'integer'</span>,<span class="string">'scalar'</span>,<span class="string">'&gt;='</span>,4});
+0033 <span class="keyword">else</span>
+0034     <span class="comment">% a large initial value</span>
+0035     k = 1024*1024;
+0036 <span class="keyword">end</span>
+0037 
+0038 p = fitfunc(R, k);
+0039 <span class="keyword">if</span> ~<a href="is_ellipsoid.html" class="code" title="function tf = is_ellipsoid(p)">is_ellipsoid</a>(p)
+0040     <span class="comment">% binary search for a k that produces an ellipsoid</span>
+0041     k = k / 2;
+0042     <span class="keyword">while</span> k &gt;= 3 &amp;&amp; ~<a href="is_ellipsoid.html" class="code" title="function tf = is_ellipsoid(p)">is_ellipsoid</a>(p)
+0043         p = fitfunc(R, k);
+0044         k = k / 2;
+0045     <span class="keyword">end</span>
+0046 
+0047     <span class="comment">% bisection algorithm for minimum k that produces an ellipsoid</span>
+0048     tol = 1e-3;
+0049     a = max(3,k);
+0050     b = 2 * k;
+0051     <span class="keyword">while</span> abs(a - b) &gt; tol
+0052         k = (a + b) / 2;
+0053         p = fitfunc(R, k);
+0054         <span class="keyword">if</span> <a href="is_ellipsoid.html" class="code" title="function tf = is_ellipsoid(p)">is_ellipsoid</a>(p)
+0055             a = k;
+0056         <span class="keyword">else</span>
+0057             b = k;
+0058         <span class="keyword">end</span>
+0059     <span class="keyword">end</span>
+0060     p = fitfunc(R, a);
+0061 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

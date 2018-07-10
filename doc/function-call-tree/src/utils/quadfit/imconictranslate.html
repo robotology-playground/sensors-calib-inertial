@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of imconictranslate</title>
+  <meta name="keywords" content="imconictranslate">
+  <meta name="description" content="Translates a conic section given as an implicit equation.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>imconictranslate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Translates a conic section given as an implicit equation.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function pt = imconictranslate(p, t) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Translates a conic section given as an implicit equation.
+
+ Input arguments:
+ p:
+    the parameter vector p = [a b c d f g]
+ t:
+    the translation vector t = [x y]
+
+ See also: <a href="imconictranslation.html" class="code" title="function t = imconictranslation(p)">imconictranslation</a>, <a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="imconictranslation.html" class="code" title="function t = imconictranslation(p)">imconictranslation</a>	Translation vector of a conic section given as an implicit equation.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a>	Cast ellipse defined with explicit parameters to implicit form.</li><li><a href="example_conic.html" class="code" title="function example_conic">example_conic</a>	Demonstrates plotting conic sections given as an implicit equation.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function pt = imconictranslate(p, t)</a>
+0002 <span class="comment">% Translates a conic section given as an implicit equation.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% p:</span>
+0006 <span class="comment">%    the parameter vector p = [a b c d f g]</span>
+0007 <span class="comment">% t:</span>
+0008 <span class="comment">%    the translation vector t = [x y]</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% See also: imconictranslation, imconicrotate</span>
+0011 
+0012 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0013 
+0014 validateattributes(p, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0015 assert(length(p) == 6, <span class="string">'imconictranslate:DimensionMismatch'</span>, <span class="keyword">...</span>
+0016     <span class="string">'A parameter vector of length 6 expected for a to g in a*x^2 + b*x*y + c*y^2 + d*x + f*y + g = 0.'</span>);
+0017 <span class="keyword">if</span> nargin &gt; 1 &amp;&amp; ~isempty(t)
+0018     validateattributes(t, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0019     assert(length(t) == 2, <span class="string">'imconictranslate:DimensionMismatch'</span>, <span class="keyword">...</span>
+0020         <span class="string">'A translation vector of length 2 expected.'</span>);
+0021 <span class="keyword">else</span>
+0022     t = <a href="imconictranslation.html" class="code" title="function t = imconictranslation(p)">imconictranslation</a>(p);  <span class="comment">% translate conic to origin</span>
+0023 <span class="keyword">end</span>
+0024 
+0025 a = p(1); b = p(2); c = p(3); d = p(4); f = p(5); g = p(6);
+0026 x = t(1); <a href="../../../src/@y/y.html" class="code" title="">y</a> = t(2);
+0027 
+0028 dt = d - 2*a*x - b*<a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0029 ft = f - b*x - 2*c*<a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0030 gt = g + a*x^2 + b*x*<a href="../../../src/@y/y.html" class="code" title="">y</a> + c*y^2 - d*x - f*<a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0031 
+0032 pt = zeros(size(p));
+0033 pt(:) = [a b c dt ft gt];</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

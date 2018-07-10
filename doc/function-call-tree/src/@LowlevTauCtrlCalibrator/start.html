@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of start</title>
+  <meta name="keywords" content="start">
+  <meta name="description" content="Inits the state machine">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @LowlevTauCtrlCalibrator -->
+<h1>start
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Inits the state machine</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function start( obj ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Inits the state machine
+ 
+ The calibration requires a mapping between the joint names and a
+ structure containing:
+ - a cell array of references to `MotorFriction` objects. Each joint is associated
+   to a list of coupled motors, and the respective friction `MotorFriction` object.
+
+ - a list containing the name of the other joints coupled with the element-joint
+
+ - the coupling matrix T (which can be eventually 1 in case of decoupled joints).
+
+ The class RobotModel already provides model parameters extracted from
+ the URDF model file and iDynTree library API. It shall also provide the
+ coupled joints and motor friction information described above, as a list
+ of joint groups. Each group can either hold a single joint or a list of
+ coupled joints and respective motors:
+
+ group(i).coupledJoints : list of joint names (size 1 or n)
+ group(i).coupledMotors : list of MotorFriction object handles (same size)
+ group(i).T             : 3x3 matrix or integer 1</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li><li><a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li><li><a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>	</li><li><a href="../../src/@RemoteControlBoardRemapper/waitMotionDone.html" class="code" title="function success = waitMotionDone(obj,timeout)">waitMotionDone</a>	Waits for last programmed joint position to be reached.</li><li><a href="../../src/@SensorDataYarpI/waitPortOpen.html" class="code" title="function [ ok ] = waitPortOpen( port,timeout )">waitPortOpen</a>	Waits for specified port to open.</li><li><a href="../../src/@Timers/Timers.html" class="code" title="">Timers</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function start( obj )</a>
+0002 <span class="comment">% Inits the state machine</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% The calibration requires a mapping between the joint names and a</span>
+0005 <span class="comment">% structure containing:</span>
+0006 <span class="comment">% - a cell array of references to `MotorFriction` objects. Each joint is associated</span>
+0007 <span class="comment">%   to a list of coupled motors, and the respective friction `MotorFriction` object.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% - a list containing the name of the other joints coupled with the element-joint</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% - the coupling matrix T (which can be eventually 1 in case of decoupled joints).</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% The class RobotModel already provides model parameters extracted from</span>
+0014 <span class="comment">% the URDF model file and iDynTree library API. It shall also provide the</span>
+0015 <span class="comment">% coupled joints and motor friction information described above, as a list</span>
+0016 <span class="comment">% of joint groups. Each group can either hold a single joint or a list of</span>
+0017 <span class="comment">% coupled joints and respective motors:</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% group(i).coupledJoints : list of joint names (size 1 or n)</span>
+0020 <span class="comment">% group(i).coupledMotors : list of MotorFriction object handles (same size)</span>
+0021 <span class="comment">% group(i).T             : 3x3 matrix or integer 1</span>
+0022 <span class="comment">%</span>
+0023 
+0024 <span class="comment">% Get the joint list to calibrate from UI</span>
+0025 jointNameList = obj.getJointNamesFromUIidxes(obj.init,obj.model);
+0026 
+0027 <span class="comment">% Get the list of joint/motor couplings and from there, set the expanded</span>
+0028 <span class="comment">% list of motors that will be calibrated.</span>
+0029 jmCouplings = obj.model.jointsDbase.getJMcouplings(<span class="string">'joints'</span>,jointNameList);
+0030 obj.expddMotorList = JointMotorCoupling.getMotorsFromList(jmCouplings);
+0031 
+0032 <span class="comment">% Select first group to calibrate</span>
+0033 obj.state.currentMotorIdx = 1;
+0034 
+0035 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

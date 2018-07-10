@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of getMotorsPWM</title>
+  <meta name="keywords" content="getMotorsPWM">
+  <meta name="description" content="Get the PWM values (0-100%) for a set of motor indexes">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoardRemapper -->
+<h1>getMotorsPWM
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Get the PWM values (0-100%) for a set of motor indexes</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ pwmVecMat ] = getMotorsPWM( obj,motorsIdxList ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Get the PWM values (0-100%) for a set of motor indexes
+   (for calibration purpose).
+   There is no concept of coupled motors in the control board
+   remapper. For the mapping motorIdx &lt;-&gt; jointIdx, refer to the config
+   file hardwareMechanicalsConfig.m</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ pwmVecMat ] = getMotorsPWM( obj,motorsIdxList )</a>
+0002 <span class="comment">%Get the PWM values (0-100%) for a set of motor indexes</span>
+0003 <span class="comment">%   (for calibration purpose).</span>
+0004 <span class="comment">%   There is no concept of coupled motors in the control board</span>
+0005 <span class="comment">%   remapper. For the mapping motorIdx &lt;-&gt; jointIdx, refer to the config</span>
+0006 <span class="comment">%   file hardwareMechanicalsConfig.m</span>
+0007 
+0008 <span class="comment">% map a PWM controller</span>
+0009 ipwm = obj.driver.viewIPWMControl();
+0010 
+0011 <span class="comment">% Read all PWMs</span>
+0012 allPwmVec = yarp.Vector();
+0013 allPwmVec.resize(length(obj.motorsList));
+0014 ipwm.getDutyCycles(allPwmVec.data());
+0015 allPwmVecMat = RemoteControlBoardRemapper.toMatlab(allPwmVec);
+0016 
+0017 <span class="comment">% select sub vector</span>
+0018 pwmVecMat = allPwmVecMat(motorsIdxList);
+0019 
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

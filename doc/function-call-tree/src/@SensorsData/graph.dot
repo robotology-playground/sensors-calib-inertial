@@ -1,0 +1,11 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  SensorsData -> SensorsData;
+
+  SensorsData [URL="SensorsData.html"];
+  addSensToData [URL="addSensToData.html"];
+  buildInputDataSet [URL="buildInputDataSet.html"];
+  loadData [URL="loadData.html"];
+  parseIMUdata [URL="parseIMUdata.html"];
+  parseMTBdata [URL="parseMTBdata.html"];
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsoidfit_leastsquares</title>
+  <meta name="keywords" content="ellipsoidfit_leastsquares">
+  <meta name="description" content="Fit an ellipsoid to a set of 3D data points.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsoidfit_leastsquares
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit an ellipsoid to a set of 3D data points.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = ellipsoidfit_leastsquares(x,y,z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit an ellipsoid to a set of 3D data points.
+
+ Input arguments:
+ x, y, z
+    cartesian coordinates of noisy data points
+
+ Output arguments:
+ p:
+    the 10 parameters describing the ellipsoid algebraically
+    Ax^2 + By^2 + Cz^2 + Dxy + Exz + Fyz + Gx + Hy + Iz + J = 0
+    where norm([A,B,C,D,E,F,G,H,I,J]) == 1
+
+ Examples:
+ p = ellipsoid_leastsquares(x,y,z)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = ellipsoidfit_leastsquares(x,y,z)</a>
+0002 <span class="comment">% Fit an ellipsoid to a set of 3D data points.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y, z</span>
+0006 <span class="comment">%    cartesian coordinates of noisy data points</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Output arguments:</span>
+0009 <span class="comment">% p:</span>
+0010 <span class="comment">%    the 10 parameters describing the ellipsoid algebraically</span>
+0011 <span class="comment">%    Ax^2 + By^2 + Cz^2 + Dxy + Exz + Fyz + Gx + Hy + Iz + J = 0</span>
+0012 <span class="comment">%    where norm([A,B,C,D,E,F,G,H,I,J]) == 1</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Examples:</span>
+0015 <span class="comment">% p = ellipsoid_leastsquares(x,y,z)</span>
+0016 
+0017 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0018 
+0019 narginchk(3, 3);  <span class="comment">% check input arguments</span>
+0020 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0021 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0022 validateattributes(z, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0023 x = x(:);
+0024 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0025 z = z(:);
+0026 
+0027 assert(numel(x) &gt;= 9, <span class="keyword">...</span>
+0028     <span class="string">'At least 9 points are required to fit a unique ellipsoid.'</span>);
+0029 
+0030 <span class="comment">% normalize data by canceling mean to improve numerical accuracy</span>
+0031 mx = mean(x);
+0032 my = mean(<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0033 mz = mean(z);
+0034 x = x - mx;
+0035 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a> - my;
+0036 z = z - mz;
+0037 
+0038 <span class="comment">% fit ellipsoid in the form Ax^2 + By^2 + Cz^2 + 2Dxy + 2Exz + 2Fyz + 2Gx + 2Hy + 2Iz = 1</span>
+0039 <span class="comment">% use singular value decomposition (unconstrained problem)</span>
+0040 D = [ x .* x, <span class="keyword">...</span><span class="comment">  % size = (number of data points) x (9 ellipsoid parameters + 1 constant term)</span>
+0041       <a href="../../../src/@y/y.html" class="code" title="">y</a> .* <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="keyword">...</span>
+0042       z .* z, <span class="keyword">...</span>
+0043       x .* <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="keyword">...</span>
+0044       x .* z, <span class="keyword">...</span>
+0045       <a href="../../../src/@y/y.html" class="code" title="">y</a> .* z, <span class="keyword">...</span>
+0046       x, <span class="keyword">...</span>
+0047       <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="keyword">...</span><span class="comment"> </span>
+0048       z, <span class="keyword">...</span>
+0049       ones(size(x)) ];
+0050 [~,~,V] = svd(D,0);
+0051 p = V(:,end);  <span class="comment">% smallest singular value</span>
+0052 
+0053 <span class="comment">% unnormalize</span>
+0054 p(:) = <span class="keyword">...</span>
+0055 [ p(1) <span class="keyword">...</span>
+0056 ; p(2) <span class="keyword">...</span>
+0057 ; p(3) <span class="keyword">...</span>
+0058 ; p(4) <span class="keyword">...</span>
+0059 ; p(5) <span class="keyword">...</span>
+0060 ; p(6) <span class="keyword">...</span>
+0061 ; p(7) - 2*p(1)*mx - p(4)*my - p(5)*mz <span class="keyword">...</span>
+0062 ; p(8) - 2*p(2)*my - p(4)*mx - p(6)*mz <span class="keyword">...</span>
+0063 ; p(9) - 2*p(3)*mz - p(5)*mx - p(6)*my <span class="keyword">...</span>
+0064 ; p(10) + p(1)*mx*mx + p(2)*my*my + p(3)*mz*mz + p(4)*mx*my + p(5)*mx*mz + p(6)*my*mz - p(7)*mx - p(8)*my - p(9)*mz <span class="keyword">...</span>
+0065 ];
+0066 p = p / norm(p);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

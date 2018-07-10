@@ -1,0 +1,210 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of parseMTBdata</title>
+  <meta name="keywords" content="parseMTBdata">
+  <meta name="description" content="Parses the MTB data on the '/icub/&lt;part&gt;/inertialMTB' YARP port.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorsData -->
+<h1>parseMTBdata
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Parses the MTB data on the '/icub/&lt;part&gt;/inertialMTB' YARP port.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function parseMTBdata(obj,yBuff) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Parses the MTB data on the '/icub/&lt;part&gt;/inertialMTB' YARP port.
+ Builds the map between the MTB ids from the inertialMTB metadata into MTB sensor
+ codes and define the respective offsets for parsing accelerometers data from
+ the yarp frames.
+
+ Refer to wiki:
+ https://github.com/robotology/codyco-modules/wiki/External-Inertial-Sensors-for-iCubGenova02</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function parseMTBdata(obj,yBuff)</a>
+0002 <span class="comment">% Parses the MTB data on the '/icub/&lt;part&gt;/inertialMTB' YARP port.</span>
+0003 <span class="comment">% Builds the map between the MTB ids from the inertialMTB metadata into MTB sensor</span>
+0004 <span class="comment">% codes and define the respective offsets for parsing accelerometers data from</span>
+0005 <span class="comment">% the yarp frames.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Refer to wiki:</span>
+0008 <span class="comment">% https://github.com/robotology/codyco-modules/wiki/External-Inertial-Sensors-for-iCubGenova02</span>
+0009 <span class="comment">%</span>
+0010 
+0011 <span class="comment">%% ==== EMS Data format ====</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% The network interface is a single Port for a whole limb/part</span>
+0014 <span class="comment">% (left_leg, left_arm, rught_arm, torso, ...)</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% [n  VER  (a1 b1 t1 x1 y1 z1)   .... (an bn tn xn yn zn)]</span>
+0017 <span class="comment">% n  = number of sensors</span>
+0018 <span class="comment">% VER= current format version: 6.0</span>
+0019 <span class="comment">% ai = pos of sensor ... see enum type</span>
+0020 <span class="comment">% bi = accel (1) or gyro (2)</span>
+0021 <span class="comment">% ti = time stamp.</span>
+0022 <span class="comment">% xi,yi,zi = the 3 measurement channels of the accelerometer (non calibrated)</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% | size  | 1 |  1  |   6  |            6           | ...</span>
+0025 <span class="comment">% | offset| 1 |  2  | 3..8 |2+6*(i-1)+1..2+6*(i-1)+6| ...</span>
+0026 <span class="comment">% | Field | n | 6.0 |a1..z1| ai  bi  ti  xi  yi  zi | ...</span>
+0027 
+0028 header_length = 2;
+0029 version = 6;
+0030 sensorDataLength = 6;
+0031 sensorDataStartOffset = 3;
+0032 sensorDataStopOffset = 5;
+0033 sensorTypeOffset = 1;
+0034 sensorIdxOffset = 0;
+0035 sensorTimestpNmeasOffset = 2;
+0036 
+0037 <span class="comment">% Below tables are populated according to enums defined in icub-firmware-shared/eth/embobj/plus/comm-v2/icub/EoAnalogSensors.h</span>
+0038 
+0039 <span class="comment">% Matches sensorTypeT</span>
+0040 <span class="comment">% type_none          = 0;</span>
+0041 <span class="comment">% type_accelerometer = 1;</span>
+0042 <span class="comment">% type_gyroscope     = 2;</span>
+0043 mtbType = {<span class="string">'none'</span>,<span class="string">'mtb_acc'</span>,<span class="string">'mtb_gyro'</span>};
+0044 
+0045 <span class="comment">% unique id for every possible inertial sensor positioned on iCub. So far we can host</span>
+0046 <span class="comment">% up to 63 different positions. The actual positions on iCub are documented on</span>
+0047 <span class="comment">% http://wiki.icub.org/wiki/Distributed_Inertial_sensing</span>
+0048 <span class="comment">%     eoas_inertial_pos_max_numberof = 63;</span>
+0049 <span class="comment">%</span>
+0050 <span class="comment">%     enum { eoas_inertial_pos_offsetleft = 0, eoas_inertial_pos_offsetright = 24, eoas_inertial_pos_offsetcentral = 48 };</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">%     typedef enum</span>
+0053 <span class="comment">%     {</span>
+0054 <span class="comment">%         eoas_inertial_pos_none                  = 0,</span>
+0055 <span class="comment">%</span>
+0056 <span class="comment">%         // left arm</span>
+0057 <span class="comment">%         eoas_inertial_pos_l_hand                = 1+eoas_inertial_pos_offsetleft,       // label 1B7    canloc = (CAN2, 14)</span>
+0058 <span class="comment">%         eoas_inertial_pos_l_forearm_1           = 2+eoas_inertial_pos_offsetleft,       // label 1B8    canloc = (CAN2, 12)</span>
+0059 <span class="comment">%         eoas_inertial_pos_l_forearm_2           = 3+eoas_inertial_pos_offsetleft,       // label 1B9    canloc = (CAN2, 13)</span>
+0060 <span class="comment">%         eoas_inertial_pos_l_upper_arm_1         = 4+eoas_inertial_pos_offsetleft,       // label 1B10   canloc = (CAN2,  9)</span>
+0061 <span class="comment">%         eoas_inertial_pos_l_upper_arm_2         = 5+eoas_inertial_pos_offsetleft,       // label 1B11   canloc = (CAN2, 11)</span>
+0062 <span class="comment">%         eoas_inertial_pos_l_upper_arm_3         = 6+eoas_inertial_pos_offsetleft,       // label 1B12   canloc = (CAN2, 10)</span>
+0063 <span class="comment">%         eoas_inertial_pos_l_upper_arm_4         = 7+eoas_inertial_pos_offsetleft,       // label 1B13   canloc = (CAN2,  8)</span>
+0064 <span class="comment">%         // left leg</span>
+0065 <span class="comment">%         eoas_inertial_pos_l_foot_1              = 8+eoas_inertial_pos_offsetleft,       // label 10B12  canloc = (CAN2, 13)</span>
+0066 <span class="comment">%         eoas_inertial_pos_l_foot_2              = 9+eoas_inertial_pos_offsetleft,       // label 10B13  canloc = (CAN2, 12)</span>
+0067 <span class="comment">%         eoas_inertial_pos_l_lower_leg_1         = 10+eoas_inertial_pos_offsetleft,      // label 10B8   canloc = (CAN2,  8)</span>
+0068 <span class="comment">%         eoas_inertial_pos_l_lower_leg_2         = 11+eoas_inertial_pos_offsetleft,      // label 10B9   canloc = (CAN2,  9)</span>
+0069 <span class="comment">%         eoas_inertial_pos_l_lower_leg_3         = 12+eoas_inertial_pos_offsetleft,      // label 10B10  canloc = (CAN2, 10)</span>
+0070 <span class="comment">%         eoas_inertial_pos_l_lower_leg_4         = 13+eoas_inertial_pos_offsetleft,      // label 10B11  canloc = (CAN2, 11)</span>
+0071 <span class="comment">%         eoas_inertial_pos_l_upper_leg_1         = 14+eoas_inertial_pos_offsetleft,      // label 10B1   canloc = (CAN1,  1)</span>
+0072 <span class="comment">%         eoas_inertial_pos_l_upper_leg_2         = 15+eoas_inertial_pos_offsetleft,      // label 10B2   canloc = (CAN1,  2)</span>
+0073 <span class="comment">%         eoas_inertial_pos_l_upper_leg_3         = 16+eoas_inertial_pos_offsetleft,      // label 10B3   canloc = (CAN1,  3)</span>
+0074 <span class="comment">%         eoas_inertial_pos_l_upper_leg_4         = 17+eoas_inertial_pos_offsetleft,      // label 10B4   canloc = (CAN1,  4)</span>
+0075 <span class="comment">%         eoas_inertial_pos_l_upper_leg_5         = 18+eoas_inertial_pos_offsetleft,      // label 10B5   canloc = (CAN1,  5)</span>
+0076 <span class="comment">%         eoas_inertial_pos_l_upper_leg_6         = 19+eoas_inertial_pos_offsetleft,      // label 10B6   canloc = (CAN1,  6)</span>
+0077 <span class="comment">%         eoas_inertial_pos_l_upper_leg_7         = 20+eoas_inertial_pos_offsetleft,      // label 10B7   canloc = (CAN1,  7)</span>
+0078 <span class="comment">%</span>
+0079 <span class="comment">%         // right arm</span>
+0080 <span class="comment">%         eoas_inertial_pos_r_hand                = 1+eoas_inertial_pos_offsetright,      // label 2B7    canloc = (CAN2, 14)</span>
+0081 <span class="comment">%         eoas_inertial_pos_r_forearm_1           = 2+eoas_inertial_pos_offsetright,      // label 2B8    canloc = (CAN2, 12)</span>
+0082 <span class="comment">%         eoas_inertial_pos_r_forearm_2           = 3+eoas_inertial_pos_offsetright,      // label 2B9    canloc = (CAN2, 13)</span>
+0083 <span class="comment">%         eoas_inertial_pos_r_upper_arm_1         = 4+eoas_inertial_pos_offsetright,      // label 2B10   canloc = (CAN2,  9)</span>
+0084 <span class="comment">%         eoas_inertial_pos_r_upper_arm_2         = 5+eoas_inertial_pos_offsetright,      // label 2B11   canloc = (CAN2, 11)</span>
+0085 <span class="comment">%         eoas_inertial_pos_r_upper_arm_3         = 6+eoas_inertial_pos_offsetright,      // label 2B12   canloc = (CAN2, 10)</span>
+0086 <span class="comment">%         eoas_inertial_pos_r_upper_arm_4         = 7+eoas_inertial_pos_offsetright,      // label 2B13   canloc = (CAN2,  8)</span>
+0087 <span class="comment">%         // right leg</span>
+0088 <span class="comment">%         eoas_inertial_pos_r_foot_1              = 8+eoas_inertial_pos_offsetright,      // label 11B12  canloc = (CAN2, 13)</span>
+0089 <span class="comment">%         eoas_inertial_pos_r_foot_2              = 9+eoas_inertial_pos_offsetright,      // label 11B13  canloc = (CAN2, 12)</span>
+0090 <span class="comment">%         eoas_inertial_pos_r_lower_leg_1         = 10+eoas_inertial_pos_offsetright,     // label 11B8   canloc = (CAN2,  8)</span>
+0091 <span class="comment">%         eoas_inertial_pos_r_lower_leg_2         = 11+eoas_inertial_pos_offsetright,     // label 11B9   canloc = (CAN2,  9)</span>
+0092 <span class="comment">%         eoas_inertial_pos_r_lower_leg_3         = 12+eoas_inertial_pos_offsetright,     // label 11B10  canloc = (CAN2, 10)</span>
+0093 <span class="comment">%         eoas_inertial_pos_r_lower_leg_4         = 13+eoas_inertial_pos_offsetright,     // label 11B11  canloc = (CAN2, 11)</span>
+0094 <span class="comment">%         eoas_inertial_pos_r_upper_leg_1         = 14+eoas_inertial_pos_offsetright,     // label 11B1   canloc = (CAN1,  1)</span>
+0095 <span class="comment">%         eoas_inertial_pos_r_upper_leg_2         = 15+eoas_inertial_pos_offsetright,     // label 11B2   canloc = (CAN1,  2)</span>
+0096 <span class="comment">%         eoas_inertial_pos_r_upper_leg_3         = 16+eoas_inertial_pos_offsetright,     // label 11B3   canloc = (CAN1,  3)</span>
+0097 <span class="comment">%         eoas_inertial_pos_r_upper_leg_4         = 17+eoas_inertial_pos_offsetright,     // label 11B5   canloc = (CAN1,  5)</span>
+0098 <span class="comment">%         eoas_inertial_pos_r_upper_leg_5         = 18+eoas_inertial_pos_offsetright,     // label 11B4   canloc = (CAN1,  4)</span>
+0099 <span class="comment">%         eoas_inertial_pos_r_upper_leg_6         = 19+eoas_inertial_pos_offsetright,     // label 11B6   canloc = (CAN1,  6)</span>
+0100 <span class="comment">%         eoas_inertial_pos_r_upper_leg_7         = 20+eoas_inertial_pos_offsetright,     // label 11B7   canloc = (CAN1,  7)</span>
+0101 <span class="comment">%</span>
+0102 <span class="comment">%         // central parts</span>
+0103 <span class="comment">%         eoas_inertial_pos_chest_1               = 1+eoas_inertial_pos_offsetcentral,    // 0B7</span>
+0104 <span class="comment">%         eoas_inertial_pos_chest_2               = 2+eoas_inertial_pos_offsetcentral,    // 0B8</span>
+0105 <span class="comment">%         eoas_inertial_pos_chest_3               = 3+eoas_inertial_pos_offsetcentral,    // 0B9</span>
+0106 <span class="comment">%         eoas_inertial_pos_chest_4               = 4+eoas_inertial_pos_offsetcentral,    // 0B10</span>
+0107 <span class="comment">%</span>
+0108 <span class="comment">%         eOas_inertial_pos_jolly_1               = 60,</span>
+0109 <span class="comment">%         eOas_inertial_pos_jolly_2               = 61,</span>
+0110 <span class="comment">%         eOas_inertial_pos_jolly_3               = 62,</span>
+0111 <span class="comment">%         eOas_inertial_pos_jolly_4               = 63</span>
+0112 <span class="comment">%</span>
+0113 <span class="comment">%     } eOas_inertial_position_t;</span>
+0114 
+0115 <span class="comment">%% LUT of MTB IDs (LUT output) indexed by the MTB pos defined as the above enum (LUT input).</span>
+0116 obj.mapMTBpos2code = {<span class="string">'none'</span>,<span class="keyword">...</span>
+0117     <span class="string">'1b7'</span>,<span class="string">'1b8'</span>,<span class="string">'1b9'</span>,<span class="string">'1b10'</span>,<span class="string">'1b11'</span>,<span class="string">'1b12'</span>,<span class="string">'1b13'</span>,<span class="keyword">...</span>
+0118     <span class="string">'10b12'</span>,<span class="string">'10b13'</span>,<span class="string">'10b8'</span>,<span class="string">'10b9'</span>,<span class="string">'10b10'</span>,<span class="string">'10b11'</span>,<span class="string">'10b1'</span>,<span class="string">'10b2'</span>,<span class="string">'10b3'</span>,<span class="string">'10b4'</span>,<span class="string">'10b5'</span>,<span class="string">'10b6'</span>,<span class="string">'10b7'</span>,<span class="keyword">...</span>
+0119     <span class="string">'none'</span>,<span class="string">'none'</span>,<span class="string">'none'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0120     <span class="string">'2b7'</span>,<span class="string">'2b8'</span>,<span class="string">'2b9'</span>,<span class="string">'2b10'</span>,<span class="string">'2b11'</span>,<span class="string">'2b12'</span>,<span class="string">'2b13'</span>,<span class="keyword">...</span>
+0121     <span class="string">'11b12'</span>,<span class="string">'11b13'</span>,<span class="string">'11b8'</span>,<span class="string">'11b9'</span>,<span class="string">'11b10'</span>,<span class="string">'11b11'</span>,<span class="string">'11b1'</span>,<span class="string">'11b2'</span>,<span class="string">'11b3'</span>,<span class="string">'11b5'</span>,<span class="string">'11b4'</span>,<span class="string">'11b6'</span>,<span class="string">'11b7'</span>,<span class="keyword">...</span>
+0122     <span class="string">'none'</span>,<span class="string">'none'</span>,<span class="string">'none'</span>,<span class="string">'none'</span>,<span class="keyword">...</span>
+0123     <span class="string">'0b7'</span>,<span class="string">'0b8'</span>,<span class="string">'0b9'</span>,<span class="string">'0b10'</span>};
+0124 
+0125 <span class="comment">%% check metadata is constant</span>
+0126 <span class="comment">%</span>
+0127 <span class="comment">% Get number of published sensor on the YARP port</span>
+0128 nbSensors = yBuff(1,1);
+0129 
+0130 <span class="comment">% set of metadata offsets</span>
+0131 sensorMetaOffsets = header_length+([1:nbSensors]-1)*sensorDataLength;
+0132 
+0133 <span class="comment">% check that metadata is constant through all the samples</span>
+0134 allMetaDataIdx = [1:2 sensorMetaOffsets+1 sensorMetaOffsets+2];
+0135 <span class="keyword">if</span> sum(yBuff(:,allMetaDataIdx) ~= yBuff(1,allMetaDataIdx)) &gt; 0
+0136     error(<span class="string">'Metadata changed in MTB sensor YARP port stream !!!'</span>);
+0137 <span class="keyword">end</span>
+0138 
+0139 <span class="comment">%% check and parse metadata fields</span>
+0140 <span class="comment">%</span>
+0141 <span class="comment">% version</span>
+0142 <span class="keyword">if</span> yBuff(1,2) ~= version
+0143     error([<span class="string">'Wrong version (should be '</span> version <span class="string">')'</span>]);
+0144 <span class="keyword">end</span>
+0145 
+0146 <span class="comment">% Parse the MTB sensor pos. IDs and build the mapping to sensor labels.</span>
+0147 obj.mapMTBlabel2position = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0148 <span class="keyword">for</span> offset = sensorMetaOffsets
+0149     <span class="comment">% parse the sensor position id</span>
+0150     mtbPos = yBuff(1,1+offset+sensorIdxOffset);
+0151     <span class="comment">% map it to the sensor code (ex: '10b1')</span>
+0152     mtbCode = obj.mapMTBpos2code{mtbPos+1}; <span class="comment">% +1 because of matlab indexing</span>
+0153     <span class="comment">% parse the sensor type '_acc' or '_gyro' then build the sensor label.</span>
+0154     mtbLabel = [mtbType{yBuff(1,1+offset+sensorTypeOffset)+1} <span class="string">'_'</span> mtbCode]; <span class="comment">% +1 because of matlab indexing</span>
+0155     obj.mapMTBlabel2position(mtbLabel) = [num2str(1+offset+sensorDataStartOffset) <span class="string">':'</span> num2str(1+offset+sensorDataStopOffset)];
+0156 <span class="keyword">end</span>
+0157 
+0158 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

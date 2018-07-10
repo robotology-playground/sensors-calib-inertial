@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipse</title>
+  <meta name="keywords" content="ellipse">
+  <meta name="description" content="Generates points along an ellipse.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipse
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Generates points along an ellipse.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Generates points along an ellipse.
+
+ Input arguments:
+ N:
+    number of points to generate
+ cx, cy:
+    coordinates of the center of the ellipse
+ a:
+    semi-major axis length
+ b:
+    semi-minor axis length
+ phi:
+    rotation of the aligned ellipse w.r.t. x-axis
+
+ Output arguments:
+ x,y:
+    points of the ellipse
+ nx,ny:
+    ellipse normal vector target coordinates at points x,y</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li><li><a href="example_ellipsefit2.html" class="code" title="function example_ellipsefit2">example_ellipsefit2</a>	Various ellipse fits to some data points.</li><li><a href="example_ellipsefitnoise.html" class="code" title="function example_ellipsefitnoise">example_ellipsefitnoise</a>	Comparing ellipse fits under various noise conditions.</li><li><a href="example_ellipsefitsector.html" class="code" title="function example_ellipsefitsector">example_ellipsefitsector</a>	Ellipse fitting to data from a limited sector.</li><li><a href="example_ellipsenormfit.html" class="code" title="function example_ellipsenormfit">example_ellipsenormfit</a>	Comparing the accuracy of various ellipse fits with and without normals.</li><li><a href="example_ellipseproj.html" class="code" title="function example_ellipseproj">example_ellipseproj</a>	Demonstration of projecting points to an ellipse.</li><li><a href="example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [x,y,nx,ny] = aligned_ellipse(N, a, b)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)</a>
+0002 <span class="comment">% Generates points along an ellipse.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% N:</span>
+0006 <span class="comment">%    number of points to generate</span>
+0007 <span class="comment">% cx, cy:</span>
+0008 <span class="comment">%    coordinates of the center of the ellipse</span>
+0009 <span class="comment">% a:</span>
+0010 <span class="comment">%    semi-major axis length</span>
+0011 <span class="comment">% b:</span>
+0012 <span class="comment">%    semi-minor axis length</span>
+0013 <span class="comment">% phi:</span>
+0014 <span class="comment">%    rotation of the aligned ellipse w.r.t. x-axis</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% Output arguments:</span>
+0017 <span class="comment">% x,y:</span>
+0018 <span class="comment">%    points of the ellipse</span>
+0019 <span class="comment">% nx,ny:</span>
+0020 <span class="comment">%    ellipse normal vector target coordinates at points x,y</span>
+0021 
+0022 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0023 
+0024 <span class="keyword">if</span> nargin &lt; 2
+0025     cx = 0;
+0026 <span class="keyword">else</span>
+0027     validateattributes(cx, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0028 <span class="keyword">end</span>
+0029 <span class="keyword">if</span> nargin &lt; 3
+0030     cy = 0;
+0031 <span class="keyword">else</span>
+0032     validateattributes(cy, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0033 <span class="keyword">end</span>
+0034 <span class="keyword">if</span> nargin &lt; 4
+0035     a = 1;
+0036 <span class="keyword">else</span>
+0037     validateattributes(a, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0038 <span class="keyword">end</span>
+0039 <span class="keyword">if</span> nargin &lt; 5
+0040     b = 1;
+0041 <span class="keyword">else</span>
+0042     validateattributes(b, {<span class="string">'numeric'</span>}, {<span class="string">'positive'</span>,<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">if</span> nargin &lt; 6
+0045     phi = 0;
+0046 <span class="keyword">else</span>
+0047     validateattributes(phi, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">% X(t) = X_c + a cos(t) cos(phi) - b sin(t) sin(phi)</span>
+0051 <span class="comment">% Y(t) = Y_c + a cos(t) sin(phi) + b sin(t) cos(phi)</span>
+0052 
+0053 <span class="comment">% create aligned ellipse</span>
+0054 <span class="keyword">if</span> nargout &gt; 2
+0055     [ax,ay,anx,any] = <a href="#_sub1" class="code" title="subfunction [x,y,nx,ny] = aligned_ellipse(N, a, b)">aligned_ellipse</a>(N, a, b);
+0056 <span class="keyword">else</span>
+0057     [ax,ay] = <a href="#_sub1" class="code" title="subfunction [x,y,nx,ny] = aligned_ellipse(N, a, b)">aligned_ellipse</a>(N, a, b);
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="comment">% rotate</span>
+0061 rx = ax*cos(-phi) + ay*sin(-phi);
+0062 ry = ay*cos(-phi) - ax*sin(-phi);
+0063 <span class="keyword">if</span> nargout &gt; 2
+0064     nx = anx*cos(-phi) + any*sin(-phi);
+0065     ny = any*cos(-phi) - anx*sin(-phi);
+0066 <span class="keyword">end</span>
+0067 
+0068 <span class="comment">% translate</span>
+0069 x = rx + cx;
+0070 <a href="../../../src/@y/y.html" class="code" title="">y</a> = ry + cy;
+0071 
+0072 <span class="comment">% plot</span>
+0073 <span class="keyword">if</span> nargout &lt; 2
+0074     plot(x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="string">'.'</span>);
+0075 <span class="keyword">end</span>
+0076 
+0077 <a name="_sub1" href="#_subfunctions" class="code">function [x,y,nx,ny] = aligned_ellipse(N, a, b)</a>
+0078 
+0079 <span class="keyword">if</span> nargin &lt; 2
+0080     a = 1;
+0081 <span class="keyword">end</span>
+0082 <span class="keyword">if</span> nargin &lt; 3
+0083     b = 1;
+0084 <span class="keyword">end</span>
+0085 
+0086 t = 2*pi * rand(N,1);
+0087 x = a*cos(t);
+0088 <a href="../../../src/@y/y.html" class="code" title="">y</a> = b*sin(t);
+0089 <span class="keyword">if</span> nargout &gt; 2
+0090     <span class="comment">% tx = -a*sin(t);</span>
+0091     <span class="comment">% ty = b*cos(t);</span>
+0092     <span class="comment">% nx = tx*cos(phi) + ty*sin(phi) where phi = pi/2</span>
+0093     <span class="comment">% ny = ty*cos(phi) + tx*sin(phi) where phi = pi/2</span>
+0094     nx = b*cos(t);
+0095     ny = a*sin(t);
+0096     n = sqrt(nx.^2 + ny.^2);
+0097     nx = nx ./ n;
+0098     ny = ny ./ n;
+0099 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of testRateFunction</title>
+  <meta name="keywords" content="testRateFunction">
+  <meta name="description" content="UNTITLED Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html +UT -->
+<h1>testRateFunction
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function testRateFunction(timerObj,thisEvent,threadStopFcn,threadPeriod,aTextH) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Summary of this function goes here
+   threadPeriod: thread period in seconds</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function testRateFunction(timerObj,thisEvent,threadStopFcn,threadPeriod,aTextH)</a>
+0002 <span class="comment">%UNTITLED Summary of this function goes here</span>
+0003 <span class="comment">%   threadPeriod: thread period in seconds</span>
+0004 <span class="keyword">persistent</span> firstYarpTime;
+0005 <span class="keyword">persistent</span> currentLocalTime;
+0006 
+0007 <span class="keyword">if</span> (timerObj.TasksExecuted &lt;= 2)
+0008     <span class="comment">% latch Yarp clock and local clock</span>
+0009     firstYarpTime = yarp.now;
+0010     currentLocalTime = tic;
+0011 <span class="keyword">end</span>
+0012 
+0013 <span class="comment">% compute the error</span>
+0014 currentYarpTime = yarp.now - firstYarpTime;
+0015 localTimeErr = currentYarpTime - toc(currentLocalTime);
+0016 yarpTimeErr = currentYarpTime - (timerObj.TasksExecuted-2)*threadPeriod;
+0017 
+0018 <span class="comment">% Refresh text window</span>
+0019 newText = sprintf([<span class="keyword">...</span>
+0020     <span class="string">'ellapsed Yarp time = %f \n'</span><span class="keyword">...</span>
+0021     <span class="string">'Error w.r.t. local time = %f \n'</span><span class="keyword">...</span>
+0022     <span class="string">'Error w.r.t. Yarp time = %f'</span>],<span class="keyword">...</span>
+0023     currentYarpTime,localTimeErr,yarpTimeErr);
+0024 set(aTextH,<span class="string">'String'</span>,newText);
+0025 
+0026 <span class="comment">% Displaying all the below information can cause the rate function</span>
+0027 <span class="comment">% execution time to thrift.</span>
+0028 
+0029 <span class="comment">% disp([thisEvent.Type ' executed '...</span>
+0030 <span class="comment">%     datestr(thisEvent.Data.time,'dd-mmm-yyyy HH:MM:SS.FFF')]);</span>
+0031 <span class="comment">% disp(timerObj.TasksExecuted);</span>
+0032 <span class="comment">% disp(timerObj.InstantPeriod);</span>
+0033 <span class="comment">% disp(timerObj.AveragePeriod);</span>
+0034 
+0035 <span class="keyword">if</span> (timerObj.TasksExecuted == 2000)
+0036     <span class="comment">% stop the timer</span>
+0037     threadStopFcn(true);
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

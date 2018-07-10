@@ -1,0 +1,28 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  JointsDbase -> JointsDbase;
+  JointsDbase -> getAxesIdxesFromCtrlBoard;
+  JointsDbase -> getCpldJointSharingIdx;
+  JointsDbase -> getCpldMotorSharingIdx;
+  JointsDbase -> getJMcouplingFromCtrlBoard;
+  JointsDbase -> getJMcouplings;
+  JointsDbase -> getJointNames;
+  JointsDbase -> getJointsMaxCalibDq0;
+  JointsDbase -> getMotorGearboxRatioNfullscale;
+  JointsDbase -> getPartFromMotors;
+  JointsDbase -> getTotalJointDoF;
+  JointsDbase -> setAllJointsMaxCalibDq0;
+
+  JointsDbase [URL="JointsDbase.html"];
+  getAxesIdxesFromCtrlBoard [URL="getAxesIdxesFromCtrlBoard.html"];
+  getCpldJointSharingIdx [URL="getCpldJointSharingIdx.html"];
+  getCpldMotorSharingIdx [URL="getCpldMotorSharingIdx.html"];
+  getJMcouplingFromCtrlBoard [URL="getJMcouplingFromCtrlBoard.html"];
+  getJMcouplings [URL="getJMcouplings.html"];
+  getJointNames [URL="getJointNames.html"];
+  getJointsMaxCalibDq0 [URL="getJointsMaxCalibDq0.html"];
+  getMotorGearboxRatioNfullscale [URL="getMotorGearboxRatioNfullscale.html"];
+  getPartFromMotors [URL="getPartFromMotors.html"];
+  getTotalJointDoF [URL="getTotalJointDoF.html"];
+  setAllJointsMaxCalibDq0 [URL="setAllJointsMaxCalibDq0.html"];
+}

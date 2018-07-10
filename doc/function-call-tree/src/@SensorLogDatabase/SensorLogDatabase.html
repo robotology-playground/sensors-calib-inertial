@@ -1,0 +1,282 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of SensorLogDatabase</title>
+  <meta name="keywords" content="SensorLogDatabase">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorLogDatabase -->
+<h1>SensorLogDatabase
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@AcqSensorDataAccessor/AcqSensorDataAccessor.html" class="code" title="">AcqSensorDataAccessor</a>	</li><li><a href="SensorLogDatabase.html" class="code" title="">SensorLogDatabase</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li><li><a href="SensorLogDatabase.html" class="code" title="">SensorLogDatabase</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = SensorLogDatabase(dataFolderPath)</a></li><li><a href="#_sub2" class="code">function scheduleNewAcquisition(obj)</a></li><li><a href="#_sub3" class="code">function logRelativePath = add(obj,modelName,dataLogInfo)</a></li><li><a href="#_sub4" class="code">function acqSensorDataAccessor = get(obj,varargin)</a></li><li><a href="#_sub5" class="code">function acqSensorDataAccessor = get1(obj,modelName,calibedSensor,calibedPartList)</a></li><li><a href="#_sub6" class="code">function acqSensorDataAccessor = get2(obj,calibIterator)</a></li><li><a href="#_sub7" class="code">function acqSensorDataAccessor = get3(obj,iteratorList)</a></li><li><a href="#_sub8" class="code">function str = toString(obj)</a></li><li><a href="#_sub9" class="code">function aKey2struct = converterKey2RSP(obj,aKey)</a></li><li><a href="#_sub10" class="code">function [keys,fields] = genKey1Sensor(modelName,calibedSensor,calibedParts)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="SensorLogDatabase.html" class="code" title="">SensorLogDatabase</a> &lt; handle
+0002     <span class="comment">%Classifier of log data</span>
+0003     <span class="comment">%   This class implements a database handler for all the sensor data</span>
+0004     <span class="comment">%   logs, providing setters and getters of log entries through</span>
+0005     <span class="comment">%   attributes like: robotname, sensor (calibrated sensor modality), part</span>
+0006     <span class="comment">%   (calibrated part). The targetted information to be accessed are:</span>
+0007     <span class="comment">%   calibApp (calibrator designation), seqIterator (log unique counter),</span>
+0008     <span class="comment">%   calibIterator (calibrator unique counter), logPath (the actual</span>
+0009     <span class="comment">%   folder path where to find the sensor data for 1 single acquisition</span>
+0010     <span class="comment">%   sequence), sequence (a sequence info object constructed by</span>
+0011     <span class="comment">%   MotionSequencer.seqMap2runner holding information required by the</span>
+0012     <span class="comment">%   calibrator for generating the new calibration parameters (ex:</span>
+0013     <span class="comment">%   obj@JointEncodersCalibrator.calibrateSensors ), calibrationMap (current</span>
+0014     <span class="comment">%   sensor calibration directly retrieved from the robot as sensor data</span>
+0015     <span class="comment">%   was acquired).</span>
+0016     <span class="comment">%</span>
+0017     <span class="comment">%   There are 2 levels indexing. 1rst level (container map mapAttr):</span>
+0018     <span class="comment">%   - key{robotname,sensor,part} --&gt; value{entryLvl1}</span>
+0019     <span class="comment">%</span>
+0020     <span class="comment">%     note: entryLvl1 is a chronological list of seqIterator, i.e.</span>
+0021     <span class="comment">%     a container map [key{calibIterator} --&gt; value{seqIterator}]</span>
+0022     <span class="comment">%     where calibIterator is the counter of a single execution of a</span>
+0023     <span class="comment">%     calibrator running 1 or several motion/acquisition sequences</span>
+0024     <span class="comment">%     (i.e. creating as many log entries). It might be useful in the</span>
+0025     <span class="comment">%     future to correlate sensor data acquired in a short period of</span>
+0026     <span class="comment">%     time, where the robot has the same configuration and the sensors</span>
+0027     <span class="comment">%     the &quot;same&quot; behaviour/state with respect to the calibration</span>
+0028     <span class="comment">%     parameters and the offsets drift.</span>
+0029     <span class="comment">%</span>
+0030     <span class="comment">%   2nd level (container map 'mapIter'):</span>
+0031     <span class="comment">%   - key{seqIterator} --&gt; value{entryLvl2}</span>
+0032     <span class="comment">%</span>
+0033     <span class="comment">%     note: entryLvl2 is the actual targetted information, composed</span>
+0034     <span class="comment">%     by the calibApp, seqIterator, calibIterator, logPath, sequence,</span>
+0035     <span class="comment">%     calibrationMap.</span>
+0036     
+0037     properties(SetAccess = protected, GetAccess = protected)
+0038         seqIterator = 0;   <span class="comment">% counter as a unique identifyer of the log entry</span>
+0039         calibIterator = 0; <span class="comment">% counter as a unique identifyer of a calibrator iteration</span>
+0040         schedCalibIterator = []; <span class="comment">% scheduled next counter value, triggered by a calibrator</span>
+0041         mapAttr = []; <span class="comment">% map using key = [modelName '.' sensor '.' calibedPart]</span>
+0042         key2RSP = [];
+0043         mapIter = []; <span class="comment">% map using key = seqIterator</span>
+0044         dataFolderPath = <span class="string">''</span>;
+0045         logInfoFileName = <span class="string">''</span>;
+0046     <span class="keyword">end</span>
+0047     
+0048     methods
+0049         <a name="_sub0" href="#_subfunctions" class="code">function obj = SensorLogDatabase(dataFolderPath)</a>
+0050             <span class="comment">% log info file name (used for restore/save of</span>
+0051             <span class="comment">% 'dataLogInfoMap'</span>
+0052             obj.logInfoFileName = [dataFolderPath <span class="string">'/dataLogInfo'</span>];
+0053             
+0054             <span class="comment">% Eventually restore map from file</span>
+0055             <span class="keyword">if</span> exist([obj.logInfoFileName <span class="string">'.mat'</span>],<span class="string">'file'</span>) == 2
+0056                 load([obj.logInfoFileName <span class="string">'.mat'</span>],<span class="string">'dataLogInfoMap'</span>);
+0057                 obj = dataLogInfoMap;
+0058             <span class="keyword">else</span>
+0059                 <span class="comment">% mapping keys to log entries (folder paths)</span>
+0060                 obj.mapAttr = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0061                 <span class="comment">% expanding the key to the attributes used to build the key</span>
+0062                 <span class="comment">% (R:modelName; S:sensor; P:part). We choosed here a map to</span>
+0063                 <span class="comment">% have the extraction of the attributes independant from the</span>
+0064                 <span class="comment">% way the key is built from them. We call each map element an</span>
+0065                 <span class="comment">% expander.</span>
+0066                 obj.key2RSP = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0067                 
+0068                 obj.mapIter = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'int32'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0069             <span class="keyword">end</span>
+0070             
+0071             <span class="comment">% For safety, rewrite some parameters</span>
+0072             obj.logInfoFileName = [dataFolderPath <span class="string">'/dataLogInfo'</span>];
+0073             obj.schedCalibIterator = [];
+0074         <span class="keyword">end</span>
+0075         
+0076         <a name="_sub1" href="#_subfunctions" class="code">function scheduleNewAcquisition(obj)</a>
+0077             <span class="comment">% A new acquisition session is triggered by a calibrator and</span>
+0078             <span class="comment">% can run several motion/acquisition sequences.</span>
+0079             obj.schedCalibIterator = obj.calibIterator+1;
+0080         <span class="keyword">end</span>
+0081         
+0082         <a name="_sub2" href="#_subfunctions" class="code">function logRelativePath = add(obj,modelName,dataLogInfo)</a>
+0083             <span class="comment">% check data log info structure fields and sensor/parts lists</span>
+0084             <span class="keyword">if</span> sum(~ismember(<span class="keyword">...</span>
+0085                     {<span class="string">'calibApp'</span>,<span class="string">'calibedSensorList'</span>,<span class="string">'calibedPartsList'</span>,<span class="string">'sequence'</span>},<span class="keyword">...</span>
+0086                     fieldnames(dataLogInfo)))&gt;0
+0087                 warning(<span class="string">'Wrong data log info format. Log info not registered!'</span>);
+0088                 <span class="keyword">return</span>;
+0089             <span class="keyword">end</span>
+0090             
+0091             <span class="comment">% Update the calibrator iteration with the new scheduled value</span>
+0092             <span class="keyword">if</span> ~isempty(obj.schedCalibIterator)
+0093                 obj.calibIterator = obj.schedCalibIterator;
+0094             <span class="keyword">end</span>
+0095             <span class="comment">% Update the seqIterator. for all the sensors, we add the same</span>
+0096             <span class="comment">% only log entry</span>
+0097             obj.seqIterator = obj.seqIterator+1;
+0098             
+0099             <span class="comment">% define the keys pointing to a log or list of logs (several</span>
+0100             <span class="comment">% logs at different times of the same robot|sensorType|part</span>
+0101             
+0102             <span class="comment">% key generation for all parts</span>
+0103             [logKeys,keyExpanders] = cellfun(<span class="keyword">...</span>
+0104                 @(sensor,parts) obj.genKey1Sensor(modelName,sensor,parts),<span class="keyword">...</span><span class="comment">  %2-generate sub-list of keys for that part</span>
+0105                 dataLogInfo.calibedSensorList,dataLogInfo.calibedPartsList,<span class="keyword">...</span><span class="comment"> % 1-for each part with associated sensors</span>
+0106                 <span class="string">'UniformOutput'</span>,false);                                        <span class="comment">% 3-concatenate key sub-lists</span>
+0107             logKeys = [logKeys{:}];
+0108             keyExpanders = [keyExpanders{:}];
+0109             
+0110             <span class="comment">% add key expanders</span>
+0111             obj.key2RSP = [obj.key2RSP;containers.Map(logKeys,keyExpanders)];
+0112             
+0113             <span class="comment">% Update entry level 1 for each requested key. If key doesn't</span>
+0114             <span class="comment">% exist yet, create a new entry (empty map container)</span>
+0115             <span class="keyword">for</span> ckey = logKeys
+0116                 key = ckey{:};
+0117                 <span class="keyword">if</span> ~isKey(obj.mapAttr,key)
+0118                     obj.mapAttr(key) = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'int32'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0119                 <span class="keyword">end</span>
+0120                 entryLvl1 = obj.mapAttr(key);
+0121                 entryLvl1(obj.calibIterator) = obj.seqIterator;
+0122             <span class="keyword">end</span>
+0123             
+0124             <span class="comment">% define log entry level 2</span>
+0125             logRelativePath = [<span class="keyword">...</span>
+0126                 modelName <span class="string">'.'</span> dataLogInfo.calibApp <span class="keyword">...</span>
+0127                 <span class="string">'#'</span> num2str(obj.calibIterator) <span class="string">'.seq#'</span> num2str(obj.seqIterator)];
+0128             dataLogInfo.sequence.seqDataFolderPath = logRelativePath;
+0129             
+0130             newEntryLvl2 = struct(<span class="keyword">...</span>
+0131                 <span class="string">'calibApp'</span>,dataLogInfo.calibApp,<span class="keyword">...</span>
+0132                 <span class="string">'calibIterator'</span>,obj.calibIterator,<span class="keyword">...</span>
+0133                 <span class="string">'seqIterator'</span>,obj.seqIterator,<span class="keyword">...</span>
+0134                 <span class="string">'sequence'</span>,dataLogInfo.sequence,<span class="keyword">...</span>
+0135                 <span class="string">'logPath'</span>,logRelativePath);
+0136             
+0137             <span class="comment">% Add log entry to the map of iterators</span>
+0138             obj.mapIter(obj.seqIterator) = newEntryLvl2;
+0139             
+0140             <span class="comment">% save log info to a file</span>
+0141             dataLogInfoMap = obj; <span class="comment">%#ok&lt;NASGU&gt;</span>
+0142             save([obj.logInfoFileName <span class="string">'.mat'</span>],<span class="string">'dataLogInfoMap'</span>);
+0143         <span class="keyword">end</span>
+0144         
+0145         <a name="_sub3" href="#_subfunctions" class="code">function acqSensorDataAccessor = get(obj,varargin)</a>
+0146             <span class="keyword">switch</span> varargin{1}
+0147                 <span class="keyword">case</span> <span class="string">'modelName'</span>
+0148                     acqSensorDataAccessor = obj.get1(varargin{2},varargin{4},varargin{6});
+0149                 <span class="keyword">case</span> <span class="string">'calibrator'</span>
+0150                     acqSensorDataAccessor = obj.get2(varargin{2});
+0151                 <span class="keyword">case</span> <span class="string">'seq'</span>
+0152                     acqSensorDataAccessor = obj.get3(varargin(2:nargin-1));
+0153                 <span class="keyword">otherwise</span>
+0154                     error(<span class="string">'Unknow option !!'</span>);
+0155             <span class="keyword">end</span>
+0156         <span class="keyword">end</span>
+0157         
+0158         <a name="_sub4" href="#_subfunctions" class="code">function acqSensorDataAccessor = get1(obj,modelName,calibedSensor,calibedPartList)</a>
+0159             <span class="comment">% generate the access key and get the pointed element</span>
+0160             [keys,~] = obj.genKey1Sensor(modelName,calibedSensor,calibedPartList);
+0161             <span class="comment">% build the iterator list with the last iterator from each key</span>
+0162             iteratorList = cellfun(<span class="keyword">...</span>
+0163                 @(entryLvl1) max(cell2mat(entryLvl1.values)),<span class="keyword">...</span>
+0164                 obj.mapAttr.values(keys),<span class="keyword">...</span>
+0165                 <span class="string">'UniformOutput'</span>,false);
+0166             <span class="comment">% get the accessor from the method taking a list of iterators</span>
+0167             acqSensorDataAccessor = obj.get3(iteratorList);
+0168         <span class="keyword">end</span>
+0169         
+0170         <a name="_sub5" href="#_subfunctions" class="code">function acqSensorDataAccessor = get2(obj,calibIterator)</a>
+0171             <span class="comment">% get the entryLvl1 having the 'calibIterator'</span>
+0172             entryLvl1MatchingCalibIterator = cellfun(<span class="keyword">...</span>
+0173                 @(entryLvl1) isKey(entryLvl1,calibIterator),<span class="keyword">...</span>
+0174                 obj.mapAttr.values,<span class="keyword">...</span>
+0175                 <span class="string">'UniformOutput'</span>,true);
+0176             <span class="comment">% for the matching entryLvl1, get the iterator associated to calibIterator</span>
+0177             entryLvl1List = obj.mapAttr.values;
+0178             iteratorList = cellfun(<span class="keyword">...</span>
+0179                 @(entryLvl1) entryLvl1(calibIterator),<span class="keyword">...</span>
+0180                 entryLvl1List(entryLvl1MatchingCalibIterator),<span class="keyword">...</span>
+0181                 <span class="string">'UniformOutput'</span>,false);
+0182             <span class="comment">% get the accessor from the method taking a list of iterators</span>
+0183             acqSensorDataAccessor = obj.get3(iteratorList);
+0184         <span class="keyword">end</span>
+0185         
+0186         <a name="_sub6" href="#_subfunctions" class="code">function acqSensorDataAccessor = get3(obj,iteratorList)</a>
+0187             <span class="comment">% remove repetitions</span>
+0188             iteratorListWOrep = unique(cell2mat(iteratorList));
+0189             <span class="comment">% get entryLvl2 list</span>
+0190             seqList = arrayfun(<span class="keyword">...</span>
+0191                 @(iterator) getfield(obj.mapIter(iterator),<span class="string">'sequence'</span>),<span class="keyword">...</span>
+0192                 iteratorListWOrep,<span class="keyword">...</span>
+0193                 <span class="string">'UniformOutput'</span>,false); <span class="comment">%#ok&lt;GFLD&gt;</span>
+0194             <span class="comment">% get sequence list</span>
+0195             acqSensorDataAccessor = <a href="../../src/@AcqSensorDataAccessor/AcqSensorDataAccessor.html" class="code" title="">AcqSensorDataAccessor</a>(seqList);
+0196         <span class="keyword">end</span>
+0197         
+0198         <a name="_sub7" href="#_subfunctions" class="code">function str = toString(obj)</a>
+0199 <span class="comment">%             % create cell array expander</span>
+0200 <span class="comment">%             charConv = @(aType) obj.converterKey2RSP(aType);</span>
+0201 <span class="comment">%             converter = Converters('V','char',charConv);</span>
+0202 <span class="comment">%             % convert mapAttr to cell array</span>
+0203 <span class="comment">%             AttrAscellArray = converter.recursiveAny2cellArray(obj.mapAttr);</span>
+0204             
+0205             str = [<span class="string">'seqIterator = '</span> obj.seqIterator <span class="string">'\n\n'</span>];
+0206 <span class="comment">%             str = [str obj.toTable() '\n'];</span>
+0207         <span class="keyword">end</span>
+0208     <span class="keyword">end</span>
+0209     
+0210     methods(Access = protected)
+0211         <a name="_sub8" href="#_subfunctions" class="code">function aKey2struct = converterKey2RSP(obj,aKey)</a>
+0212             <span class="keyword">if</span> isKey(obj.key2RSP,aKey)
+0213                 aKey2struct = obj.key2RSP(aKey);
+0214             <span class="keyword">else</span>
+0215                 aKey2struct = aKey;
+0216             <span class="keyword">end</span>
+0217         <span class="keyword">end</span>
+0218     <span class="keyword">end</span>
+0219     
+0220     methods(Static = true)
+0221         <a name="_sub9" href="#_subfunctions" class="code">function [keys,fields] = genKey1Sensor(modelName,calibedSensor,calibedParts)</a>
+0222             <span class="comment">% key generation through sensor list for 1 part</span>
+0223             [keys,fields] = cellfun(<span class="keyword">...</span>
+0224                 @(part) deal(<span class="keyword">...</span>
+0225                 [modelName <span class="string">'.'</span> calibedSensor <span class="string">'.'</span> part],<span class="keyword">...</span><span class="comment">  % 2-concatenate key string</span>
+0226                 struct(<span class="keyword">...</span>
+0227                 <span class="string">'modelName'</span>,modelName,<span class="string">'calibedSensor'</span>,calibedSensor,<span class="keyword">...</span>
+0228                 <span class="string">'calibedPart'</span>,part)),<span class="keyword">...</span><span class="comment">            % 3-define structure expanding the key</span>
+0229                 calibedParts,<span class="keyword">...</span><span class="comment">                    % 1-for each sensor type</span>
+0230                 <span class="string">'UniformOutput'</span>,false);             <span class="comment">% 4-and put output in a cell</span>
+0231         <span class="keyword">end</span>
+0232     <span class="keyword">end</span>
+0233 <span class="keyword">end</span>
+0234</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

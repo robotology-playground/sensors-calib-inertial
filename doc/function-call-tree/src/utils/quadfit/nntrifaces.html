@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of nntrifaces</title>
+  <meta name="keywords" content="nntrifaces">
+  <meta name="description" content="Nearest-neighbor triangle face vertex indices.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>nntrifaces
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Nearest-neighbor triangle face vertex indices.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function f = nntrifaces(F, nn, x, y, z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Nearest-neighbor triangle face vertex indices.
+
+ Input arguments:
+ x, y, z:
+    coordinates of points the nearest neighbors of which to seek
+ F:
+    a 3x3xn array of face vertex coordinates
+
+ Output arguments:
+ f:
+    an nx1 logical vector that selects elements of the face vertex array</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="plot_ellipsoid_part.html" class="code" title="function plot_ellipsoid_part(cx,cy,cz,ap,bp,cp,R,x,y,z,varargin)">plot_ellipsoid_part</a>	Plot ellipsoid specified with center, radii and rotation matrix.</li><li><a href="plot_sphere_part.html" class="code" title="function plot_sphere_part(n, radius, center, x, y, z)">plot_sphere_part</a>	Partial sphere surface.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function f = nntrifaces(F, nn, x, y, z)</a>
+0002 <span class="comment">% Nearest-neighbor triangle face vertex indices.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x, y, z:</span>
+0006 <span class="comment">%    coordinates of points the nearest neighbors of which to seek</span>
+0007 <span class="comment">% F:</span>
+0008 <span class="comment">%    a 3x3xn array of face vertex coordinates</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Output arguments:</span>
+0011 <span class="comment">% f:</span>
+0012 <span class="comment">%    an nx1 logical vector that selects elements of the face vertex array</span>
+0013 
+0014 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0015 
+0016 validateattributes(F, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'size'</span>,[3,3,NaN]});
+0017 validateattributes(nn, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'positive'</span>,<span class="string">'integer'</span>,<span class="string">'scalar'</span>});
+0018 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0019 n = numel(x);
+0020 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,n});
+0021 validateattributes(z, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'finite'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>,<span class="string">'numel'</span>,n});
+0022 
+0023 f = false(size(F,3),1);  <span class="comment">% faces to select</span>
+0024 <span class="keyword">if</span> exist(<span class="string">'kdtree'</span>, <span class="string">'file'</span>)  <span class="comment">% approach using a kd-tree</span>
+0025     tree = kdtree(transpose(reshape(F, 3, numel(F)/3)));  <span class="comment">% build kd-tree of points grouped by threes</span>
+0026     <span class="keyword">for</span> k = 1 : numel(x)
+0027         ix = tree.k_nearest_neighbors([x(k),<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),z(k)], nn);
+0028         nnf = false(size(f));
+0029         nnf(floor((ix+2) / 3)) = true;  <span class="comment">% include all points of the triangle, map groups of threes to face index</span>
+0030         f = f | nnf;
+0031     <span class="keyword">end</span>
+0032 <span class="keyword">else</span>  <span class="comment">% approach using standard MatLab</span>
+0033     M = reshape(F, 3, numel(F)/3);
+0034     <span class="keyword">for</span> k = 1 : numel(x)
+0035         dist = sum(bsxfun(@minus, M, [x(k);<a href="../../../src/@y/y.html" class="code" title="">y</a>(k);z(k)]).^2, 1);
+0036         [~,ix] = sort(dist);
+0037         nnf = false(size(f));
+0038         nnf(floor((ix(1:nn)+2) / 3)) = true;  <span class="comment">% include all points of the triangle, map groups of threes to face index</span>
+0039         f = f | nnf;
+0040     <span class="keyword">end</span>
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

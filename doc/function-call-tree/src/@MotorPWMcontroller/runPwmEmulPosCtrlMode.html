@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of runPwmEmulPosCtrlMode</title>
+  <meta name="keywords" content="runPwmEmulPosCtrlMode">
+  <meta name="description" content="UNTITLED Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @MotorPWMcontroller -->
+<h1>runPwmEmulPosCtrlMode
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [ ok ] = runPwmEmulPosCtrlMode( obj,samplingPeriod,timeout ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [ ok ] = runPwmEmulPosCtrlMode( obj,samplingPeriod,timeout )</a>
+0002 <span class="comment">%UNTITLED Summary of this function goes here</span>
+0003 <span class="comment">%   Detailed explanation goes here</span>
+0004 
+0005 <span class="comment">% Get the PID parameters (as a structure array)</span>
+0006 [~,obj.pidGains] = obj.remCtrlBoardRemap.getMotorsPids(<span class="string">'posPID'</span>,obj.posCtrledMotors.idx);
+0007 
+0008 <span class="comment">% Define and run the position control emulator thread with a discrete PID</span>
+0009 <span class="comment">% controller.</span>
+0010 obj.ctrllerThreadPeriod = samplingPeriod; <span class="comment">% thread period</span>
+0011 aFilter = DSP.IdentityFilter([]);         <span class="comment">% define the filter</span>
+0012 <span class="comment">% DEBUG</span>
+0013 [obj.pidGains.Ki] = deal(-5);
+0014 [obj.pidGains.Kp] = deal(-4);
+0015 <span class="comment">% DEBUG</span>
+0016 PIDCtrller = DSP.PIDcontroller(<span class="keyword">...</span>
+0017     [obj.pidGains.Kp],[obj.pidGains.Kd],[obj.pidGains.Ki],<span class="keyword">...</span><span class="comment">                 % P, I, D gains</span>
+0018     [obj.pidGains.max_int],[obj.pidGains.max_output],[obj.pidGains.scale],<span class="keyword">...</span><span class="comment"> % max integral term and max correction term</span>
+0019     aFilter);                                                                 <span class="comment">% discrete PID controller</span>
+0020 startFcn  = @(~,~) obj.ctrllerThreadStartFcn(PIDCtrller);
+0021 stopFcn   = @(~,~) obj.ctrllerThreadStopFcn();
+0022 updateFcn = @(~,~,ctrllerThreadStop) <span class="keyword">...</span><span class="comment"> % update function</span>
+0023     obj.ctrllerThreadUpdateFcn(ctrllerThreadStop,samplingPeriod,PIDCtrller);
+0024 
+0025 <span class="comment">% Use a timer fully synchronised with Yarp as done by the realtime</span>
+0026 <span class="comment">% synchronizer in Simulink through the WB-toolbox</span>
+0027 <span class="keyword">if</span> obj.testMode 
+0028     obj.ctrllerThread = UT.RateThread_CB(updateFcn,startFcn,stopFcn,<span class="string">'yarp'</span>,samplingPeriod,timeout);
+0029 <span class="keyword">else</span>
+0030     obj.ctrllerThread = <a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>(updateFcn,startFcn,stopFcn,<span class="string">'yarp'</span>,samplingPeriod,timeout);
+0031 <span class="keyword">end</span>
+0032 ok = obj.ctrllerThread.run(false); <span class="comment">% run and don't wait for thread termination</span>
+0033 
+0034 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

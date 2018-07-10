@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of lineclip</title>
+  <meta name="keywords" content="lineclip">
+  <meta name="description" content="Draw a line with clipping using the Cohen-Sutherland algorithm.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>lineclip
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Draw a line with clipping using the Cohen-Sutherland algorithm.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function lineclip(p,w) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Draw a line with clipping using the Cohen-Sutherland algorithm.
+
+ Input arguments:
+ x0,x1:
+    x coordinates of start and end point of line to clip
+ y0,y1:
+    y coordinates of start and end point of line to clip
+ xmin, xmax, ymin, ymax:
+    clip rectangle bounded diagonally by [xmin,ymin] and [xmax,ymax]</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function code = ComputeOutCode(x,y)</a></li><li><a href="#_sub2" class="code">function CohenSutherlandLineClip(x0,y0,x1,y1)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function lineclip(p,w)</a>
+0002 <span class="comment">% Draw a line with clipping using the Cohen-Sutherland algorithm.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% x0,x1:</span>
+0006 <span class="comment">%    x coordinates of start and end point of line to clip</span>
+0007 <span class="comment">% y0,y1:</span>
+0008 <span class="comment">%    y coordinates of start and end point of line to clip</span>
+0009 <span class="comment">% xmin, xmax, ymin, ymax:</span>
+0010 <span class="comment">%    clip rectangle bounded diagonally by [xmin,ymin] and [xmax,ymax]</span>
+0011 
+0012 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0013 
+0014     INSIDE = uint8(0);  <span class="comment">% 0000</span>
+0015     LEFT = uint8(1);    <span class="comment">% 0001</span>
+0016     RIGHT = uint8(2);   <span class="comment">% 0010</span>
+0017     BOTTOM = uint8(4);  <span class="comment">% 0100</span>
+0018     TOP = uint8(8);     <span class="comment">% 1000</span>
+0019 
+0020     x0 = p(1); x1 = p(2); y0 = p(3); y1 = p(4);
+0021     xmin = w(1); xmax = w(2); ymin = w(3); ymax = w(4);
+0022     <a href="#_sub2" class="code" title="subfunction CohenSutherlandLineClip(x0,y0,x1,y1)">CohenSutherlandLineClip</a>(x0,y0,x1,y1);
+0023 
+0024     <a name="_sub1" href="#_subfunctions" class="code">function code = ComputeOutCode(x,y)</a>
+0025     <span class="comment">% Computes the bit code for a point [x,y] using the clip rectangle.</span>
+0026 
+0027         code = INSIDE;  <span class="comment">% initialized as being inside of clip window</span>
+0028 
+0029         <span class="keyword">if</span> (x &lt; xmin)      <span class="comment">% to the left of clip window</span>
+0030             code = bitor(code, LEFT);
+0031         <span class="keyword">elseif</span> (x &gt; xmax)  <span class="comment">% to the right of clip window</span>
+0032             code = bitor(code, RIGHT);
+0033         <span class="keyword">end</span>
+0034         <span class="keyword">if</span> (<a href="../../../src/@y/y.html" class="code" title="">y</a> &lt; ymin)      <span class="comment">% below the clip window</span>
+0035             code = bitor(code, BOTTOM);
+0036         <span class="keyword">elseif</span> (<a href="../../../src/@y/y.html" class="code" title="">y</a> &gt; ymax)  <span class="comment">% above the clip window</span>
+0037             code = bitor(code, TOP);
+0038         <span class="keyword">end</span>
+0039     <span class="keyword">end</span>
+0040 
+0041     <a name="_sub2" href="#_subfunctions" class="code">function CohenSutherlandLineClip(x0,y0,x1,y1)</a>
+0042     <span class="comment">% Clips a line from (x0, y0) to (x1, y1) against a rectangle.</span>
+0043     <span class="comment">%</span>
+0044     <span class="comment">% Input arguments:</span>
+0045     <span class="comment">% xmin, xmax, ymin, ymax:</span>
+0046     <span class="comment">%    clip rectangle bounded diagonally by (xmin, ymin) and (xmax, ymax)</span>
+0047 
+0048         <span class="comment">% compute outcodes for P0, P1, and whatever point lies outside the clip rectangle</span>
+0049         outcode0 = <a href="#_sub1" class="code" title="subfunction code = ComputeOutCode(x,y)">ComputeOutCode</a>(x0, y0);
+0050         outcode1 = <a href="#_sub1" class="code" title="subfunction code = ComputeOutCode(x,y)">ComputeOutCode</a>(x1, y1);
+0051         accept = false;
+0052 
+0053         <span class="keyword">while</span> true
+0054             <span class="keyword">if</span> ~bitor(outcode0, outcode1)  <span class="comment">% bitwise OR is 0, trivially accept and get out of loop</span>
+0055                 accept = true;
+0056                 <span class="keyword">break</span>;
+0057             <span class="keyword">elseif</span> bitand(outcode0, outcode1)  <span class="comment">% bitwise AND is not 0, trivially reject and get out of loop</span>
+0058                 <span class="keyword">break</span>;
+0059             <span class="keyword">else</span>
+0060                 <span class="comment">% failed both tests, so calculate the line segment to clip from an outside point to an intersection with clip edge</span>
+0061 
+0062                 <span class="comment">% at least one endpoint is outside the clip rectangle; pick it</span>
+0063                 <span class="keyword">if</span> outcode0
+0064                     outcodeOut = outcode0;
+0065                 <span class="keyword">else</span>
+0066                     outcodeOut = outcode1;
+0067                 <span class="keyword">end</span>
+0068 
+0069                 <span class="comment">% find the intersection point;</span>
+0070                 <span class="comment">% use formulas y = y0 + slope * (x - x0) and x = x0 + (1 / slope) * (y - y0)</span>
+0071                 <span class="keyword">if</span> bitand(outcodeOut, TOP)  <span class="comment">% point is above the clip rectangle</span>
+0072                     x = x0 + (x1 - x0) * (ymax - y0) / (y1 - y0);
+0073                     <a href="../../../src/@y/y.html" class="code" title="">y</a> = ymax;
+0074                 <span class="keyword">elseif</span> bitand(outcodeOut, BOTTOM)  <span class="comment">% point is below the clip rectangle</span>
+0075                     x = x0 + (x1 - x0) * (ymin - y0) / (y1 - y0);
+0076                     <a href="../../../src/@y/y.html" class="code" title="">y</a> = ymin;
+0077                 <span class="keyword">elseif</span> bitand(outcodeOut, RIGHT)  <span class="comment">% point is to the right of clip rectangle</span>
+0078                     <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + (y1 - y0) * (xmax - x0) / (x1 - x0);
+0079                     x = xmax;
+0080                 <span class="keyword">elseif</span> bitand(outcodeOut, LEFT)  <span class="comment">% point is to the left of clip rectangle</span>
+0081                     <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + (y1 - y0) * (xmin - x0) / (x1 - x0);
+0082                     x = xmin;
+0083                 <span class="keyword">end</span>
+0084 
+0085                 <span class="comment">% move outside point to intersection point to clip and get ready for next pass</span>
+0086                 <span class="keyword">if</span> outcodeOut == outcode0
+0087                     x0 = x;
+0088                     y0 = <a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0089                     outcode0 = <a href="#_sub1" class="code" title="subfunction code = ComputeOutCode(x,y)">ComputeOutCode</a>(x0, y0);
+0090                 <span class="keyword">else</span>
+0091                     x1 = x;
+0092                     y1 = <a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0093                     outcode1 = <a href="#_sub1" class="code" title="subfunction code = ComputeOutCode(x,y)">ComputeOutCode</a>(x1, y1);
+0094                 <span class="keyword">end</span>
+0095             <span class="keyword">end</span>
+0096         <span class="keyword">end</span>
+0097 
+0098         <span class="keyword">if</span> accept
+0099             <span class="keyword">if</span> 0
+0100                 axes( <span class="keyword">...</span>
+0101                     <span class="string">'XLim'</span>, [xmin,xmax], <span class="keyword">...</span>
+0102                     <span class="string">'XLimMode'</span>, <span class="string">'manual'</span>, <span class="keyword">...</span>
+0103                     <span class="string">'YLim'</span>, [ymin,ymax], <span class="keyword">...</span>
+0104                     <span class="string">'YLimMode'</span>, <span class="string">'manual'</span>); <span class="comment">%#ok&lt;UNRCH&gt;</span>
+0105             <span class="keyword">end</span>
+0106             line([x0 x1], [y0,y1]);
+0107         <span class="keyword">end</span>
+0108     <span class="keyword">end</span>
+0109 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of IdentityFilter</title>
+  <meta name="keywords" content="IdentityFilter">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- # +DSP --><!-- menu.html @IdentityFilter -->
+<h1>IdentityFilter
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="IdentityFilter.html" class="code" title="">IdentityFilter</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="IdentityFilter.html" class="code" title="">IdentityFilter</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = IdentityFilter(Fc)</a></li><li><a href="#_sub2" class="code">function sigVecOut = procSig(~,sigVecIn)</a></li><li><a href="#_sub3" class="code">function setCutoffFreq(obj,Fc)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="IdentityFilter.html" class="code" title="">IdentityFilter</a> &lt; DSP.ILowPassFilter
+0002     <span class="comment">%This class defines an identity filter for testing purposes</span>
+0003     
+0004     methods
+0005         <a name="_sub0" href="#_subfunctions" class="code">function obj = IdentityFilter(Fc)</a>
+0006             obj.Fc = Fc;
+0007         <span class="keyword">end</span>
+0008         
+0009         <a name="_sub1" href="#_subfunctions" class="code">function sigVecOut = procSig(~,sigVecIn)</a>
+0010             sigVecOut = sigVecIn;
+0011         <span class="keyword">end</span>
+0012         
+0013         <a name="_sub2" href="#_subfunctions" class="code">function setCutoffFreq(obj,Fc)</a>
+0014             obj.Fc = Fc;
+0015         <span class="keyword">end</span>
+0016     <span class="keyword">end</span>
+0017     
+0018 <span class="keyword">end</span>
+0019</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

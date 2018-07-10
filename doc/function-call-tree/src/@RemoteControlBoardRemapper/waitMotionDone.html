@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of waitMotionDone</title>
+  <meta name="keywords" content="waitMotionDone">
+  <meta name="description" content="Waits for last programmed joint position to be reached.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RemoteControlBoardRemapper -->
+<h1>waitMotionDone
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Waits for last programmed joint position to be reached.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function success = waitMotionDone(obj,timeout) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">Waits for last programmed joint position to be reached.
+   Every 100 ms, we check for the joints motion completion. if all joints
+   reached their programmed position before the timeout, then 'true' is
+   returned, otherwise 'false' is returned.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>	Inits the state machine</li><li><a href="../../src/@MotorPWMcontroller/start.html" class="code" title="function [ ok ] = start( obj )">start</a>	Set the controlled motor obj.ctrledMotor in PWM control mode.</li><li><a href="../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>	Stop the PWM controller.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function checkMotionDone(obj,ipos)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function success = waitMotionDone(obj,timeout)</a>
+0002 <span class="comment">%Waits for last programmed joint position to be reached.</span>
+0003 <span class="comment">%   Every 100 ms, we check for the joints motion completion. if all joints</span>
+0004 <span class="comment">%   reached their programmed position before the timeout, then 'true' is</span>
+0005 <span class="comment">%   returned, otherwise 'false' is returned.</span>
+0006 
+0007 <span class="comment">% define polling function (timer callback)</span>
+0008 ipos = obj.driver.viewIPositionControl();
+0009 timerFcn = @(timerObj,~) <a href="#_sub1" class="code" title="subfunction checkMotionDone(obj,ipos)">checkMotionDone</a>(timerObj,ipos);
+0010 
+0011 <span class="comment">% create timeout timer</span>
+0012 poller = timer(<span class="keyword">...</span>
+0013     <span class="string">'ExecutionMode'</span>,<span class="string">'fixedRate'</span>,<span class="keyword">...</span>
+0014     <span class="string">'Period'</span>,0.1,<span class="keyword">...</span>
+0015     <span class="string">'TasksToExecute'</span>,timeout/0.1,<span class="keyword">...</span>
+0016     <span class="string">'TimerFcn'</span>,timerFcn,<span class="keyword">...</span>
+0017     <span class="string">'UserData'</span>,false);
+0018 
+0019 <span class="comment">% start timer and wait</span>
+0020 <a href="../../src/@LowlevTauCtrlCalibrator/start.html" class="code" title="function start( obj )">start</a>(poller);
+0021 wait(poller);
+0022 
+0023 <span class="comment">% return motion done success or failure</span>
+0024 success = get(poller,<span class="string">'UserData'</span>);
+0025 
+0026 <span class="keyword">end</span>
+0027 
+0028 <span class="comment">% polling function</span>
+0029 <a name="_sub1" href="#_subfunctions" class="code">function checkMotionDone(obj,ipos)</a>
+0030 
+0031 <span class="comment">% check if motion is done</span>
+0032 <span class="keyword">if</span> ipos.isMotionDone()
+0033     <span class="comment">% motion is done. Set the completion flag to true</span>
+0034     set(obj,<span class="string">'UserData'</span>,true);
+0035     <span class="comment">% stop the timer</span>
+0036     <a href="../../src/@MotorPWMcontroller/stop.html" class="code" title="function [ ok ] = stop( obj )">stop</a>(obj);
+0037 <span class="keyword">end</span>
+0038 
+0039 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

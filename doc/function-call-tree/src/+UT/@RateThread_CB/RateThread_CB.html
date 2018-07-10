@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of RateThread_CB</title>
+  <meta name="keywords" content="RateThread_CB">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html +UT --><!-- menu.html @RateThread_CB -->
+<h1>RateThread_CB
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="RateThread_CB.html" class="code" title="">RateThread_CB</a>	</li><li><a href="../../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="RateThread_CB.html" class="code" title="">RateThread_CB</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = RateThread_CB(rateFcn,startFcn,stopFcn,threadClock,period,timeout)</a></li><li><a href="#_sub2" class="code">function ok = run(obj,~)</a></li><li><a href="#_sub3" class="code">function stop(obj,completion)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="RateThread_CB.html" class="code" title="">RateThread_CB</a> &lt; <a href="../../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>
+0002     <span class="comment">%UNTITLED2 Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     methods
+0006         <a name="_sub0" href="#_subfunctions" class="code">function obj = RateThread_CB(rateFcn,startFcn,stopFcn,threadClock,period,timeout)</a>
+0007             <span class="comment">%UNTITLED2 Construct an instance of this class</span>
+0008             <span class="comment">%   Detailed explanation goes here</span>
+0009             obj = obj@<a href="../../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>(rateFcn,startFcn,stopFcn,threadClock,period,timeout);
+0010         <span class="keyword">end</span>
+0011         
+0012         <a name="_sub1" href="#_subfunctions" class="code">function ok = run(obj,~)</a>
+0013             <span class="comment">% latch Yarp clock and local clock</span>
+0014             obj.firstYarpTime = yarp.now;
+0015             obj.currentLocalTime = tic;
+0016             <span class="comment">% test the start/update callback-functions of the timer thread</span>
+0017             f = obj.threadTimer.StartFcn; f(obj.threadTimer,[]);
+0018             yarp.delay(obj.period);
+0019             f = obj.threadTimer.TimerFcn; f(obj.threadTimer,[]);
+0020             ok = true;
+0021         <span class="keyword">end</span>
+0022         
+0023         <a name="_sub2" href="#_subfunctions" class="code">function stop(obj,completion)</a>
+0024             <span class="comment">% test the stop callback-function of the timer thread</span>
+0025             f = obj.threadTimer.StopFcn; f(obj.threadTimer,[]);
+0026         <span class="keyword">end</span>
+0027     <span class="keyword">end</span>
+0028     
+0029 <span class="keyword">end</span>
+0030</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

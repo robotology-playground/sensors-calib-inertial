@@ -1,0 +1,312 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of test_sympoly</title>
+  <meta name="keywords" content="test_sympoly">
+  <meta name="description" content="Test suite for symbolic polynomial manipulation.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>test_sympoly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Test suite for symbolic polynomial manipulation.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function test_sympoly </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Test suite for symbolic polynomial manipulation.
+
+ More complex examples are by John D'Errico.
+
+ References:
+ John D'Errico, &quot;Symbolic Polynomial Manipulation&quot;, MatLab Central File
+    Exchange, http://www.mathworks.com/matlabcentral/fileexchange/9577</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="sympoly.html" class="code" title="">sympoly</a>	</li><li><a href="sympolys.html" class="code" title="function sympolys(varargin)">sympolys</a>	Create multiple symbolic polynomials in the caller workspace.</li><li><a href="symvard.html" class="code" title="">symvard</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function test_covariance</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function test_sympoly</a>
+0002 <span class="comment">% Test suite for symbolic polynomial manipulation.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% More complex examples are by John D'Errico.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% References:</span>
+0007 <span class="comment">% John D'Errico, &quot;Symbolic Polynomial Manipulation&quot;, MatLab Central File</span>
+0008 <span class="comment">%    Exchange, http://www.mathworks.com/matlabcentral/fileexchange/9577</span>
+0009 
+0010 <span class="comment">% Copyright 2009-2011 Levente Hunyadi</span>
+0011 
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Creating sympoly objects</span>
+0014 <span class="comment">%</span>
+0015 
+0016 <span class="comment">% zero sympoly</span>
+0017 x = <a href="sympoly.html" class="code" title="">sympoly</a>;
+0018 <span class="comment">% constant sympoly</span>
+0019 x = <a href="sympoly.html" class="code" title="">sympoly</a>(2);
+0020 <span class="comment">% constant matrix sympoly</span>
+0021 x = <a href="sympoly.html" class="code" title="">sympoly</a>(magic(3));
+0022 <span class="comment">% single-variable sympoly</span>
+0023 x = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'x'</span>);
+0024 <span class="comment">% multiple sympoly objects with a single command in the caller context</span>
+0025 <a href="sympolys.html" class="code" title="function sympolys(varargin)">sympolys</a> <a href="../../../src/@y/y.html" class="code" title="">y</a> z;
+0026 <span class="keyword">if</span> exist(<span class="string">'sym'</span>, <span class="string">'file'</span>)  <span class="comment">% Symbolic Toolbox is installed</span>
+0027     <span class="comment">% scalar sym --&gt; scalar sympoly</span>
+0028     x = <a href="sympoly.html" class="code" title="">sympoly</a>(4*sym(<span class="string">'x'</span>)^2 + sym(<span class="string">'y'</span>));
+0029     <span class="comment">% array sym --&gt; array sympoly</span>
+0030     x = <a href="sympoly.html" class="code" title="">sympoly</a>([4*sym(<span class="string">'x'</span>)^2, sym(<span class="string">'y'</span>)]);
+0031     <span class="comment">% sym with fractional negative exponent</span>
+0032     x = <a href="sympoly.html" class="code" title="">sympoly</a>(4*sym(<span class="string">'x'</span>)^-0.5);
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="comment">%</span>
+0036 <span class="comment">% Addition</span>
+0037 <span class="comment">%</span>
+0038 
+0039 x = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'x'</span>);
+0040 assert(issinglevariable(x));
+0041 <span class="comment">% linear sympoly</span>
+0042 x1 = x + 1;
+0043 assert(~issinglevariable(x1));
+0044 x2 = x - 2;
+0045 <span class="comment">% multinomial</span>
+0046 e = x + <a href="../../../src/@y/y.html" class="code" title="">y</a> + z;
+0047 assert(e - x - <a href="../../../src/@y/y.html" class="code" title="">y</a> - z == 0);
+0048 <span class="comment">% unary plus</span>
+0049 assert((+x) + (+<a href="../../../src/@y/y.html" class="code" title="">y</a>) == x + <a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0050 <span class="comment">% unary minus</span>
+0051 assert((-x) + (+<a href="../../../src/@y/y.html" class="code" title="">y</a>) == <a href="../../../src/@y/y.html" class="code" title="">y</a> - x);
+0052 
+0053 <span class="comment">%</span>
+0054 <span class="comment">% Multiplication</span>
+0055 <span class="comment">%</span>
+0056 
+0057 assert(2*<a href="sympoly.html" class="code" title="">sympoly</a>(3) == 6);
+0058 e = 2*x;
+0059 e = x*2;
+0060 e = x*x;
+0061 e = x*<a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0062 e = x1*<a href="../../../src/@y/y.html" class="code" title="">y</a>;
+0063 e = x1*x1;
+0064 e = x1*x2;
+0065 
+0066 <span class="comment">%</span>
+0067 <span class="comment">% Power</span>
+0068 <span class="comment">%</span>
+0069 
+0070 assert(<a href="sympoly.html" class="code" title="">sympoly</a>(2)^5 == 32);
+0071 assert(<a href="sympoly.html" class="code" title="">sympoly</a>(2)^-5 == 1/32);
+0072 assert(x^2 == x*x);
+0073 assert(<a href="../../../src/@y/y.html" class="code" title="">y</a>*x^2 == x*x*<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0074 assert((x+<a href="../../../src/@y/y.html" class="code" title="">y</a>)^2 == x^2 + y^2 + 2*x*<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0075 assert(all(all(<a href="sympoly.html" class="code" title="">sympoly</a>(eye(3,3)^5) == eye(3,3))));
+0076 assert(all(all(<a href="sympoly.html" class="code" title="">sympoly</a>(eye(3,3)^-5) == eye(3,3))));
+0077 
+0078 <span class="comment">%</span>
+0079 <span class="comment">% Linear combination</span>
+0080 <span class="comment">%</span>
+0081 
+0082 <span class="comment">% a polynomial with coefficients and exponents</span>
+0083 assert(x + 2*<a href="../../../src/@y/y.html" class="code" title="">y</a> + 3*z == z*3 + x + <a href="../../../src/@y/y.html" class="code" title="">y</a>*2);
+0084 assert((x+<a href="../../../src/@y/y.html" class="code" title="">y</a>+2)*(<a href="../../../src/@y/y.html" class="code" title="">y</a>+1) == x*<a href="../../../src/@y/y.html" class="code" title="">y</a>+x+y^2+3*<a href="../../../src/@y/y.html" class="code" title="">y</a>+2);
+0085 
+0086 <span class="comment">%</span>
+0087 <span class="comment">% Equality and inequality</span>
+0088 <span class="comment">%</span>
+0089 
+0090 assert(<a href="sympoly.html" class="code" title="">sympoly</a>(2) == 2);
+0091 assert(x == x);
+0092 assert(x ~= x + 1);
+0093 assert(x + 1 ~= x + 2);
+0094 assert(x + <a href="../../../src/@y/y.html" class="code" title="">y</a> ~= x + 1);
+0095 assert(x + <a href="../../../src/@y/y.html" class="code" title="">y</a> ~= x + y^2);
+0096 assert(x^2 + <a href="../../../src/@y/y.html" class="code" title="">y</a> ~= x + y^2);
+0097 
+0098 <span class="comment">%</span>
+0099 <span class="comment">% Vector sum and product</span>
+0100 <span class="comment">%</span>
+0101 
+0102 assert(sum([x <a href="../../../src/@y/y.html" class="code" title="">y</a> z 1]) == x + <a href="../../../src/@y/y.html" class="code" title="">y</a> + z + 1);
+0103 assert(sum([x;<a href="../../../src/@y/y.html" class="code" title="">y</a>;z;1]) == x + <a href="../../../src/@y/y.html" class="code" title="">y</a> + z + 1);
+0104 assert(prod([x <a href="../../../src/@y/y.html" class="code" title="">y</a> z 1]) == x*<a href="../../../src/@y/y.html" class="code" title="">y</a>*z);
+0105 assert(prod([x;<a href="../../../src/@y/y.html" class="code" title="">y</a>;z;1]) == x*<a href="../../../src/@y/y.html" class="code" title="">y</a>*z);
+0106 assert(all(sum([x+1,0;<a href="../../../src/@y/y.html" class="code" title="">y</a>-1,z]) == [x+<a href="../../../src/@y/y.html" class="code" title="">y</a>,z]));
+0107 assert(all(sum([x+1,0;<a href="../../../src/@y/y.html" class="code" title="">y</a>-1,z], 2) == [x+1;<a href="../../../src/@y/y.html" class="code" title="">y</a>+z-1]));
+0108 
+0109 <span class="comment">%</span>
+0110 <span class="comment">% Division</span>
+0111 <span class="comment">%</span>
+0112 
+0113 assert(x ./ 2 == 0.5*x);
+0114 assert(x ./ x == 1);
+0115 assert(1 ./ x == x^-1);
+0116 assert(x^2 ./ x == x);
+0117 assert(x^-2 ./ x == x^-3);
+0118 assert(<a href="../../../src/@y/y.html" class="code" title="">y</a> ./ x == x^-1*<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0119 assert((x+<a href="../../../src/@y/y.html" class="code" title="">y</a>) ./ x == 1 + x^-1*<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0120 
+0121 <span class="comment">%</span>
+0122 <span class="comment">% Differentiation and integration</span>
+0123 <span class="comment">%</span>
+0124 
+0125 assert(diff(x) == 1);
+0126 assert(diff(<a href="../../../src/@y/y.html" class="code" title="">y</a>) == 1);
+0127 assert(diff(2*x+1) == 2);
+0128 assert(diff(<a href="sympoly.html" class="code" title="">sympoly</a>(2), <span class="string">'x'</span>) == 0);
+0129 assert(diff(x^3) == 3*x^2);
+0130 assert(diff(x^3 + y^2, <span class="string">'x'</span>) == 3*x^2);
+0131 assert(diff(x^3 + x^2*y^2, <span class="string">'x'</span>) == 3*x^2 + 2*x*y^2);
+0132 assert(diff(int(x)) == x);
+0133 assert(int(2*x) == x^2);
+0134 assert(int(2*x, 0, 2) == 4);
+0135 assert(int(2*x, -2, 2) == 0);
+0136 assert(defint(175/16*x^7 - 255/16*x^5 + 105/16*x^3 - 9/16*x, [-1,1]) == 0);
+0137 
+0138 <span class="comment">%</span>
+0139 <span class="comment">% Coefficients and conversions</span>
+0140 <span class="comment">%</span>
+0141 
+0142 <span class="comment">% extract coefficients of a scalar</span>
+0143 [c,t] = coeffs(x^3+y^2+z+1, x);
+0144 assert(all(c == [ y^2 + z + 1  1 ]));
+0145 assert(all(t == [ 1  x^3 ]));
+0146 <span class="comment">% extract coefficients of a scalar</span>
+0147 e = (x+<a href="../../../src/@y/y.html" class="code" title="">y</a>+2)*(<a href="../../../src/@y/y.html" class="code" title="">y</a>+1);
+0148 [c,t] = coeffs(e, <span class="string">'x'</span>);
+0149 assert(all(c == [ y^2+3*<a href="../../../src/@y/y.html" class="code" title="">y</a>+2, <a href="../../../src/@y/y.html" class="code" title="">y</a>+1 ]));
+0150 assert(all(t == [ 1, x ]));
+0151 assert(sum(c.*t) == e);
+0152 <span class="comment">% extract coefficients of a matrix</span>
+0153 [c,t] = coeffs([x^3+y^2+z+1 x^2+x*z ; x+<a href="../../../src/@y/y.html" class="code" title="">y</a> 1], x);
+0154 assert(all(t == [ 1  x  x^2  x^3 ]));
+0155 assert(all(all(c(:,:,1) == [ y^2 + z + 1  0 ; <a href="../../../src/@y/y.html" class="code" title="">y</a>  1 ])));
+0156 assert(all(all(c(:,:,2) == [ 0  z ; 1  0 ])));
+0157 
+0158 <span class="comment">% convert to numeric polynomial</span>
+0159 assert(all(sym2poly(3*x^4 + x^2 + 6*x + 5) == [3 0 1 6 5]));
+0160 
+0161 <span class="comment">%</span>
+0162 <span class="comment">% Substitution</span>
+0163 <span class="comment">%</span>
+0164 
+0165 assert(subspower(x^2+1,x^2,<a href="../../../src/@y/y.html" class="code" title="">y</a>) == <a href="../../../src/@y/y.html" class="code" title="">y</a> + 2);
+0166 assert(subspower(x^2+1,x,<a href="../../../src/@y/y.html" class="code" title="">y</a>) == x^2 + 1);
+0167 assert(subs(x+1,<span class="string">'x'</span>,2*x) == 2*x + 1);
+0168 assert(subs(x^2+1,x^2,<a href="../../../src/@y/y.html" class="code" title="">y</a>) == <a href="../../../src/@y/y.html" class="code" title="">y</a> + 1);
+0169 assert(subs(x*<a href="../../../src/@y/y.html" class="code" title="">y</a>+1,<span class="string">'x'</span>,x-1) == x*<a href="../../../src/@y/y.html" class="code" title="">y</a> - <a href="../../../src/@y/y.html" class="code" title="">y</a> + 1);
+0170 
+0171 <span class="comment">%</span>
+0172 <span class="comment">% Error mean</span>
+0173 <span class="comment">%</span>
+0174 
+0175 <span class="comment">% given a unit random variable x, compute the mean of p(x) = 3*x + 2*x^2 - x^3</span>
+0176 x = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'x'</span>);
+0177 [polymean,polyvar] = errorprop(3*x + 2*x^2 - x^3,<span class="string">'x'</span>,0,1);
+0178 assert(polymean == 2);
+0179 assert(polyvar == 14);
+0180 
+0181 <span class="comment">% given random variables x and y with N(mux,sx^2), and N(muy,sy^2), compute the</span>
+0182 <span class="comment">% mean of x*y + 3*y^3</span>
+0183 <a href="sympolys.html" class="code" title="function sympolys(varargin)">sympolys</a> x <a href="../../../src/@y/y.html" class="code" title="">y</a> mux muy sx sy;
+0184 [polymean,polyvar] = errorprop(x*<a href="../../../src/@y/y.html" class="code" title="">y</a>+3*y^3,{<span class="string">'x'</span> <span class="string">'y'</span>},[mux,muy],[sx,sy]);
+0185 assert(polymean == mux*muy + 3*muy^3 + 9*muy*sy^2);
+0186 assert(polyvar == mux^2*sy^2 + 18*mux*muy^2*sy^2 + 18*mux*sy^4 + 81*muy^4*sy^2 + muy^2*sx^2 + 324*muy^2*sy^4 + sx^2*sy^2 + 135*sy^6);
+0187 
+0188 <span class="comment">%</span>
+0189 <span class="comment">% Dynamic systems</span>
+0190 <span class="comment">%</span>
+0191 
+0192 u1 = <a href="sympoly.html" class="code" title="">sympoly</a>(<a href="symvard.html" class="code" title="">symvard</a>(<span class="string">'u'</span>, -1));
+0193 y0 = <a href="sympoly.html" class="code" title="">sympoly</a>(<a href="symvard.html" class="code" title="">symvard</a>(<span class="string">'y'</span>, 0));
+0194 y1 = <a href="sympoly.html" class="code" title="">sympoly</a>(<a href="symvard.html" class="code" title="">symvard</a>(<span class="string">'y'</span>, -1));
+0195 y2 = <a href="sympoly.html" class="code" title="">sympoly</a>(<a href="symvard.html" class="code" title="">symvard</a>(<span class="string">'y'</span>, -2));
+0196 phi = [y0;y1;y2;u1;u1^2;y1*y2;u1*y1];
+0197 theta = [-1;1.5;-0.7;1;-0.3;-0.05;0.1];
+0198 G = phi'*theta;
+0199 assert(diff(G, u1) == -0.6*u1 + 0.1*y1 + 1.0);
+0200 
+0201 <span class="comment">%</span>
+0202 <span class="comment">% More complex examples</span>
+0203 <span class="comment">%</span>
+0204 
+0205 <span class="comment">% a simple construction for a Newton-Cotes integration rule</span>
+0206 <span class="comment">% Simpson's 3/8 rule</span>
+0207 M = vander(0:3);
+0208 <a href="sympolys.html" class="code" title="function sympolys(varargin)">sympolys</a> x f0 f1 f2 f3;
+0209 <span class="comment">% an interpolating polynomial on the set of points { (0,f0), (1,f1), (2,f2), (3,f3) }</span>
+0210 P = [x^3, x^2, x, 1]*pinv(M)*[f0;f1;f2;f3];
+0211 <span class="comment">% integrate the polynomial over its support</span>
+0212 i = defint(P,<span class="string">'x'</span>,[0 3]);
+0213 <span class="comment">%assert(i == 3/8*f0 + 9/8*f1 + 9/8*f2 + 3/8*f3);</span>
+0214 
+0215 <span class="comment">% a 4 point open Newton-Cotes rule</span>
+0216 M = vander(1:4);
+0217 <a href="sympolys.html" class="code" title="function sympolys(varargin)">sympolys</a> x f1 f2 f3 f4;
+0218 <span class="comment">% an interpolating polynomial on the set of points { (1,f1), (2,f2), (3,f3) (4,f4) }</span>
+0219 P = [x^3, x^2, x, 1]*pinv(M)*[f1;f2;f3;f4];
+0220 <span class="comment">%assert(P == -1/6*f1*x^3 + 3/2*f1*x^2 - 13/3*f1*x + 4*f1 + 1/2*f2*x^3 - 4*f2*x^2 + 19/2*f2*x - 6*f2 - 1/2*f3*x^3 + 7/2*f3*x^2 - 7*f3*x + 4*f3 + 1/6*f4*x^3 - 1*f4*x^2 + 11/6*f4*x - 1*f4);</span>
+0221 <span class="comment">% integrate the polynomial over the full domain of the rule</span>
+0222 i = defint(P,<span class="string">'x'</span>,[0 5]);
+0223 <span class="comment">%assert(i == 55/24*f1 + 5/24*f2 + 5/24*f3 + 55/24*f4);</span>
+0224 
+0225 <a href="#_sub1" class="code" title="subfunction test_covariance">test_covariance</a>
+0226 
+0227 <a name="_sub1" href="#_subfunctions" class="code">function test_covariance</a>
+0228 
+0229 n = 6;
+0230 
+0231 c = <a href="sympoly.html" class="code" title="">sympoly</a>(zeros(n,1));
+0232 x = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'x'</span>);
+0233 x0 = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'x0'</span>);
+0234 xn = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'xn'</span>);
+0235 sigma_x = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'sigma_x'</span>);
+0236 
+0237 <span class="keyword">for</span> i = 2 : 2 : n
+0238     e = (x0 + xn)^i - x0^i;  <span class="comment">% noise compensation of x^i</span>
+0239     c(i) = errorprop(e, {<span class="string">'xn'</span>}, 0, sigma_x);  <span class="comment">% take expectation</span>
+0240 <span class="keyword">end</span>
+0241 disp(c);  <span class="comment">% print using disp</span>
+0242 
+0243 <span class="keyword">for</span> i = 2 : 1 : n
+0244     <span class="keyword">for</span> j = i - 1 : -1 : 2
+0245         c(i) = subspower(c(i), x0^j, x^j - c(j));  <span class="comment">% substitute (x - xn)^j in place of x0^j</span>
+0246     <span class="keyword">end</span>
+0247 <span class="keyword">end</span>
+0248 
+0249 c <span class="comment">%#ok&lt;NOPRT&gt;  % print using display</span>
+0250 code(c)        <span class="comment">% print MatLab code for column vector</span>
+0251 latex(c)       <span class="comment">% print LaTeX code for column vector</span>
+0252 
+0253 code(c.')      <span class="comment">% print MatLab code for row vector</span>
+0254 latex(c.')     <span class="comment">% print LaTeX code for row vector</span>
+0255 
+0256 c(1,2) = <a href="sympoly.html" class="code" title="">sympoly</a>(<span class="string">'y'</span>);  <span class="comment">% extend vector to matrix</span>
+0257 code(c)
+0258 latex(c)</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

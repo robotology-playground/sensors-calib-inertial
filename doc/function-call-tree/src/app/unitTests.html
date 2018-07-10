@@ -1,0 +1,608 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of unitTests</title>
+  <meta name="keywords" content="unitTests">
+  <meta name="description" content="Add main folders in Matlab path">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html app -->
+<h1>unitTests
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Add main folders in Matlab path</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Add main folders in Matlab path</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li><li><a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>	</li><li><a href="../../src/@RemoteControlBoard/RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>	</li><li><a href="../../src/@RemoteControlBoardRemapper/RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>	</li><li><a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>	</li><li><a href="../../src/@Timers/Timers.html" class="code" title="">Timers</a>	</li><li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>	% clear all variables and close all previous figures</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Add main folders in Matlab path</span>
+0002 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> generatePaths.m;
+0003 
+0004 <span class="comment">%% 1 - test retrieval of kinematic_mj and axis list directly using YARP bindings</span>
+0005 
+0006 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>; <span class="comment">% clear all variables and close all previous figures</span>
+0007 
+0008 <span class="comment">% Set robot environment names from the model name (yarp port prefix, yarp</span>
+0009 <span class="comment">% robot name)</span>
+0010 robotEnvNames = RobotModel.getRobotEnvNames(init.modelName);
+0011 
+0012 <span class="comment">% open remote control board and get list of remote debug variables</span>
+0013 obj.options = yarp.Property(<span class="string">'(device remote_controlboard)'</span>);
+0014 obj.options.put(<span class="string">'remote'</span>,[<span class="string">'/'</span> robotEnvNames.yarpPortPrefix <span class="string">'/torso'</span>]);
+0015 obj.options.put(<span class="string">'local'</span>,<span class="string">'/collector/torso'</span>);
+0016 obj.driver = yarp.PolyDriver()
+0017 obj.driver.open(obj.options)
+0018 ivar = obj.driver.viewIRemoteVariables()
+0019 varList = yarp.Bottle();
+0020 ivar.getRemoteVariablesList(varList);
+0021 varList.toString()
+0022 
+0023 <span class="comment">% get coupling parameters</span>
+0024 kinematic_mjVar=yarp.Bottle();
+0025 ivar.getRemoteVariable(<span class="string">'kinematic_mj'</span>,kinematic_mjVar);
+0026 kinematic_mjVar.toString()
+0027 
+0028 <span class="comment">% convert them to a matrix</span>
+0029 kinematic_mjMatStr = kinematic_mjVar.get(0);
+0030 str2num(kinematic_mjMatStr.toString)
+0031 
+0032 <span class="comment">% get axis list</span>
+0033 ipos = obj.driver.viewIPositionControl();
+0034 nbAxes = ipos.getAxes();
+0035 
+0036 iaxis = obj.driver.viewIAxisInfo();
+0037 axisNames = cell(1,nbAxes);
+0038 <span class="keyword">for</span> axisIdx = 1:nbAxes
+0039     axisNames{1,axisIdx} = iaxis.getAxisName(axisIdx-1);
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">%% 2 - Test same features using the class RemoteControlBoard</span>
+0043 
+0044 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>;
+0045 
+0046 <span class="comment">% Set robot environment names from the model name (yarp port prefix, yarp</span>
+0047 <span class="comment">% robot name)</span>
+0048 robotEnvNames = RobotModel.getRobotEnvNames(init.modelName);
+0049 
+0050 remoteCtrlBoard = <a href="../../src/@RemoteControlBoard/RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>(robotEnvNames.yarpPortPrefix,<span class="string">'left_arm'</span>);
+0051 <span class="comment">%rawCouplingInfo = remoteCtrlBoard.getRawCoupling();</span>
+0052 nbAxes = remoteCtrlBoard.getAxes();
+0053 axesNames = remoteCtrlBoard.getAxesNames();
+0054 jointIdx = remoteCtrlBoard.getJointsMappedIdxes({<span class="string">'l_shoulder_pitch'</span>,<span class="string">'l_shoulder_yaw'</span>,<span class="string">'l_elbow'</span>,<span class="string">'l_wrist_yaw'</span>});
+0055 couplingList = remoteCtrlBoard.getCouplings();
+0056 delete(remoteCtrlBoard);
+0057 
+0058 <span class="keyword">for</span> part = {<span class="string">'head'</span>,<span class="string">'torso'</span>,<span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>}
+0059     remoteCtrlBoard = <a href="../../src/@RemoteControlBoard/RemoteControlBoard.html" class="code" title="">RemoteControlBoard</a>(robotEnvNames.yarpPortPrefix,cell2mat(part));
+0060     couplingList = remoteCtrlBoard.getCouplings();
+0061     <span class="keyword">for</span> coupling = couplingList
+0062         coupling{1}
+0063         coupling{1}.Tm2j
+0064     <span class="keyword">end</span>
+0065     delete(remoteCtrlBoard);
+0066     clear remoteCtrlBoard;
+0067 <span class="keyword">end</span>
+0068 
+0069 
+0070 <span class="comment">%% 3 - Below tests require a full RobotModel class object.</span>
+0071 <span class="comment">%</span>
+0072 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>;
+0073 
+0074 <span class="comment">% Create robot model. The model holds the robot name, the parameters</span>
+0075 <span class="comment">% extracted from the URDF model, the sensor calibration parameters and the</span>
+0076 <span class="comment">% joint/motor parameters (PWM to torque rate, friction parameters, ...).</span>
+0077 model = <a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>(init.modelName,init.modelPath,init.calibrationMapFile);
+0078 
+0079 <span class="comment">% Get the list of joint/motor couplings</span>
+0080 jointNameList = {<span class="keyword">...</span>
+0081     <span class="string">'l_shoulder_pitch'</span>,<span class="string">'l_elbow'</span>,<span class="string">'l_wrist_yaw'</span>,<span class="keyword">...</span>
+0082     <span class="string">'torso_pitch'</span>,<span class="string">'torso_roll'</span>,<span class="string">'torso_yaw'</span>,<span class="keyword">...</span>
+0083     <span class="string">'neck_roll'</span>,<span class="keyword">...</span>
+0084     <span class="string">'l_ankle_roll'</span>};
+0085 
+0086 motorNameList = {<span class="keyword">...</span>
+0087     <span class="string">'l_shoulder_m1'</span>,<span class="string">'l_elbow_m'</span>,<span class="string">'l_wrist_yaw_m'</span>,<span class="keyword">...</span>
+0088     <span class="string">'torso_m3'</span>,<span class="string">'torso_m2'</span>,<span class="string">'torso_m1'</span>,<span class="keyword">...</span>
+0089     <span class="string">'neck_m2'</span>,<span class="keyword">...</span>
+0090     <span class="string">'l_ankle_roll_m'</span>};
+0091 
+0092 <span class="comment">% Get the list of joint/motor couplings.</span>
+0093 jmCouplings = model.jointsDbase.getJMcouplings(<span class="string">'joints'</span>,jointNameList)
+0094 
+0095 <span class="comment">% Get part name and motor names list from joint/motor coupling</span>
+0096 parts = JointMotorCoupling.getPartsFromList(jmCouplings)
+0097 motorNameListExpdd = JointMotorCoupling.getMotorsFromList(jmCouplings)
+0098 
+0099 <span class="comment">% Get part names holding the motors</span>
+0100 parts = model.jointsDbase.getPartFromMotors(motorNameList)
+0101 
+0102 <span class="comment">% Get the joints indexes as mapped in the motors control board server.</span>
+0103 jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard(<span class="string">'joints'</span>,jointNameList)
+0104 
+0105 <span class="comment">% Get the motors indexes as mapped in the motors control board server.</span>
+0106 motorIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard(<span class="string">'motors'</span>,motorNameList)
+0107 
+0108 <span class="comment">% Get joints sharing the same indexes as the given motors</span>
+0109 jointNameListSharingIdx = model.jointsDbase.getCpldJointSharingIdx(motorNameList)
+0110 
+0111 <span class="comment">% Get motors sharing the same indexes as the given joints</span>
+0112 motorNameList2 = model.jointsDbase.getCpldMotorSharingIdx(jointNameList)
+0113 
+0114 <span class="comment">% Get the gearbox ratios and fullscale values for a given list of motors</span>
+0115 [gearboxDqM2Jratio,fullscalePWM] = model.jointsDbase.getMotorGearboxRatioNfullscale(motorNameList)
+0116 
+0117 <span class="comment">%% 4 - Below tests require a full RobotModel class object.</span>
+0118 <span class="comment">%</span>
+0119 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>;
+0120 
+0121 <span class="comment">% Create robot model. The model holds the robot name, the parameters</span>
+0122 <span class="comment">% extracted from the URDF model, the sensor calibration parameters and the</span>
+0123 <span class="comment">% joint/motor parameters (PWM to torque rate, friction parameters, ...).</span>
+0124 model = <a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>(init.modelName,init.modelPath,init.calibrationMapFile);
+0125 
+0126 obj=<a href="../../src/@RemoteControlBoardRemapper/RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>(model,<span class="string">'test'</span>)
+0127 
+0128 <span class="comment">%% Test the IControlMode2 class methods and the yarp bindings</span>
+0129 
+0130 obj.open({<span class="string">'left_leg'</span>})
+0131 iCtrlMode = obj.driver.viewIControlMode2()
+0132 
+0133 iCtrlMode.getControlMode(2)
+0134 vecModes=yarp.IVector(3)
+0135 vecJoints=yarp.IVector(3)
+0136 vecModes.zero()
+0137 vecJoints.fromMatlab([1 2 3])
+0138 iCtrlMode.setControlMode(2,y.VOCAB_CM_PWM)
+0139 iCtrlMode.getControlModes(3,vecJoints,vecModes)
+0140 <span class="comment">% check modes</span>
+0141 RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
+0142 <span class="comment">% set modes and check</span>
+0143 vecModes.fromMatlab([y.VOCAB_CM_IDLE y.VOCAB_CM_PWM y.VOCAB_CM_TORQUE])
+0144 iCtrlMode.setControlModes(3,vecJoints,vecModes)
+0145 iCtrlMode.getControlModes(3,vecJoints,vecModes)
+0146 RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
+0147 <span class="comment">% restore previous modes</span>
+0148 vecModes.fromMatlab([y.VOCAB_CM_POSITION y.VOCAB_CM_POSITION y.VOCAB_CM_POSITION])
+0149 iCtrlMode.setControlModes(3,vecJoints,vecModes)
+0150 iCtrlMode.getControlModes(3,vecJoints,vecModes)
+0151 RemoteControlBoardRemapper.vocab2ctrlMode.values(num2cell(vecModes.toMatlab))
+0152 
+0153 obj.close();
+0154 
+0155 <span class="comment">%% Test RemoteControlBoardRemapper public methods</span>
+0156 <span class="comment">% getAxes(),</span>
+0157 <span class="comment">% getJointsNames(),</span>
+0158 <span class="comment">% getMotorsNames(),</span>
+0159 <span class="comment">% getJointsMappedIdxes(),</span>
+0160 <span class="comment">% setJointsControlMode(),</span>
+0161 <span class="comment">% getJointsControlMode(),</span>
+0162 <span class="comment">% setMotorPWMcontrolMode(),</span>
+0163 <span class="comment">% setMotorsPWM(),</span>
+0164 <span class="comment">% setMotorPWM(),</span>
+0165 <span class="comment">% getMotorsPWM()</span>
+0166 <span class="comment">% getMotorEncoders(),</span>
+0167 <span class="comment">% getMotorEncoderSpeeds(),</span>
+0168 <span class="comment">% getJointTorques().</span>
+0169 obj.open({<span class="string">'torso'</span>})
+0170 
+0171 obj.getJointsNames(1:obj.getAxes())
+0172 obj.getMotorsNames(1:obj.getAxes())
+0173 
+0174 jointsIdxes = obj.getJointsMappedIdxes({<span class="string">'torso_yaw'</span>,<span class="string">'torso_roll'</span>,<span class="string">'torso_pitch'</span>})
+0175 <span class="comment">% change control mode to PWM</span>
+0176 [ok,modes] = obj.getJointsControlMode(jointsIdxes)
+0177 ok = obj.setJointsControlMode(jointsIdxes,<span class="string">'pwmctrl'</span>)
+0178 [ok,modes] = obj.getJointsControlMode(jointsIdxes)
+0179 pause
+0180 <span class="comment">% change PWM</span>
+0181 pwmVecMat = obj.getMotorsPWM(jointsIdxes)
+0182 ok = obj.setMotorsPWM(jointsIdxes,[0 0 0])
+0183 pwmVecMat = obj.getMotorsPWM(jointsIdxes)
+0184 
+0185 <span class="comment">% get motor positions and velocities</span>
+0186 [readEncs,timeEncs] = obj.getMotorEncoders(jointsIdxes)
+0187 [readSpeeds] = obj.getMotorEncoderSpeeds(jointsIdxes)
+0188 
+0189 <span class="comment">% get joint torques</span>
+0190 [torqVecMat] = obj.getJointTorques(jointsIdxes)
+0191 
+0192 <span class="comment">% Set each motor back to position control mode</span>
+0193 ok = obj.setJointsControlMode(jointsIdxes,<span class="string">'ctrl'</span>)
+0194 [ok,modes] = obj.getJointsControlMode(jointsIdxes)
+0195 obj.close();
+0196 
+0197 
+0198 <span class="comment">%% 5 - Timers and rate threads.</span>
+0199 <span class="comment">%</span>
+0200 
+0201 <span class="comment">% clear all variables and close all previous figures</span>
+0202 clear
+0203 close all
+0204 clc
+0205 
+0206 <span class="comment">%Clear static data</span>
+0207 clear classes;
+0208 
+0209 <span class="comment">% Clear all timers</span>
+0210 System.clearTimers();
+0211 
+0212 <span class="comment">% Create YARP Network device, for initializing YARP classes for communication</span>
+0213 yarp.Network.init();
+0214 
+0215 <span class="comment">% Display text window</span>
+0216 timerDisplay = sprintf([<span class="keyword">...</span>
+0217     <span class="string">'ellapsed Yarp time = 0.000000 \n'</span><span class="keyword">...</span>
+0218     <span class="string">'Error w.r.t. local time = 0.000000 \n'</span><span class="keyword">...</span>
+0219     <span class="string">'Error w.r.t. Yarp time = 0.000000'</span>]);
+0220 out = dialog(<span class="keyword">...</span>
+0221     <span class="string">'WindowStyle'</span>,<span class="string">'normal'</span>,<span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="keyword">...</span>
+0222     <span class="string">'Position'</span>,[0.3,0.4,0.4,0.25],<span class="string">'resize'</span>,<span class="string">'off'</span>,<span class="keyword">...</span>
+0223     <span class="string">'Name'</span>,<span class="string">'Timer stats'</span>);
+0224 aTimerStatsH=uicontrol(<span class="keyword">...</span>
+0225     <span class="string">'parent'</span>,out,<span class="string">'Style'</span>,<span class="string">'text'</span>,<span class="string">'String'</span>,timerDisplay,<span class="keyword">...</span>
+0226     <span class="string">'units'</span>,<span class="string">'normalized'</span>,<span class="string">'fontunits'</span>,<span class="string">'normalized'</span>,<span class="keyword">...</span>
+0227     <span class="string">'fontsize'</span>,0.15,<span class="string">'Position'</span>,[0.1,0.1,0.8,0.8]);
+0228 
+0229 <span class="comment">% define the rate function</span>
+0230 rateThreadPeriod = 0.01;
+0231 testFunction = @(timerObj,thisEvent,threadStopFcn) UT.testRateFunction(timerObj,thisEvent,threadStopFcn,rateThreadPeriod,aTimerStatsH);
+0232 
+0233 <span class="comment">% define the rate threads</span>
+0234 <span class="comment">%</span>
+0235 <span class="comment">% local timer</span>
+0236 myRateThread=<a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>(testFunction,@(a,b) disp(<span class="string">'start'</span>),@(a,b) disp(<span class="string">'stop'</span>),<span class="string">'local'</span>,rateThreadPeriod,20);
+0237 ok = myRateThread.run(true)
+0238 pause;
+0239 ok = myRateThread.run(false)
+0240 pause;
+0241 myRateThread.stop(true)
+0242 delete(myRateThread)
+0243 
+0244 <span class="comment">% local timer synced with Yarp</span>
+0245 <span class="comment">% myRateThread=RateThread(testFunction,@(a,b) disp('start'),@(a,b) disp('stop'),'localSyncYarp',rateThreadPeriod,20);</span>
+0246 <span class="comment">% myRateThread.run(false);</span>
+0247 <span class="comment">% myRateThread.stop(true);</span>
+0248 <span class="comment">% delete(myRateThread);</span>
+0249 
+0250 <span class="comment">% Yarp timer only</span>
+0251 myRateThread=<a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>(testFunction,@(a,b) disp(<span class="string">'start'</span>),@(a,b) disp(<span class="string">'stop'</span>),<span class="string">'yarp'</span>,rateThreadPeriod,20);
+0252 ok = myRateThread.run(true)
+0253 pause;
+0254 isit = myRateThread.isRunning()
+0255 ok = myRateThread.run(false)
+0256 isit = myRateThread.isRunning()
+0257 pause;
+0258 myRateThread.stop(true)
+0259 delete(myRateThread)
+0260 
+0261 System.clearTimers;
+0262 clear <a href="../../src/@Timers/Timers.html" class="code" title="">Timers</a>;
+0263 
+0264 
+0265 <span class="comment">%% 6 - High-level position control emulation.</span>
+0266 <span class="comment">%</span>
+0267 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>;
+0268 
+0269 <span class="comment">% Create robot model. The model holds the robot name, the parameters</span>
+0270 <span class="comment">% extracted from the URDF model, the sensor calibration parameters and the</span>
+0271 <span class="comment">% joint/motor parameters (PWM to torque rate, friction parameters, ...).</span>
+0272 model = <a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>(init.modelName,init.modelPath,init.calibrationMapFile);
+0273 
+0274 <span class="comment">% Create motor control boards remapper</span>
+0275 ctrlBoard = <a href="../../src/@RemoteControlBoardRemapper/RemoteControlBoardRemapper.html" class="code" title="">RemoteControlBoardRemapper</a>(model,<span class="string">'test'</span>)
+0276 
+0277 <span class="comment">%% PID controller</span>
+0278 ctrlBoard.open({<span class="string">'torso'</span>})
+0279 
+0280 <span class="comment">% PID gains</span>
+0281 jointsIdxes = ctrlBoard.getJointsMappedIdxes({<span class="string">'torso_yaw'</span>,<span class="string">'torso_roll'</span>,<span class="string">'torso_pitch'</span>})
+0282 [readPids,readPidsMatArray] = ctrlBoard.getMotorsPids(<span class="string">'posPID'</span>,jointsIdxes);
+0283 
+0284 <span class="comment">% close device</span>
+0285 ctrlBoard.close()
+0286 
+0287 <span class="comment">% PID controller</span>
+0288 aFilter = DSP.IdentityFilter([])         <span class="comment">% define the filter</span>
+0289 PIDCtrller = DSP.PIDcontroller(<span class="keyword">...</span>
+0290     [readPidsMatArray.Kp],[readPidsMatArray.Kd],[readPidsMatArray.Ki],<span class="keyword">...</span><span class="comment">                 % P, I, D gains</span>
+0291     [readPidsMatArray.max_int],[readPidsMatArray.max_output],[readPidsMatArray.scale],<span class="keyword">...</span><span class="comment"> % max integral term and max correction term</span>
+0292     aFilter)                                                                              <span class="comment">% discrete PID controller</span>
+0293 
+0294 PIDCtrller.reset([1,1,1]')
+0295 
+0296 [intSat,outSat,nextCorr] = PIDCtrller.step(0.01,[0.017,0.017,0.017]',[0,0,0]',[0,0,0]')
+0297 
+0298 <span class="comment">%% PWM controller</span>
+0299 
+0300 <span class="comment">% Set the motor in PWM control mode and handle the coupled</span>
+0301 <span class="comment">% motors keeping their control mode and state unchanged. If</span>
+0302 <span class="comment">% this is not supported by the YARP remoteControlBoardRemapper,</span>
+0303 <span class="comment">% emulate it. We can only emulate position control.</span>
+0304 <span class="comment">% For this create an PWM controller that handles single and</span>
+0305 <span class="comment">% coupled motors seamlessly.</span>
+0306 
+0307 <span class="comment">%% Set a non-coupled motor to PWM control mode and PWM value using motor name</span>
+0308 ctrlBoard.open({<span class="string">'right_leg'</span>})
+0309 pwmController = <a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>(<span class="string">'r_knee_m'</span>,ctrlBoard,System.Const.ThreadON);
+0310 
+0311 <span class="comment">% Set the desired PWM level (0-100%) for the named motor</span>
+0312 pwmController.setMotorPWM(0)
+0313 pause
+0314 
+0315 <span class="comment">% Stop the controller. This also restores the previous</span>
+0316 <span class="comment">% control mode for the named motor and eventual coupled</span>
+0317 <span class="comment">% motors.</span>
+0318 pwmController.stop();
+0319 clear pwmController
+0320 ctrlBoard.close()
+0321 System.clearTimers; <span class="comment">% cleanup timers</span>
+0322 
+0323 <span class="comment">%% Set a coupled motor to PWM control mode and PWM value</span>
+0324 <span class="comment">% In runPwmEmulPosCtrlMode(), replace &quot;obj.ctrllerThread = RateThread(...)&quot;</span>
+0325 <span class="comment">% by &quot;obj.ctrllerThread = UT.RateThread_CB(...)&quot;</span>
+0326 ctrlBoard.open({<span class="string">'torso'</span>})
+0327 <span class="comment">% change control mode to Position control</span>
+0328 ok = ctrlBoard.setJointsControlMode(1:3,<span class="string">'ctrl'</span>)
+0329 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
+0330 
+0331 pwmController = <a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>(<span class="string">'torso_m1'</span>,ctrlBoard,System.Const.ThreadTEST)
+0332 f = pwmController.ctrllerThread.threadTimer.TimerFcn;
+0333 aThreadTimer = pwmController.ctrllerThread.threadTimer;
+0334 pause
+0335 pwmController.setMotorPWM(3)
+0336 f(aThreadTimer,[]);
+0337 yarp.delay(5);
+0338 pwmController.setMotorPWM(-3)
+0339 f(aThreadTimer,[]);
+0340 yarp.delay(5);
+0341 pwmController.stop();
+0342 pause
+0343 pwmController.setMotorPWM(3); <span class="comment">% this shouldn't work</span>
+0344 clear pwmController
+0345 ctrlBoard.close();
+0346 System.clearTimers; <span class="comment">% cleanup timers</span>
+0347 
+0348 <span class="comment">%% Set a coupled motor to PWM control mode and PWM value</span>
+0349 <span class="comment">% In runPwmEmulPosCtrlMode(), restore &quot;obj.ctrllerThread = RateThread(...)&quot;</span>
+0350 ctrlBoard.open({<span class="string">'torso'</span>})
+0351 <span class="comment">% change control mode to Position control</span>
+0352 ok = ctrlBoard.setJointsControlMode(1:3,<span class="string">'ctrl'</span>)
+0353 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
+0354 
+0355 pwmController = <a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>(<span class="string">'torso_m1'</span>,ctrlBoard,System.Const.ThreadON)
+0356 
+0357 <span class="comment">% Set the desired PWM level (0-100%) for the named motor</span>
+0358 pwmController.setMotorPWM(0)
+0359 pause
+0360 pwmController.setMotorPWM(2)
+0361 pause
+0362 pwmController.setMotorPWM(-2)
+0363 pause
+0364 
+0365 <span class="comment">% Stop the controller. This also restores the previous</span>
+0366 <span class="comment">% control mode for the named motor and eventual coupled</span>
+0367 <span class="comment">% motors.</span>
+0368 pwmController.stop();
+0369 clear pwmController
+0370 ctrlBoard.close();
+0371 System.clearTimers; <span class="comment">% cleanup timers</span>
+0372 
+0373 <span class="comment">%% Set a coupled motor to PWM control mode and PWM value</span>
+0374 ctrlBoard.open({<span class="string">'torso'</span>})
+0375 <span class="comment">% change control mode to Position control</span>
+0376 ok = ctrlBoard.setJointsControlMode(1:3,<span class="string">'ctrl'</span>)
+0377 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
+0378 
+0379 pwmController = <a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>(<span class="string">'torso_m2'</span>,ctrlBoard,System.Const.ThreadON)
+0380 
+0381 <span class="comment">% Set the desired PWM level (0-100%) for the named motor</span>
+0382 pwmController.setMotorPWM(0)
+0383 pause
+0384 pwmController.setMotorPWM(2)
+0385 pause
+0386 pwmController.setMotorPWM(-2)
+0387 pause
+0388 
+0389 <span class="comment">% Stop the controller. This also restores the previous</span>
+0390 <span class="comment">% control mode for the named motor and eventual coupled</span>
+0391 <span class="comment">% motors.</span>
+0392 pwmController.stop();
+0393 clear pwmController
+0394 ctrlBoard.close();
+0395 System.clearTimers; <span class="comment">% cleanup timers</span>
+0396 
+0397 <span class="comment">% pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard,System.Const.ThreadON)</span>
+0398 <span class="comment">%</span>
+0399 <span class="comment">% jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})</span>
+0400 <span class="comment">% ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')</span>
+0401 <span class="comment">% [ok,modes] = obj.getJointsControlMode(jointsIdxes)</span>
+0402 <span class="comment">%</span>
+0403 <span class="comment">% % high-level control, keep joint at current position</span>
+0404 <span class="comment">% ok = obj.setMotorsPWM(jointsIdxes,[0])</span>
+0405 <span class="comment">% pause;</span>
+0406 <span class="comment">%</span>
+0407 <span class="comment">% % Run a PID on the joint. Send a command every 10ms</span>
+0408 <span class="comment">% quit = false;</span>
+0409 <span class="comment">% while (~quit)</span>
+0410 <span class="comment">%</span>
+0411 <span class="comment">% end</span>
+0412 <span class="comment">%</span>
+0413 <span class="comment">% % End of test: set each motor back to position control mode</span>
+0414 <span class="comment">% ok = obj.setJointsControlMode(jointsIdxes,'ctrl')</span>
+0415 <span class="comment">% [ok,modes] = obj.getJointsControlMode(jointsIdxes)</span>
+0416 <span class="comment">% obj.close();</span>
+0417 <span class="comment">% clear all;</span>
+0418 
+0419 
+0420 <span class="comment">%% 7 - Test plotters from 'Plotter' class</span>
+0421 
+0422 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>;
+0423 
+0424 figuresHandler = [];
+0425 time = 1:1000;
+0426 w = 2*pi/time(end)*2;
+0427 y1 = sin(w*time);
+0428 N = 0.2*(rand([1,1000])-0.5);
+0429 y1WithNoise = y1 + N;
+0430 y2 = cos(w*time)./10;
+0431 dy1 = w*cos(w*time);
+0432 dtFrac = 0.5;
+0433 
+0434 Plotter.plotFuncTimeseries(<span class="keyword">...</span>
+0435     figuresHandler,<span class="string">'plotFuncTimeseries'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0436     time,y1,<span class="keyword">...</span>
+0437     <span class="string">'yLabel'</span>);
+0438 
+0439 Plotter.plot2funcTimeseries(<span class="keyword">...</span>
+0440     figuresHandler,<span class="string">'plot2funcTimeseries'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0441     time,y1,y2,<span class="keyword">...</span>
+0442     <span class="string">'yLabel'</span>,<span class="string">'y1Legend'</span>,<span class="string">'y2Legend'</span>);
+0443 
+0444 Plotter.plotFuncTimeseriesNderivative(<span class="keyword">...</span>
+0445     figuresHandler,<span class="string">'plotFuncTimeseriesNderivative'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0446     time,y1,dtFrac,dy1,<span class="keyword">...</span>
+0447     <span class="string">'yLabel'</span>,<span class="string">'yLegend'</span>,<span class="string">'dydtLegend'</span>);
+0448 
+0449 Plotter.plot2funcTimeseriesYY(<span class="keyword">...</span>
+0450     figuresHandler,<span class="string">'plot2funcTimeseriesYY'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0451     time,y1,time,y2,<span class="keyword">...</span>
+0452     <span class="string">'yLabel1'</span>,<span class="string">'yLabel2'</span>,<span class="string">'y1Legend'</span>,<span class="string">'y2Legend'</span>);
+0453 
+0454 Plotter.plot2dDataNfittedModel(<span class="keyword">...</span>
+0455     figuresHandler,<span class="string">'plot2dDataNfittedModel'</span>,<span class="string">''</span>,<span class="keyword">...</span>
+0456     time,y1WithNoise,time,y1,<span class="keyword">...</span>
+0457     <span class="string">'xLabel'</span>,<span class="string">'yLabel'</span>,<span class="keyword">...</span>
+0458     <span class="string">'dataLegend'</span>,<span class="string">'modelLegend'</span>);
+0459 
+0460 
+0461 <span class="comment">%% 8 - Realtime plotter</span>
+0462 
+0463 <span class="comment">% clear all variables and close all previous figures</span>
+0464 clear
+0465 close all
+0466 clc
+0467 
+0468 <span class="comment">%Clear static data</span>
+0469 clear classes;
+0470 
+0471 <span class="comment">% Create YARP Network device, for initializing YARP classes for communication</span>
+0472 yarp.Network.init();
+0473 
+0474 <span class="comment">% Figure parameters</span>
+0475 figTitle = <span class="string">'Motor velocity to torque model'</span>;
+0476 xLabel = <span class="string">'Motor velocity (degrees/s)'</span>;
+0477 yLabel = <span class="string">'Motor torque (N.m)'</span>;
+0478 <span class="comment">% create figure</span>
+0479 figH = figure(<span class="string">'Name'</span>,figTitle);
+0480 <span class="comment">% This is a temporary figure and won't be docked, so display it full screen.</span>
+0481 set(gcf,<span class="string">'PositionMode'</span>,<span class="string">'manual'</span>,<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);
+0482 <span class="comment">% title, axes labels, legend</span>
+0483 title(figTitle,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0484 xlabel(xLabel,<span class="string">'Fontsize'</span>,12);
+0485 ylabel(yLabel,<span class="string">'Fontsize'</span>,12);
+0486 set(gca,<span class="string">'FontSize'</span>,12);
+0487 <span class="comment">% figH.CurrentAxes.XLim = xRange;</span>
+0488 <span class="comment">% figH.CurrentAxes.YLim = yRange;</span>
+0489 grid on;
+0490 
+0491 <span class="comment">% create animated line</span>
+0492 h = animatedline;
+0493 axis([0 4*pi -1 1])
+0494 x = linspace(0,4*pi,100);
+0495 <a href="../../src/@y/y.html" class="code" title="">y</a> = sin(x);
+0496 h.LineStyle = <span class="string">'none'</span>;
+0497 h.Marker = <span class="string">'o'</span>;
+0498 h.MarkerFaceColor = <span class="string">'b'</span>;
+0499 h.Visible = <span class="string">'on'</span>;
+0500 h.Selected = <span class="string">'off'</span>;
+0501 h.UserData = [1,1]; <span class="comment">% counters</span>
+0502 colors = {<span class="string">'r'</span>,<span class="string">'g'</span>,<span class="string">'b'</span>,<span class="string">'y'</span>,<span class="string">'m'</span>};
+0503 
+0504 <span class="comment">% define the thread and run</span>
+0505 threadPeriod = 0.05;
+0506 threadTimeout = 60;
+0507 startFcn  = <span class="string">''</span>;
+0508 stopFcn   = <span class="string">''</span>;
+0509 updateFcn = @(~,~,~) UT.plotterThreadUpdateFcn(h,x,<a href="../../src/@y/y.html" class="code" title="">y</a>,colors);
+0510 
+0511 plotterThread = <a href="../../src/@RateThread/RateThread.html" class="code" title="">RateThread</a>(<span class="keyword">...</span>
+0512     updateFcn,startFcn,stopFcn,<span class="string">'yarp'</span>,<span class="keyword">...</span>
+0513     threadPeriod,threadTimeout);
+0514 
+0515 <span class="comment">% run the new thread</span>
+0516 ok = plotterThread.run(false); <span class="comment">% run and don't wait for thread termination</span>
+0517 
+0518 pause;
+0519 
+0520 plotterThread.stop(true);
+0521 clear plotterThread;
+0522 System.clearTimers; <span class="comment">% cleanup timers</span>
+0523 
+0524 <span class="comment">%% 9 - Test 'LowlevTauCtrlCalibrator'</span>
+0525 
+0526 <a href="../../src/@Calibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a> <a href="unitTestsInit.html" class="code" title="">unitTestsInit</a>;
+0527 
+0528 <span class="comment">% Create robot model. The model holds the robot name, the parameters</span>
+0529 <span class="comment">% extracted from the URDF model, the sensor calibration parameters and the</span>
+0530 <span class="comment">% joint/motor parameters (PWM to torque rate, friction parameters, ...).</span>
+0531 model = <a href="../../src/@RobotModel/RobotModel.html" class="code" title="">RobotModel</a>(init.modelName,init.modelPath,init.calibrationMapFile);
+0532 
+0533 <span class="comment">% Load last acquired data accessors from file</span>
+0534 <span class="keyword">if</span> exist(<span class="string">'lastAcqSensorDataAccessorMap.mat'</span>,<span class="string">'file'</span>) == 2
+0535     load(<span class="string">'lastAcqSensorDataAccessorMap.mat'</span>,<span class="string">'lastAcqSensorDataAccessorMap'</span>);
+0536 <span class="keyword">end</span>
+0537 <span class="keyword">if</span> ~exist(<span class="string">'lastAcqSensorDataAccessorMap'</span>,<span class="string">'var'</span>)
+0538     lastAcqSensorDataAccessorMap = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'any'</span>);
+0539 <span class="keyword">end</span>
+0540 
+0541 <span class="comment">% Just test the state transitions</span>
+0542 task = UT.LowlevTauCtrlCalibrator_SM.instance();
+0543 task.run(init,model,lastAcqSensorDataAccessorMap);
+0544 
+0545 <span class="comment">% Test the state processings</span>
+0546 task = UT.LowlevTauCtrlCalibrator_Proc.instance();
+0547 task.run(init,model,lastAcqSensorDataAccessorMap);
+0548 
+0549 <span class="comment">% Test the plotting and fitting functions</span>
+0550 <span class="comment">% - src/@LowlevTauCtrlCalibrator/plotTrainingData.m</span>
+0551 <span class="comment">% - src/@LowlevTauCtrlCalibrator/savePlot.m</span>
+0552 <span class="comment">% - src/@LowlevTauCtrlCalibrator/calibrateSensors.m</span>
+0553 <span class="comment">% - src/@LowlevTauCtrlCalibrator/plotModel.m</span>
+0554 <span class="comment">% - src/@MotorTransFunc/MotorTransFunc.m</span>
+0555 <span class="comment">% - src/@DiagPlotFiguresHandler/DiagPlotFiguresHandler.m (getFigure)</span>
+0556 task = LowlevTauCtrlCalibrator.instance();
+0557 task.run(init,model,lastAcqSensorDataAccessorMap);
+0558 
+0559 
+0560 <span class="comment">%% Uninitialize yarp</span>
+0561 yarp.Network.fini();
+0562</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

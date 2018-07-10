@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsefit_robust</title>
+  <meta name="keywords" content="ellipsefit_robust">
+  <meta name="description" content="Constrained ellipse fit by solving a modified eigenvalue problem.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsefit_robust
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Constrained ellipse fit by solving a modified eigenvalue problem.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = ellipsefit_robust(R, Q) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Constrained ellipse fit by solving a modified eigenvalue problem.
+ The method is numerically stable.
+
+ Input arguments:
+ R:
+    positive semi-definite data covariance matrix
+ Q:
+    constraint matrix in parameters x^2, xy, y^2, x, y and 1.
+
+ Output arguments:
+ p:
+    estimated parameters (taking constraints into account)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit_direct.html" class="code" title="function p = ellipsefit_direct(x,y)">ellipsefit_direct</a>	Direct least squares fitting of ellipses.</li><li><a href="quad2dconfit_koopmans.html" class="code" title="function [p,p0,mu0] = quad2dconfit_koopmans(x, y, sigma_x, sigma_y, Q)">quad2dconfit_koopmans</a>	Fit a constrained quadratic curve to data using the nonlinear Koopmans method.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = ellipsefit_robust(R, Q)</a>
+0002 <span class="comment">% Constrained ellipse fit by solving a modified eigenvalue problem.</span>
+0003 <span class="comment">% The method is numerically stable.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Input arguments:</span>
+0006 <span class="comment">% R:</span>
+0007 <span class="comment">%    positive semi-definite data covariance matrix</span>
+0008 <span class="comment">% Q:</span>
+0009 <span class="comment">%    constraint matrix in parameters x^2, xy, y^2, x, y and 1.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Output arguments:</span>
+0012 <span class="comment">% p:</span>
+0013 <span class="comment">%    estimated parameters (taking constraints into account)</span>
+0014 
+0015 <span class="comment">% References:</span>
+0016 <span class="comment">% Radim Halir and Jan Flusser, &quot;Numerically stable direct least squares fitting of</span>
+0017 <span class="comment">%    ellipses&quot;, 1998</span>
+0018 
+0019 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0020 
+0021 validateattributes(R, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'2d'</span>,<span class="string">'size'</span>,[6,6]});
+0022 validateattributes(Q, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'2d'</span>,<span class="string">'size'</span>,[6,6]});
+0023 
+0024 <span class="comment">% check that constraint matrix has all zeros except in upper left block</span>
+0025 assert( nnz(Q(4:6,:)) == 0 );
+0026 assert( nnz(Q(:,4:6)) == 0 );
+0027 
+0028 S1 = R(1:3,1:3);     <span class="comment">% quadratic part of the scatter matrix</span>
+0029 S2 = R(1:3,4:6);     <span class="comment">% combined part of the scatter matrix</span>
+0030 S3 = R(4:6,4:6);     <span class="comment">% linear part of the scatter matrix</span>
+0031 T = -(S3 \ S2');     <span class="comment">% for getting a2 from a1</span>
+0032 M = S1 + S2 * T;     <span class="comment">% reduced scatter matrix</span>
+0033 M = Q(1:3,1:3) \ M;  <span class="comment">% premultiply by inv(C1), e.g. M = [M(3,:)./2 ; -M(2,:) ; M(1,:)./2] for an ellipse</span>
+0034 [evec,~] = eig(M);   <span class="comment">% solve eigensystem</span>
+0035 
+0036 <span class="comment">% evaluate a'*C*a, e.g. cond = 4 * evec(1,:).*evec(3,:) - evec(2,:).^2 for an ellipse</span>
+0037 cond = zeros(1,size(evec,2));
+0038 <span class="keyword">for</span> k = 1 : numel(cond)
+0039     cond(k) = evec(:,k)'*Q(1:3,1:3)*evec(:,k);
+0040 <span class="keyword">end</span>
+0041 
+0042 <span class="comment">% eigenvector for minimum positive eigenvalue</span>
+0043 evec = evec(:,cond &gt; 0);
+0044 cond = cond(cond &gt; 0);
+0045 [~,ix] = min(cond);
+0046 p1 = evec(:,ix);  <span class="comment">% eigenvector for minimum positive eigenvalue</span>
+0047 
+0048 <span class="comment">% ellipse coefficients</span>
+0049 p = [p1 ; T * p1];</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mpolycomp</title>
+  <meta name="keywords" content="mpolycomp">
+  <meta name="description" content="Matrix polynomial companion form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>mpolycomp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Matrix polynomial companion form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [A,B] = mpolycomp(T) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Matrix polynomial companion form.
+ Builds two p*n-by-p*n matrices such that
+ A = [T0   0   0   0]   B = [-T1 -T2 -T3 -T4]
+     [ 0   I   0   0]       [  I   0   0   0]
+     [ 0   0   I   0]       [  0   I   0   0]
+     [ 0   0   0   I]       [  0   0   I   0]
+
+ See also: polyeig, eig</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="mpolyeig.html" class="code" title="function [X,e] = mpolyeig(T, sigma)">mpolyeig</a>	Eigenvalues and eigenvectors for matrix polynomial.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,B] = mpolycomp(T)</a>
+0002 <span class="comment">% Matrix polynomial companion form.</span>
+0003 <span class="comment">% Builds two p*n-by-p*n matrices such that</span>
+0004 <span class="comment">% A = [T0   0   0   0]   B = [-T1 -T2 -T3 -T4]</span>
+0005 <span class="comment">%     [ 0   I   0   0]       [  I   0   0   0]</span>
+0006 <span class="comment">%     [ 0   0   I   0]       [  0   I   0   0]</span>
+0007 <span class="comment">%     [ 0   0   0   I]       [  0   0   I   0]</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% See also: polyeig, eig</span>
+0010 
+0011 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0012 
+0013 [~,p,n] = size(T);
+0014 n = n - 1;
+0015 A = eye(p*n,p*n);
+0016 A(1:p,1:p) = T(:,:,1);
+0017 <span class="keyword">if</span> n &gt; 0
+0018     B = diag(ones(p*(n-1),1), -p);
+0019     k = 1:p;
+0020     <span class="keyword">for</span> i = 2 : n+1
+0021         B(1:p,k) = -T(:,:,i);  <span class="comment">% T_1, T_2, etc.</span>
+0022         k = k+p;
+0023     <span class="keyword">end</span>
+0024 <span class="keyword">elseif</span> nargout &gt; 1
+0025     B = eye(p,p);
+0026 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

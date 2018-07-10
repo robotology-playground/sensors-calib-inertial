@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of plotFuncTimeseries</title>
+  <meta name="keywords" content="plotFuncTimeseries">
+  <meta name="description" content="UNTITLED9 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Plotter -->
+<h1>plotFuncTimeseries
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED9 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function plotFuncTimeseries(figuresHandler,aTitle,aLabel,time,y,yLabel) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED9 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Plotter.html" class="code" title="">Plotter</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function plotFuncTimeseries(</a><span class="keyword">...</span>
+0002     figuresHandler,aTitle,aLabel,<span class="keyword">...</span>
+0003     time,<a href="../../src/@y/y.html" class="code" title="">y</a>,<span class="keyword">...</span>
+0004     yLabel)
+0005 <span class="comment">%UNTITLED9 Summary of this function goes here</span>
+0006 <span class="comment">%   Detailed explanation goes here</span>
+0007 
+0008 <span class="comment">% create figure</span>
+0009 figH = figure(<span class="string">'Name'</span>,aTitle,<span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0010 
+0011 <span class="keyword">if</span> ~isempty(figuresHandler)
+0012     figuresHandler.addFigure(figH,aLabel); <span class="comment">% Add figure to the figure handler</span>
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">% If the figure is not docked, use the below command to display it full</span>
+0016 <span class="comment">% screen.</span>
+0017 <span class="comment">%set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);</span>
+0018 title(aTitle,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0019 hold on
+0020 
+0021 plot(time,<a href="../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'b'</span>,<span class="string">'lineWidth'</span>,1.0);
+0022 
+0023 hold off
+0024 grid ON;
+0025 xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0026 ylabel(yLabel,<span class="string">'Fontsize'</span>,12);
+0027 set(gca,<span class="string">'FontSize'</span>,12);
+0028 
+0029 <span class="keyword">end</span>
+0030</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

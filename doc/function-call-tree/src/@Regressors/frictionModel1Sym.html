@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of frictionModel1Sym</title>
+  <meta name="keywords" content="frictionModel1Sym">
+  <meta name="description" content="frictionModel1Sym Computes the closed-form solution to linear regression">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Regressors -->
+<h1>frictionModel1Sym
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>frictionModel1Sym Computes the closed-form solution to linear regression</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function model = frictionModel1Sym( x,y ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">frictionModel1Sym Computes the closed-form solution to linear regression 
+   using the normal equations.
+   \in x: column vector (function inputs)
+   \in y: column vector (measurements)
+   model.theta: fitted parametters (Kc, Kv)
+   model.h: function handle, takes a column vector X as input</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Regressors.html" class="code" title="">Regressors</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function signVec = signExc0(aX)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function model = frictionModel1Sym( x,y )</a>
+0002 <span class="comment">%frictionModel1Sym Computes the closed-form solution to linear regression</span>
+0003 <span class="comment">%   using the normal equations.</span>
+0004 <span class="comment">%   \in x: column vector (function inputs)</span>
+0005 <span class="comment">%   \in y: column vector (measurements)</span>
+0006 <span class="comment">%   model.theta: fitted parametters (Kc, Kv)</span>
+0007 <span class="comment">%   model.h: function handle, takes a column vector X as input</span>
+0008 
+0009 <span class="comment">% checks...</span>
+0010 <span class="keyword">if</span> size(x,1) ~= size(<a href="../../src/@y/y.html" class="code" title="">y</a>,1) || ~iscolumn(<a href="../../src/@y/y.html" class="code" title="">y</a>)
+0011     error(<span class="string">'Badly formatted data!!'</span>);
+0012 <span class="keyword">end</span>
+0013 
+0014 <span class="comment">% remove velocities too close to 0</span>
+0015 filtIdxes = abs(x)&gt;abs(max(x)/100);
+0016 <a href="../../src/@y/y.html" class="code" title="">y</a> = <a href="../../src/@y/y.html" class="code" title="">y</a>(filtIdxes);
+0017 x = x(filtIdxes);
+0018 
+0019 <span class="comment">% format X adding the column of sign(x)</span>
+0020 M = @(dq) [sign(dq) dq]
+0021 X = M(x);
+0022 
+0023 <span class="comment">% process positive velocities model</span>
+0024 model.theta = pinv(X'*X)*X'*<a href="../../src/@y/y.html" class="code" title="">y</a>;
+0025 model.h = @(vecX) M(vecX(:)) * model.theta;
+0026 
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">%% Local functions</span>
+0030 
+0031 <a name="_sub1" href="#_subfunctions" class="code">function signVec = signExc0(aX)</a>
+0032 <span class="comment">% sign(x)=1 if x==0</span>
+0033 signVec = sign(aX);
+0034 signVec(aX==0) = -1;
+0035 
+0036 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

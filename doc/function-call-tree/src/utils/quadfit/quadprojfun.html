@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quadprojfun</title>
+  <meta name="keywords" content="quadprojfun">
+  <meta name="description" content="The projection function Q(t) for various conics and quadrics.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quadprojfun
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>The projection function Q(t) for various conics and quadrics.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function quadprojfun(kind) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> The projection function Q(t) for various conics and quadrics.
+
+ In deriving the projection function, we use the canonical equation of the quadratic curve or
+ surface, i.e. the curve or surface is axis-aligned and centered at the origin (where possible).
+
+ While it may appear restrictive, the canonical equation lets us treat projection of a point to a
+ quadratic curve or surface without loss of generality. Should the curve or surface not be in the
+ canonical form, a transformation matrix M that axis-aligns and centers the ellipse can be applied
+ to the data points, and the inverse transformation matrix to the computed foot points.
+
+ References
+ David Eberly, &quot;Distance from a point to an ellipse, an ellipsoid, or a hyperellipsoid&quot;, 2011,
+    http://www.geometrictools.com/Documentation/DistancePointEllipseEllipsoid.pdf
+ Nikolai Chernov and Hui Ma, &quot;Least squares fitting of quadratic curves and surfaces&quot;, In Sota R.
+    Yoshida, editor, Computer Vision, pages 285�302, Nova Science Publishers, 2011,
+    ISBN 978-1-61209-399-4
+
+ Examples:
+ quadprojfun
+ quadprojfun ellipse
+ quadprojfun('hyperbolic_paraboloid')</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function quadprojfun(kind)</a>
+0002 <span class="comment">% The projection function Q(t) for various conics and quadrics.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% In deriving the projection function, we use the canonical equation of the quadratic curve or</span>
+0005 <span class="comment">% surface, i.e. the curve or surface is axis-aligned and centered at the origin (where possible).</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% While it may appear restrictive, the canonical equation lets us treat projection of a point to a</span>
+0008 <span class="comment">% quadratic curve or surface without loss of generality. Should the curve or surface not be in the</span>
+0009 <span class="comment">% canonical form, a transformation matrix M that axis-aligns and centers the ellipse can be applied</span>
+0010 <span class="comment">% to the data points, and the inverse transformation matrix to the computed foot points.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% References</span>
+0013 <span class="comment">% David Eberly, &quot;Distance from a point to an ellipse, an ellipsoid, or a hyperellipsoid&quot;, 2011,</span>
+0014 <span class="comment">%    http://www.geometrictools.com/Documentation/DistancePointEllipseEllipsoid.pdf</span>
+0015 <span class="comment">% Nikolai Chernov and Hui Ma, &quot;Least squares fitting of quadratic curves and surfaces&quot;, In Sota R.</span>
+0016 <span class="comment">%    Yoshida, editor, Computer Vision, pages 285�302, Nova Science Publishers, 2011,</span>
+0017 <span class="comment">%    ISBN 978-1-61209-399-4</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Examples:</span>
+0020 <span class="comment">% quadprojfun</span>
+0021 <span class="comment">% quadprojfun ellipse</span>
+0022 <span class="comment">% quadprojfun('hyperbolic_paraboloid')</span>
+0023 
+0024 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0025 
+0026 <span class="keyword">if</span> nargin &gt; 0
+0027     validateattributes(kind, {<span class="string">'char'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'row'</span>});
+0028 <span class="keyword">else</span>
+0029     kind = {<span class="string">'ellipse'</span>,<span class="string">'hyperbola'</span>,<span class="string">'parabola'</span>,<span class="string">'ellipsoid'</span>,<span class="string">'elliptic_paraboloid'</span>,<span class="string">'hyperbolic_paraboloid'</span>,<span class="string">'hyperboloid_one_sheet'</span>};
+0030 <span class="keyword">end</span>
+0031 
+0032 <span class="comment">% projection to ellipse</span>
+0033 <span class="keyword">if</span> any(strcmp(<span class="string">'ellipse'</span>, kind))
+0034     <span class="comment">%syms a b w1 w2 w3 t</span>
+0035     <span class="comment">%Q = ( (a*w1)./(t+a^2) ).^2 + ( (b*w2)./(t+b^2) ).^2 - 1;</span>
+0036     <span class="comment">%dQdt1 = diff(Q,t)</span>
+0037     <span class="comment">%dQdt1 = - (2*a^2*w1^2)/(a^2 + t)^3 - (2*b^2*w2^2)/(b^2 + t)^3;</span>
+0038     <span class="comment">%dQdt2 = diff(dQdt1,t)</span>
+0039     <span class="comment">%Qdt2 = (6*a^2*w1^2)/(a^2 + t)^4 + (6*b^2*w2^2)/(b^2 + t)^4;</span>
+0040     
+0041     a = 2;
+0042     b = 1;
+0043     w1 = 0.5;
+0044     w2 = 0.5;
+0045     t = linspace(-b^2, b, 1000);
+0046     f = ( (a*w1)./(t+a^2) ).^2 + ( (b*w2)./(t+b^2) ).^2 - 1;
+0047     <a href="#_sub1" class="code" title="subfunction draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)">draw_figure</a>(<span class="string">'Ellipse'</span>, t, f, [-b^2-b^2/5,max(t)], [-2,9], -b^2, -1, {<span class="string">'-b^2'</span>}, {<span class="string">'-1'</span>});
+0048 <span class="keyword">end</span>
+0049 
+0050 <span class="comment">% projection to hyperbola</span>
+0051 <span class="keyword">if</span> any(strcmp(<span class="string">'hyperbola'</span>, kind))
+0052     a = 2;
+0053     b = 1;
+0054     w1 = 2;
+0055     w2 = 5;
+0056     t = linspace(-a^2, b^2, 1000);
+0057     f = ( (a*w1)./(t+a^2) ).^2 - ( (b*w2)./(-t+b^2) ).^2 - 1;
+0058     
+0059     tx = ( b^2*sqrt(a*w1) - a^2*sqrt(b*w2) ) / (sqrt(a*w1) + sqrt(b*w2));
+0060     
+0061     <a href="#_sub1" class="code" title="subfunction draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)">draw_figure</a>(<span class="string">'Hyperbola, case 1'</span>, t, f, [min(t),max(t)], [-10,10], [-a^2,tx,b^2], 0, {<span class="string">'-a^2'</span>,<span class="string">'t_\ast'</span>,<span class="string">'b^2'</span>}, {<span class="string">'0'</span>});
+0062 <span class="keyword">end</span>
+0063 <span class="keyword">if</span> any(strcmp(<span class="string">'hyperbola'</span>, kind))
+0064     a = 2;
+0065     b = 1;
+0066     w1 = 9;
+0067     w2 = 4;
+0068     t = linspace(-a^2, b^2, 1000);
+0069     f = ( (a*w1)./(t+a^2) ).^2 - ( (b*w2)./(-t+b^2) ).^2 - 1;
+0070     
+0071     tx = ( b^2*sqrt(a*w1) - a^2*sqrt(b*w2) ) / (sqrt(a*w1) + sqrt(b*w2));
+0072     
+0073     <a href="#_sub1" class="code" title="subfunction draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)">draw_figure</a>(<span class="string">'Hyperbola, case 2'</span>, t, f, [min(t),max(t)], [-100,100], [-a^2,tx,b^2], 0, {<span class="string">'-a^2'</span>,<span class="string">'t_\ast'</span>,<span class="string">'b^2'</span>}, {<span class="string">'0'</span>});
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="comment">% projection to parabola</span>
+0077 <span class="keyword">if</span> any(strcmp(<span class="string">'parabola'</span>, kind))
+0078     p = 1;
+0079     w1 = 0.5;
+0080     w2 = 0.5;
+0081     t = linspace(-1, 1, 1000);
+0082     f = w2^2 ./ (t+1).^2 - 2.*p.*w1 - 2.*p.^2.*t;
+0083     <a href="#_sub1" class="code" title="subfunction draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)">draw_figure</a>(<span class="string">'Parabola'</span>, t, f, [-1.25,1], [-5,10], -1, 0, {<span class="string">'-1'</span>}, {<span class="string">'0'</span>});
+0084 <span class="keyword">end</span>
+0085 
+0086 <span class="comment">% projection to ellipsoid</span>
+0087 <span class="keyword">if</span> any(strcmp(<span class="string">'ellipsoid'</span>, kind))
+0088     <span class="comment">%syms a b c w1 w2 w3 t</span>
+0089     <span class="comment">%Q = ( (a*w1)./(t+a^2) ).^2 + ( (b*w2)./(t+b^2) ).^2 + ( (c*w3)./(t+c^2) ).^2 - 1</span>
+0090     <span class="comment">%dQdt1 = diff(Q,t)</span>
+0091     <span class="comment">%dQdt1 = - (2*a^2*w1^2)/(a^2 + t)^3 - (2*b^2*w2^2)/(b^2 + t)^3 - (2*c^2*w3^2)/(c^2 + t)^3</span>
+0092     <span class="comment">%dQdt2 = diff(dQdt1,t)</span>
+0093     <span class="comment">%dQdt2 = (6*a^2*w1^2)/(a^2 + t)^4 + (6*b^2*w2^2)/(b^2 + t)^4 + (6*c^2*w3^2)/(c^2 + t)^4</span>
+0094 <span class="keyword">end</span>
+0095 
+0096 <span class="comment">% projection to elliptic paraboloid</span>
+0097 <span class="keyword">if</span> any(strcmp(<span class="string">'elliptic_paraboloid'</span>, kind))
+0098     <span class="comment">%syms a b w1 w2 w3 t</span>
+0099     <span class="comment">%Q = (a^2.*w1^2)./(a^2 + t).^2 + (b^2.*w2^2)./(b^2 + t).^2 - w3 - t./2</span>
+0100     <span class="comment">%dQdt1 = diff(Q,t)</span>
+0101     <span class="comment">%dQdt1 = - (2*a^2*w1^2)./(a^2 + t).^3 - (2*b^2*w2^2)./(b^2 + t).^3 - 1/2</span>
+0102     <span class="comment">%dQdt2 = diff(dQdt1,t)</span>
+0103     <span class="comment">%dQdt2 = (6*a^2*w1^2)./(a^2 + t).^4 + (6*b^2*w2^2)./(b^2 + t).^4</span>
+0104     
+0105     a = 3;
+0106     b = 0.5;
+0107     w1 = 0.5;
+0108     w2 = 0.5;
+0109     w3 = 0.5;
+0110     t = linspace(-b^2, 2, 1000);
+0111     f = (a^2.*w1^2)./(a^2 + t).^2 + (b^2.*w2^2)./(b^2 + t).^2 - w3 - t./2;
+0112     <a href="#_sub1" class="code" title="subfunction draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)">draw_figure</a>(<span class="string">'Elliptic paraboloid'</span>, t, f, [min(t)-0.25,max(t)], [-2,10], -b^2, 0, {<span class="string">'-b^2'</span>}, {<span class="string">'0'</span>});
+0113 <span class="keyword">end</span>
+0114 
+0115 <span class="comment">% projection to hyperbolic paraboloid</span>
+0116 <span class="keyword">if</span> any(strcmp(<span class="string">'hyperbolic_paraboloid'</span>, kind))
+0117     <span class="comment">%syms a b w1 w2 w3 t</span>
+0118     <span class="comment">%Q = (a^2*w1^2)./((t+a^2).^2)-(b^2*w2^2)./((-t+b^2).^2)-w3-t./2;</span>
+0119     <span class="comment">%dQdt1 = diff(Q,t)</span>
+0120     <span class="comment">%dQdt1 = - (2*b^2*w2^2)/(b^2 - t)^3 - (2*a^2*w1^2)/(a^2 + t)^3 - 1/2;</span>
+0121     <span class="comment">%dQdt2 = diff(dQdt1,t)</span>
+0122     <span class="comment">%dQdt2 = (6*a^2*w1^2)/(a^2 + t)^4 - (6*b^2*w2^2)/(t - b^2)^4</span>
+0123 
+0124     a = 1;
+0125     b = 0.5;
+0126     w1 = 0.5;
+0127     w2 = 0.5;
+0128     w3 = 0.5;
+0129     t = linspace(-a^2, b^2, 1000);
+0130     f = (a^2*w1^2)./((t+a^2).^2)-(b^2*w2^2)./((-t+b^2).^2)-w3-t./2;
+0131     <a href="#_sub1" class="code" title="subfunction draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)">draw_figure</a>(<span class="string">'Hyperbolic paraboloid'</span>, t, f, [min(t)-0.25,max(t)+0.25], [-10,10], [-a^2,b^2], [], {<span class="string">'-a^2'</span>,<span class="string">'b^2'</span>}, {});
+0132 <span class="keyword">end</span>
+0133 
+0134 <span class="comment">% projection to a hyperboloid of one sheet</span>
+0135 <span class="keyword">if</span> any(strcmp(<span class="string">'hyperboloid_one_sheet'</span>, kind))
+0136     <span class="comment">%syms a b c w1 w2 w3 t</span>
+0137     <span class="comment">%Q = (a^2*w1^2) / ((t+a^2)^2) + (b^2*w2^2) / ((t+b^2)^2) - (c^2*w3^2) / ((-t+c^2)^2) - 1;</span>
+0138     <span class="comment">%Q = (a^2*w1^2)./((t+a^2).^2)-(b^2*w2^2)./((-t+b^2).^2)-w3-t./2;</span>
+0139     <span class="comment">%dQdt1 = diff(Q,t)</span>
+0140     <span class="comment">%dQdt1 = (2*c^2*w3^2)/(t - c^2)^3 - (2*a^2*w1^2)/(a^2 + t)^3 - (2*b^2*w2^2)/(b^2 + t)^3</span>
+0141     <span class="comment">%dQdt2 = diff(dQdt1,t)</span>
+0142     <span class="comment">%dQdt2 = (6*a^2*w1^2)/(a^2 + t)^4 - (6*c^2*w3^2)/(t - c^2)^4 + (6*b^2*w2^2)/(b^2 + t)^4</span>
+0143 <span class="keyword">end</span>
+0144 
+0145 <a name="_sub1" href="#_subfunctions" class="code">function draw_figure(name, t, f, xlim, ylim, xticks, yticks, xticklabels, yticklabels)</a>
+0146 
+0147 fig = figure(<span class="string">'Name'</span>, name);
+0148 ax = axes(<span class="string">'Parent'</span>,fig);
+0149 plot(ax, t, f, <span class="string">'LineWidth'</span>, 2);
+0150 set(ax, <span class="keyword">...</span>
+0151     <span class="string">'TickLength'</span>,[0 0], <span class="keyword">...</span><span class="comment">  % suppress tick marks</span>
+0152     <span class="string">'XTick'</span>,xticks, <span class="keyword">...</span>
+0153     <span class="string">'XTickLabel'</span>,xticklabels, <span class="keyword">...</span>
+0154     <span class="string">'YTick'</span>,yticks, <span class="keyword">...</span>
+0155     <span class="string">'YTickLabel'</span>,yticklabels, <span class="keyword">...</span>
+0156     <span class="string">'XLimMode'</span>,<span class="string">'manual'</span>, <span class="keyword">...</span>
+0157     <span class="string">'XLim'</span>,xlim, <span class="keyword">...</span>
+0158     <span class="string">'YLimMode'</span>,<span class="string">'manual'</span>, <span class="keyword">...</span>
+0159     <span class="string">'YLim'</span>,ylim <span class="keyword">...</span>
+0160 );
+0161 
+0162 <span class="comment">% vertical lines</span>
+0163 line(<span class="string">'Parent'</span>,ax,<span class="string">'XData'</span>,[0,0],<span class="string">'YData'</span>,ylim);
+0164 <span class="keyword">for</span> k = 1 : numel(xticks)
+0165     line(<span class="string">'Parent'</span>,ax,<span class="string">'XData'</span>,[xticks(k),xticks(k)],<span class="string">'YData'</span>,ylim,<span class="string">'LineStyle'</span>,<span class="string">'--'</span>);
+0166 <span class="keyword">end</span>
+0167 
+0168 <span class="comment">% horizontal lines</span>
+0169 line(<span class="string">'Parent'</span>,ax,<span class="string">'XData'</span>,xlim,<span class="string">'YData'</span>,[0,0]);
+0170 <span class="keyword">for</span> k = 1 : numel(yticks)
+0171     line(<span class="string">'Parent'</span>,ax,<span class="string">'XData'</span>,xlim,<span class="string">'YData'</span>,[yticks(k),yticks(k)],<span class="string">'LineStyle'</span>,<span class="string">'--'</span>);
+0172 <span class="keyword">end</span>
+0173 
+0174 <span class="comment">% apply LaTeX interpreter to axis tick labels</span>
+0175 <span class="keyword">if</span> 1
+0176     <span class="comment">% clear current labels</span>
+0177     set(ax, <span class="string">'XTickLabel'</span>, {}, <span class="string">'YTickLabel'</span>, {});
+0178     
+0179     <span class="comment">% get figure dimensions</span>
+0180     dims = axis(ax);
+0181 
+0182     <span class="comment">% reset the ytick labels in desired font</span>
+0183     <span class="keyword">for</span> i = 1 : numel(yticks)
+0184         <span class="comment">% create text box and set appropriate properties</span>
+0185         text(dims(1), yticks(i), yticklabels{i}, <span class="keyword">...</span>
+0186             <span class="string">'HorizontalAlignment'</span>,<span class="string">'right'</span>,<span class="string">'VerticalAlignment'</span>,<span class="string">'middle'</span>,<span class="string">'Interpreter'</span>,<span class="string">'tex'</span>,<span class="string">'FontSize'</span>,10);
+0187 
+0188     <span class="keyword">end</span>
+0189 
+0190     <span class="comment">% reset the xtick labels in desired font</span>
+0191     <span class="keyword">for</span> i = 1 : numel(xticks)
+0192         <span class="comment">% create text box and set appropriate properties</span>
+0193         text(xticks(i), dims(3), xticklabels{i}, <span class="keyword">...</span>
+0194             <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>,<span class="string">'VerticalAlignment'</span>,<span class="string">'top'</span>,<span class="string">'Interpreter'</span>, <span class="string">'tex'</span>,<span class="string">'FontSize'</span>,10); 
+0195     <span class="keyword">end</span>
+0196 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

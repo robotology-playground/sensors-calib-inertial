@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of run</title>
+  <meta name="keywords" content="run">
+  <meta name="description" content="Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @Calibrator -->
+<h1>run
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function run(obj,init,model,lastAcqSensorDataAccessorMap) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="runCalibratorOrDiagnosis.html" class="code" title="function runCalibratorOrDiagnosis(obj,init,model,calibOrDiagFuncH,calibedSensorType)">runCalibratorOrDiagnosis</a>	Harvest the parameters and runs the calibration task</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/+UI/getMappingFromIniFile.html" class="code" title="function [ mapping ] = getMappingFromIniFile( mappingIniScript )">getMappingFromIniFile</a>	UNTITLED2 Summary of this function goes here</li><li><a href="../../src/@AccelerometersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,~,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot</li><li><a href="Calibrator.html" class="code" title="">Calibrator</a>	</li><li><a href="../../src/@Init/Init.html" class="code" title="">Init</a>	</li><li><a href="../../src/@JointEncodersCalibrator/calibrateSensors.html" class="code" title="function calibrateSensors(~,dataPath,calibedParts,measedSensorList,measedPartsList,model,taskSpecificParams)">calibrateSensors</a>	Get calibration map</li><li><a href="../../src/@LowlevTauCtrlCalibrator/LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li><li><a href="../../src/@LowlevTauCtrlCalibrator/run.html" class="code" title="function run(obj,init,model,lastAcqSensorDataAccessorMap)">run</a>	Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</li><li><a href="../../src/@MotionSequencer/MotionSequencer.html" class="code" title="">MotionSequencer</a>	</li><li><a href="../../src/@SensorDataAcquisition/getSeqProfile.html" class="code" title="function [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams)">getSeqProfile</a>	getSeqProfile Loads the sequence profile parameters from a script ini file</li><li><a href="../../src/@SensorDataYarpI/SensorDataYarpI.html" class="code" title="">SensorDataYarpI</a>	</li><li><a href="../../src/@SensorDiagnosis/runDiagnosis.html" class="code" title="function runDiagnosis(dataPath,measedSensorList,measedPartsList,model,taskSpecificParams,figuresHandlerMap,task) % params specific to this diagnosis function">runDiagnosis</a>	Parameters specific to this diagnosis function:</li><li><a href="../../src/app/sensorSelfCalibrator.html" class="code" title="">sensorSelfCalibrator</a>	Calibrates accelerometers, joint encoders using only self sensors</li><li><a href="../../src/app/unitTests.html" class="code" title="">unitTests</a>	Add main folders in Matlab path</li><li><a href="../../src/utils/loadInit.html" class="code" title="function init = loadInit(initScript)">loadInit</a>	loadInit Builds input structure init from a script</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function run(obj,init,model,lastAcqSensorDataAccessorMap)</a>
+0002 <span class="comment">% Calibrates the sensors using the data accessed through 'lastAcqSensorDataAccessorMap'</span>
+0003 
+0004 <span class="comment">% Get or acquire sensor data</span>
+0005 obj.getOrAcquireData(init,model,lastAcqSensorDataAccessorMap);
+0006 
+0007 <span class="comment">% Save eventual changes of last acquired data accessors to file</span>
+0008 save(<span class="string">'lastAcqSensorDataAccessorMap.mat'</span>,<span class="string">'lastAcqSensorDataAccessorMap'</span>);
+0009 
+0010 <span class="comment">% Calibrate the joint encoders</span>
+0011 obj.runCalibratorOrDiagnosis(init,model,@obj.calibrateSensors,obj.calibedSensorType);
+0012 
+0013 <span class="comment">% Run diagnosis on acquired data.</span>
+0014 <span class="keyword">if</span> init.runDiagnosis
+0015     <span class="comment">% Diagnosis function: doesn't require 'calibedParts' &amp; 'calibedJointsIdxes'.</span>
+0016     diagFuncH = @(path,~,sensors,parts,model,taskSpec) <span class="keyword">...</span>
+0017         SensorDiagnosis.runDiagnosis(<span class="keyword">...</span>
+0018         path,sensors,parts,model,taskSpec,<span class="keyword">...</span><span class="comment"> % actual params passed through the func handle</span>
+0019         obj.figuresHandlerMap,obj.task);              <span class="comment">% params specific to this calibrator</span>
+0020     <span class="comment">% Run diagnosis plotters for all acquired data, so for each acquired data accessor.</span>
+0021     <a href="runCalibratorOrDiagnosis.html" class="code" title="function runCalibratorOrDiagnosis(obj,init,model,calibOrDiagFuncH,calibedSensorType)">runCalibratorOrDiagnosis</a>(init,model,diagFuncH,obj.calibedSensorType);
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

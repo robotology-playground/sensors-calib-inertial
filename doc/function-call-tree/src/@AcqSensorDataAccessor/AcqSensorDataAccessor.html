@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of AcqSensorDataAccessor</title>
+  <meta name="keywords" content="AcqSensorDataAccessor">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @AcqSensorDataAccessor -->
+<h1>AcqSensorDataAccessor
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="AcqSensorDataAccessor.html" class="code" title="">AcqSensorDataAccessor</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="AcqSensorDataAccessor.html" class="code" title="">AcqSensorDataAccessor</a>	</li><li><a href="../../src/@MotionSequencer/run.html" class="code" title="function acqSensorDataAccessor = run(obj)">run</a>	</li><li><a href="../../src/@SensorLogDatabase/SensorLogDatabase.html" class="code" title="">SensorLogDatabase</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = AcqSensorDataAccessor(sequences)</a></li><li><a href="#_sub2" class="code">function [dataFolderPathList,calibedPartsList] = getFolderPaths4calibedSensor(obj,sensor,rootPath)</a></li><li><a href="#_sub3" class="code">function [measedSensorLists,measedPartsLists] = getMeasedSensorsParts(obj)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="AcqSensorDataAccessor.html" class="code" title="">AcqSensorDataAccessor</a> &lt; handle
+0002     <span class="comment">%AcqSensorDataAccessor Retrieves the path to acquired data for its use in a calibrator</span>
+0003     <span class="comment">%   We assume that the sensors of a given modality, from a given set of</span>
+0004     <span class="comment">%   parts, are being calibrated and data from those sensors have been</span>
+0005     <span class="comment">%   stored as N data sets through N acquisition sequences (MotionSequencer runner</span>
+0006     <span class="comment">%   sequences). This class stores the sequences information required</span>
+0007     <span class="comment">%   by the calibrators. For each sensor modality, 'getFolderPaths()'</span>
+0008     <span class="comment">%   returns the list of data set folders and respective calibrated</span>
+0009     <span class="comment">%   parts.</span>
+0010     
+0011     properties(Access = protected)
+0012         sequences = {}; <span class="comment">% sequences information required by the calibrators</span>
+0013     <span class="keyword">end</span>
+0014     
+0015     methods(Access = public)
+0016         <a name="_sub0" href="#_subfunctions" class="code">function obj = AcqSensorDataAccessor(sequences)</a>
+0017             obj.sequences = sequences;
+0018         <span class="keyword">end</span>
+0019         
+0020         <span class="comment">% 'getFolderPaths()' returns the list of data set folders and respective</span>
+0021         <span class="comment">% calibrated parts.</span>
+0022         <a name="_sub1" href="#_subfunctions" class="code">function [dataFolderPathList,calibedPartsList] = getFolderPaths4calibedSensor(obj,sensor,rootPath)</a>
+0023             [dataFolderPathList,calibedPartsList] = cellfun(<span class="keyword">...</span>
+0024                 @(sequence) deal(<span class="keyword">...</span><span class="comment">           % 1-for each sequence...</span>
+0025                 [rootPath <span class="string">'/'</span> sequence.seqDataFolderPath],<span class="keyword">...</span><span class="comment"> % 2-get the respective data folder</span>
+0026                 <span class="keyword">...</span><span class="comment"> % 3-get parts holding the calibrated sensors of modality 'sensor'</span>
+0027                 sequence.calib.part{ismember(sequence.calib.sensor,sensor)}),<span class="keyword">...</span>
+0028                 obj.sequences,<span class="string">'UniformOutput'</span>,false);
+0029         <span class="keyword">end</span>
+0030         
+0031         <a name="_sub2" href="#_subfunctions" class="code">function [measedSensorLists,measedPartsLists] = getMeasedSensorsParts(obj)</a>
+0032             [measedSensorLists,measedPartsLists] = cellfun(<span class="keyword">...</span>
+0033                 @(sequence) deal(<span class="keyword">...</span><span class="comment">        % 1-for each sequence...</span>
+0034                 sequence.meas.sensor,<span class="keyword">...</span><span class="comment">    % 2-get the list of sensors</span>
+0035                 sequence.meas.part),<span class="keyword">...</span><span class="comment">      % 3-get the list of parts for each sensor</span>
+0036                 obj.sequences,<span class="string">'UniformOutput'</span>,false);
+0037         <span class="keyword">end</span>
+0038     <span class="keyword">end</span>
+0039     
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

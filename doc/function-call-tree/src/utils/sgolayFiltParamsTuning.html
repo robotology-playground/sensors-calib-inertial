@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of sgolayFiltParamsTuning</title>
+  <meta name="keywords" content="sgolayFiltParamsTuning">
+  <meta name="description" content="% clear all variables and close all previous figures">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html utils -->
+<h1>sgolayFiltParamsTuning
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>% clear all variables and close all previous figures</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% clear all variables and close all previous figures</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="../../src/@FilterContext/FilterContext.html" class="code" title="">FilterContext</a>	</li><li><a href="../../src/@SensorsData/SensorsData.html" class="code" title="">SensorsData</a>	</li><li><a href="../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">%% clear all variables and close all previous figures</span>
+0002 clear
+0003 close all
+0004 clc
+0005 
+0006 <span class="comment">%% Main interface parameters ==============================================</span>
+0007 
+0008 <span class="comment">% 'matFile' or 'dumpFile' mode</span>
+0009 saveToCache = false;
+0010 loadFromCache = false;
+0011 saveFiltParams = false;
+0012 loadFiltParams = false;
+0013 
+0014 <span class="comment">% model and data capture file</span>
+0015 dataPath  = <span class="string">'../../data/dumper/icubSim.accelerometersCalibrator#25.seq#25'</span>;
+0016 modelPath = <span class="string">'../models/icubSim/icub.urdf'</span>;
+0017 dataSetNb = <span class="string">''</span>;
+0018 contextPath = <span class="string">'../../data/calibration/sgolayFiltParams.mat'</span>;
+0019 
+0020 <span class="comment">% Start and end point of data samples</span>
+0021 timeStart = 1;  <span class="comment">% starting time in capture data file (in seconds)</span>
+0022 timeStop  = -1; <span class="comment">% ending time in capture data file (in seconds). If -1, use</span>
+0023                 <span class="comment">% the end time from log</span>
+0024 <span class="comment">% filtering/subsampling: the main single data bucket of (timeStop-timeStart)/10ms</span>
+0025 <span class="comment">% samples is sub-sampled to 'subSamplingSize' samples for running the ellipsoid fitting.</span>
+0026 subSamplingSize = 1000;
+0027 <span class="comment">% Default filter params</span>
+0028 filtParams.type = <span class="string">'none'</span>;
+0029 
+0030 <span class="comment">% define the limb from which we will calibrate all the sensors.</span>
+0031 <span class="comment">% Activate all the sensors of that limb.</span>
+0032 jointsToCalibrate.parts = {<span class="string">'right_leg'</span>};
+0033 
+0034 <span class="comment">%%=========================================================================</span>
+0035 
+0036 <span class="comment">%% set init parameters 'modelParams'</span>
+0037 <span class="comment">%</span>
+0038 measedSensorList = {<span class="string">'acc'</span>,<span class="string">'joint'</span>};
+0039 measedPartsList = {{<span class="string">'right_leg'</span>},{<span class="string">'right_leg'</span>}};
+0040 mtbSensorAct.left_arm = [10:13 8:9 7];
+0041 mtbSensorAct.right_arm = [10:13 8:9 7];
+0042 mtbSensorAct.left_leg = 1:13;
+0043 mtbSensorAct.right_leg = 1:13;
+0044 mtbSensorAct.torso = 7:10;
+0045 mtbSensorAct.head = 1;
+0046 
+0047 modelParams = model.buildModelParams(<span class="keyword">...</span>
+0048     measedSensorList,measedPartsList,<span class="keyword">...</span>
+0049     {},[],<span class="keyword">...</span><span class="comment">  % no need for calibration parts information</span>
+0050     mtbSensorAct);
+0051 
+0052 <span class="comment">%% Get sensor output data</span>
+0053 <span class="comment">%</span>
+0054 <span class="keyword">if</span> loadFromCache
+0055     loadSource = <span class="string">'matFile'</span>;
+0056 <span class="keyword">else</span>
+0057     loadSource = <span class="string">'dumpFile'</span>;
+0058 <span class="keyword">end</span>
+0059 
+0060 <span class="comment">% Retrieve all captured data</span>
+0061 <span class="keyword">switch</span> loadSource
+0062     <span class="keyword">case</span> <span class="string">'cache'</span>
+0063         load([dataPath <span class="string">'/dataCache.mat'</span>],<span class="string">'data'</span>);
+0064         
+0065     <span class="keyword">case</span> <span class="string">'dumpFile'</span>
+0066         <span class="comment">% build sensor data parser</span>
+0067         plot_ = false; loadJointPos = false;
+0068         data = <a href="../../src/@SensorsData/SensorsData.html" class="code" title="">SensorsData</a>(dataPath,<span class="string">''</span>,subSamplingSize,<span class="keyword">...</span>
+0069             timeStart,timeStop,plot_,[],filtParams);
+0070         [sensorsIdxListFile,~] = data.buildInputDataSet(loadJointPos,modelParams);
+0071         
+0072         <span class="comment">% Save data in a Matlab file for faster access in further runs</span>
+0073         <span class="keyword">if</span> saveToCache
+0074             save([dataPath <span class="string">'/dataCache.mat'</span>],<span class="string">'data'</span>);
+0075         <span class="keyword">end</span>
+0076         
+0077     <span class="keyword">otherwise</span>
+0078         disp(<span class="string">'Unknown data source !!'</span>)
+0079 <span class="keyword">end</span>
+0080 
+0081 acc_list = 1:length(sensorsIdxListFile);
+0082 
+0083 <span class="comment">% get time series of ys_xxx_acc [3xnSamples] from captured data,</span>
+0084 sensMeasCell = cell(1,length(sensorsIdxListFile));
+0085 timeCell = cell(1,length(sensorsIdxListFile));
+0086 
+0087 <span class="keyword">for</span> acc_i = acc_list
+0088     <span class="comment">% raw sensor measurements components</span>
+0089     <a href="../../src/@y/y.html" class="code" title="">y</a> = [<span class="string">'y_'</span> data.labels{sensorsIdxListFile(acc_i)}];
+0090     eval([<span class="string">'sensMeas = data.parsedParams.'</span> <a href="../../src/@y/y.html" class="code" title="">y</a> <span class="string">';'</span>]);
+0091     sensMeasCell{1,acc_i} = sensMeas'*data.calib{sensorsIdxListFile(acc_i)}.gain;
+0092     <span class="comment">% time</span>
+0093     t = [<span class="string">'time_'</span> data.labels{sensorsIdxListFile(acc_i)}];
+0094     eval([<span class="string">'time = data.parsedParams.'</span> t <span class="string">';'</span>]);
+0095     timeCell{1,acc_i} = data.tInit + time';
+0096 <span class="keyword">end</span>
+0097 
+0098 <span class="comment">%% Plot data, apply sgolay filter and tune its parameters</span>
+0099 <span class="comment">%</span>
+0100 
+0101 <span class="keyword">for</span> acc_i = acc_list
+0102     <span class="comment">% init filter parameter and referenced object</span>
+0103     filterContext = <a href="../../src/@FilterContext/FilterContext.html" class="code" title="">FilterContext</a>(5,601,timeCell{1,acc_i},sensMeasCell{1,acc_i},contextPath);
+0104     
+0105     <span class="comment">% create figure and press-key handler</span>
+0106     figure(<span class="string">'Name'</span>,[<span class="string">'{x,y,z} Components of raw sensor '</span> num2str(sensorsIdxListFile(acc_i))],<span class="keyword">...</span>
+0107         <span class="string">'WindowKeyPressFcn'</span>,{@FilterContext.tuneFilter,filterContext});
+0108     set(gcf,<span class="string">'PositionMode'</span>,<span class="string">'manual'</span>,<span class="string">'Units'</span>,<span class="string">'normalized'</span>,<span class="string">'outerposition'</span>,[0 0 1 1]);
+0109     
+0110     <span class="comment">% Plot original signal components X, Y, Z</span>
+0111     ax = subplot(3,1,1);
+0112     title(<span class="string">'X component'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0113     grid ON;
+0114     hold on;
+0115     plot(timeCell{1,acc_i},sensMeasCell{1,acc_i}(:,1),<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,2.0);
+0116     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0117     ylabel(<span class="string">'proper a_x (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0118     hold off;
+0119     
+0120     ay = subplot(3,1,2);
+0121     title(<span class="string">'Y component'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0122     grid ON;
+0123     hold on;
+0124     plot(timeCell{1,acc_i},sensMeasCell{1,acc_i}(:,2),<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,2.0);
+0125     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0126     ylabel(<span class="string">'proper a_y (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0127     hold off;
+0128 
+0129     az = subplot(3,1,3);
+0130     title(<span class="string">'Z component'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0131     grid ON;
+0132     hold on;
+0133     plot(timeCell{1,acc_i},sensMeasCell{1,acc_i}(:,3),<span class="string">'r-'</span>,<span class="string">'lineWidth'</span>,2.0);
+0134     xlabel(<span class="string">'Time (sec)'</span>,<span class="string">'Fontsize'</span>,12);
+0135     ylabel(<span class="string">'proper a_z (m/s^2)'</span>,<span class="string">'Fontsize'</span>,12);
+0136     hold off;
+0137     
+0138     <span class="comment">% register the subplot axis for allowing the callback function to plot</span>
+0139     <span class="comment">% the filtered components</span>
+0140     filterContext.regSubPlots(ax,ay,az);
+0141 <span class="keyword">end</span>
+0142</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

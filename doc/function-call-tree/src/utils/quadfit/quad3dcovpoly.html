@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad3dcovpoly</title>
+  <meta name="keywords" content="quad3dcovpoly">
+  <meta name="description" content="Theoretical noise covariance structure corresponding to a 3D quadratic function.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad3dcovpoly
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Theoretical noise covariance structure corresponding to a 3D quadratic function.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function C = quad3dcovpoly(sx, sy, sz, x, y, z) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Theoretical noise covariance structure corresponding to a 3D quadratic function.
+
+ Input arguments:
+ sx, sy, sz:
+    vector of noise covariance components (up to scale)
+ x, y, z:
+    vector of observed data</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>	Fit an ellipsoid to data using the nonlinear Koopmans method.</li><li><a href="quad3dfit_koopmans.html" class="code" title="function [p,mu] = quad3dfit_koopmans(varargin)">quad3dfit_koopmans</a>	Fit a quadratic curve to data using the nonlinear Koopmans method.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function C = quad3dcovpoly(sx, sy, sz, x, y, z)</a>
+0002 <span class="comment">% Theoretical noise covariance structure corresponding to a 3D quadratic function.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Input arguments:</span>
+0005 <span class="comment">% sx, sy, sz:</span>
+0006 <span class="comment">%    vector of noise covariance components (up to scale)</span>
+0007 <span class="comment">% x, y, z:</span>
+0008 <span class="comment">%    vector of observed data</span>
+0009 
+0010 <span class="comment">% Copyright 2008-2009 Levente Hunyadi</span>
+0011 
+0012 validateattributes(sx, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0013 validateattributes(sy, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0014 validateattributes(sz, {<span class="string">'numeric'</span>}, {<span class="string">'nonnegative'</span>,<span class="string">'scalar'</span>});
+0015 n = sqrt(sx.^2 + sy.^2 + sz.^2);
+0016 sx = sx / n;
+0017 sy = sy / n;
+0018 sz = sz / n;
+0019 
+0020 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0021 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0022 validateattributes(z, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0023 assert(numel(x) == numel(<a href="../../../src/@y/y.html" class="code" title="">y</a>) &amp;&amp; numel(<a href="../../../src/@y/y.html" class="code" title="">y</a>) == numel(z), <span class="keyword">...</span>
+0024     <span class="string">'quad3dcov:DimensionMismatch'</span>, <span class="string">'Data vectors x, y and z must have the same number of elements.'</span>);
+0025 x = x(:);
+0026 <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0027 z = z(:);
+0028 
+0029 <span class="comment">% terms are ordered as [x^2 y^2 z^2 x*y x*z y*z x y z 1]</span>
+0030 C = zeros(10,10,3);
+0031 C(:,:,1) = <span class="keyword">...</span>
+0032 [ mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0033 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0034 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0035 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0036 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0037 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0038 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0039 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0040 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0041 ; mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0042 ];
+0043 C(:,:,2) = <span class="keyword">...</span>
+0044 [            mean(6.*sx.^2.*x.^2), mean(sx.^2.*y.^2 + sy.^2.*x.^2), mean(sx.^2.*z.^2 + sz.^2.*x.^2),            mean(3.*sx.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),            mean(3.*sx.^2.*x.*z),               mean(sx.^2.*y.*z), mean(3.*sx.^2.*x),    mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sx.^2.*z), mean(sx.^2) <span class="keyword">...</span>
+0045 ; mean(sx.^2.*y.^2 + sy.^2.*x.^2),            mean(6.*sy.^2.*y.^2), mean(sy.^2.*z.^2 + sz.^2.*y.^2),            mean(3.*sy.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),               mean(sy.^2.*x.*z),            mean(3.*sy.^2.*y.*z),    mean(sy.^2.*x), mean(3.*sy.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sy.^2.*z), mean(sy.^2) <span class="keyword">...</span>
+0046 ; mean(sx.^2.*z.^2 + sz.^2.*x.^2), mean(sy.^2.*z.^2 + sz.^2.*y.^2),            mean(6.*sz.^2.*z.^2),               mean(sz.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),            mean(3.*sz.^2.*x.*z),            mean(3.*sz.^2.*y.*z),    mean(sz.^2.*x),    mean(sz.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(3.*sz.^2.*z), mean(sz.^2) <span class="keyword">...</span>
+0047 ;            mean(3.*sx.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),            mean(3.*sy.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),               mean(sz.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sx.^2.*y.^2 + sy.^2.*x.^2),               mean(sx.^2.*y.*z),               mean(sy.^2.*x.*z),    mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sy.^2.*x),           mean(0),     mean(0) <span class="keyword">...</span>
+0048 ;            mean(3.*sx.^2.*x.*z),               mean(sy.^2.*x.*z),            mean(3.*sz.^2.*x.*z),               mean(sx.^2.*y.*z), mean(sx.^2.*z.^2 + sz.^2.*x.^2),               mean(sz.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),    mean(sx.^2.*z),           mean(0),    mean(sz.^2.*x),     mean(0) <span class="keyword">...</span>
+0049 ;               mean(sx.^2.*y.*z),            mean(3.*sy.^2.*y.*z),            mean(3.*sz.^2.*y.*z),               mean(sy.^2.*x.*z),               mean(sz.^2.*x.*<a href="../../../src/@y/y.html" class="code" title="">y</a>), mean(sy.^2.*z.^2 + sz.^2.*y.^2),           mean(0),    mean(sy.^2.*z),    mean(sz.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),     mean(0) <span class="keyword">...</span>
+0050 ;               mean(3.*sx.^2.*x),                  mean(sy.^2.*x),                  mean(sz.^2.*x),                  mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                  mean(sx.^2.*z),                         mean(0),       mean(sx.^2),           mean(0),           mean(0),     mean(0) <span class="keyword">...</span>
+0051 ;                  mean(sx.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),               mean(3.*sy.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                  mean(sz.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),                  mean(sy.^2.*x),                         mean(0),                  mean(sy.^2.*z),           mean(0),       mean(sy.^2),           mean(0),     mean(0) <span class="keyword">...</span>
+0052 ;                  mean(sx.^2.*z),                  mean(sy.^2.*z),               mean(3.*sz.^2.*z),                         mean(0),                  mean(sz.^2.*x),                  mean(sz.^2.*<a href="../../../src/@y/y.html" class="code" title="">y</a>),           mean(0),           mean(0),       mean(sz.^2),     mean(0) <span class="keyword">...</span>
+0053 ;                     mean(sx.^2),                     mean(sy.^2),                     mean(sz.^2),                         mean(0),                         mean(0),                         mean(0),           mean(0),           mean(0),           mean(0),     mean(0) <span class="keyword">...</span>
+0054 ];
+0055 C(:,:,3) = <span class="keyword">...</span>
+0056 [     mean(-3.*sx.^4), mean(-sx.^2.*sy.^2), mean(-sx.^2.*sz.^2),             mean(0),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0057 ; mean(-sx.^2.*sy.^2),     mean(-3.*sy.^4), mean(-sy.^2.*sz.^2),             mean(0),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0058 ; mean(-sx.^2.*sz.^2), mean(-sy.^2.*sz.^2),     mean(-3.*sz.^4),             mean(0),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0059 ;             mean(0),             mean(0),             mean(0), mean(-sx.^2.*sy.^2),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0060 ;             mean(0),             mean(0),             mean(0),             mean(0), mean(-sx.^2.*sz.^2),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0061 ;             mean(0),             mean(0),             mean(0),             mean(0),             mean(0), mean(-sy.^2.*sz.^2), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0062 ;             mean(0),             mean(0),             mean(0),             mean(0),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0063 ;             mean(0),             mean(0),             mean(0),             mean(0),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0064 ;             mean(0),             mean(0),             mean(0),             mean(0),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0065 ;             mean(0),             mean(0),             mean(0),             mean(0),             mean(0),             mean(0), mean(0), mean(0), mean(0), mean(0) <span class="keyword">...</span>
+0066 ];</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

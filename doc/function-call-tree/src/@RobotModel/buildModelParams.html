@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of buildModelParams</title>
+  <meta name="keywords" content="buildModelParams">
+  <meta name="description" content="buildModelParams Build old interface structure">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @RobotModel -->
+<h1>buildModelParams
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>buildModelParams Build old interface structure</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function modelParams = buildModelParams(obj,measedSensorList,measedPartsList,calibedParts,calibedJointsIdxes,mtbSensorAct) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">buildModelParams Build old interface structure
+   Build old interface structure such that RobotModel class
+   introduction doesn't impact the calibrators and the yarp data
+   parsing current design (for non-regression tests purpose).</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="RobotModel.html" class="code" title="">RobotModel</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function modelParams = buildModelParams(obj,</a><span class="keyword">...</span>
+0002     measedSensorList,measedPartsList,<span class="keyword">...</span>
+0003     calibedParts,calibedJointsIdxes,<span class="keyword">...</span>
+0004     mtbSensorAct)
+0005 <span class="comment">%buildModelParams Build old interface structure</span>
+0006 <span class="comment">%   Build old interface structure such that RobotModel class</span>
+0007 <span class="comment">%   introduction doesn't impact the calibrators and the yarp data</span>
+0008 <span class="comment">%   parsing current design (for non-regression tests purpose).</span>
+0009 
+0010 <span class="comment">%% save joints and sensors databases from model</span>
+0011 modelParams.jointsDbase = obj.jointsDbase;
+0012 modelParams.sensorsDbase = obj.sensorsDbase;
+0013 
+0014 <span class="comment">%% Build access lists for joints information</span>
+0015 <span class="comment">%</span>
+0016 
+0017 <span class="comment">% 'jointsToCalibrate' holds information for measured and calibrated</span>
+0018 <span class="comment">% joints. Use the list of parts associated to measured joint encoders</span>
+0019 parts = [measedPartsList{ismember(measedSensorList,<span class="string">'joint'</span>)}];
+0020 
+0021 <span class="comment">% Preset some input parameters</span>
+0022 <span class="keyword">if</span> isempty(calibedParts)
+0023     <span class="keyword">for</span> cPart = parts
+0024         part = cell2mat(cPart);
+0025         calibedJointsIdxes.(part) = [];
+0026     <span class="keyword">end</span>
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="comment">% Build 'jointsToCalibrate'</span>
+0030 jointsToCalibrate.ctrledJoints = cell(1,length(parts));
+0031 jointsToCalibrate.calibedJointsDq0 = cell(1,length(parts));
+0032 jointsToCalibrate.jointsDofs = cell(1,length(parts));
+0033 jointsToCalibrate.ctrledJointsIdxes = cell(1,length(parts)); <span class="comment">% element index on the data from yarp port</span>
+0034 jointsToCalibrate.calibedJointsIdxes = cell(1,length(parts)); <span class="comment">% subset within the controlled joints</span>
+0035 
+0036 jointsToCalibrate.mapIdx = containers.Map(<span class="string">'KeyType'</span>,<span class="string">'char'</span>,<span class="string">'ValueType'</span>,<span class="string">'uint8'</span>);
+0037 <span class="keyword">for</span> i = 1:length(parts)
+0038     jointList = obj.jointsDbase.getJointNames(parts{i});
+0039     jointsToCalibrate.ctrledJoints{i} = jointList;
+0040     jointsToCalibrate.calibedJointsDq0{i} = cell2mat(obj.jointsDbase.getJointsMaxCalibDq0(jointList));
+0041     jointsToCalibrate.jointsDofs{i} = obj.jointsDbase.getTotalJointDoF(jointList);
+0042     jointsToCalibrate.ctrledJointsIdxes{i} = 1:length(jointList); <span class="comment">% TO BE FIXED. the indexes here should match those in the app GUI and YARP indexes</span>
+0043     jointsToCalibrate.calibedJointsIdxes{i} = calibedJointsIdxes.(parts{i});
+0044     jointsToCalibrate.mapIdx(parts{i}) = i;
+0045 <span class="keyword">end</span>
+0046 
+0047 <span class="comment">% Process the selection for the structure 'jointsToCalibrate' definition</span>
+0048 <span class="keyword">for</span> i = 1:length(parts)
+0049     jointsToCalibrate.calibedJointsDq0{i}=jointsToCalibrate.calibedJointsDq0{i}(jointsToCalibrate.calibedJointsIdxes{i});
+0050 <span class="keyword">end</span>
+0051 
+0052 <span class="comment">% Save parameters to output structure</span>
+0053 modelParams.jointsToCalibrate = jointsToCalibrate;
+0054 modelParams.calibedParts = calibedParts; <span class="comment">% parts for calibrated joint encoders</span>
+0055 modelParams.jointMeasedParts = parts;    <span class="comment">% parts for measured joint encoders</span>
+0056 
+0057 <span class="comment">%% Build access lists for inertial sensors information</span>
+0058 <span class="comment">%</span>
+0059 
+0060 <span class="keyword">if</span> isempty(mtbSensorAct)
+0061     mtbSensorAct.left_arm = [10:13 8:9 7];
+0062     mtbSensorAct.right_arm = [10:13 8:9 7];
+0063     mtbSensorAct.left_leg = 1:13;
+0064     mtbSensorAct.right_leg = 1:13;
+0065     mtbSensorAct.torso = 7:10;
+0066     mtbSensorAct.head = 1;
+0067 <span class="keyword">end</span>
+0068 
+0069 <span class="comment">% Use the list of parts associated to measured accelerometers and</span>
+0070 <span class="comment">% IMUs.</span>
+0071 parts = [measedPartsList{ismember(measedSensorList,{<span class="string">'acc'</span>,<span class="string">'imu'</span>})}];
+0072 
+0073 activeSensorLabels = cell(1,length(parts));
+0074 
+0075 <span class="keyword">for</span> i = 1:length(parts)
+0076     activeSensorLabels{i} = obj.sensorsDbase.getSensorlabels(parts{i},mtbSensorAct.(parts{i}));
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">% Save parameters to output structure</span>
+0080 modelParams.accMeasedParts = parts; <span class="comment">% parts for measured inertial sensors</span>
+0081 modelParams.activeSensorLabels = activeSensorLabels;
+0082 
+0083 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

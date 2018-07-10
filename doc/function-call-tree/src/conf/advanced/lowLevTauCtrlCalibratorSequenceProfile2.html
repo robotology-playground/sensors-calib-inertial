@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of lowLevTauCtrlCalibratorSequenceProfile2</title>
+  <meta name="keywords" content="lowLevTauCtrlCalibratorSequenceProfile2">
+  <meta name="description" content="We support two control modes: position and pwm.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html conf --><!-- menu.html advanced -->
+<h1>lowLevTauCtrlCalibratorSequenceProfile2
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>We support two control modes: position and pwm.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> We support two control modes: position and pwm.
+ Before this script is run, 'motor' is set to the joints/motors group
+ being calibrated. Here we are running the Ktau parameter (2nd phase).
+ The targeted joint is kept in position control.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@SensorDataAcquisition/getSeqProfile.html" class="code" title="function [seqHomeParams,seqEndParams,selector] = getSeqProfile(task,taskSpecificParams)">getSeqProfile</a>	getSeqProfile Loads the sequence profile parameters from a script ini file</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% We support two control modes: position and pwm.</span>
+0002 <span class="comment">% Before this script is run, 'motor' is set to the joints/motors group</span>
+0003 <span class="comment">% being calibrated. Here we are running the Ktau parameter (2nd phase).</span>
+0004 <span class="comment">% The targeted joint is kept in position control.</span>
+0005 
+0006 
+0007 <span class="comment">%% Home single step sequence</span>
+0008 
+0009 <span class="comment">% For limbs and torso calibration</span>
+0010 homeCalib.labels = {<span class="keyword">...</span>
+0011     <span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>,<span class="string">'ctrl'</span>;<span class="keyword">...</span>
+0012     <span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>,<span class="string">'pos'</span>;
+0013     <span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="string">'torso'</span>,<span class="string">'head'</span>};
+0014 homeCalib.val = {<span class="keyword">...</span>
+0015     [0 45 0  50 0 0 0],<span class="keyword">...</span>
+0016     [0 45 0  50 0 0 0],<span class="keyword">...</span>
+0017     [0 20 0 -30 0 0],<span class="keyword">...</span>
+0018     [0 20 0 -30 0 0],<span class="keyword">...</span>
+0019     [0 0 0],<span class="keyword">...</span>
+0020     [0 0 0]};
+0021 
+0022 <span class="comment">%% Motion sequences</span>
+0023 <span class="comment">% (a single sequence is intended to move all defined parts synchronously,</span>
+0024 <span class="comment">% motions from 2 different sequences should be run asynchronously)</span>
+0025 <span class="comment">% each calibPart should be calibrated within a single sequence.</span>
+0026 
+0027 <span class="comment">% Prompt strings definition</span>
+0028 NA = @() []; <span class="comment">% no prompt</span>
+0029 promptStr = @() [<span class="keyword">...</span>
+0030     <span class="string">'Calibrating the torque parameter Kpwm of joint/motor '</span> motor <span class="string">'.\n'</span> <span class="keyword">...</span>
+0031     <span class="string">'Push joint back and forth and press any key when done..\n'</span>];
+0032 
+0033 <span class="comment">% define tables for each limb</span>
+0034 left_arm_seqParams.labels = {<span class="keyword">...</span>
+0035     <span class="string">'prpt'</span>   ,<span class="string">'mode'</span>   ,<span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0036     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'jtorq'</span>    ;<span class="keyword">...</span>
+0037     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'left_arm'</span>           ,<span class="string">'left_arm'</span>      ,<span class="string">'left_arm'</span> ,<span class="string">'left_arm'</span> };
+0038 left_arm_seqParams.val = {<span class="keyword">...</span>
+0039     NA       ,<span class="string">'ctrl'</span>   ,homeCalib.val{1}     ,repmat( 4,[1 7]),false      ,false      ;<span class="keyword">...</span>
+0040     promptStr,<span class="string">'ctrl'</span>   ,homeCalib.val{1}     ,repmat( 4,[1 7]),true       ,true       };
+0041 
+0042 right_arm_seqParams.labels = {<span class="keyword">...</span>
+0043     <span class="string">'prpt'</span>   ,<span class="string">'mode'</span>   ,<span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0044     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'jtorq'</span>    ;<span class="keyword">...</span>
+0045     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'right_arm'</span>          ,<span class="string">'right_arm'</span>     ,<span class="string">'right_arm'</span>,<span class="string">'right_arm'</span>};
+0046 right_arm_seqParams.val = left_arm_seqParams.val;
+0047 
+0048 left_leg_seqParams.labels = {<span class="keyword">...</span>
+0049     <span class="string">'prpt'</span>   ,<span class="string">'mode'</span>   ,<span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0050     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'jtorq'</span>    ;<span class="keyword">...</span>
+0051     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'left_leg'</span>           ,<span class="string">'left_leg'</span>      ,<span class="string">'left_leg'</span> ,<span class="string">'left_leg'</span> };
+0052 left_leg_seqParams.val = {<span class="keyword">...</span>
+0053     NA       ,<span class="string">'ctrl'</span>   ,homeCalib.val{3}     ,repmat( 4,[1 6]),false      ,false      ;<span class="keyword">...</span>
+0054     promptStr,<span class="string">'ctrl'</span>   ,homeCalib.val{3}     ,repmat( 4,[1 6]),true       ,true       };
+0055 
+0056 right_leg_seqParams.labels = {<span class="keyword">...</span>
+0057     <span class="string">'prpt'</span>   ,<span class="string">'mode'</span>   ,<span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0058     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'jtorq'</span>    ;<span class="keyword">...</span>
+0059     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'right_leg'</span>          ,<span class="string">'right_leg'</span>     ,<span class="string">'right_leg'</span>,<span class="string">'right_leg'</span>};
+0060 right_leg_seqParams.val = left_leg_seqParams.val;
+0061 
+0062 torso_seqParams.labels = {<span class="keyword">...</span>
+0063     <span class="string">'prpt'</span>   ,<span class="string">'mode'</span>   ,<span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0064     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'jtorq'</span>    ;<span class="keyword">...</span>
+0065     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'torso'</span>              ,<span class="string">'torso'</span>         ,<span class="string">'torso'</span>    ,<span class="string">'torso'</span>    };
+0066 torso_seqParams.val = {<span class="keyword">...</span>
+0067     NA       ,<span class="string">'ctrl'</span>   ,homeCalib.val{5}     ,repmat( 4,[1 3]),false      ,false      ;<span class="keyword">...</span>
+0068     promptStr,<span class="string">'ctrl'</span>   ,homeCalib.val{5}     ,repmat( 4,[1 3]),true       ,true       };
+0069 
+0070 head_seqParams.labels = {<span class="keyword">...</span>
+0071     <span class="string">'prpt'</span>   ,<span class="string">'mode'</span>   ,<span class="string">'ctrl'</span>               ,<span class="string">'ctrl'</span>          ,<span class="string">'meas'</span>     ,<span class="string">'meas'</span>     ;<span class="keyword">...</span>
+0072     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'pos'</span>                ,<span class="string">'vel'</span>           ,<span class="string">'joint'</span>    ,<span class="string">'jtorq'</span>    ;<span class="keyword">...</span>
+0073     <span class="string">'NA'</span>     ,<span class="string">'NA'</span>     ,<span class="string">'head'</span>               ,<span class="string">'head'</span>          ,<span class="string">'head'</span>     ,<span class="string">'head'</span>     };
+0074 head_seqParams.val = {<span class="keyword">...</span>
+0075     NA       ,<span class="string">'ctrl'</span>   ,homeCalib.val{6}     ,repmat( 4,[1 3]),false      ,false      ;<span class="keyword">...</span>
+0076     promptStr,<span class="string">'ctrl'</span>   ,homeCalib.val{6}     ,repmat( 4,[1 3]),true       ,true       };
+0077 
+0078 <span class="comment">% define Home and End sequences for limbs and torso calibration</span>
+0079 seqHomeParams{1} = homeCalib;
+0080 seqEndParams     = homeCalib;
+0081 
+0082 <span class="comment">% Map parts to sequences and params</span>
+0083 selector.calibedParts = {<span class="keyword">...</span>
+0084     <span class="string">'left_arm'</span>,<span class="string">'right_arm'</span>,<span class="keyword">...</span>
+0085     <span class="string">'left_leg'</span>,<span class="string">'right_leg'</span>,<span class="keyword">...</span>
+0086     <span class="string">'torso'</span>,<span class="string">'head'</span>};
+0087 selector.calibedSensors = {<span class="keyword">...</span>
+0088     {<span class="string">'LLTctrl'</span>},{<span class="string">'LLTctrl'</span>},<span class="keyword">...</span>
+0089     {<span class="string">'LLTctrl'</span>},{<span class="string">'LLTctrl'</span>},<span class="keyword">...</span>
+0090     {<span class="string">'LLTctrl'</span>},{<span class="string">'LLTctrl'</span>}};
+0091 selector.setIdx  = {1,1,1,1,1,1}; <span class="comment">% max index must not exceed max index of seqHomePArams</span>
+0092 selector.seqParams = {<span class="keyword">...</span>
+0093     left_arm_seqParams,right_arm_seqParams,<span class="keyword">...</span>
+0094     left_leg_seqParams,right_leg_seqParams,<span class="keyword">...</span>
+0095     torso_seqParams,head_seqParams};</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

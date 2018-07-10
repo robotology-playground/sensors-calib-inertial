@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of setValFromGrid</title>
+  <meta name="keywords" content="setValFromGrid">
+  <meta name="description" content="parse the grid parameters (creates vars 'part1','joint1','part2'...)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDataAcquisition -->
+<h1>setValFromGrid
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>parse the grid parameters (creates vars 'part1','joint1','part2'...)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function seqParams = setValFromGrid(gridBuilder,gridParams,acqVel,transVel,labels) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> parse the grid parameters (creates vars 'part1','joint1','part2'...)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDataAcquisition.html" class="code" title="">SensorDataAcquisition</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function seqParams = setValFromGrid(gridBuilder,gridParams,acqVel,transVel,labels)</a>
+0002 
+0003 <span class="comment">% parse the grid parameters (creates vars 'part1','joint1','part2'...)</span>
+0004 q1params = cell2struct(gridParams(2,:),gridParams(1,:),2);
+0005 q2params = cell2struct(gridParams(3,:),gridParams(1,:),2);
+0006 part = labels{3,ismember(labels(1,:),<span class="string">'ctrl'</span>) &amp; ismember(labels(2,:),<span class="string">'pos'</span>)};
+0007 q1params.part = part;
+0008 q2params.part = part;
+0009 
+0010 <span class="comment">% create sequence where q1 spans once from qmin1 to qmax2 step by step, and</span>
+0011 <span class="comment">% q2 spans its range in a continuous way.</span>
+0012 seqX = cell(1,5);
+0013 [seqX{1:5}] = gridBuilder.buildGrid(q1params,q2params,acqVel,transVel);
+0014 
+0015 <span class="comment">% create sequence where q1 and q2 now have their roles inverted</span>
+0016 seqY = cell(1,5);
+0017 [seqY{[2 1 4 3 5]}] = gridBuilder.buildGrid(q2params,q1params,acqVel,transVel);
+0018 
+0019 <span class="comment">% concatenate and extract final vectors...</span>
+0020 seq = cellfun(@(cellX,cellY) [cellX;cellY],seqX,seqY,<span class="string">'UniformOutput'</span>,false);
+0021 [q1,q2,dq1,dq2,measTag] = deal(seq{:});
+0022 
+0023 <span class="comment">% Reshape the data for setting ['ctrl','pos','&lt;part&gt;'] and ['ctrl','vel','&lt;part&gt;']</span>
+0024 <span class="comment">% colums of 'seqParams':</span>
+0025 <span class="comment">% - first init to all zeros</span>
+0026 jointsList = RobotModel.jointsListFromPart(part);
+0027 ctrlPos = zeros(length(q1),length(jointsList));
+0028 ctrlVel = ctrlPos;
+0029 <span class="comment">% - select columns for the controlled joints</span>
+0030 colq1 = ismember(jointsList,q1params.joint);
+0031 colq2 = ismember(jointsList,q2params.joint);
+0032 <span class="comment">% - set values the controlled joints</span>
+0033 ctrlPos(:,colq1) = q1; ctrlVel(:,colq1) = dq1;
+0034 ctrlPos(:,colq2) = q2; ctrlVel(:,colq2) = dq2;
+0035 <span class="comment">% - reshape as a list and set to 'seqParams'. We don't assume what the</span>
+0036 <span class="comment">% 'pos','vel' labels order is in 'labels' cell array.</span>
+0037 posCols = ismember(labels(1,:),<span class="string">'ctrl'</span>) &amp; ismember(labels(2,:),<span class="string">'pos'</span>);
+0038 seqParams(:,posCols) = num2cell(ctrlPos,2);
+0039 velCols = ismember(labels(1,:),<span class="string">'ctrl'</span>) &amp; ismember(labels(2,:),<span class="string">'vel'</span>);
+0040 seqParams(:,velCols) = num2cell(ctrlVel,2);
+0041 
+0042 <span class="comment">% Set measurement tags</span>
+0043 measCols = ismember(labels(1,:),<span class="string">'meas'</span>);
+0044 seqParams(:,measCols) = repmat(num2cell(measTag,2),1,sum(measCols));
+0045 
+0046 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

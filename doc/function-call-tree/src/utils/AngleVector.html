@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of AngleVector</title>
+  <meta name="keywords" content="AngleVector">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html utils -->
+<h1>AngleVector
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="Angle.html" class="code" title="">Angle</a>	</li><li><a href="AngleVector.html" class="code" title="">AngleVector</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="AngleVector.html" class="code" title="">AngleVector</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = AngleVector(vec)</a></li><li><a href="#_sub2" class="code">function angleVec = computeAngles2ref(obj,vec)</a></li><li><a href="#_sub3" class="code">function setRefs(obj,vec)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="AngleVector.html" class="code" title="">AngleVector</a> &lt; handle
+0002     <span class="comment">%UNTITLED3 Summary of this class goes here</span>
+0003     <span class="comment">%   Detailed explanation goes here</span>
+0004     
+0005     properties
+0006         angleList;
+0007         acc_offsetList;
+0008     <span class="keyword">end</span>
+0009     
+0010     methods
+0011         <a name="_sub0" href="#_subfunctions" class="code">function obj = AngleVector(vec)</a>
+0012             <span class="comment">% Refer to wiki:</span>
+0013             <span class="comment">% https://github.com/robotology/codyco-modules/wiki/External-Inertial-Sensors-for-iCubGenova02</span>
+0014             <span class="comment">%</span>
+0015             <span class="comment">% a = ((t1 x1 y1 z1)   .... (tn xn yn xn))</span>
+0016             <span class="comment">% n  = number of sensors published on the port</span>
+0017             <span class="comment">% ai = pos of sensor ... see enum type</span>
+0018             <span class="comment">% bi = accel (1) or gyro (2)</span>
+0019             <span class="comment">% ti = timestamp in us</span>
+0020             <span class="comment">%</span>
+0021             <span class="comment">% | size  |            4           | ...</span>
+0022             <span class="comment">% | offset| 4*(i-1)+1..4*(i-1)+4   | ...</span>
+0023             <span class="comment">% | Field | t1..z1| ti  xi  yi  zi | ...</span>
+0024             <span class="comment">%</span>
+0025             HEADER_LENGTH = 0;
+0026             FULL_ACC_SIZE = 4;
+0027             LIN_ACC_1RST_IDX = 2;
+0028 
+0029             obj.angleList = cell(13,1);
+0030             obj.acc_offsetList = zeros(13,1);
+0031             
+0032             <span class="keyword">for</span> acc_idx = 1:13
+0033                 acc_offset = HEADER_LENGTH+(acc_idx-1)*FULL_ACC_SIZE+LIN_ACC_1RST_IDX;
+0034                 obj.acc_offsetList(acc_idx) = acc_offset;
+0035                 acc_i = vec([acc_offset acc_offset+1 acc_offset+2]);
+0036                 obj.angleList{acc_idx} = <a href="Angle.html" class="code" title="">Angle</a>(acc_i);
+0037             <span class="keyword">end</span>
+0038         <span class="keyword">end</span>
+0039         
+0040         <a name="_sub1" href="#_subfunctions" class="code">function angleVec = computeAngles2ref(obj,vec)</a>
+0041             angleVec = zeros(2,13);
+0042             <span class="keyword">for</span> acc_idx = 1:13
+0043                 acc_offset = obj.acc_offsetList(acc_idx);
+0044                 acc_i = vec([acc_offset acc_offset+1 acc_offset+2]);
+0045                 angleVec(:,acc_idx) = obj.angleList{acc_idx}.computeNormAngle2ref(acc_i);
+0046             <span class="keyword">end</span>
+0047         <span class="keyword">end</span>
+0048         
+0049         <a name="_sub2" href="#_subfunctions" class="code">function setRefs(obj,vec)</a>
+0050             <span class="keyword">for</span> acc_idx = 1:13
+0051                 acc_offset = obj.acc_offsetList(acc_idx);
+0052                 acc_i = vec([acc_offset acc_offset+1 acc_offset+2]);
+0053                 obj.angleList{acc_idx}.setGravRef(acc_i);
+0054             <span class="keyword">end</span>
+0055         <span class="keyword">end</span>
+0056     <span class="keyword">end</span>
+0057     
+0058 <span class="keyword">end</span>
+0059</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

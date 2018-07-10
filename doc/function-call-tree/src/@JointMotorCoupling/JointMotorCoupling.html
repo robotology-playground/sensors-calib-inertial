@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of JointMotorCoupling</title>
+  <meta name="keywords" content="JointMotorCoupling">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @JointMotorCoupling -->
+<h1>JointMotorCoupling
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointMotorCoupling.html" class="code" title="">JointMotorCoupling</a>	</li><li><a href="getMotorsFromList.html" class="code" title="function motorNameList = getMotorsFromList( jmCouplings )">getMotorsFromList</a>	Get all motor names from the couplings list</li><li><a href="getPartsFromList.html" class="code" title="function parts = getPartsFromList( jmCouplings )">getPartsFromList</a>	Get part name from each joint/motor coupling</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="JointMotorCoupling.html" class="code" title="">JointMotorCoupling</a>	</li><li><a href="../../src/@MotorPWMcontroller/MotorPWMcontroller.html" class="code" title="">MotorPWMcontroller</a>	</li><li><a href="../../src/@RemoteControlBoard/getCouplings.html" class="code" title="function [ couplingList ] = getCouplings( obj )">getCouplings</a>	This method retrieves the coupling parameters through the IRemoteVariables debug interface</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function obj = JointMotorCoupling(</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 classdef <a href="JointMotorCoupling.html" class="code" title="">JointMotorCoupling</a> &lt; handle
+0002     <span class="comment">%This class hold the coupling info for a set of joints/motors</span>
+0003     <span class="comment">%   - coupling.T : the coupling matrix 3x3 or just the integer 1</span>
+0004     <span class="comment">%   - coupling.coupledJoints : ordered list of coupled joint names</span>
+0005     <span class="comment">%   - coupling.coupledMotors : ordered list of coupled motor names</span>
+0006     
+0007     properties(GetAccess=public, SetAccess=protected)
+0008         label@char = <span class="string">''</span>; <span class="comment">% unique id of the coupling</span>
+0009         Tm2j = 1;           <span class="comment">% coupling matrix</span>
+0010         Tj2m = 1;           <span class="comment">% inverted coupling matrix</span>
+0011         coupledJoints = {}; <span class="comment">% cell array of strings</span>
+0012         coupledMotors = {}; <span class="comment">% cell array of motor names</span>
+0013         gearboxDqM2Jratios = []; <span class="comment">% array of motors gearbox ratios</span>
+0014         fullscalePWMs = [];  <span class="comment">% array of motors PWM fullscale values</span>
+0015         part = <span class="string">''</span>;       <span class="comment">% parent part of the coupled joints/motors</span>
+0016     <span class="keyword">end</span>
+0017     
+0018     methods
+0019         <a name="_sub0" href="#_subfunctions" class="code">function obj = JointMotorCoupling(</a><span class="keyword">...</span>
+0020                 Tm2j, cpldJoints, cpldMotors, <span class="keyword">...</span>
+0021                 cpldGearboxDqM2Jratios, cpldFullscalePWMs, part)
+0022             
+0023             obj.Tm2j = Tm2j;
+0024             obj.Tj2m = inv(Tm2j);
+0025             obj.coupledJoints = cpldJoints(:)';
+0026             obj.coupledMotors = cpldMotors(:)';
+0027             obj.gearboxDqM2Jratios = cpldGearboxDqM2Jratios(:)';
+0028             obj.fullscalePWMs = cpldFullscalePWMs(:)';
+0029             obj.part = part;
+0030             obj.label = [obj.coupledJoints{:}];
+0031         <span class="keyword">end</span>
+0032     <span class="keyword">end</span>
+0033     
+0034     methods(Static)
+0035         <span class="comment">% Get all motor names from the couplings list</span>
+0036         motorNameList = <a href="getMotorsFromList.html" class="code" title="function motorNameList = getMotorsFromList( jmCouplings )">getMotorsFromList</a>(jmCouplings);
+0037         
+0038         <span class="comment">% Get part name from each joint/motor coupling</span>
+0039         parts = <a href="getPartsFromList.html" class="code" title="function parts = getPartsFromList( jmCouplings )">getPartsFromList</a>(jmCouplings);
+0040     <span class="keyword">end</span>
+0041     
+0042 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

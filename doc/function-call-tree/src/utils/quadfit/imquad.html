@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of imquad</title>
+  <meta name="keywords" content="imquad">
+  <meta name="description" content="Identify type of quadratic surface.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>imquad
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Identify type of quadratic surface.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function kind = imquad(p_im) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Identify type of quadratic surface.
+
+ References:
+ Weisstein, Eric W. &quot;Quadratic Surface.&quot; From MathWorld--A Wolfram Web Resource.
+    http://mathworld.wolfram.com/QuadraticSurface.html</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function kind = imquad(p_im)</a>
+0002 <span class="comment">% Identify type of quadratic surface.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% References:</span>
+0005 <span class="comment">% Weisstein, Eric W. &quot;Quadratic Surface.&quot; From MathWorld--A Wolfram Web Resource.</span>
+0006 <span class="comment">%    http://mathworld.wolfram.com/QuadraticSurface.html</span>
+0007 
+0008 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0009 
+0010 validateattributes(p_im, {<span class="string">'numeric'</span>}, {<span class="string">'nonempty'</span>,<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0011 p_im = p_im(:);
+0012 validateattributes(p_im, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[10,1]});
+0013 
+0014 <span class="comment">% ax^2+by^2+cz^2+2fyz+2gzx+2hxy+2px+2qy+2rz+d=0</span>
+0015 a = p_im(1);
+0016 b = p_im(2);
+0017 c = p_im(3);
+0018 h = 0.5*p_im(4);
+0019 g = 0.5*p_im(5);
+0020 f = 0.5*p_im(6);
+0021 p = p_im(7);
+0022 q = p_im(8);
+0023 r = p_im(9);
+0024 d = p_im(10);
+0025 
+0026 e = [a h g; h b f; g f c];
+0027 E = [a h g p; h b f q; g f c r; p q r d];
+0028 
+0029 rho_e = rank(e);
+0030 rho_E = rank(E);
+0031 evals = svd(e);  <span class="comment">% same as evals = eig(e) but sorted in descending order of magnitude</span>
+0032 
+0033 <span class="keyword">switch</span> rho_e
+0034     <span class="keyword">case</span> 1
+0035         <span class="keyword">switch</span> rho_E
+0036             <span class="keyword">case</span> 1
+0037                 kind = <span class="string">'coincident_planes'</span>;
+0038             <span class="keyword">case</span> 2
+0039                 kind = <span class="string">'parallel_planes'</span>;  <span class="comment">% real or imaginary</span>
+0040             <span class="keyword">case</span> 3
+0041                 kind = <span class="string">'parabolic cylinder'</span>;
+0042         <span class="keyword">end</span>
+0043     <span class="keyword">case</span> 2
+0044         <span class="keyword">switch</span> rho_E
+0045             <span class="keyword">case</span> 2
+0046                 <span class="comment">% test for matching signs of the nonzero eigenvalues</span>
+0047                 <span class="keyword">if</span> prod(evals(1:2)) &gt; 0  <span class="comment">% signs of the nonzero eigenvalues are the same</span>
+0048                     kind = <span class="string">'imaginary_intersecting_planes'</span>;
+0049                 <span class="keyword">else</span>
+0050                     kind = <span class="string">'real_intersecting_planes'</span>;
+0051                 <span class="keyword">end</span>
+0052             <span class="keyword">case</span> 3
+0053                 <span class="comment">% test for matching signs of the nonzero eigenvalues</span>
+0054                 <span class="keyword">if</span> prod(evals(1:3)) &gt; 0  <span class="comment">% signs of the nonzero eigenvalues are the same</span>
+0055                     kind = <span class="string">'elliptic_cylinder'</span>;  <span class="comment">% real or imaginary</span>
+0056                 <span class="keyword">else</span>
+0057                     kind = <span class="string">'hyperbolic_cylinder'</span>;
+0058                 <span class="keyword">end</span>
+0059             <span class="keyword">case</span> 4
+0060                 <span class="keyword">if</span> prod(evals) &gt; 0
+0061                     kind = <span class="string">'elliptic_paraboloid'</span>;
+0062                 <span class="keyword">else</span>
+0063                     kind = <span class="string">'hyperbolic_paraboloid'</span>;
+0064                 <span class="keyword">end</span>
+0065         <span class="keyword">end</span>
+0066     <span class="keyword">case</span> 3
+0067         <span class="keyword">switch</span> rho_E
+0068             <span class="keyword">case</span> 3
+0069                 <span class="keyword">if</span> prod(evals) &gt; 0
+0070                     kind = <span class="string">'imaginary_elliptic_cone'</span>;
+0071                 <span class="keyword">else</span>
+0072                     kind = <span class="string">'real_elliptic_cone'</span>;
+0073                 <span class="keyword">end</span>
+0074             <span class="keyword">case</span> 4
+0075                 <span class="keyword">if</span> prod(evals) &gt; 0
+0076                     <span class="keyword">if</span> det(E) &gt; 0
+0077                         kind = <span class="string">'imaginary_ellipsoid'</span>;
+0078                     <span class="keyword">else</span>
+0079                         kind = <span class="string">'real_ellipsoid'</span>;
+0080                     <span class="keyword">end</span>
+0081                 <span class="keyword">else</span>
+0082                     <span class="keyword">if</span> det(E) &gt; 0
+0083                         kind = <span class="string">'hyperboloid_of_one_sheet'</span>;
+0084                     <span class="keyword">else</span>
+0085                         kind = <span class="string">'hyperboloid_of_two_sheets'</span>;
+0086                     <span class="keyword">end</span>
+0087                 <span class="keyword">end</span>
+0088         <span class="keyword">end</span>
+0089 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

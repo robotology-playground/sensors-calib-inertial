@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of checkSensorMeasVsEstAngleImprovmt</title>
+  <meta name="keywords" content="checkSensorMeasVsEstAngleImprovmt">
+  <meta name="description" content="convert angles from radians to degrees">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @SensorDiagnosis -->
+<h1>checkSensorMeasVsEstAngleImprovmt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>convert angles from radians to degrees</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function checkSensorMeasVsEstAngleImprovmt(data,sensorsIdxListFile,angleList_bc,angleList_ac,figuresHandler) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> convert angles from radians to degrees</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="SensorDiagnosis.html" class="code" title="">SensorDiagnosis</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function checkSensorMeasVsEstAngleImprovmt(</a><span class="keyword">...</span>
+0002     data,sensorsIdxListFile,<span class="keyword">...</span>
+0003     angleList_bc,angleList_ac,<span class="keyword">...</span>
+0004     figuresHandler)
+0005 
+0006 <span class="comment">% convert angles from radians to degrees</span>
+0007 angleList_bc = angleList_bc*180/pi;
+0008 angleList_ac = angleList_ac*180/pi;
+0009 
+0010 <span class="comment">% check the size of 'sensorsIdxListFile'</span>
+0011 <span class="keyword">if</span> length(sensorsIdxListFile)~=size(angleList_bc,2)
+0012     error(<span class="string">'Wrong number of sensors doesn''t match the size of angles list'</span>);
+0013 <span class="keyword">end</span>
+0014 
+0015 <span class="comment">% Create figure and add it to the figure handler</span>
+0016 figH = figure(<span class="string">'Name'</span>,<span class="string">'Mean and STD of Angle of sensors measurement VS estimation'</span>,<span class="string">'WindowStyle'</span>, <span class="string">'docked'</span>);
+0017 figuresHandler.addFigure(figH,<span class="string">'meanSTDmeasVSestAngleBefNAftCalibration'</span>);
+0018 title(<span class="string">'Mean and STD of Angle of sensors measurement VS estimation'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>,<span class="string">'Fontsize'</span>,16,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0019 hold on;
+0020 
+0021 <span class="comment">% plot mean values</span>
+0022 bar([mean(angleList_bc,1)' mean(angleList_ac,1)']);
+0023 set(gca,<span class="string">'XTick'</span>,1:length(sensorsIdxListFile),<span class="string">'XTickLabel'</span>,data.ac.labels(sensorsIdxListFile));
+0024 xlabel(<span class="string">'MTB board labels'</span>,<span class="string">'Fontsize'</span>,20);
+0025 ylabel(<span class="string">'angle (degrees)'</span>,<span class="string">'Fontsize'</span>,20);
+0026 grid on;
+0027 
+0028 <span class="comment">% plot standard deviations</span>
+0029 errorbar((1:size(angleList_bc,2))-0.15,mean(angleList_bc,1)',<span class="keyword">...</span>
+0030     std(angleList_bc,0,1)',<span class="keyword">...</span>
+0031     <span class="string">'r*'</span>,<span class="string">'lineWidth'</span>,2.5);
+0032 errorbar((1:size(angleList_bc,2))+0.15,mean(angleList_ac,1)',<span class="keyword">...</span>
+0033     std(angleList_ac,0,1)',<span class="keyword">...</span>
+0034     <span class="string">'b*'</span>,<span class="string">'lineWidth'</span>,2.5);
+0035 
+0036 legend(<span class="string">'mean before calibration'</span>,<span class="string">'mean after calibration'</span>,<span class="keyword">...</span>
+0037     <span class="string">'\sigma before calibration'</span>,<span class="string">'\sigma after calibration'</span>);
+0038 hold off
+0039 
+0040 <span class="keyword">end</span>
+0041</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

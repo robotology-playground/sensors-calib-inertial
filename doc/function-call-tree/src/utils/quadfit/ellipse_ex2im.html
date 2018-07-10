@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipse_ex2im</title>
+  <meta name="keywords" content="ellipse_ex2im">
+  <meta name="description" content="Cast ellipse defined with explicit parameters to implicit form.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipse_ex2im
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Cast ellipse defined with explicit parameters to implicit form.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = ellipse_ex2im(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Cast ellipse defined with explicit parameters to implicit form.
+ In explicit form, the parameters of the ellipse are its center (cx,cy) its semi-major
+ and semi-minor axes (a and b) and its angle of tilt (theta).
+
+ See also: <a href="ellipse_im2ex.html" class="code" title="function varargout = ellipse_im2ex(varargin)">ellipse_im2ex</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>	Rotates a conic section given as an implicit equation.</li><li><a href="imconictranslate.html" class="code" title="function pt = imconictranslate(p, t)">imconictranslate</a>	Translates a conic section given as an implicit equation.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="example_ellipsefitnoise.html" class="code" title="function example_ellipsefitnoise">example_ellipsefitnoise</a>	Comparing ellipse fits under various noise conditions.</li><li><a href="example_ellipsefitsector.html" class="code" title="function example_ellipsefitsector">example_ellipsefitsector</a>	Ellipse fitting to data from a limited sector.</li><li><a href="example_ellipseproj.html" class="code" title="function example_ellipseproj">example_ellipseproj</a>	Demonstration of projecting points to an ellipse.</li><li><a href="example_kcrlb.html" class="code" title="function example_kcrlb()">example_kcrlb</a>	Demonstration of fitting algoritm performance compared to KCR-LB.</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function p = ellipse_implicit(c1,c2,a,b,theta)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = ellipse_ex2im(varargin)</a>
+0002 <span class="comment">% Cast ellipse defined with explicit parameters to implicit form.</span>
+0003 <span class="comment">% In explicit form, the parameters of the ellipse are its center (cx,cy) its semi-major</span>
+0004 <span class="comment">% and semi-minor axes (a and b) and its angle of tilt (theta).</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% See also: ellipse_im2ex</span>
+0007 
+0008 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0009 
+0010 <span class="keyword">if</span> nargin &gt; 1
+0011     narginchk(5,5);
+0012     <span class="keyword">for</span> k = 1 : 5
+0013         validateattributes(varargin{k}, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'scalar'</span>});
+0014     <span class="keyword">end</span>
+0015     p = <a href="#_sub1" class="code" title="subfunction p = ellipse_implicit(c1,c2,a,b,theta)">ellipse_implicit</a>(varargin{:});
+0016 <span class="keyword">else</span>
+0017     narginchk(1,1);
+0018     q = varargin{1};
+0019     validateattributes(q, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0020     q = q(:);
+0021     validateattributes(q, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[5 1]});
+0022     p = <a href="#_sub1" class="code" title="subfunction p = ellipse_implicit(c1,c2,a,b,theta)">ellipse_implicit</a>(q(1), q(2), q(3), q(4), q(5));
+0023 <span class="keyword">end</span>
+0024 
+0025 <a name="_sub1" href="#_subfunctions" class="code">function p = ellipse_implicit(c1,c2,a,b,theta)</a>
+0026 <span class="comment">% Cast ellipse defined in Kepler form to standard parameter vector form.</span>
+0027 
+0028 p = <a href="imconictranslate.html" class="code" title="function pt = imconictranslate(p, t)">imconictranslate</a>(<a href="imconicrotate.html" class="code" title="function pr = imconicrotate(p, theta)">imconicrotate</a>([1/a^2 0 1/b^2 0 0 -1], theta), [c1;c2]);
+0029 p = p ./ norm(p);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

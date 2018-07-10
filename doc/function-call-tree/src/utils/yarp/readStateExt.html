@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of readStateExt</title>
+  <meta name="keywords" content="readStateExt">
+  <meta name="description" content="n is the number of joints in the limb (6 for a leg, 7? for the arm, ...)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html yarp -->
+<h1>readStateExt
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>n is the number of joints in the limb (6 for a leg, 7? for the arm, ...)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [q, dq, d2q, dqM, tau, pwm, time] = readStateExt(n, filename) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> n is the number of joints in the limb (6 for a leg, 7? for the arm, ...)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@SensorsData/loadData.html" class="code" title="function loadData(obj)">loadData</a>	LOADDATA Summary of this function goes here</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [q, dq, d2q, dqM, tau, pwm, time] = readStateExt(n, filename)</a>
+0002 
+0003 <span class="comment">% n is the number of joints in the limb (6 for a leg, 7? for the arm, ...)</span>
+0004 
+0005 format = <span class="string">'%d %f '</span>;
+0006 fid    = fopen(filename);
+0007 
+0008 <span class="keyword">for</span> j = 1 : 11
+0009    format = [format, <span class="string">'('</span>];
+0010    <span class="keyword">for</span> i = 1 : n
+0011       <span class="keyword">if</span> j &lt; 10
+0012          format = [format, <span class="string">'%f '</span>];
+0013       <span class="keyword">else</span>
+0014          format = [format, <span class="string">'%d '</span>];
+0015       <span class="keyword">end</span>
+0016    <span class="keyword">end</span>
+0017    <span class="keyword">if</span> ismember(j,[1 2 3 5 7 8])
+0018        format = [format, <span class="string">') [ok] '</span>];
+0019    <span class="keyword">else</span>
+0020        format = [format, <span class="string">') %*s '</span>];
+0021    <span class="keyword">end</span>
+0022 <span class="keyword">end</span>
+0023 
+0024 <span class="comment">% parse file into an array of cells. As all file lines (L lines) have the same</span>
+0025 <span class="comment">% format, textscan parses the j_th matched elements of every line into one</span>
+0026 <span class="comment">% single cell C(1,j) = matrix(Lx1).</span>
+0027 C    = textscan(fid, format);
+0028 <span class="comment">% 2nd column is defined as C{1,2} and will be a column vector of</span>
+0029 <span class="comment">% timestamps.</span>
+0030 time = C{1, 2};
+0031 q    = cell2mat(C(1, 3    :3+  n-1)); <span class="comment">% n columns of &quot;joint q&quot; value</span>
+0032 dq   = cell2mat(C(1, 3+  n:3+2*n-1)); <span class="comment">% n columns of &quot;joint dq&quot; value</span>
+0033 d2q  = cell2mat(C(1, 3+2*n:3+3*n-1)); <span class="comment">% n columns of &quot;joint d2q&quot; value</span>
+0034 dqM  = cell2mat(C(1, 3+4*n:3+5*n-1)); <span class="comment">% n columns of &quot;motor dq&quot; value</span>
+0035 tau  = cell2mat(C(1, 3+6*n:3+7*n-1)); <span class="comment">% n columns of &quot;joint tau&quot; (&quot;torques&quot;) value</span>
+0036 pwm  = cell2mat(C(1, 3+7*n:3+8*n-1)); <span class="comment">% n columns of &quot;motor pwm&quot; (&quot;pwmDutycycle&quot;) value</span>
+0037 
+0038 [tu,iu] = unique(time);
+0039 time    = tu';
+0040 q       = q(iu, :)';
+0041 dq      = dq(iu, :)';
+0042 d2q     = d2q(iu, :)';
+0043 dqM     = dqM(iu, :)';
+0044 tau     = tau(iu, :)';
+0045 pwm     = pwm(iu, :)';
+0046 
+0047 <span class="keyword">if</span> fclose(fid) == -1
+0048    error(<span class="string">'[ERROR] there was a problem in closing the file'</span>)
+0049 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

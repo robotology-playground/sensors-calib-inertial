@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of setPropList</title>
+  <meta name="keywords" content="setPropList">
+  <meta name="description" content="setPropList Select elements which &lt;inputKeyName&gt; is among &lt;inputKeyValues&gt; and set">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @DataBase -->
+<h1>setPropList
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>setPropList Select elements which &lt;inputKeyName&gt; is among &lt;inputKeyValues&gt; and set</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function success = setPropList( obj,queryKeyName,queryKeyValues,propNameToSet,propValuesToSet ) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">setPropList Select elements which &lt;inputKeyName&gt; is among &lt;inputKeyValues&gt; and set
+            the &lt;propNameToSet&gt; respective properties to &lt;propValuesToSet&gt; values.
+   
+   inputKeyName   : key property name (type) where to search for the values.
+   
+   inputKeyValues : list of key property values to match.
+   
+   propNameToSet  : property (of the matching database element) to set.
+   
+   propValuesToSet: list of values to set to the matching element's &lt;propNameToSet&gt;
+                    property.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="DataBase.html" class="code" title="">DataBase</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function success = setPropList( obj,</a><span class="keyword">...</span>
+0002     queryKeyName,queryKeyValues,<span class="keyword">...</span>
+0003     propNameToSet,propValuesToSet )
+0004 <span class="comment">%setPropList Select elements which &lt;inputKeyName&gt; is among &lt;inputKeyValues&gt; and set</span>
+0005 <span class="comment">%            the &lt;propNameToSet&gt; respective properties to &lt;propValuesToSet&gt; values.</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   inputKeyName   : key property name (type) where to search for the values.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">%   inputKeyValues : list of key property values to match.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">%   propNameToSet  : property (of the matching database element) to set.</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">%   propValuesToSet: list of values to set to the matching element's &lt;propNameToSet&gt;</span>
+0014 <span class="comment">%                    property.</span>
+0015 <span class="comment">%</span>
+0016 
+0017 <span class="comment">% build query (input properties to match)</span>
+0018 inputQuery.format = 2;
+0019 inputQuery.data = {queryKeyName,queryKeyValues};
+0020 
+0021 <span class="comment">% get line Idx of the queried element</span>
+0022 elemRowIdxList = obj.getElemRowIdxList(inputQuery);
+0023 
+0024 <span class="comment">% get the output property column</span>
+0025 propNameCol = obj.name2colIdx(propNameToSet);
+0026 
+0027 <span class="comment">% set queried value</span>
+0028 obj.propValueList(elemRowIdxList,propNameCol) = propValuesToSet;
+0029 
+0030 success = true;
+0031 
+0032 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

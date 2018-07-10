@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipseproj</title>
+  <meta name="keywords" content="example_ellipseproj">
+  <meta name="description" content="Demonstration of projecting points to an ellipse.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipseproj
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Demonstration of projecting points to an ellipse.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_ellipseproj </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Demonstration of projecting points to an ellipse.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>	Generates points along an ellipse.</li><li><a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a>	Cast ellipse defined with explicit parameters to implicit form.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="quad2dproj.html" class="code" title="function [Wp,rss] = quad2dproj(W, varargin)">quad2dproj</a>	Projects a set of points onto a quadratic curve.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_ellipseproj</a>
+0002 <span class="comment">% Demonstration of projecting points to an ellipse.</span>
+0003 
+0004 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0005 
+0006 N = 100000;  <span class="comment">% sample count</span>
+0007 sigma_x = 0.1;
+0008 sigma_y = 0.1;
+0009 cx = 12;
+0010 cy = 13;
+0011 a = 4;
+0012 b = 2;
+0013 <span class="comment">%cx = 0; cy = 0; a = 1; b = 1;</span>
+0014 phi = pi/6;
+0015 [x0,y0] = <a href="ellipse.html" class="code" title="function [x,y,nx,ny] = ellipse(N, cx, cy, a, b, phi)">ellipse</a>(N, cx, cy, a, b, phi);
+0016 
+0017 RandStream.setGlobalStream(RandStream(<span class="string">'mt19937ar'</span>,<span class="string">'seed'</span>,9999));
+0018 x = x0 + sigma_x * randn(size(x0));
+0019 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + sigma_y * randn(size(y0));
+0020 
+0021 tic
+0022 Xp = <a href="quad2dproj.html" class="code" title="function [Wp,rss] = quad2dproj(W, varargin)">quad2dproj</a>([x,<a href="../../../src/@y/y.html" class="code" title="">y</a>],[cx,cy],[a,b],phi);
+0023 xp = Xp(:,1);
+0024 yp = Xp(:,2);
+0025 toc
+0026 
+0027 plot(xp,yp,<span class="string">'b.'</span>);
+0028 plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>);
+0029 
+0030 p = <a href="ellipse_ex2im.html" class="code" title="function p = ellipse_ex2im(varargin)">ellipse_ex2im</a>(cx,cy,a,b,phi);
+0031 <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p);</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

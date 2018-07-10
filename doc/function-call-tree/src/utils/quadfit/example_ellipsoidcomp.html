@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of example_ellipsoidcomp</title>
+  <meta name="keywords" content="example_ellipsoidcomp">
+  <meta name="description" content="Comparative demonstration of fits to random ellipsoids.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>example_ellipsoidcomp
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Comparative demonstration of fits to random ellipsoids.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function example_ellipsoidcomp </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Comparative demonstration of fits to random ellipsoids.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>	Cast ellipsoid defined with implicit parameter vector to explicit form.</li><li><a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>	Fit an ellipsoid to data by minimizing point-to-surface distance.</li><li><a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>	Fit an ellipsoid to data using the nonlinear Koopmans method.</li><li><a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>	Simple iterative least squares fitting of ellipsoids under the constraint k*J - I^2 > 0.</li><li><a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>	Plot ellipsoid specified with implicit parameters.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function d = dist(a,b)</a></li><li><a href="#_sub2" class="code">function [x,y,z,center,radii] = example_ellipsoid_random</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function example_ellipsoidcomp</a>
+0002 <span class="comment">% Comparative demonstration of fits to random ellipsoids.</span>
+0003 
+0004 <span class="comment">% Copyright 2013 Levente Hunyadi</span>
+0005 
+0006 fitting_methods = { @<a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>, @<a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>, @<a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a> };
+0007 experiment_count = 530;
+0008 R = zeros(3, experiment_count);
+0009 D = zeros(numel(fitting_methods), experiment_count);
+0010 
+0011 <span class="keyword">for</span> i = 1 : experiment_count;
+0012     [x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,center_orig,radii_orig] = <a href="#_sub2" class="code" title="subfunction [x,y,z,center,radii] = example_ellipsoid_random">example_ellipsoid_random</a>;
+0013     R(:,i) = radii_orig;
+0014 
+0015     <span class="keyword">for</span> j = 1 : numel(fitting_methods)
+0016         fitting_func = fitting_methods{j};
+0017         p = fitting_func(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0018         [center,radii] = <a href="ellipsoid_im2ex.html" class="code" title="function [center,radii,quat,R] = ellipsoid_im2ex(v)">ellipsoid_im2ex</a>(p);
+0019         D(j,i) = <a href="#_sub1" class="code" title="subfunction d = dist(a,b)">dist</a>(center_orig, center);
+0020     <span class="keyword">end</span>
+0021 
+0022     <span class="keyword">if</span> experiment_count &lt;= 8  <span class="comment">% do not visualize fits for many experiments</span>
+0023         figure;
+0024         hold on;
+0025         plot3(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z,<span class="string">'k.'</span>);
+0026         xlabel(<span class="string">'x'</span>);
+0027         ylabel(<span class="string">'y'</span>);
+0028         zlabel(<span class="string">'z'</span>);
+0029         hold off;
+0030 
+0031         p_direct = <a href="ellipsoidfit_simple.html" class="code" title="function p = ellipsoidfit_simple(x,y,z)">ellipsoidfit_simple</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0032         <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_direct,<span class="string">'EdgeColor'</span>,<span class="string">'blue'</span>);
+0033 
+0034         p_koopmans = <a href="ellipsoidfit_koopmans.html" class="code" title="function [p,p0,mu0] = ellipsoidfit_koopmans(varargin)">ellipsoidfit_koopmans</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0035         <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_koopmans,<span class="string">'EdgeColor'</span>,<span class="string">'red'</span>);
+0036 
+0037         p_ml = <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0038         <a href="plot_ellipsoid_im.html" class="code" title="function plot_ellipsoid_im(p,varargin)">plot_ellipsoid_im</a>(p_ml);
+0039 
+0040         axis equal;
+0041     <span class="keyword">end</span>
+0042 <span class="keyword">end</span>
+0043 
+0044 <span class="keyword">if</span> 1
+0045     <span class="comment">% discard 10 largest values for each method (remove non-convergent cases)</span>
+0046     <span class="keyword">for</span> i = 1 : 10
+0047         [~,ix] = max(D,[],2);
+0048         R(:,ix) = [];
+0049         D(:,ix) = [];
+0050     <span class="keyword">end</span>
+0051 <span class="keyword">end</span>
+0052 
+0053 <span class="comment">% ellipsoid parameters (semi-axes radii) and distance of ellipsoid center from origin</span>
+0054 [R' D']
+0055 
+0056 <span class="comment">% mean distance from origin for various methods</span>
+0057 mean(D,2)
+0058 
+0059 <span class="comment">% standard deviation of distance from origin for various methods</span>
+0060 std(D,1,2)
+0061 
+0062 <span class="comment">% export variables to workspace</span>
+0063 <span class="comment">% some methods might have converged to suboptimal estimates; these cases may have to be removed</span>
+0064 assignin(<span class="string">'base'</span>, <span class="string">'R'</span>, R);
+0065 assignin(<span class="string">'base'</span>, <span class="string">'D'</span>, D);
+0066 
+0067 <a name="_sub1" href="#_subfunctions" class="code">function d = dist(a,b)</a>
+0068 
+0069 d = sqrt(sum((a-b).^2));
+0070 
+0071 <a name="_sub2" href="#_subfunctions" class="code">function [x,y,z,center,radii] = example_ellipsoid_random</a>
+0072 <span class="comment">% Some points from a random ellipsoid centered at the origin.</span>
+0073 
+0074 <span class="comment">% generate points</span>
+0075 xc = 0; yc = 0; zc = 0;
+0076 xr = 9 * rand + 1;
+0077 yr = 9 * rand + 1;
+0078 zr = 9 * rand + 1;
+0079 [x0,y0,z0] = ellipsoid(xc,yc,zc,xr,yr,zr,50);
+0080 x0 = x0(:); y0 = y0(:); z0 = z0(:);
+0081 
+0082 <span class="comment">% filter points</span>
+0083 <span class="comment">%f = x0 &lt; 0;  % half surface</span>
+0084 f = x0 &lt; 0 &amp; y0 &gt; 0;  <span class="comment">% quarter surface</span>
+0085 x0 = x0(f); y0 = y0(f); z0 = z0(f);
+0086 
+0087 <span class="comment">% add noise</span>
+0088 mu = 0.25;
+0089 <span class="comment">%RandStream.setDefaultStream(RandStream('mt19937ar','seed',9999));</span>
+0090 x = x0 + mu*randn(size(x0));
+0091 <a href="../../../src/@y/y.html" class="code" title="">y</a> = y0 + mu*randn(size(y0));
+0092 z = z0 + mu*randn(size(z0));
+0093 
+0094 <span class="keyword">if</span> nargout &lt; 3
+0095     hold all;
+0096     <span class="comment">%plot3(x,y,z,'.');</span>
+0097     <a href="ellipsoidfit.html" class="code" title="function [p,e,d] = ellipsoidfit(x,y,z,varargin)">ellipsoidfit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,z);
+0098     hold off;
+0099 <span class="keyword">end</span>
+0100 
+0101 center = [xc ; yc ; zc];
+0102 radii = [xr ; yr ; zr];</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

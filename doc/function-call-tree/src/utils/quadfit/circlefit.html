@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of circlefit</title>
+  <meta name="keywords" content="circlefit">
+  <meta name="description" content="Fit a circle to data using the least squares approach.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>circlefit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Fit a circle to data using the least squares approach.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [center,radius,residuals] = circlefit(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Fit a circle to data using the least squares approach.
+
+ Fits the equation of a circle in Cartesian coordinates to a set of xy
+ data points by solving the overdetermined system of normal equations, i.e.
+ x^2 + y^2 + a*x + b*y + d = 0
+
+ Input arguments:
+ x,y
+    Cartesian coordinates of noisy data points
+
+ Output arguments:
+ center:
+    coordinates of the least-squares fit circle center
+ radius:
+    least-squares fit cirlce radius
+ residuals:
+    residuals in the radial direction
+
+ Examples:
+ [center,radius,residuals] = circlefit(X)
+ [center,radius,residuals] = circlefit(x,y,z);</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@Regressors/residuals.html" class="code" title="function resVec = residuals(thetaPos,thetaNeg,x,y)">residuals</a>	UNTITLED Summary of this function goes here</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [center,radius,residuals] = circlefit(x,y)</a>
+0002 <span class="comment">% Fit a circle to data using the least squares approach.</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Fits the equation of a circle in Cartesian coordinates to a set of xy</span>
+0005 <span class="comment">% data points by solving the overdetermined system of normal equations, i.e.</span>
+0006 <span class="comment">% x^2 + y^2 + a*x + b*y + d = 0</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Input arguments:</span>
+0009 <span class="comment">% x,y</span>
+0010 <span class="comment">%    Cartesian coordinates of noisy data points</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Output arguments:</span>
+0013 <span class="comment">% center:</span>
+0014 <span class="comment">%    coordinates of the least-squares fit circle center</span>
+0015 <span class="comment">% radius:</span>
+0016 <span class="comment">%    least-squares fit cirlce radius</span>
+0017 <span class="comment">% residuals:</span>
+0018 <span class="comment">%    residuals in the radial direction</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% Examples:</span>
+0021 <span class="comment">% [center,radius,residuals] = circlefit(X)</span>
+0022 <span class="comment">% [center,radius,residuals] = circlefit(x,y,z);</span>
+0023 
+0024 <span class="comment">% Copyright 2010 Levente Hunyadi</span>
+0025 
+0026 narginchk(1,2);
+0027 <span class="keyword">switch</span> nargin  <span class="comment">% n x 2 matrix</span>
+0028     <span class="keyword">case</span> 1
+0029         n = size(x,1);
+0030         validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'2d'</span>,<span class="string">'real'</span>,<span class="string">'size'</span>,[n,2]});
+0031         <a href="../../../src/@y/y.html" class="code" title="">y</a> = x(:,2);
+0032         x = x(:,1);
+0033     <span class="keyword">otherwise</span>  <span class="comment">% two x,y vectors</span>
+0034         validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0035         validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'vector'</span>});
+0036         n = numel(x);
+0037         x = x(:);  <span class="comment">% force into columns</span>
+0038         <a href="../../../src/@y/y.html" class="code" title="">y</a> = <a href="../../../src/@y/y.html" class="code" title="">y</a>(:);
+0039         validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[n,1]});
+0040         validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'size'</span>,[n,1]});
+0041 <span class="keyword">end</span>
+0042 
+0043 <span class="comment">% solve linear system of normal equations</span>
+0044 A = [x, <a href="../../../src/@y/y.html" class="code" title="">y</a>, ones(size(x))];
+0045 b = -(x.^2 + y.^2);
+0046 a = A \ b;
+0047 
+0048 <span class="comment">% return center coordinates and sphere radius</span>
+0049 center = -a(1:2)./2;
+0050 radius = realsqrt(sum(center.^2)-a(3));
+0051 
+0052 <span class="keyword">if</span> nargout &gt; 2
+0053     <span class="comment">% calculate residuals</span>
+0054    <a href="../../../src/@Regressors/residuals.html" class="code" title="function resVec = residuals(thetaPos,thetaNeg,x,y)">residuals</a> = radius - sqrt(sum(bsxfun(@minus,[x <a href="../../../src/@y/y.html" class="code" title="">y</a>],center.').^2,2));
+0055 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

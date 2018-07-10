@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ellipsefit_foot</title>
+  <meta name="keywords" content="ellipsefit_foot">
+  <meta name="description" content="Maximum likelihood ellipse fit with foot points.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>ellipsefit_foot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Maximum likelihood ellipse fit with foot points.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [xf,yf] = ellipsefit_foot(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Maximum likelihood ellipse fit with foot points.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li><li><a href="ellipse_im2ex.html" class="code" title="function varargout = ellipse_im2ex(varargin)">ellipse_im2ex</a>	Cast ellipse defined with implicit parameter vector to explicit form.</li><li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>	Compute parameters of or plot conic section given in implicit form.</li><li><a href="quad2dproj.html" class="code" title="function [Wp,rss] = quad2dproj(W, varargin)">quad2dproj</a>	Projects a set of points onto a quadratic curve.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>	Fit an ellipse to data by minimizing point-to-curve distance.</li><li><a href="example_ellipsefit1.html" class="code" title="function example_ellipsefit1">example_ellipsefit1</a>	Demonstration of various ellipse (and general quadratic curve) fits.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [xf,yf] = ellipsefit_foot(x,y)</a>
+0002 <span class="comment">% Maximum likelihood ellipse fit with foot points.</span>
+0003 
+0004 <span class="comment">% Copyright 2011 Levente Hunyadi</span>
+0005 
+0006 p_impl = <a href="ellipsefit.html" class="code" title="function [p,e,d] = ellipsefit(x,y,varargin)">ellipsefit</a>(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>, <span class="keyword">...</span>
+0007     <span class="string">'Method'</span>, <span class="string">'kepler'</span>);
+0008 p_expl = <a href="ellipse_im2ex.html" class="code" title="function varargout = ellipse_im2ex(varargin)">ellipse_im2ex</a>(p_impl);
+0009 xfyf = <a href="quad2dproj.html" class="code" title="function [Wp,rss] = quad2dproj(W, varargin)">quad2dproj</a>([x,<a href="../../../src/@y/y.html" class="code" title="">y</a>], p_expl);
+0010 xf = xfyf(:,1);
+0011 yf = xfyf(:,2);
+0012 
+0013 <span class="keyword">if</span> nargout &lt; 2
+0014     hold on;
+0015     <span class="keyword">for</span> k = 1 : numel(x)
+0016         plot([x(k),xf(k)],[<a href="../../../src/@y/y.html" class="code" title="">y</a>(k),yf(k)],<span class="string">'r'</span>, <span class="keyword">...</span>
+0017             <span class="string">'LineWidth'</span>, 2);
+0018     <span class="keyword">end</span>
+0019     <a href="imconic.html" class="code" title="function [kind,a,b,R,t] = imconic(p, w, figax, varargin)">imconic</a>(p_impl, [], gca, <span class="keyword">...</span>
+0020         <span class="string">'LineWidth'</span>, 2);
+0021     plot(xf,yf,<span class="string">'r.'</span>, <span class="keyword">...</span>
+0022         <span class="string">'MarkerSize'</span>, 18);
+0023     plot(x,<a href="../../../src/@y/y.html" class="code" title="">y</a>,<span class="string">'k.'</span>, <span class="keyword">...</span>
+0024         <span class="string">'MarkerSize'</span>, 18);
+0025     hold off;
+0026 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

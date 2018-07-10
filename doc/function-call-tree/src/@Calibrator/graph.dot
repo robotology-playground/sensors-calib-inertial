@@ -1,0 +1,15 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  Calibrator -> Calibrator;
+  Calibrator -> getJointNamesFromUIidxes;
+  Calibrator -> getOrAcquireData;
+  Calibrator -> run;
+  Calibrator -> runCalibratorOrDiagnosis;
+  run -> runCalibratorOrDiagnosis;
+
+  Calibrator [URL="Calibrator.html"];
+  getJointNamesFromUIidxes [URL="getJointNamesFromUIidxes.html"];
+  getOrAcquireData [URL="getOrAcquireData.html"];
+  run [URL="run.html"];
+  runCalibratorOrDiagnosis [URL="runCalibratorOrDiagnosis.html"];
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of buildDataLoadingParams</title>
+  <meta name="keywords" content="buildDataLoadingParams">
+  <meta name="description" content="UNTITLED6 Summary of this function goes here">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- menu.html @LowlevTauCtrlCalibrator -->
+<h1>buildDataLoadingParams
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>UNTITLED6 Summary of this function goes here</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function dataLoadingParams = buildDataLoadingParams(model,measedSensorList,measedPartsList,calibedJointOrderedList) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">UNTITLED6 Summary of this function goes here
+   Detailed explanation goes here</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="LowlevTauCtrlCalibrator.html" class="code" title="">LowlevTauCtrlCalibrator</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function dataLoadingParams = buildDataLoadingParams(</a><span class="keyword">...</span>
+0002     model,measedSensorList,measedPartsList,<span class="keyword">...</span>
+0003     calibedJointOrderedList)
+0004 <span class="comment">%UNTITLED6 Summary of this function goes here</span>
+0005 <span class="comment">%   Detailed explanation goes here</span>
+0006 
+0007 parts = [measedPartsList{ismember(measedSensorList,<span class="string">'joint'</span>)}];
+0008 
+0009 <span class="keyword">for</span> i = 1:length(parts)
+0010     jointList = model.jointsDbase.getJointNames(parts{i}); <span class="comment">% this joints list is ordered as the data logged by the YARP data dumper</span>
+0011     jointsToCalibrate.jointsDofs{i} = model.jointsDbase.getTotalJointDoF(jointList);
+0012     [~,jointsToCalibrate.ctrledJointsIdxes{i}] = ismember(calibedJointOrderedList,jointList);
+0013 <span class="keyword">end</span>
+0014 
+0015 dataLoadingParams.accMeasedParts = {};
+0016 dataLoadingParams.jointMeasedParts = parts;
+0017 dataLoadingParams.jointsDbase = model.jointsDbase;
+0018 dataLoadingParams.jointsToCalibrate = jointsToCalibrate;
+0019 
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of quad2d_similarity</title>
+  <meta name="keywords" content="quad2d_similarity">
+  <meta name="description" content="Translate data to place centroid at origin and apply isotropic scaling.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- # src --><!-- ../menu.html utils --><!-- menu.html quadfit -->
+<h1>quad2d_similarity
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Translate data to place centroid at origin and apply isotropic scaling.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [Sx,Sy,S,s] = quad2d_similarity(x,y) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Translate data to place centroid at origin and apply isotropic scaling.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="../../../src/@S/S.html" class="code" title="">S</a>	</li><li><a href="../../../src/@y/y.html" class="code" title="">y</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [Sx,Sy,S,s] = quad2d_similarity(x,y)</a>
+0002 <span class="comment">% Translate data to place centroid at origin and apply isotropic scaling.</span>
+0003 
+0004 <span class="comment">% Copyright 2012 Levente Hunyadi</span>
+0005 
+0006 validateattributes(x, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0007 validateattributes(<a href="../../../src/@y/y.html" class="code" title="">y</a>, {<span class="string">'numeric'</span>}, {<span class="string">'real'</span>,<span class="string">'nonempty'</span>,<span class="string">'vector'</span>});
+0008 
+0009 n = numel(x);
+0010 mx = mean(x);
+0011 my = mean(<a href="../../../src/@y/y.html" class="code" title="">y</a>);
+0012 
+0013 s = sqrt(2*n / sum((x - mx).^2 + (<a href="../../../src/@y/y.html" class="code" title="">y</a> - my).^2));  <span class="comment">% root mean square (RMS) scaling</span>
+0014 <a href="../../../src/@S/S.html" class="code" title="">S</a> = [ s, 0, -s*mx ; 0, s, -s*my ; 0, 0, 1 ];
+0015 
+0016 Sx = <a href="../../../src/@S/S.html" class="code" title="">S</a>*x;
+0017 Sy = <a href="../../../src/@S/S.html" class="code" title="">S</a>*<a href="../../../src/@y/y.html" class="code" title="">y</a>;</pre></div>
+<hr><address>Generated on Tue 10-Jul-2018 15:03:35 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
