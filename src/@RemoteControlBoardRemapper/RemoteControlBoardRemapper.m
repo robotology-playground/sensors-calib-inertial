@@ -105,6 +105,9 @@ classdef RemoteControlBoardRemapper < handle
         % Read motor encoder speeds
         [readEncSpeeds] = getMotorEncoderSpeeds(obj,motorsIdxList);
         
+        % Get the current values (A) for a set of motor indexes
+        [currVec] = getCurrents(obj,motorsIdxList);
+        
         % Write joint encoders
         ok = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin);
         
