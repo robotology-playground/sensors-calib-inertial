@@ -38,7 +38,7 @@ sequences = sequenceParams.buildMapSequences();
 % Create Yarp data interface. It can create the necessary yarp ports
 % for logging the data and holds a method for connecting or disconnecting
 % the ports. It also access data previously logged.
-logger = SensorDataYarpI(robotModel.robotName,dataPath);
+logger = SensorDataYarpI(robotModel.robotEnvNames,dataPath);
 % Configure callback logger commands
 logCmd.sched = @logger.scheduleNewAcquisition;
 logCmd.new   = @logger.newLog;

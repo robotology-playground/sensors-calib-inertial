@@ -5,9 +5,13 @@ run generatePaths.m;
 
 run unitTestsInit; % clear all variables and close all previous figures
 
+% Set robot environment names from the model name (yarp port prefix, yarp
+% robot name)
+robotEnvNames = RobotModel.getRobotEnvNames(init.modelName);
+
 % open remote control board and get list of remote debug variables
 obj.options = yarp.Property('(device remote_controlboard)');
-obj.options.put('remote',['/' init.robotName '/torso']);
+obj.options.put('remote',['/' robotEnvNames.yarpPortPrefix '/torso']);
 obj.options.put('local','/collector/torso');
 obj.driver = yarp.PolyDriver()
 obj.driver.open(obj.options)
@@ -39,7 +43,11 @@ end
 
 run unitTestsInit;
 
-remoteCtrlBoard = RemoteControlBoard(init.robotName,'left_arm');
+% Set robot environment names from the model name (yarp port prefix, yarp
+% robot name)
+robotEnvNames = RobotModel.getRobotEnvNames(init.modelName);
+
+remoteCtrlBoard = RemoteControlBoard(robotEnvNames.yarpPortPrefix,'left_arm');
 %rawCouplingInfo = remoteCtrlBoard.getRawCoupling();
 nbAxes = remoteCtrlBoard.getAxes();
 axesNames = remoteCtrlBoard.getAxesNames();
@@ -48,7 +56,7 @@ couplingList = remoteCtrlBoard.getCouplings();
 delete(remoteCtrlBoard);
 
 for part = {'head','torso','left_arm','right_arm','left_leg','right_leg'}
-    remoteCtrlBoard = RemoteControlBoard(init.robotName,cell2mat(part));
+    remoteCtrlBoard = RemoteControlBoard(robotEnvNames.yarpPortPrefix,cell2mat(part));
     couplingList = remoteCtrlBoard.getCouplings();
     for coupling = couplingList
         coupling{1}
@@ -66,7 +74,7 @@ run unitTestsInit;
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the
 % joint/motor parameters (PWM to torque rate, friction parameters, ...).
-model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
+model = RobotModel(init.modelName,init.modelPath,init.calibrationMapFile);
 
 % Get the list of joint/motor couplings
 jointNameList = {...
@@ -113,7 +121,7 @@ run unitTestsInit;
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the
 % joint/motor parameters (PWM to torque rate, friction parameters, ...).
-model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
+model = RobotModel(init.modelName,init.modelPath,init.calibrationMapFile);
 
 obj=RemoteControlBoardRemapper(model,'test')
 
@@ -261,7 +269,7 @@ run unitTestsInit;
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the
 % joint/motor parameters (PWM to torque rate, friction parameters, ...).
-model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
+model = RobotModel(init.modelName,init.modelPath,init.calibrationMapFile);
 
 % Create motor control boards remapper
 ctrlBoard = RemoteControlBoardRemapper(model,'test')
@@ -520,7 +528,7 @@ run unitTestsInit;
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the
 % joint/motor parameters (PWM to torque rate, friction parameters, ...).
-model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
+model = RobotModel(init.modelName,init.modelPath,init.calibrationMapFile);
 
 % Load last acquired data accessors from file
 if exist('lastAcqSensorDataAccessorMap.mat','file') == 2

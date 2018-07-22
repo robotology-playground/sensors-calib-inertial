@@ -25,7 +25,7 @@ init = Init.load('sensorSelfCalibratorInit');
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the
 % joint/motor parameters (PWM to torque rate, friction parameters, ...).
-model = RobotModel(init.robotName,init.modelPath,init.calibrationMapFile);
+model = RobotModel(init.modelName,init.modelPath,init.calibrationMapFile);
 
 % Load last acquired data accessors from file
 if exist('lastAcqSensorDataAccessorMap.mat','file') == 2

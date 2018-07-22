@@ -3,7 +3,7 @@
 %====================================================================
 
 %% Common model and calibration input parameters
-robotName = 'icub'; % 'icub' or 'icubSim'
+modelName = 'iCubGenova04'; % as the models defined in 'icub-models' repo
 dataPath  = '../../data/dumper';
 %modelPath = '../models/icubSim/icub.urdf';
 modelPath = '../models/iCubGenova04/model.urdf';
@@ -67,7 +67,7 @@ acquiredParts = {'torso'};
 % head     :       head_imu 3D accelerometer
 % mtbSensorAct idx:  1
 % 
-% torso    :       9b7..9b10
+% torso    :       0b7..0b10
 % mtbSensorAct idx:  7....10
 % 
 % some sensors are de-activated because of faulty behaviour
@@ -88,7 +88,9 @@ loadJointPos = true;
 
 % Motion sequence profile
 %motionSeqProfile = 'jointsCalibratorSequenceProfile';
-motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
+%motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
+motionSeqProfile = 'gyroscopesCalibratorSequenceProfile2checkCalib';
+%motionSeqProfile = 'gyroscopesCalibratorSequenceProfile1checkAlgo';
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...

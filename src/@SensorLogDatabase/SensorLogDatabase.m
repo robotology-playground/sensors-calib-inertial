@@ -38,7 +38,7 @@ classdef SensorLogDatabase < handle
         seqIterator = 0;   % counter as a unique identifyer of the log entry
         calibIterator = 0; % counter as a unique identifyer of a calibrator iteration
         schedCalibIterator = []; % scheduled next counter value, triggered by a calibrator
-        mapAttr = []; % map using key = [robotName '.' sensor '.' calibedPart]
+        mapAttr = []; % map using key = [modelName '.' sensor '.' calibedPart]
         key2RSP = [];
         mapIter = []; % map using key = seqIterator
         dataFolderPath = '';
@@ -59,7 +59,7 @@ classdef SensorLogDatabase < handle
                 % mapping keys to log entries (folder paths)
                 obj.mapAttr = containers.Map('KeyType','char','ValueType','any');
                 % expanding the key to the attributes used to build the key
-                % (R:robotName; S:sensor; P:part). We choosed here a map to
+                % (R:modelName; S:sensor; P:part). We choosed here a map to
                 % have the extraction of the attributes independant from the
                 % way the key is built from them. We call each map element an
                 % expander.
@@ -79,7 +79,7 @@ classdef SensorLogDatabase < handle
             obj.schedCalibIterator = obj.calibIterator+1;
         end
         
-        function logRelativePath = add(obj,robotName,dataLogInfo)
+        function logRelativePath = add(obj,modelName,dataLogInfo)
             % check data log info structure fields and sensor/parts lists
             if sum(~ismember(...
                     {'calibApp','calibedSensorList','calibedPartsList','sequence'},...
@@ -101,7 +101,7 @@ classdef SensorLogDatabase < handle
             
             % key generation for all parts
             [logKeys,keyExpanders] = cellfun(...
-                @(sensor,parts) obj.genKey1Sensor(robotName,sensor,parts),...  %2-generate sub-list of keys for that part
+                @(sensor,parts) obj.genKey1Sensor(modelName,sensor,parts),...  %2-generate sub-list of keys for that part
                 dataLogInfo.calibedSensorList,dataLogInfo.calibedPartsList,... % 1-for each part with associated sensors
                 'UniformOutput',false);                                        % 3-concatenate key sub-lists
             logKeys = [logKeys{:}];
@@ -123,7 +123,7 @@ classdef SensorLogDatabase < handle
             
             % define log entry level 2
             logRelativePath = [...
-                robotName '.' dataLogInfo.calibApp ...
+                modelName '.' dataLogInfo.calibApp ...
                 '#' num2str(obj.calibIterator) '.seq#' num2str(obj.seqIterator)];
             dataLogInfo.sequence.seqDataFolderPath = logRelativePath;
             
@@ -144,7 +144,7 @@ classdef SensorLogDatabase < handle
         
         function acqSensorDataAccessor = get(obj,varargin)
             switch varargin{1}
-                case 'robotName'
+                case 'modelName'
                     acqSensorDataAccessor = obj.get1(varargin{2},varargin{4},varargin{6});
                 case 'calibrator'
                     acqSensorDataAccessor = obj.get2(varargin{2});
@@ -155,9 +155,9 @@ classdef SensorLogDatabase < handle
             end
         end
         
-        function acqSensorDataAccessor = get1(obj,robotName,calibedSensor,calibedPartList)
+        function acqSensorDataAccessor = get1(obj,modelName,calibedSensor,calibedPartList)
             % generate the access key and get the pointed element
-            [keys,~] = obj.genKey1Sensor(robotName,calibedSensor,calibedPartList);
+            [keys,~] = obj.genKey1Sensor(modelName,calibedSensor,calibedPartList);
             % build the iterator list with the last iterator from each key
             iteratorList = cellfun(...
                 @(entryLvl1) max(cell2mat(entryLvl1.values)),...
@@ -218,13 +218,13 @@ classdef SensorLogDatabase < handle
     end
     
     methods(Static = true)
-        function [keys,fields] = genKey1Sensor(robotName,calibedSensor,calibedParts)
+        function [keys,fields] = genKey1Sensor(modelName,calibedSensor,calibedParts)
             % key generation through sensor list for 1 part
             [keys,fields] = cellfun(...
                 @(part) deal(...
-                [robotName '.' calibedSensor '.' part],...  % 2-concatenate key string
+                [modelName '.' calibedSensor '.' part],...  % 2-concatenate key string
                 struct(...
-                'robotName',robotName,'calibedSensor',calibedSensor,...
+                'modelName',modelName,'calibedSensor',calibedSensor,...
                 'calibedPart',part)),...            % 3-define structure expanding the key
                 calibedParts,...                    % 1-for each sensor type
                 'UniformOutput',false);             % 4-and put output in a cell

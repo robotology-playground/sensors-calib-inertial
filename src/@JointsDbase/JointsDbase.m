@@ -8,12 +8,11 @@ classdef JointsDbase < DataBase
     
     properties(Access = protected)
         iDynTreeModel;
-        robotName;
     end
     
     methods(Access = public)
         % Constructor
-        function obj = JointsDbase(iDynTreeModelFromURDF,robotName)
+        function obj = JointsDbase(iDynTreeModelFromURDF,link2partH,robotYarpPortPrefix)
             % create property names and keys
             propKeyList = {'jointName','cpldMotorSharingIdx'};
             propNameList = {...
@@ -37,13 +36,13 @@ classdef JointsDbase < DataBase
                 DoF = iDynObject.getNrOfDOFs();
                 
                 % determine to which part the parent link is attached to
-                part = RobotModel.link2part(secondAttachedLink);
+                part = link2partH(secondAttachedLink);
                 
                 % This joint might be coupled with other joints to a set of motors.
                 % Retrieve the respective joints/motors coupling information
                 if DoF>0
                     [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM] = ...
-                        JointsDbase.getJMcouplingFromCtrlBoard(joint2coupling,robotName,part,jointName);
+                        JointsDbase.getJMcouplingFromCtrlBoard(joint2coupling,robotYarpPortPrefix,part,jointName);
                 else
                     warning('JointsDbase: %s is a fixed joint.',jointName);
                     parentCoupling = [];
@@ -111,7 +110,7 @@ classdef JointsDbase < DataBase
         % 'joint2coupling', for future queries. It returns the handle of the
         % coupling to which the joint belongs.
         [parentCoupling,idxInCtrlBoardServer,cpldMotorSharingIdx,gearboxDqM2Jratio,fullscalePWM] = ...
-            getJMcouplingFromCtrlBoard(joint2coupling,robotName,part,jointName);
+            getJMcouplingFromCtrlBoard(joint2coupling,robotYarpPortPrefix,part,jointName);
     end
 end
 
