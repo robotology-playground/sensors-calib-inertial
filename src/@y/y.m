@@ -1,10 +1,6 @@
 classdef y
     %Y Class implementing a few YARP constants not handled by the bindings
     %   Detailed explanation goes here
-    properties(Constant) %, Access=protected)
-        aVocab = yarp.Vocab();
-    end
-    
     properties(Constant)
         VOCAB_CM_IDLE            = y.vocabEnc('idl');
         VOCAB_CM_TORQUE          = y.vocabEnc('torq');
@@ -24,11 +20,11 @@ classdef y
             % we cast the vocab integer to double otherwise the fromMatlab
             % conversion fails (copies 0s instead of the actual values.
             % This should be due to a memory misalignment).
-            vocabInt = double(y.aVocab.encode(vocabString));
+            vocabInt = double(yarp.encode(vocabString));
         end
         
         function vocabString = vocabDec(vocabInt)
-            vocabString = y.aVocab.decode(vocabInt);
+            vocabString = yarp.decode(vocabInt);
         end
     end
     
