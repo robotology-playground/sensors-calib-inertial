@@ -21,6 +21,7 @@ calibrateJointEncoders  = false;
 calibrateFTsensors      = false;
 calibrateGyroscopes     = false;
 calibrateLowLevTauCtrl  = true;
+calibrateLowLevCurrCtrl = false;
 
 %% Diagnosis and visualization
 runDiagnosis = false;
@@ -278,6 +279,65 @@ sensorDataAcq = {'new'};
 
 % wrap parameters
 lowLevelTauCtrlCalib = struct(...
+    'calibedParts',{calibedParts},...
+    'taskSpecificParams',taskSpecificParams,...
+    'sensorDataAcq',{sensorDataAcq});
+
+clear calibedParts calibedJointsIdxes savePlot exportPlot loadJointPos ...
+    sensorDataAcq taskSpecificParams;
+
+%% 'calibrateLowLevCurrCtrl' Joint low level current control parameters calibration
+
+% Calibrated parts:
+% Only the joint parameters from these parts (limbs) will be calibrated
+calibedParts = {'right_leg'};
+
+% Fine selection of joints to calibrate:
+% Select the joints to calibrate through the respective indexes. These indexes match 
+% the joint names listed below, as per the joint naming convention described in 
+% 'http://wiki.icub.org/wiki/ICub_Model_naming_conventions', except for the torso.
+%
+%      shoulder pitch roll yaw   |   elbow   |   wrist prosup pitch yaw   |  
+% arm:          0     1    2     |   3       |         4      5     6     |
+%
+%      hip      pitch roll yaw   |   knee    |   ankle pitch  roll       |  
+% leg:          0     1    2     |   3       |         4      5          |
+%
+%               yaw   roll pitch |
+% torso:        0     1    2     |
+%
+%               pitch roll yaw   |
+% head:         0     1    2     |
+%
+%=================================================================
+% !!! Below joint indexes will be ignored for parts not defined in
+% 'calibedParts' !!!
+%=================================================================
+calibedJointsIdxes.left_arm = 0:3;
+calibedJointsIdxes.right_arm = 0:3;
+calibedJointsIdxes.left_leg = 0:5;
+calibedJointsIdxes.right_leg = 0:5;
+calibedJointsIdxes.torso = 0:2;
+calibedJointsIdxes.head = 0:2;
+
+% Save generated figures: if this flag is set to true, all data is saved and figures 
+% printed in a new folder indexed by a unique iteration number. Log
+% classification information are saved in text format for easier search from
+% a file explorer.
+savePlot = defaultSavePlot;
+exportPlot = defaultExportPlot;
+
+% Wrap parameters specific to calibrator or diagnosis functions processing
+taskSpecificParams = struct(...
+    'calibedJointsIdxes',calibedJointsIdxes,...
+    'savePlot',savePlot,...
+    'exportPlot',exportPlot);
+
+% Sensor data acquisition: ['new'|'last'|<id>]
+sensorDataAcq = {'new'};
+
+% wrap parameters
+lowLevelCurrCtrlCalib = struct(...
     'calibedParts',{calibedParts},...
     'taskSpecificParams',taskSpecificParams,...
     'sensorDataAcq',{sensorDataAcq});

@@ -16,7 +16,7 @@ end
 obj.couplingPrevMode = modes{1}; % All modes from a coupling are identical
 
 % Load sampling and timeout parameters
-config = Init.load('lowLevTauCtrlCalibratorDevConfig');
+config = Init.load('lowLevCtrlCalibratorDevConfig');
 
 if (length(obj.couplingMotorIdxes) == 1)
     % Simple case, no coupling. Set single motor to PWM control mode

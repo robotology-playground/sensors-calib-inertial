@@ -47,13 +47,13 @@ obj.state.current = S.stateStart;
 %% For each joint/motor group do the following 2 phases
 %
 
-% PHASE 1 - Calibrating Viscuous and Coulomb friction parameters
+% PHASE 1 - Calibrating back electromotive force friction parameter
 %
 % 1 - set PWM to 0 for the selected joints/motors group
 %
 % 2 - move selected joints and acquire data:
 % 	  => selected motors velocity
-% 	  => selected joints measured torques
+% 	  => selected joints measured currents
 % 	  The data is expected to have as many ROWS as the number of joints.
 %     The order MUST be the same as in jointMotorCoupling.coupledJoints (dim 1)
 %     and jointMotorCoupling.coupledMotors (dim 2).
@@ -65,18 +65,18 @@ obj.state.current = S.stateStart;
 % 5 - Plot fitted model over acquired data.
 %
 %
-% PHASE 2 - Calibrating Ktau (PWM -> torque)
+% PHASE 2 - Calibrating Kcurr (PWM -> current)
 %
 % 1 - reset calibrated joints/motors to position control
 %
 % 2 - move selected joints and acquire data:
 % 	  => selected motors velocity
 % 	  => selected motors PWM
-% 	  => selected joints measured torques
+% 	  => selected joints measured currents
 %
 % 3 - Plot acquired data
 %
-% 4 - fit the ktau model
+% 4 - fit the kcurr model
 %
 % 5 - Plot fitted model over acquired data.
 
@@ -123,13 +123,13 @@ function debugDisp(calibrator,messageCompl)
 initSection = calibrator.init.(calibrator.initSection);
 
 if [...
-        isfield(initSection.taskSpecificParams,{'motorName','frictionOrKtau'}), ...
+        isfield(initSection.taskSpecificParams,{'motorName','frictionOrKcurr'}), ...
         isfield(initSection,'calibedParts')]
     fprintf([...
         '========== input params ==========\n'...
         '%s\n%s\n'],...
         initSection.taskSpecificParams.motorName,...
-        initSection.taskSpecificParams.frictionOrKtau);
+        initSection.taskSpecificParams.frictionOrKcurr);
     disp(initSection.calibedParts);
 end
 

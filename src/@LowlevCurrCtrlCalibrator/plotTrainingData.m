@@ -2,15 +2,15 @@ function plotTrainingData(obj,...
     dataPath,measedSensorList,measedPartsList,...
     model,taskSpecificParams)
 
-% This function plots the acquired data for the friction or ktau calibration
+% This function plots the acquired data for the friction or kcurr calibration
 %   Detailed explanation goes here
 
 % Get calibration map
 calibrationMap = model.calibrationMap;
 
 % Unwrap task specific parameters, defines:
-% - frictionOrKtau       -> = 'friction' for friction calibration
-%                           = 'ktau' for ktau calibration
+% - frictionOrKcurr       -> = 'friction' for friction calibration
+%                           = 'kcurr' for kcurr calibration
 % - jointMotorCoupling   -> label for retrieving the currently calibrated
 %                           joint/motor group info. Refer to jointsDbase
 %                           class interface.
@@ -31,7 +31,7 @@ jointMotorCoupling = cell(model.jointsDbase.getJMcouplings('motors',{motorName})
 %% build input data for calibration
 %
 % build sensor data parser
-dataLoadingParams = LowlevTauCtrlCalibrator.buildDataLoadingParams(...
+dataLoadingParams = LowlevCurrCtrlCalibrator.buildDataLoadingParams(...
     model,measedSensorList,measedPartsList,...
     jointMotorCoupling.coupledJoints);
 
@@ -53,14 +53,14 @@ plotFolder = [dataPath '/diag'];
 figuresHandler = DiagPlotFiguresHandler(plotFolder);
 obj.figuresHandlerMap(obj.task) = figuresHandler;
 
-% Joint encoder velocities and torques, and motor PWM measurements can be
+% Joint encoder velocities and currents, and motor PWM measurements can be
 % retrieved from the 'data' structure:
 % 
 % For N samples of dimension D (group of D coupled joints), we get:
 % 
 % Motor velocities table [DxN] : data.parsedParams.dqMRad_<label>
 % joint PWM table [DxN]        : data.parsedParams.pwm_<label>
-% joint torques table [DxN]    : data.parsedParams.tau_<label>
+% joint currents table [DxN]    : data.parsedParams.curr_<label>
 % 
 % Parameter names finishing by 's' are the ones recomputed after resampling
 % (refer to 'subSamplingSize' in lowLevCtrlCalibratorDevConfig.m config
@@ -72,83 +72,48 @@ time = data.parsedParams.time;
 % jointIdxes = model.jointsDbase.getAxesIdxesFromCtrlBoard('joints',jointMotorCoupling.coupledJoints);
 [~,motorIdx] = ismember(motorName,jointMotorCoupling.coupledMotors);
 
-% Get respective torques (matrix 6xNsamples)
-tauJoints  = data.parsedParams.(['tau_' jointMotorCoupling.part '_state']);
-
-% FRICTION parameters
-%
-% We express the joint velocities and torques w.r.t. the motor respective
-% quantities using the coupling matrix Tm2j (motor to joint) and gearbox ratios:
-% 
-% dq_j = Tm2j * Gm2j * dq_m
-%
-% Where Gm2j is a diagonal matrix. We then pose the conservation of
-% transmission power:
-%
-% dq_j' * Tau_j = dq_m' * Tau_m
-%
-% <=> dq_m' * Gm2j' * Tm2j' * Tau_j = dq_m' * Tau_m  ∀dq_m
-%
-% <=> Tau_m = Gm2j' * Tm2j' * Tau_j
-% 
-% Anyway we consider here the motor and gearbox as a single block, and
-% the velocity and torque as the outputs of that same block:
-%
-% xVar = S * Gm2j * dq_m
-% yVar = S * Tm2j' * Tau_j
-%
-% Where Gm2j is a diagonal matrix whose diagonal terms are represented by
-% gearboxDqM2Jratios, and S is a selective matrix. So, for motorIdx "i",
-% S=[0..0 1 0..0] (ith column set to 1). For any matrix A, we get S * A =
-% A(i,:), and A * S' = A(:,i). We get or each sample at instant "t":
-%
-% xVar = Gm2j(i,:) * dq_m = gearboxDqM2Jratios(i) * dq_m(i)
-% yVar = (Tm2j * S')' * Tau_j = Tm2j(:,i)' * Tau_j
-%
-tauMotorG = jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
+% Get respective currents (matrix 6xNsamples)
+currMotorG  = data.parsedParams.(['curr_' jointMotorCoupling.part '_state']);
 time = data.parsedParams.(['time_' jointMotorCoupling.part '_state']);
 
-switch frictionOrKtau
+switch frictionOrKcurr
     case 'friction'
-        dqMradG = ...
-            jointMotorCoupling.gearboxDqM2Jratios{motorIdx} ...
-            * data.parsedParams.(['dqMRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
+        dqMradG = data.parsedParams.(['dqMRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
-        % filtered Tau(time) & dqM(time)
+        % filtered Curr(time) & dqM(time)
         Plotter.plot2funcTimeseriesYY(...
             figuresHandler,...
-            'Motor velocity and torque over time','motorVel_N_TorqFilt',...
-            time,dqMradG,time,tauMotorG,...
-            'Motor velocity (radians/s)','Motor torque (N.m)');
+            'Motor velocity and current over time','motorVel_N_CurrFilt',...
+            time,dqMradG,time,currMotorG,...
+            'Motor velocity (radians/s)','Motor current (A)');
         
-        % filtered Tau VS dqM
+        % filtered Curr VS dqM
         Plotter.plot2dDataNfittedModel(...
             figuresHandler,...
-            'Motor velocity to torque model','motorVel2torq',...
-            dqMradG,tauMotorG,...
+            'Motor velocity to current model','motorVel2curr',...
+            dqMradG,currMotorG,...
             [],[],...
-            'Motor velocity (radians/s)','Motor torque (N.m)',...
+            'Motor velocity (radians/s)','Motor current (A)',...
             'Training data','');
         
-    case 'ktau'
+    case 'kcurr'
         pwmDutyCycle = ...
-            data.parsedParams.(['pwm_' jointMotorCoupling.part '_state'])(motorIdx,:) ...
-            * jointMotorCoupling.fullscalePWMs{motorIdx}/100;
+            data.parsedParams.(['pwm_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
-        % filtered Tau(time) & pwm(time)
+        % filtered Curr(time) & pwm(time)
         Plotter.plot2funcTimeseriesYY(...
             figuresHandler,...
-            'Motor PWM and torque over time','motorPWM_N_torqFilt',...
-            time,pwmDutyCycle,time,tauMotorG,...
-            'Motor PWM (duty cycle)','Motor torque (N.m)');
+            'Motor PWM and current over time','motorPWM_N_currFilt',...
+            time,pwmDutyCycle,time,currMotorG,...
+            'Motor PWM (duty cycle)','Motor current (A)');
         
-        % filtered Tau VS pwm
+        % filtered Curr VS pwm
         Plotter.plot2dDataNfittedModel(...
             figuresHandler,...
-            'Motor PWM to torque model','motorPWM2torq',...
-            pwmDutyCycle,tauMotorG,...
+            'Motor PWM to current model','motorPWM2curr',...
+            pwmDutyCycle,currMotorG,...
             [],[],...
-            'Motor PWM (duty cycle)','Motor torque (N.m)',...
+            'Motor PWM (duty cycle)','Motor current (A)',...
             'Training data','');
         
     otherwise
