@@ -21,20 +21,20 @@ classdef LowlevCurrCtrlCalibrator < Calibrator
 
         statesNextState = {...
             'restart'         ,'proceed'         ,'skip'            ,'end'     ;...
-            []                ,S.stateAcqKtau    ,[]                ,[]        ;...  % stateStart
+            []                ,S.stateAcqKgain   ,[]                ,[]        ;...  % stateStart
             S.stateAcqFriction,S.stateFitFriction,S.stateNextGroup  ,S.stateEnd;...  % stateAcqFriction
             S.stateAcqFriction,S.stateNextGroup  ,S.stateNextGroup  ,S.stateEnd;...  % stateFitFriction
-            S.stateAcqKtau    ,S.stateFitKtau    ,S.stateAcqFriction,S.stateEnd;...  % stateAcqKcurr
-            S.stateAcqKtau    ,S.stateAcqFriction,S.stateAcqFriction,S.stateEnd;...  % stateFitKcurr
-            []                ,S.stateAcqKtau    ,[]                ,S.stateEnd};    % stateNextGroup
+            S.stateAcqKgain   ,S.stateFitKgain   ,S.stateAcqFriction,S.stateEnd;...  % stateAcqKgain
+            S.stateAcqKgain   ,S.stateAcqFriction,S.stateAcqFriction,S.stateEnd;...  % stateFitKgain
+            []                ,S.stateAcqKgain   ,[]                ,S.stateEnd};    % stateNextGroup
         
         statesCurrentProcessing = {...
             'currentProc'      ,'transition'          ,;...
             @(o) @o.start      ,@(varargin) 'proceed' ,;... % stateStart
             @(o) @o.acqFriction,@(o) @o.promptUser    ,;... % stateAcqFriction
             @(o) @o.fitFriction,@(o) @o.promptUser    ,;... % stateFitFriction
-            @(o) @o.acqKcurr   ,@(o) @o.promptUser    ,;... % stateAcqKcurr
-            @(o) @o.fitKcurr   ,@(o) @o.promptUser    ,;... % stateFitKcurr
+            @(o) @o.acqKcurr   ,@(o) @o.promptUser    ,;... % stateAcqKgain
+            @(o) @o.fitKcurr   ,@(o) @o.promptUser    ,;... % stateFitKgain
             @(varargin) []     ,@(o) @o.nextGroupTrans,};   % stateNextGroup
         
         statesTransitionProcessing = {...
@@ -42,8 +42,8 @@ classdef LowlevCurrCtrlCalibrator < Calibrator
             @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            ;...  % stateStart
             @(o) @o.discardAcqFriction,@(varargin) []          ,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateAcqFriction
             @(o) @o.discardAcqFriction,@(o) @o.savePlotCallback,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateFitFriction
-            @(o) @o.discardAcqKcurr   ,@(varargin) []          ,@(o) @o.discardAcqKcurr   ,@(o) @o.discardAcqKcurr   ;...  % stateAcqKcurr
-            @(o) @o.discardAcqKcurr   ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKcurr   ,@(o) @o.discardAcqKcurr   ;...  % stateFitKcurr
+            @(o) @o.discardAcqKcurr   ,@(varargin) []          ,@(o) @o.discardAcqKcurr   ,@(o) @o.discardAcqKcurr   ;...  % stateAcqKgain
+            @(o) @o.discardAcqKcurr   ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKcurr   ,@(o) @o.discardAcqKcurr   ;...  % stateFitKgain
             @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            };    % stateNextGroup
         
         stateArray = LowlevCurrCtrlCalibrator.defStatesFromDesc([...
