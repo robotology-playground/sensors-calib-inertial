@@ -10,9 +10,7 @@ classdef FilterContext < handle
         lastFilteredSensMeas = [];
         deltaF;
         adjustedDeltaF; % always even
-        ax;
-        ay;
-        az;
+        ax@cell;
         contextPath = '';
     end
     
@@ -28,10 +26,8 @@ classdef FilterContext < handle
             obj.contextPath = contextPath;
         end
         
-        function regSubPlots(obj,ax,ay,az)
+        function regSubPlots(obj,ax)
             obj.ax = ax;
-            obj.ay = ay;
-            obj.az = az;
         end
     end
     

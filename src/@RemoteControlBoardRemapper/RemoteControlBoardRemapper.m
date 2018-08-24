@@ -56,6 +56,7 @@ classdef RemoteControlBoardRemapper < handle
         iencs@yarp.IEncoders;          % IEncoders interface for reading joint encoders position and velocity
         imotorencs@yarp.IMotorEncoders % IMotorEncoders interface for reading motor encoders position and velocity
         ipos@yarp.IPositionControl;    % IPositionControl interface for joint position control settings
+        ipdr@yarp.IPositionDirect;     % IPositionDirect interface for joint position Direct control settings
         ivel@yarp.IVelocityControl;    % IVelocityControl interface for joint velocity control settings
         ipwm@yarp.IPWMControl;         % IPWMControl interface for motor PWM control settings
         yarpVector@yarp.Vector;   % Temp buffer vector yarp.Vector of same size as 'jointsList' for read/write purposes
@@ -103,9 +104,10 @@ classdef RemoteControlBoardRemapper < handle
         % Close ports
         close(obj);
         
-        % Read/write joint encoders
+        % Read/write joint positions
         [readEncs] = getEncoders(obj);
         ok         = setEncoders(obj,desiredPosMat,refType,refParamsMat,wait,varargin);
+        ok         = setPositions(obj,desiredPositions); % Position Direct
         
         % Wait for motion to be completed
         ok = waitMotionDone(obj,timeout);

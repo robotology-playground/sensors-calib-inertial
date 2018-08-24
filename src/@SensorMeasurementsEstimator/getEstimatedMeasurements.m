@@ -6,9 +6,9 @@ function [ FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas ] = getEstimat
 
 % Fill iDynTree joint vectors.
 % Warning!! iDynTree takes in input **radians** based units.
-obj.q_idyn.fromMatlab(q);
-obj.dq_idyn.fromMatlab(dq);
-obj.d2q_idyn.fromMatlab(d2q);
+obj.q_idyn.fromMatlab(obj.convertInputToRadians(q));
+obj.dq_idyn.fromMatlab(obj.convertInputToRadians(dq));
+obj.d2q_idyn.fromMatlab(obj.convertInputToRadians(d2q));
 obj.grav_idyn.fromMatlab(gravity);
 
 % Update the kinematics information in the estimator
@@ -35,6 +35,10 @@ AccsMeas        = reshape(splitMeas{2},[3,obj.nbAccs]);
 GyrosMeas       = reshape(splitMeas{3},[3,obj.nbGyros]);
 ThAxAngAccsMeas = reshape(splitMeas{4},[3,obj.nbThAxAngAccs]);
 ThAxFTsMeas     = reshape(splitMeas{5},[3,obj.nbThAxFTs]);
+
+% Convert output angular velocities and accelerations
+GyrosMeas = obj.convertOutputFromRadians(GyrosMeas);
+ThAxAngAccsMeas = obj.convertOutputFromRadians(ThAxAngAccsMeas);
 
 end
 

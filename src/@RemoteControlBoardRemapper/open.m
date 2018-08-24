@@ -43,6 +43,7 @@ obj.yarpVector.resize(length(obj.jointsList));
 
 % Prepare position and velocity control interfaces
 obj.ipos = obj.driver.viewIPositionControl();
+obj.ipdr = obj.driver.viewIPositionDirect();
 obj.ivel = obj.driver.viewIVelocityControl();
 obj.ipwm = obj.driver.viewIPWMControl();
 

@@ -9,6 +9,7 @@ obj.yarpVector.resize(0);
 
 % Clean position and velocity control interfaces
 obj.ipos = yarp.IPositionControl.empty();
+obj.ipdr = obj.driver.viewIPositionDirect.empty();
 obj.ivel = yarp.IVelocityControl.empty();
 obj.ipwm = yarp.IPWMControl.empty();
 

@@ -4,6 +4,8 @@ function tuneFilter(hObject,callbackdata,filterContext)
 
 figureOpened = true; % for handling "close figure" action
 
+Ydim = numel(filterContext.ax); % dimension of the signal to filter
+
 % define operation on graph depending on the key pressed
 switch callbackdata.Key
     case 'q'
@@ -21,8 +23,12 @@ switch callbackdata.Key
         load(filterContext.contextPath,'filtParams');
         filterContext.SgolayK = filtParams.SgolayK;
         filterContext.SgolayF = filtParams.SgolayF;
-    case {'1','2','3','4','5'}
+    case {'1','2','3','4','5','6','7','8','9'}
         filterContext.SgolayK = str2double(callbackdata.Key);
+    case 'p'
+        filterContext.SgolayK = filterContext.SgolayK + 1;
+    case 'm'
+        filterContext.SgolayK = filterContext.SgolayK - 1;
     case 'rightarrow'
         filterContext.deltaF = filterContext.deltaF*10;
     case 'leftarrow'
@@ -36,7 +42,7 @@ end
 
 % is reploting necessary?
 switch callbackdata.Key
-    case {'i','l','1','2','3','4','5','downarrow','uparrow'}
+    case {'i','l','1','2','3','4','5','6','7','8','9','p','m','downarrow','uparrow'}
         refresh = true;
     otherwise
         refresh = false;
@@ -79,55 +85,35 @@ if figureOpened && refresh
     disp('plotting...');
     %% Replace previous plot with original/lastFiltered/newFiltered plots
     
-    % Plot original signal components X, Y, Z, flushing previous plots
-    plot(filterContext.ax,...
-        filterContext.time,filterContext.sensMeas(:,1),...
-        SigOrigStyle{:},'lineWidth',3);                   % component X
-    plot(filterContext.ay,...
-        filterContext.time,filterContext.sensMeas(:,2),...
-        SigOrigStyle{:},'lineWidth',3);                   % component Y
-    plot(filterContext.az,...
-        filterContext.time,filterContext.sensMeas(:,3),...
-        SigOrigStyle{:},'lineWidth',3);                   % component Z
-    
-    % Hold on
-    hold(filterContext.ax,'on');
-    hold(filterContext.ay,'on');
-    hold(filterContext.az,'on');
-    
-    % Plot last filtered signal
-    plot(filterContext.ax,...
-        filterContext.time,filterContext.lastFilteredSensMeas(:,1),...
-        'k:','lineWidth',1);                             % component X
-    plot(filterContext.ay,...
-        filterContext.time,filterContext.lastFilteredSensMeas(:,2),...
-        'k:','lineWidth',1);                             % component Y
-    plot(filterContext.az,...
-        filterContext.time,filterContext.lastFilteredSensMeas(:,3),...
-        'k:','lineWidth',1);                             % component Z
-
-    % Plot filtered signal
-    plot(filterContext.ax,...
-        filterContext.time,filteredMeas(:,1),...
-        'b-','lineWidth',2);                             % component X
-    plot(filterContext.ay,...
-        filterContext.time,filteredMeas(:,2),...
-        'b-','lineWidth',2);                             % component Y
-    plot(filterContext.az,...
-        filterContext.time,filteredMeas(:,3),...
-        'b-','lineWidth',2);                             % component Z
+    for idx = 1:Ydim
+        % Plot original signal components Y_i, flushing previous plots
+        plot(filterContext.ax{idx},...
+            filterContext.time,filterContext.sensMeas(idx,:),...
+            SigOrigStyle{:},'lineWidth',3);                   % component Y_i
+        
+        % Hold on
+        hold(filterContext.ax{idx},'on');
+        
+        % Plot last filtered signal
+        plot(filterContext.ax{idx},...
+            filterContext.time,filterContext.lastFilteredSensMeas(idx,:),...
+            'k:','lineWidth',1);                             % component Y_i
+        
+        % Plot filtered signal
+        plot(filterContext.ax{idx},...
+            filterContext.time,filteredMeas(idx,:),...
+            'b-','lineWidth',2);                             % component Y_i
+        
+        % Plot titles
+        title(filterContext.ax{idx},['Y_' idx ' component'],'Fontsize',16,'FontWeight','bold');
+        
+        % Hold off
+        hold(filterContext.ax{idx},'off');
+        
+        drawnow;
+    end
     
     disp('plot complete!');
-        
-    % Plot titles
-    title(filterContext.ax,'X component','Fontsize',16,'FontWeight','bold');
-    title(filterContext.ay,'Y component','Fontsize',16,'FontWeight','bold');
-    title(filterContext.az,'Z component','Fontsize',16,'FontWeight','bold');
-
-    % Hold off
-    hold(filterContext.ax,'off');
-    hold(filterContext.ay,'off');
-    hold(filterContext.az,'off');
     
     %% replace last filtered signal
     filterContext.lastFilteredSensMeas = filteredMeas;
