@@ -18,14 +18,14 @@ calibrationType = 'standard';
 
 %% standard calibration tasks checklist
 acquireSensorsTestData  = false;
-calibrateAccelerometers = false;
+calibrateAccelerometers = true;
 calibrateJointEncoders  = false;
 calibrateFTsensors      = false;
 calibrateGyroscopes     = false;
-calibrateLowLevTauCtrl  = true;
+calibrateLowLevTauCtrl  = false;
 
 %% Diagnosis and visualization
-runDiagnosis = false;
+runDiagnosis = true;
 
 %% Common output parameters
 saveCalibration = true;
@@ -119,7 +119,7 @@ clear acquiredParts mtbSensorAct savePlot exportPlot loadJointPos ...
 
 % Calibrated parts:
 % Only the accelerometers from these parts (limbs) will be calibrated
-calibedParts = {'torso','head'};
+calibedParts = {'left_leg'};
 
 % some sensors are de-activated because of faulty behaviour, bad calibration 
 % or wrong frame definition
@@ -146,7 +146,7 @@ taskSpecificParams = struct(...
     'loadJointPos',loadJointPos);
 
 % Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'last'};
+sensorDataAcq = {'new'};
 
 % wrap parameters
 accelerometersCalib = struct(...
