@@ -37,10 +37,11 @@ sensorTimestpNmeasOffset = 2;
 % Below tables are populated according to enums defined in icub-firmware-shared/eth/embobj/plus/comm-v2/icub/EoAnalogSensors.h
 
 % Matches sensorTypeT
-% type_none          = 0;
-% type_accelerometer = 1;
-% type_gyroscope     = 2;
-mtbType = {'none','mtb_acc','mtb_gyro'};
+% eoas_inertial1_type_none          = 0,
+% eoas_inertial1_type_accelerometer = 1,
+% eoas_inertial1_type_gyroscope     = 2,
+% eoas_inertial1_type_emsgyro       = 3.
+mtbType = {'none','mtb_acc','mtb_gyro','ems_gyro'};
 
 % unique id for every possible inertial sensor positioned on iCub. So far we can host
 % up to 63 different positions. The actual positions on iCub are documented on
@@ -120,7 +121,9 @@ obj.mapMTBpos2code = {'none',...
     '2b7','2b8','2b9','2b10','2b11','2b12','2b13',...
     '11b12','11b13','11b8','11b9','11b10','11b11','11b1','11b2','11b3','11b5','11b4','11b6','11b7',...
     'none','none','none','none',...
-    '0b7','0b8','0b9','0b10'};
+    '0b7','0b8','0b9','0b10',...
+    'none','none','none','none','none','none','none',...
+    'eb10','eb11'};
 
 %% check metadata is constant
 %
