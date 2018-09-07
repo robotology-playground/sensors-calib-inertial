@@ -13,6 +13,10 @@ imuSensors_port_rule_icub   =        '[''/'' robotname ''/inertial'']';
 imuSensors_port_rule_dumper = '[''/dumper/'' robotname ''/inertial'']';
 imuSensors_folder_rule_dumper =  '[datapath ''/'' part ''/inertial'']';
 
-FTSensors_port_rule_icub   =        '[''/'' robotname ''/'' part ''/analog:o'']';
-FTSensors_port_rule_dumper = '[''/dumper/'' robotname ''/'' part ''/analog'']';
-FTSensors_folder_rule_dumper =             '[datapath ''/'' part ''/analog'']';
+FTSensorsArms_port_rule_icub   =        '[''/'' robotname ''/'' part ''/analog:o'']';
+FTSensorsArms_port_rule_dumper = '[''/dumper/'' robotname ''/'' part ''/analog'']';
+FTSensorsArms_folder_rule_dumper =             '[datapath ''/'' part ''/analog'']';
+
+FTSensors_port_rule_icub   =        '[''/'' robotname ''/'' part ''/measures:o'']';
+FTSensors_port_rule_dumper = '[''/dumper/'' robotname ''/'' part ''/measures'']';
+FTSensors_folder_rule_dumper =             '[datapath ''/'' part ''/measures'']';
