@@ -31,7 +31,6 @@ if length(desiredPosMat) ~= length(obj.jointsList)
     error('wrong input vector size!');
 end
 % Configure positions
-ipos = obj.driver.viewIPositionControl();
 desiredPositions = yarp.Vector(length(obj.jointsList));
 desiredPositions.zero();
 RemoteControlBoardRemapper.fromMatlab(desiredPositions,desiredPosMat);
@@ -42,15 +41,15 @@ RemoteControlBoardRemapper.fromMatlab(refParams,refParamsMat);
 switch refType
     case 'refVel'
         % Set ref speeds
-        ipos.setRefSpeeds(refParams.data());
+        obj.ipos.setRefSpeeds(refParams.data());
     case 'refAcc'
         % Set ref accelerations
-        ipos.setRefAccelerations(refParams.data());
+        obj.ipos.setRefAccelerations(refParams.data());
     otherwise
         error('Unsupported reference type');
 end
 % Run the motion
-ipos.positionMove(desiredPositions.data());
+obj.ipos.positionMove(desiredPositions.data());
 
 % Wait for motion completion
 if wait

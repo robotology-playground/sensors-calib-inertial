@@ -31,7 +31,7 @@ classdef SensorMeasurementsEstimator < handle
     
     methods
         function obj = SensorMeasurementsEstimator(modelName,modelPath,varargin)
-            import System.Const
+            import System.Const;
             
             % save model name
             obj.modelName = modelName;
@@ -75,7 +75,7 @@ classdef SensorMeasurementsEstimator < handle
             obj.fixedBasePose.worldBasePos().setRotation(iDynTree.Rotation.Identity());
             obj.fixedBasePose.worldBasePos().setPosition(iDynTree.Position.Zero());
             
-            % Set the default converter for converting the q, dq, d2q input parameters into radians
+            % Set the default converter for considering the q, dq, d2q input parameters as radians
             obj.convertInputToRadians = Math.convertAnglesFromTo(Const.Radians,Const.Radians);
             obj.convertOutputFromRadians = Math.convertAnglesFromTo(Const.Radians,Const.Radians);
             
@@ -153,6 +153,9 @@ classdef SensorMeasurementsEstimator < handle
         
         % Computes the predicted sensor measurements
         [FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas] = getEstimatedMeasurements(obj,q,dq,d2q,gravity);
+        
+        % Computes the predicted sensor measurements, takes for input subvectors q, dq, d2q
+        [FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas] = getEstimatedMeasurements2(obj,q,dq,d2q,indexes,gravity);
     end
     
     methods(Static)
