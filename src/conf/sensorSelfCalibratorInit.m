@@ -4,8 +4,9 @@
 
 %% Common model and calibration input parameters
 modelName = 'iCubGenova04'; % as the models defined in 'icub-models' repo
+% modelName = 'icubGazeboSim'; % as the models defined in 'icub-models' repo
 dataPath  = '../../data/dumper';
-%modelPath = '../models/icubSim/icub.urdf';
+% modelPath = '../models/icubSim/model.urdf';
 modelPath = '../models/iCubGenova04/model.urdf';
 %calibrationMapFile = '../../data/calibration/calibrationMap_#6.mat';
 calibrationMapFile = 'calibrationMap.mat';
@@ -231,7 +232,7 @@ clear calibedParts calibedJointsIdxes mtbSensorAct savePlot exportPlot loadJoint
 
 % Calibrated parts:
 % Only the joint parameters from these parts (limbs) will be calibrated
-calibedParts = {'right_leg'};
+calibedParts = {'torso'};
 
 % Fine selection of joints to calibrate:
 % Select the joints to calibrate through the respective indexes. These indexes match 

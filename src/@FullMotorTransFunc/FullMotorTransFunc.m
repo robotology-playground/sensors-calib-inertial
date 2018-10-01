@@ -8,14 +8,16 @@ classdef FullMotorTransFunc < handle
     
     properties(GetAccess=public, SetAccess=protected)
         name@char;
-        Kpwm = 0;
-        Kc = 0;
-        Kv = 0;
+        Kpwm = 0; % pwm to torque [Nm / dutycycle]
+        Kc = 0; % Coulomb Friction [Nm]
+        Kv = 0; % back-emf + mechanical friction [Nm * (rad/s)^-1]
         stictionP = 0;
         stictionN = 0;
-        currOffset = 0;
-        Kcurr = 0;
-        Kbemf = 0;
+        currOffset = 0; % current offset [A]
+        Kcurr = 0; % pwm to current [A / dutycycle]
+        Kbemf = 0; % back-emf [A * (rad/s)^-1]
+        Ktau = 0; % current to torque [Nm / A]
+        Kvmech = 0; % mechanical friction [Nm * (rad/s)^-1]
     end
     
     methods(Access=protected)
@@ -65,6 +67,22 @@ classdef FullMotorTransFunc < handle
         function setKbemf(obj, Kbemf), obj.Kbemf = Kbemf; end
         
         function setCurrOffset(obj,currOffset), obj.currOffset = currOffset; end
+        
+        function setKtau(obj,Ktau), obj.Ktau = Ktau; end
+        
+        function setKvmech(obj,Kvmech), obj.Kvmech = Kvmech; end
+        
+        function computeKtau(obj)
+            if not(obj.Kcurr == 0)
+                obj.Ktau = obj.Kpwm / obj.Kcurr;
+            else
+                warning('FullMotorTransFunc: Impossible to compute Ktau, Kcurr=0');
+            end
+        end
+        
+        function computeKvmech(obj, GDqM2Jratio)
+            obj.Kvmech = obj.Kv * GDqM2Jratio - obj.Ktau * obj.Kbemf;
+        end
     end
     
 end

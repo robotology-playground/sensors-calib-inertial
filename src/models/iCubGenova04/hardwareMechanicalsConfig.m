@@ -47,7 +47,7 @@ axisConfig = {...
     'l_hip_pitch'   'l_hip_roll'   'l_hip_yaw'   'l_knee'   'l_ankle_pitch'   'l_ankle_roll'   % AxisName
     'l_hip_pitch_m' 'l_hip_roll_m' 'l_hip_yaw_m' 'l_knee_m' 'l_ankle_pitch_m' 'l_ankle_roll_m' % MotorName
     32000           32000          32000         32000      32000             32000            % fullscalePWM
-    -100.0          100.0          -100.0        -100.0     100.0             100.0         }; % Gearbox_M2J
+    -150.0          100.0          -100.0        -100.0     100.0             100.0         }; % Gearbox_M2J
 
 left_leg.jointNames   = axisConfig(1,:);
 left_leg.motorNames   = axisConfig(2,:);
@@ -66,7 +66,7 @@ axisConfig = {...
     'r_hip_pitch'   'r_hip_roll'   'r_hip_yaw'   'r_knee'   'r_ankle_pitch'   'r_ankle_roll'   % AxisName
     'r_hip_pitch_m' 'r_hip_roll_m' 'r_hip_yaw_m' 'r_knee_m' 'r_ankle_pitch_m' 'r_ankle_roll_m' % MotorName
     32000           32000          32000         32000      32000             32000            % fullscalePWM
-    100.0           -100.0         100.0         100.0      -100.0            -100.0        }; % Gearbox_M2J
+    150.0           -100.0         100.0         100.0      -100.0            -100.0        }; % Gearbox_M2J
 
 right_leg.jointNames   = axisConfig(1,:);
 right_leg.motorNames   = axisConfig(2,:);
@@ -82,10 +82,10 @@ right_leg.matrixM2J = {...
 
 % torso parameters
 axisConfig = {...
-    'torso_yaw' 'torso_roll' 'torso_pitch'   % AxisName
-    'torso_m1'  'torso_m2'   'torso_m3'      % MotorName
-    32000       32000        32000           % fullscalePWM
-    -100.00     -100.00      -100.00      }; % Gearbox_M2J
+    'torso_roll' 'torso_pitch' 'torso_yaw'    % AxisName
+    'torso_m1'   'torso_m2'   'torso_m3'      % MotorName
+    32000        32000         32000          % fullscalePWM
+    -100.00      -100.00      -100.00      }; % Gearbox_M2J
 
 torso.jointNames   = axisConfig(1,:);
 torso.motorNames   = axisConfig(2,:);
