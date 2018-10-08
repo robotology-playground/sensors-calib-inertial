@@ -92,6 +92,7 @@ loadJointPos = true;
 %motionSeqProfile = 'jointsCalibratorSequenceProfile';
 %motionSeqProfile = 'FTSensorsCalibratorSequenceProfileWOsuspend';
 motionSeqProfile = 'GridAndTzSequences';
+%motionSeqProfile = 'TzSequence';
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
