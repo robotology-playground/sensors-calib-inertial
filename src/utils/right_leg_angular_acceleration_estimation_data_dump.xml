@@ -1,0 +1,90 @@
+<application>
+	<name>right_leg_angular_acceleration_estimation_data_dump</name>
+	<dependencies>
+		<port>/icub/right_leg/stateExt:o</port>
+		<port>/icub/right_leg/analog:o</port>
+		<port>/icub/right_foot/analog:o</port>
+		<port>/icub/right_leg/inertials/measures:o</port>
+		<port>/icub/right_leg/inertials/rpc:o</port>
+	        <port>/icub/inertial</port>
+		<port>/icub/xsens_inertial</port>
+	</dependencies>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_leg/stateExt:o --type bottle --rxTime </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-right_leg-stateExt-o</tag>
+	</module>
+	<connection>
+		<from>/icub/right_leg/stateExt:o</from>
+		<to>/dumper/icub/right_leg/stateExt:o</to>
+		<protocol>udp</protocol>
+	</module>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_leg/analog:o --type bottle --rxTime </parameters>
+		<node>localhost</node>
+		<tag>data-dumpericub-right_leg-analog-o</tag>
+	</module>
+	<connection>
+		<from>/icub/right_leg/analog:o</from>
+		<to>/dumper/icub/right_leg/analog:o</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_foot/analog:o --type bottle --rxTime </parameters>
+		<node>localhost</node>
+		<tag>data-dumpericub-right_foot-analog-o</tag>
+	</module>
+	<connection>
+		<from>/icub/right_foot/analog:o</from>
+		<to>/dumper/icub/right_foot/analog:o</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/inertial --type bottle --rxTime </parameters>
+		<node>localhost</node>
+		<tag>data-dumpericub-inertial</tag>
+	</module>
+	<connection>
+		<from>/icub/inertial</from>
+		<to>/dumper/icub/inertial</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/xsens_inertial --type bottle --rxTime </parameters>
+		<node>localhost</node>
+		<tag>data-dumpericub-xsens_inertial</tag>
+	</module>
+	<connection>
+		<from>/icub/xsens_inertial</from>
+		<to>/dumper/icub/xsens_inertial</to>
+		<protocol>udp</protocol>
+	</connection>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_leg/inertials/measures:o --type bottle --rxTime </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-right_leg-inertials-measures-o</tag>
+	</module>
+	<connection>
+		<from>/icub/right_leg/inertials/measures:o</from>
+		<to>/dumper/icub/right_leg/inertials/measures:o</to>
+		<protocol>udp</protocol>
+	</module>
+	<module>
+		<name>yarpdatadumper</name>
+		<parameters>--name /dumper/icub/right_leg/inertials/rpc:o --type bottle --rxTime </parameters>
+		<node>localhost</node>
+		<tag>data-dumper-icub-right_leg-inertials-rpc-o</tag>
+	</module>
+	<connection>
+		<from>/icub/right_leg/inertials/rpc:o</from>
+		<to>/dumper/icub/right_leg/inertials/rpc:o</to>
+		<protocol>udp</protocol>
+	</module>
+</application>
+
