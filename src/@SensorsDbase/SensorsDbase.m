@@ -102,11 +102,13 @@ classdef SensorsDbase < DataBase
         fullscaleGainList = getSensorFullscaleGains(obj,sensorLabelList);
     end
     
-    methods(Static = true, Access = protected)
+    methods(Static=true, Access=public)
+        sensorHwId = frame2hwId(sensorFrameName);
+    end
+    
+    methods(Static=true, Access=protected)
         [iDynObject,sensorFrameName,parentLink,sensorFramePose,fullscaleGain] = ...
             getSensorProps(iDynTreeSensorsFromURDF,sensorType,sensorIndex);
-        
-        sensorHwId = frame2hwId(sensorFrameName);
         
         cadType = frame2cadType(sensorFrameName);
     end

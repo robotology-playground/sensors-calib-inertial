@@ -45,6 +45,8 @@ classdef Plotter < handle
             figuresHandler,aTitle,aLabel,yLabel,...
             yLegends,lineStyles,lineWidths,colors,...
             markerSymbols,markerSizes,markerEdgeColors,markerFaceColors);
+        
+        [h,ditribLogString] = plotNprintDistrb(aTitle,Y,errorString,units,fitGaussian,color,alpha,axbc,axac);
     end
     
 end
