@@ -38,7 +38,7 @@ if isempty(figH)
     lg=legend('Location','BestOutside');
     lg.set('Interpreter','latex');
     
-    % Save fugure label
+    % Save figure label
     figH.UserData = aLabel;
 else
     figure(figH);

@@ -1,4 +1,4 @@
-function [figH,ditribLogString] = plotNprintDistrb(aTitle,Y,xLegend,units,fitGaussian,color,alpha,axbc,axac)
+function [figH,ditribLogString] = plotNprintDistrb(aTitle,aLabel,Y,xLegend,units,fitGaussian,color,alpha,xLim)
 % Plots data in the active figure
 %
 
@@ -7,6 +7,10 @@ title(aTitle,'FontWeight','bold','Interpreter','latex');
 set(gca,'FontSize',24);
 grid on;
 hold on;
+
+% Save fugure label
+figH.UserData = aLabel;
+
 lg=legend('Location','BestOutside');
 lg.set('Interpreter','latex');
 
@@ -16,11 +20,10 @@ lg.set('Interpreter','latex');
 h = histogram(Y,'Normalization','pdf','EdgeColor','none','FaceColor',color,'FaceAlpha',alpha);
 h.DisplayName = ['$' xLegend '$'];
 
-if nargin==8
-    xmin = min([axbc.XLim(1) axac.XLim(1)]);
-    xmax = max([axbc.XLim(2) axac.XLim(2)]);
-    axbc.XLim = [xmin xmax];
-    axac.XLim = [xmin xmax];
+if nargin==9
+    xmin = xLim(1);
+    xmax = xLim(2);
+    set(gca,'XLim',[xmin,xmax]);
 else
     % get the matrix of X limits from gca (current subplot).
     % transform it to a list
@@ -34,7 +37,7 @@ if fitGaussian
     mu = mean(Y,1); sigma = std(Y,0,1);
     x_pm_sigma = linspace(mu-sigma,mu+sigma,round(1000*2*sigma/(xmax-xmin)))';
     if ~isempty(x_pm_sigma)
-        f = @(t) exp(-(t-mu).^2/(2*sigma^2))/(sigma*sqrt(2*pi));
+        f = @(t) exp(-(t-mu).^2/(2*sigma^2))/(sigma*sqrt(2*pi)); % mono-variable gaussian distribution
         pfit = plot(x,f(x),'r-','Linewidth',2);
         parea = area(x_pm_sigma,f(x_pm_sigma),...
             'Linewidth',1,'EdgeColor','red','FaceColor','none',...
