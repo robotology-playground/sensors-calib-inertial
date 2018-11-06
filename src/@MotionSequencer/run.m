@@ -86,15 +86,15 @@ for seqIdx = 1:numel(obj.sequences)
                 % the PWM value.
                 motorName = sequence.pwmctrl.motor;
                 pwm = sequence.pwmctrl.pwm{stepIdx};
-                freq = runSeq.pwmctrl.freq;
                 
-                switch runSeq.pwmctrl.trans
+                switch sequence.pwmctrl.trans{stepIdx}
                     case 'level'
                         % Set the motor in PWM control mode and handle the coupled
                         % motors keeping their control mode and state unchanged. If
                         % this is not supported by the YARP remoteControlBoardRemapper,
                         % emulate it. We can only emulate position control.
                         pwmController = MotorPWMcontroller(motorName,obj.ctrlBoardRemap,Const.ThreadON);
+                        pwmController.start();
                         
                         % Set the desired PWM level (0-100%) for the named motor
                         ok = pwmController.setMotorPWM(pwm);
@@ -103,7 +103,9 @@ for seqIdx = 1:numel(obj.sequences)
                         % Same as the 'level' transition mode but here the PWM is set by an internal 
                         % command instead of being triggered by an external action. In this case, "pwm" is a maximum
                         % value.
+                        freq = sequence.pwmctrl.freq{stepIdx};
                         pwmController = MotorPWMcontrollerTrans(motorName,freq,pwm,obj.ctrlBoardRemap,Const.ThreadON);
+                        pwmController.start();
                 end
                 
                 % Prompt the user to proceed

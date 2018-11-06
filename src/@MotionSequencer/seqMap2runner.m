@@ -83,7 +83,7 @@ if ismember('pwmctrl',fieldnames(runSeq))
         runSeq.pwmctrl.trans = runSeq.pwmctrl.trans.(runSeq.pwmctrl.motor);
         runSeq.pwmctrl.freq = runSeq.pwmctrl.freq.(runSeq.pwmctrl.motor);
     else
-        runSeq.pwmctrl.trans = 'level';
+        runSeq.pwmctrl.trans(1:numel(runSeq.pwmctrl.pwm)) = {'level'};
     end
 end
 

@@ -5,7 +5,9 @@ classdef IDiscreteFilter < handle
     
     methods(Abstract=true)
         % Filter the input signal
-        sigVecOut = procSig(obj,sigVecIn);
+        filteredMeas = process(obj,rawMeas);
+        % Create a copy of self
+        objCpy = copy(obj);
     end
     
 end

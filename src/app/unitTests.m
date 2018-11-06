@@ -307,6 +307,7 @@ PIDCtrller.reset([1,1,1]')
 %% Set a non-coupled motor to PWM control mode and PWM value using motor name
 ctrlBoard.open({'right_leg'})
 pwmController = MotorPWMcontroller('r_knee_m',ctrlBoard,System.Const.ThreadON);
+pwmController.start();
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(0)
@@ -329,6 +330,8 @@ ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
 
 pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,System.Const.ThreadTEST)
+pwmController.start()
+
 f = pwmController.ctrllerThread.threadTimer.TimerFcn;
 aThreadTimer = pwmController.ctrllerThread.threadTimer;
 pause
@@ -353,6 +356,7 @@ ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
 
 pwmController = MotorPWMcontroller('torso_m1',ctrlBoard,System.Const.ThreadON)
+pwmController.start()
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(0)
@@ -377,6 +381,7 @@ ok = ctrlBoard.setJointsControlMode(1:3,'ctrl')
 [ok,modes] = ctrlBoard.getJointsControlMode(1:3)
 
 pwmController = MotorPWMcontroller('torso_m2',ctrlBoard,System.Const.ThreadON)
+pwmController.start()
 
 % Set the desired PWM level (0-100%) for the named motor
 pwmController.setMotorPWM(0)
@@ -395,6 +400,7 @@ ctrlBoard.close();
 System.clearTimers; % cleanup timers
 
 % pwmCtrller = MotorPWMcontroller('l_shoulder_1',ctrlBoard,System.Const.ThreadON)
+% pwmController.start()
 % 
 % jointsIdxes = obj.getJointsMappedIdxes({'l_hip_roll'})
 % ok = obj.setJointsControlMode(jointsIdxes,'pwmctrl')

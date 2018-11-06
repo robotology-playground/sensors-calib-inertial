@@ -29,7 +29,8 @@ ylabel(yLabel,'Fontsize',12);
 zlabel(zLabel,'Fontsize',12);
 set(gca,'FontSize',12);
 % obj.tempPlot.figH.CurrentAxes.XLim = xRange;
-% obj.tempPlot.figH.CurrentAxes.YLim = zRange;
+% obj.tempPlot.figH.CurrentAxes.YLim = yRange;
+% obj.tempPlot.figH.CurrentAxes.ZLim = zRange;
 
 view(45,30); % view(az,el)
 % axis vis3d;

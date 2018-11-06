@@ -1,8 +1,7 @@
 function sensorList = createSensorList( model,sensorTypes,sensorNames,parentLinkNames,linkSensorHtransforms )
 
-% Load the URDF model from the respective URDF file, create the iDynTree sensors from the input 
-% parameters and wrap them in a sensor list (each model attached to a link of the URDF model, ...).
-% Supported sensors:
+% Create the iDynTree sensors from the input parameters and wrap them in a sensor list (each sensor attached to a link
+% of the URDF model, ...). Supported sensors:
 % - ACCELEROMETER,
 % - GYROSCOPE,
 % - THREE_AXIS_ANGULAR_ACCELEROMETER.
