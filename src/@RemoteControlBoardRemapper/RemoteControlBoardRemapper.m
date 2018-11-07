@@ -118,7 +118,7 @@ classdef RemoteControlBoardRemapper < handle
         ok              = velocityMove(obj,desiredVelocities);
         
         % Read/write joint accelerations
-        [readEncAccs] = getEncoderAccelerations(obj);
+        [readEncAccs] = getEncoderAccelerations(obj,jointsIdxList);
         
         % Read motor encoders
         [readEncs,timeEncs] = getMotorEncoders(obj,motorsIdxList);

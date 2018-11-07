@@ -1,7 +1,8 @@
-function [readEncAccs] = getEncoderAccelerations(obj)
+function [readEncAccs] = getEncoderAccelerations(obj,jointsIdxList)
 
 obj.yarpVector.zero();
 obj.iencs.getEncoderAccelerations(obj.yarpVector.data());
-readEncAccs=obj.yarpVector.toMatlab();
+readAllEncAccs=obj.yarpVector.toMatlab();
+readEncAccs = readAllEncAccs(jointsIdxList);
 
 end

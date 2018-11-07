@@ -15,19 +15,19 @@ end
 % If the figure is not docked, use the below command to display it full
 % screen.
 %set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
-title(aTitle,'Fontsize',16,'FontWeight','bold');
+title(aTitle,'FontSize',30,'FontWeight','bold');
 hold on
 
 [hAx,~,~] = plotyy(time1,y1,time2,y2);
 
 hold off
 grid ON;
-xlabel('Time (sec)','Fontsize',12);
-ylabel(hAx(1),yLabel1,'Fontsize',12);
-ylabel(hAx(2),yLabel2,'Fontsize',12);
+xlabel('Time (sec)','FontSize',30);
+ylabel(hAx(1),yLabel1,'FontSize',30);
+ylabel(hAx(2),yLabel2,'FontSize',30);
 if exist('y1Legend') && exist('y2Legend')
     legend('Location','BestOutside',y1Legend,y2Legend);
 end
-set(gca,'FontSize',12);
+set(gca,'FontSize',30);
 
 end

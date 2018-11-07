@@ -4,7 +4,7 @@ function [figH,ditribLogString] = plotNprintDistrb(aTitle,aLabel,Y,xLegend,units
 
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
 title(aTitle,'FontWeight','bold','Interpreter','latex');
-set(gca,'FontSize',24);
+set(gca,'FontSize',30);
 grid on;
 hold on;
 

@@ -16,7 +16,7 @@ motorTorq = ...
     * cpledJointTorques(:);
 jointVel = motorVel*obj.coupling.gearboxDqM2Jratios{obj.pwmCtrledMotorBitmapInCoupling};
 jointAcc = obj.coupling.Tj2m(obj.pwmCtrledMotorBitmapInCoupling,:) ...
-    * obj.remCtrlBoardRemap.getEncoderAccelerations(); %motorAcc*obj.coupling.gearboxDqM2Jratios{obj.pwmCtrledMotorBitmapInCoupling};
+    * obj.remCtrlBoardRemap.getEncoderAccelerations(obj.couplingJointIdxes); %motorAcc*obj.coupling.gearboxDqM2Jratios{obj.pwmCtrledMotorBitmapInCoupling};
 
 % plot the quantities
 addpoints(obj.tempPlot.an,jointVel,jointAcc,motorTorq);

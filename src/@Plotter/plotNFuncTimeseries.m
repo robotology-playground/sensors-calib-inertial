@@ -34,7 +34,7 @@ if isempty(figH)
     grid on;
     xlabel('Time (sec)');
     ylabel(yLabel);
-    set(gca,'FontSize',24);
+    set(gca,'FontSize',30);
     lg=legend('Location','BestOutside');
     lg.set('Interpreter','latex');
     

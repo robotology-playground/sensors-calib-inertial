@@ -15,7 +15,7 @@ end
 % If the figure is not docked, use the below command to display it full
 % screen.
 %set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
-title(aTitle,'Fontsize',16,'FontWeight','bold');
+title(aTitle,'FontSize',30,'FontWeight','bold');
 hold on
 
 plot(time,y1,'b','lineWidth',1.0);
@@ -23,10 +23,10 @@ plot(time,y2,'r','lineWidth',2.0);
 
 hold off
 grid ON;
-xlabel('Time (sec)','Fontsize',12);
-ylabel(yLabel,'Fontsize',12);
+xlabel('Time (sec)','FontSize',30);
+ylabel(yLabel,'FontSize',30);
 legend('Location','BestOutside',y1Legend,y2Legend);
-set(gca,'FontSize',12);
+set(gca,'FontSize',30);
 
 end
 
