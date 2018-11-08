@@ -23,8 +23,8 @@ figure(figH);
 
 % Plot the data and the model
 hold on;
-plot(xs,ys,'r','lineWidth',4.0);
-legend('Location','BestOutside','Training data','Model');
+p = plot(xs,ys,'r','lineWidth',4.0);
+p.DisplayName = 'Model';
 
 end
 

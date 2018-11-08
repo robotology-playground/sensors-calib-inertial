@@ -8,6 +8,9 @@ function plotFuncTimeseries(...
 % create figure
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
 
+% Save fugure label
+figH.UserData = aLabel;
+
 if ~isempty(figuresHandler)
     figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
 end
