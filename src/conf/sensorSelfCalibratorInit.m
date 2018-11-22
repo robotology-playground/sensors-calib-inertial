@@ -125,8 +125,8 @@ calibedParts = {'left_leg'};
 % or wrong frame definition
 mtbSensorAct.left_arm = [10:13 8:9 7];
 mtbSensorAct.right_arm = [10:13 8:9 7];
-mtbSensorAct.left_leg = 1:13;
-mtbSensorAct.right_leg = 1:13;
+mtbSensorAct.left_leg = 1:11;
+mtbSensorAct.right_leg = 1:11;
 mtbSensorAct.torso = 7:10;
 mtbSensorAct.head = 1;
 
