@@ -14,7 +14,7 @@ close all
 clc
 
 %Clear static data
-clear classes;
+% clear classes;
 clear functions;
 
 % Clear all timers
@@ -25,6 +25,11 @@ yarp.Network.init();
 
 % load application main interface parameters
 init = Init.load('sensorSelfCalibratorInit');
+% overwrite init parameters in the case of repeatability tests (refer to script `testAccelCalibratorRepeatability.m`)
+global repeatabilityTestSeqNum;
+if ~isempty(repeatabilityTestSeqNum)
+    init.accelerometersCalib.sensorDataAcq = {'seq',repeatabilityTestSeqNum};
+end
 
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the

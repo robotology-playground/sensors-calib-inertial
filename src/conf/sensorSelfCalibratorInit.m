@@ -29,8 +29,8 @@ runDiagnosis = true;
 
 %% Common output parameters
 saveCalibration = true;
-defaultSavePlot = true;
-defaultExportPlot = true;
+defaultSavePlot = false;
+defaultExportPlot = false;
 
 
 %% Custom calibration sequence

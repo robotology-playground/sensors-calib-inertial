@@ -35,6 +35,8 @@
 % 
 % 'duration' objects can be stored in 'duration' arrays and also support sorting, comparison and mathematical
 % calculations.
+% The structure described above is associated to each sensor name in a Map container `calibrationDatabase` stored in
+% a file `calibrationDatabase.mat`.
 % 
 
 % Add main folders in Matlab path
