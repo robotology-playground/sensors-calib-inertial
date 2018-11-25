@@ -46,8 +46,13 @@ end
 % get measurement table ys_xxx_acc [3xnSamples] from captured data,
 sensMeasCell = cell(1,length(sensorsIdxListFile));
 for acc_i = 1:length(sensorsIdxListFile)
-    ys = ['ys_' obj.labels{sensorsIdxListFile(acc_i)}];
-    eval(['sensMeas = obj.parsedParams.' ys ';']);
+    if obj.resampleSensorMeas
+        measOutput = 'ys_'; % resampled
+    else
+        measOutput = 'y_';  % NOT resampled
+    end
+    yOrys = [measOutput obj.labels{sensorsIdxListFile(acc_i)}];
+    eval(['sensMeas = obj.parsedParams.' yOrys ';']);
     sensMeasCell{1,acc_i} = sensMeas';
 end
 

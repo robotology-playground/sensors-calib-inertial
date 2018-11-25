@@ -48,9 +48,10 @@ clear classes; %Clear static data
 System.clearTimers(); % Clear all timers
 import System.Const; % Define constants
 
+%% ======= PARAMETERS ========
 % Define folder where to read new calibration elements
-srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets';
-accNames(1,1:13) = {...
+srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/new';
+accNames(1,1:11) = {...
     'l_upper_leg_mtb_acc_10b1'
     'l_upper_leg_mtb_acc_10b2'
     'l_upper_leg_mtb_acc_10b3'
@@ -61,10 +62,11 @@ accNames(1,1:13) = {...
     'l_lower_leg_mtb_acc_10b8'
     'l_lower_leg_mtb_acc_10b9'
     'l_lower_leg_mtb_acc_10b10'
-    'l_lower_leg_mtb_acc_10b11'
-    'l_foot_mtb_acc_10b12'
-    'l_foot_mtb_acc_10b13'}';
+    'l_lower_leg_mtb_acc_10b11'}';
 
+saveDatabase = false;
+
+%% ======= TEST ==============
 % Load current database
 if exist('calibrationDatabase.mat','file') == 2
     load('calibrationDatabase.mat','calibrationDatabase');
@@ -123,7 +125,11 @@ for accName = accNames
         {'r-','g-','b-','c-','m-','y-'},4,[],[],[]);
 end
 
-%% Static local functions
+if saveDatabase
+    save('calibrationDatabase.mat','calibrationDatabase');
+end
+
+%% ======= Static local functions ============
 
 function shortName = getShortSensorName(fullSensorName)
 

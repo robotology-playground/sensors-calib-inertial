@@ -45,6 +45,8 @@ switch loadSource
         plot = false; loadJointPos = false;
         data = SensorsData(dataPath,subSamplingSize,...
             timeStart,timeStop,plot);
+        data.setFilteringActive(filterSensorMeas);
+        data.setResamplingActive(resampleSensorMeas); % if filtering is OFF, resampling will stay OFF
         [sensorsIdxListFile,sensMeasCell] = data.buildInputDataSet(loadJointPos,modelParams);
         
         % Save data in a Matlab file for faster access in further runs
