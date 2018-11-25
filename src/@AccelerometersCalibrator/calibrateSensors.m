@@ -62,6 +62,7 @@ end
 %
 %                          ellipsoid fitting and distance to ellipsoid
 %
+global predefinedOffsets;
 
 ellipsoid_p = cell(1,length(sensorsIdxListFile)); % implicit parameters
 calib = cell(1,length(sensorsIdxListFile)); % explicit parameters
@@ -69,10 +70,13 @@ ellipsoid_e = cell(1,length(sensorsIdxListFile)); % least squares error
 ellipsoid_d = cell(1,length(sensorsIdxListFile)); % distance to surface
 
 for acc_i = sensorsIdxListFile
+    % get estimated centre from database
+    predefinedCentre = predefinedOffsets(data.frames{1,acc_i});
     [ellipsoid_p{acc_i},ellipsoid_e{acc_i},ellipsoid_d{acc_i}] = ellipsoidfit( ...
         sensMeasCell{1,acc_i}(:,1), ...
         sensMeasCell{1,acc_i}(:,2), ...
-        sensMeasCell{1,acc_i}(:,3));
+        sensMeasCell{1,acc_i}(:,3),...
+        predefinedCentre);
     [calib{acc_i}.centre,radii,calib{acc_i}.quat,calib{acc_i}.R] = ...
         ellipsoid_im2ex(ellipsoid_p{1,acc_i}); % convert implicit to explicit
     % convert ellipsoid axis lengths to rates

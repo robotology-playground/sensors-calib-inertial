@@ -54,8 +54,14 @@ opts = optimset( ...
     'Display', 'off', ...
     'Jacobian', 'off');
 
-lb_center = [-Inf,-Inf,-Inf];
-ub_center = [Inf,Inf,Inf];
+if ~isempty(varargin)
+    centre = varargin{1};
+    lb_center = centre(:)'-0.01;
+    ub_center = centre(:)'+0.01;
+else
+    lb_center = [-Inf,-Inf,-Inf];
+    ub_center = [Inf,Inf,Inf];
+end
 lb_radii = [0,0,0];
 ub_radii = [Inf,Inf,Inf];
 lb_quat = [0,-1,-1,-1];  % resolve sign ambiguity in quaternion representation
