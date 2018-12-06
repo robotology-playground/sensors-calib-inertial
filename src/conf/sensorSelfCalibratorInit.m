@@ -117,6 +117,10 @@ clear acquiredParts mtbSensorAct savePlot exportPlot loadJointPos ...
 
 %% 'calibrateAccelerometers': MTB/IMU accelerometers gains/offsets calibration
 
+% Subtask...
+% ['calibOffsets'|'calibMatrixC']
+subtask = 'calibOffsets';
+
 % Calibrated parts:
 % Only the accelerometers from these parts (limbs) will be calibrated
 calibedParts = {'left_leg'};
@@ -138,12 +142,19 @@ savePlot = defaultSavePlot;
 exportPlot = defaultExportPlot;
 loadJointPos = false;
 
+% Motion sequence profile
+motionSeqProfileOffsets = 'accelerometersCalibratorSequenceProfile2';
+motionSeqProfileMatrixC = 'accelerometersCalibratorSequenceProfile';
+
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
+    'subtask',subtask,...
     'mtbSensorAct',mtbSensorAct,...
     'savePlot',savePlot,...
     'exportPlot',exportPlot,...
-    'loadJointPos',loadJointPos);
+    'loadJointPos',loadJointPos,...
+    'motionSeqProfileOffsets',motionSeqProfileOffsets,...
+    'motionSeqProfileMatrixC',motionSeqProfileMatrixC);
 
 % Sensor data acquisition: ['new'|'last'|<id>]
 sensorDataAcq = {'new'};

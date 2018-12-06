@@ -1,4 +1,4 @@
-function [sensorsIdxListFile,sensMeasCell] = buildInputDataSet(...
+function [sensorsIdxListFile,sensMeasCell,time] = buildInputDataSet(...
     obj,loadJointPos,modelParams)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
@@ -45,15 +45,17 @@ end
 
 % get measurement table ys_xxx_acc [3xnSamples] from captured data,
 sensMeasCell = cell(1,length(sensorsIdxListFile));
+time = cell(1,length(sensorsIdxListFile));
 for acc_i = 1:length(sensorsIdxListFile)
     if obj.resampleSensorMeas
-        measOutput = 'ys_'; % resampled
+        measOutput = ['ys_' obj.labels{sensorsIdxListFile(acc_i)}]; % resampled
+        timeOutput = 'time';
     else
-        measOutput = 'y_';  % NOT resampled
+        measOutput = ['y_' obj.labels{sensorsIdxListFile(acc_i)}];  % NOT resampled
+        timeOutput = ['time_' obj.labels{sensorsIdxListFile(acc_i)}];
     end
-    yOrys = [measOutput obj.labels{sensorsIdxListFile(acc_i)}];
-    eval(['sensMeas = obj.parsedParams.' yOrys ';']);
-    sensMeasCell{1,acc_i} = sensMeas';
+    sensMeasCell{1,acc_i} = obj.parsedParams.(measOutput)';
+    time{1,acc_i} = obj.parsedParams.(timeOutput)';
 end
 
 

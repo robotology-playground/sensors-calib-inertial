@@ -16,4 +16,4 @@ resampleSensorMeas = false; % if filtering is OFF, resampling will stay OFF
 
 % filtering/subsampling: the main single data bucket of (timeStop-timeStart)/10ms 
 % samples is sub-sampled to 'subSamplingSize' samples for running the ellipsoid fitting.
-subSamplingSize = 1000;
+subSamplingSize = 5000;
