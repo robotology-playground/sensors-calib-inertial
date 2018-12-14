@@ -28,7 +28,11 @@ init = Init.load('sensorSelfCalibratorInit');
 % overwrite init parameters in the case of repeatability tests (refer to script `testAccelCalibratorRepeatability.m`)
 global repeatabilityTestSeqNum;
 if ~isempty(repeatabilityTestSeqNum)
-    init.accelerometersCalib.sensorDataAcq = {'seq',repeatabilityTestSeqNum};
+    if (repeatabilityTestSeqNum == -1)
+        init.accelerometersCalib.sensorDataAcq = {'new'};
+    else
+        init.accelerometersCalib.sensorDataAcq = {'seq',repeatabilityTestSeqNum};
+    end
 end
 
 % Create robot model. The model holds the robot name, the parameters

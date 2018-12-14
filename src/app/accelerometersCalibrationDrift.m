@@ -52,7 +52,7 @@ import System.Const; % Define constants
 
 %% ======= PARAMETERS ========
 % Define folder where to read new calibration elements
-srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/new';
+srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/14-12-2018';
 accNames(1,1:11) = {...
     'l_upper_leg_mtb_acc_10b1'
     'l_upper_leg_mtb_acc_10b2'

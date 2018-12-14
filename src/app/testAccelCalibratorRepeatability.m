@@ -2,7 +2,8 @@
 % 
 % This script runs the calibration script `sensorSelfCalibrator` for each training sequence acquired data selected in
 % the list seqNum. The calibration is done on the sensors `accNames` and the resulting `calibrationMap` files copied to
-% the destination folder `destFolder`.
+% the destination folder `destFolder`. If one wish to acquire new data instead of processing old training data, set
+% `-1` in `seqNum` for the respective desired iteration. For instance: seqNum=[25,26,27,-1];
 % After this script is run, the drift of the parameters can be visualized by running the script
 % `accelerometersCalibrationDrift.m`
 % 
@@ -15,6 +16,13 @@
 % - set the `destFolder`, `accNames` and `seqNum` init parameters in PARAMETERS section below
 % - the training data is stored in the path defined by `dataPath` set in `sensorSelfCalibratorInit.m`.
 % 
+
+% PERFORMED TESTS
+% 
+% We've checked that, after running a first set of calibrations (saved into `calibrationDatabase-previous.mat`), if we
+% run again the same set but using an imposed acc. offset to the quadfit algorithm, we obtain the same calibrated gains
+% (saved into `calibrationDatabase-new.mat`).
+% => shows that the calibration algorithm is stable if the same offset is used between two calibration iterations.
 
 % Add main folders in Matlab path
 run generatePaths.m;
@@ -30,7 +38,7 @@ import System.Const; % Define constants
 %% ======= PARAMETERS ========
 
 % Folder where `calibrationMap.mat` generated files will be copied
-destFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/new';
+destFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/14-12-2018';
 % Accelerometers to be calibrated
 accNames(1,1:11) = {...
     'l_upper_leg_mtb_acc_10b1'
@@ -45,7 +53,10 @@ accNames(1,1:11) = {...
     'l_lower_leg_mtb_acc_10b10'
     'l_lower_leg_mtb_acc_10b11'}';
 % Data dump training sequences to be used in the calibration
-seqNum = [25,26,27,28,29];
+seqNum = [-1,-1,-1];
+
+% calibration database
+calibrationDatabaseName = 'calibrationDatabase-previous.mat';
 
 %% ======= TEST ==============
 
@@ -66,7 +77,7 @@ end
 global repeatabilityTestSeqNum;
 global predefinedOffsets; predefinedOffsets = containers.Map();
 % load the calibration database holding the previously calibrated offsets
-load('calibrationDatabase-previous.mat','calibrationDatabase');
+load(calibrationDatabaseName,'calibrationDatabase');
 
 % for each iteration:
 % - select the acquired data sequence number (this will overwrite the setting in the `sensorSelfCalibratorInit.m`,
@@ -78,7 +89,7 @@ for runIter = 1:numel(seqNum)
     for accName = accNames
         % gather all the offsets (ellipsoid centre) previously identified
         calibArray = calibrationDatabase(accName{1});
-        predefinedOffsets(accName{1}) = calibArray(runIter).centre; % replace `runIter` by <n> for using the same offset <n>
+%         predefinedOffsets(accName{1}) = calibArray(runIter).centre; % replace `runIter` by <n> for using the same offset <n>
     end
     runCalibInSafeWorkspace();
     system(['cp ./calibrationMap.mat ' destFolder '/calibrationMap_' num2str(maxFilenum+runIter) '.mat']);
