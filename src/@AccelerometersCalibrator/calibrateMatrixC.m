@@ -5,8 +5,6 @@ function ok = calibrateMatrixC(~,sensorsIdxListFile,data,~,sensMeasCell,calibrat
 %                          ellipsoid fitting and distance to ellipsoid
 %
 
-global predefinedOffsets;
-
 ellipsoid_p = cell(1,length(sensorsIdxListFile)); % implicit parameters
 calib = cell(1,length(sensorsIdxListFile)); % explicit parameters
 ellipsoid_e = cell(1,length(sensorsIdxListFile)); % least squares error
@@ -14,7 +12,7 @@ ellipsoid_d = cell(1,length(sensorsIdxListFile)); % distance to surface
 
 for acc_i = 1:numel(sensorsIdxListFile)
     % get estimated centre from database
-    predefinedCentre = predefinedOffsets(data.frames{1,sensorsIdxListFile(acc_i)});
+    predefinedCentre = calibrationMap(data.frames{1,sensorsIdxListFile(acc_i)}).centre;
     [ellipsoid_p{acc_i},ellipsoid_e{acc_i},ellipsoid_d{acc_i}] = ellipsoidfit( ...
         sensMeasCell{1,acc_i}(:,1), ...
         sensMeasCell{1,acc_i}(:,2), ...

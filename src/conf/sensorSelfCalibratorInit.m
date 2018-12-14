@@ -29,8 +29,8 @@ runDiagnosis = true;
 
 %% Common output parameters
 saveCalibration = true;
-defaultSavePlot = false;
-defaultExportPlot = false;
+defaultSavePlot = true;
+defaultExportPlot = true;
 
 
 %% Custom calibration sequence
@@ -49,7 +49,7 @@ defaultExportPlot = false;
 %% 'acquireSensorsTestData': Acquire only sensors test data (only accelerometers for now)
 
 % define the robot limb holding the sensors on which we run the diagnosis.
-acquiredParts = {'torso'};
+acquiredParts = {'left_leg'};
 % Profile = ... TBD!!
 
 % Fine selection of the accelerometers:
@@ -75,7 +75,7 @@ acquiredParts = {'torso'};
 % some sensors are de-activated because of faulty behaviour
 mtbSensorAct.left_arm = [10:13 8:9 7];
 mtbSensorAct.right_arm = [10:13 8:9 7];
-mtbSensorAct.left_leg = 1:13;
+mtbSensorAct.left_leg = [1:4,8:11];
 mtbSensorAct.right_leg = 1:13;
 mtbSensorAct.torso = 7:10;
 mtbSensorAct.head = 1;
@@ -89,10 +89,10 @@ exportPlot = defaultExportPlot;
 loadJointPos = true;
 
 % Motion sequence profile
-%motionSeqProfile = 'jointsCalibratorSequenceProfile';
-%motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
-motionSeqProfile = 'gyroscopesCalibratorSequenceProfile2checkCalib';
-%motionSeqProfile = 'gyroscopesCalibratorSequenceProfile1checkAlgo';
+% motionSeqProfile = 'jointsCalibratorSequenceProfile';
+motionSeqProfile = 'accelerometersCalibratorSequenceProfileWOsuspend';
+% motionSeqProfile = 'gyroscopesCalibratorSequenceProfile2checkCalib';
+% motionSeqProfile = 'gyroscopesCalibratorSequenceProfile1checkAlgo';
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
@@ -103,7 +103,7 @@ taskSpecificParams = struct(...
     'motionSeqProfile',motionSeqProfile);
 
 % Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'seq',53};
+sensorDataAcq = {'new'};
 
 % wrap parameters ('acquiredParts' renamed as 'calibratedParts' because this is handled as
 % a calibrator task)
@@ -119,7 +119,7 @@ clear acquiredParts mtbSensorAct savePlot exportPlot loadJointPos ...
 
 % Subtask...
 % ['calibOffsets'|'calibMatrixC']
-subtask = 'calibOffsets';
+subtask = 'calibMatrixC';
 
 % Calibrated parts:
 % Only the accelerometers from these parts (limbs) will be calibrated
@@ -129,7 +129,7 @@ calibedParts = {'left_leg'};
 % or wrong frame definition
 mtbSensorAct.left_arm = [10:13 8:9 7];
 mtbSensorAct.right_arm = [10:13 8:9 7];
-mtbSensorAct.left_leg = 1:11;
+mtbSensorAct.left_leg = [1:4,8:11];
 mtbSensorAct.right_leg = 1:11;
 mtbSensorAct.torso = 7:10;
 mtbSensorAct.head = 1;
@@ -144,7 +144,7 @@ loadJointPos = false;
 
 % Motion sequence profile
 motionSeqProfileOffsets = 'accelerometersCalibratorSequenceProfile2';
-motionSeqProfileMatrixC = 'accelerometersCalibratorSequenceProfile';
+motionSeqProfileMatrixC = 'accelerometersCalibratorSequenceProfileWOsuspend';
 
 % Wrap parameters specific to calibrator or diagnosis functions processing
 taskSpecificParams = struct(...
