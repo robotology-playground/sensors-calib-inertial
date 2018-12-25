@@ -35,6 +35,7 @@ if isempty(figH)
     xlabel('Time (sec)');
     ylabel(yLabel);
     set(gca,'FontSize',24);
+    figH.UserData = aLabel;
     lg=legend('Location','BestOutside');
     lg.set('Interpreter','latex');
 else

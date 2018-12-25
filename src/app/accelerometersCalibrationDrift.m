@@ -52,21 +52,25 @@ import System.Const; % Define constants
 
 %% ======= PARAMETERS ========
 % Define folder where to read new calibration elements
-srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/14-12-2018';
-accNames(1,1:11) = {...
+% srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/06-12-2018_offsetFrom_06_12_2018';
+% srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/14-12-2018_offsetFrom_06_12_2018';
+srcFolder = '/Users/nunoguedelha/dev/green-icub-inertial-sensors-calibration-datasets/repeatability-test-10000samples-imposed-offset/14-12-2018_offsetFrom_14_12_2018';
+% srcFolder = '/Users/nunoguedelha/dev/sensors-calib-inertial/data/phd-thesis-data/5-accelerometers-calibration/old-procedure/2018_07_30-iCubGenova04-accCalibOnPole-5timesIn1hour';
+% srcFolder = '/Users/nunoguedelha/dev/sensors-calib-inertial/data/phd-thesis-data/5-accelerometers-calibration/old-procedure/2018_11_21-10-iCubGenova04-accCalibOnPole';
+% srcFolder = '/Users/nunoguedelha/dev/sensors-calib-inertial/data/phd-thesis-data/5-accelerometers-calibration/new-procedure/offsetsCalibration';
+% srcFolder = '/Users/nunoguedelha/dev/sensors-calib-inertial/data/phd-thesis-data/5-accelerometers-calibration/new-procedure/gainsCalibration';
+accNames(1,1:8) = {...
     'l_upper_leg_mtb_acc_10b1'
     'l_upper_leg_mtb_acc_10b2'
     'l_upper_leg_mtb_acc_10b3'
     'l_upper_leg_mtb_acc_10b4'
-    'l_upper_leg_mtb_acc_10b5'
-    'l_upper_leg_mtb_acc_10b6'
-    'l_upper_leg_mtb_acc_10b7'
     'l_lower_leg_mtb_acc_10b8'
     'l_lower_leg_mtb_acc_10b9'
     'l_lower_leg_mtb_acc_10b10'
     'l_lower_leg_mtb_acc_10b11'}';
 
 saveDatabase = false;
+plotDrift = true;
 
 %% ======= TEST ==============
 % Load current database
@@ -103,6 +107,10 @@ for file = {listOfCalibFiles.folder;listOfCalibFiles.name;listOfCalibFiles.date}
 end
 clear calibrationMap;
 
+distrCentre = containers.Map();
+distrCmatrix = containers.Map();
+tablePrint = containers.Map();
+
 % Sort the database
 for accName = accNames
     accCalibRecord = calibrationDatabase(accName{1});
@@ -110,26 +118,66 @@ for accName = accNames
     centreMat = [accCalibRecord.centre]';
     Cmat =[accCalibRecord.C]';
     accShortName = System.toLatexInterpreterCompliant(getShortSensorName(accName{1}));
-    % Offsets evolution
-    figH = Plotter.plotNFuncTimeseries(...
-        [],['Drift of ' accShortName ' offsets'],...
-        ['drift_' accShortName '_offsets'],'m \cdot s^{-2}',...
-        dateVec,centreMat,{[accShortName ' offset$_x$'],[accShortName ' offset $_y$'],[accShortName ' offset $_z$']},...
-        {'r-','g-','b-'},4,[],[],[]);
-    % Calibration matrix
-    figH = Plotter.plotNFuncTimeseries(...
-        [],['Drift of ' accShortName ' calibration matrix C'],...
-        ['drift_' accShortName '_Cmatrix'],'ratio',...
-        dateVec,Cmat(:,[1 5 9 2 3 6]),{...
-        [accShortName ' gain $xx$'],[accShortName ' gain $yy$'],[accShortName ' gain $zz$'],...
-        [accShortName ' cross gain $yx$'],[accShortName ' cross gain $zx$'],...
-        [accShortName ' cross gain $zy$']},...
-        {'r-','g-','b-','c-','m-','y-'},4,[],[],[]);
+    
+    %% Distributions.
+    %  For the matrix C, we only care about the elements xx, yy, zz, yx, zx, zy since it is a symmetric matrix.
+    %  We select the elements: [1 5 9 2 3 6].
+    centreMat4distr = centreMat';
+    Cmat4distr = Cmat(:,[1 5 9 2 3 6])';
+    centreMean = mean(centreMat4distr,2);
+    centreStd  = std(centreMat4distr,1,2);
+    cMatrixMean = mean(Cmat4distr,2);
+    cMatrixStd  = std(Cmat4distr,1,2);
+    % to be printed on latex document
+    meanString = [accShortName,mat2str([centreMean;cMatrixMean],3),' \\'];
+    meanString = strrep(meanString,'acc\_','MTB ');
+    meanString = strrep(meanString,'[',' & ');
+    meanString = strrep(meanString,';',' & ');
+    meanString = strrep(meanString,']','');
+    stdString = [accShortName,mat2str([centreStd;cMatrixStd],3),' \\'];
+    stdString = strrep(stdString,'acc\_','MTB ');
+    stdString = strrep(stdString,'[',' & ');
+    stdString = strrep(stdString,';',' & ');
+    stdString = strrep(stdString,']','');
+    tablePrint(accName{1}) = struct('mean',meanString,'std',stdString);
+    % for later use
+    distrCentre(accName{1}) = struct('mean',centreMean,'std',centreStd);
+    distrCmatrix(accName{1}) = struct('mean',cMatrixMean,'std',cMatrixStd);
+    
+    %% Plots
+    if plotDrift
+        % Offsets evolution
+        figH = Plotter.plotNFuncTimeseries(...
+            [],['Drift of ' accShortName ' offsets'],...
+            ['drift_' accShortName '_offsets'],'m \cdot s^{-2}',...
+            dateVec,centreMat,{[accShortName ' offset$_x$'],[accShortName ' offset $_y$'],[accShortName ' offset $_z$']},...
+            {'r-','g-','b-'},4,[],[],[]);
+        % Calibration matrix
+        figH = Plotter.plotNFuncTimeseries(...
+            [],['Drift of ' accShortName ' calibration matrix C'],...
+            ['drift_' accShortName '_Cmatrix'],'ratio',...
+            dateVec,Cmat(:,[1 5 9 2 3 6]),{...
+            [accShortName ' gain $xx$'],[accShortName ' gain $yy$'],[accShortName ' gain $zz$'],...
+            [accShortName ' cross gain $yx$'],[accShortName ' cross gain $zx$'],...
+            [accShortName ' cross gain $zy$']},...
+            {'r-','g-','b-','c-','m-','y-'},4,[],[],[]);
+    end
 end
 
 if saveDatabase
     save('calibrationDatabase.mat','calibrationDatabase');
 end
+
+tablePrintList  = tablePrint.values(accNames);
+tablePrintArray = cell2mat(tablePrintList');
+% Display
+tableMEAN = {tablePrintArray.mean}'
+tableSTD = {tablePrintArray.std}'
+% save acc 10b4 and 10b11 plots
+if plotDrift
+%     UI.saveFigures2(srcFolder,[7,8,15,16]);
+end
+
 
 %% ======= Static local functions ============
 
