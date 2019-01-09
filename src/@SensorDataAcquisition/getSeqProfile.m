@@ -33,7 +33,7 @@ switch task
                 run lowLevTauCtrlCalibratorSequenceProfile1;
             case 'ktau'
                 % run the profile script for friction identification
-                run lowLevTauCtrlCalibratorSequenceProfile2;
+                run lowLevTauCtrlCalibratorSequenceProfile3;
             otherwise
                 error('Unknown low level control calibration phase!');
         end

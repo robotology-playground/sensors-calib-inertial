@@ -69,7 +69,8 @@ classdef MotorPWMcontroller < handle
             obj.pwmCtrledMotor = struct(...
                 'name',motorName,...
                 'idx',remCtrlBoardRemapper.getMotorsMappedIdxes({motorName}),...
-                'pwm',0);
+                'pwm',0,...
+                't0',0);
             
             posCtrledMotorsIdxes = setdiff(obj.couplingMotorIdxes,obj.pwmCtrledMotor.idx,'stable');
             
@@ -80,12 +81,12 @@ classdef MotorPWMcontroller < handle
             % Previous time of motor encoders measurement
             obj.prevMotorsTime = nan;
             
-            % start the controller. Check for test mode
+            % Check for test mode before the controller can be started
             switch threadActivation
                 case System.Const.ThreadON
-                    obj.testMode = false; obj.start();
+                    obj.testMode = false;
                 case System.Const.ThreadTEST
-                    obj.testMode = true; obj.start();
+                    obj.testMode = true;
                 otherwise
             end
         end

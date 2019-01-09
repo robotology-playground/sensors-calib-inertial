@@ -45,7 +45,7 @@ classdef PIDcontroller < handle
             % Reshape inputs as column vectors
             [desiredX,currentX,currentDx] = deal(desiredX(:),currentX(:),currentDx(:));
             % Filter current position measurement
-            filteredCurrX = obj.filter.procSig(currentX);
+            filteredCurrX = obj.filter.process(currentX);
             % Error to desired position
             epsilon = filteredCurrX - desiredX;
             depsilon = currentDx - 0;

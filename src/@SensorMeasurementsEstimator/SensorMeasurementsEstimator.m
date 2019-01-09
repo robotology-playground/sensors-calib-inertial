@@ -25,10 +25,14 @@ classdef SensorMeasurementsEstimator < handle
         nbGyros;
         nbThAxAngAccs;
         nbThAxFTs;
+        convertInputToRadians@function_handle;    % converts from degrees or radians as defined at setup
+        convertOutputFromRadians@function_handle; % converts to degrees or radians as defined at setup
     end
     
     methods
-        function obj = SensorMeasurementsEstimator(modelName,modelPath)
+        function obj = SensorMeasurementsEstimator(modelName,modelPath,varargin)
+            import System.Const;
+            
             % save model name
             obj.modelName = modelName;
             
@@ -36,7 +40,16 @@ classdef SensorMeasurementsEstimator < handle
             obj.estimator = iDynTree.ExtWrenchesAndJointTorquesEstimator();
             
             % Load model and sensors from the URDF file
-            obj.estimator.loadModelAndSensorsFromFile(modelPath);
+            if (numel(varargin)==0)
+                obj.estimator.loadModelAndSensorsFromFile(modelPath);
+            elseif (numel(varargin)==2)
+                aModel = varargin{1};
+                aSensorsList = varargin{2};
+                obj.estimator.setModelAndSensors(aModel,aSensorsList);
+            else
+                error('Wrong number of input arguments!');
+            end
+            
             obj.nbFTs = obj.estimator.sensors.getNrOfSensors(iDynTree.SIX_AXIS_FORCE_TORQUE);
             obj.nbAccs = obj.estimator.sensors.getNrOfSensors(iDynTree.ACCELEROMETER);
             obj.nbGyros = obj.estimator.sensors.getNrOfSensors(iDynTree.GYROSCOPE);
@@ -61,7 +74,11 @@ classdef SensorMeasurementsEstimator < handle
             obj.fixedBasePose = iDynTree.FreeFloatingPos(obj.estimator.model);
             obj.fixedBasePose.worldBasePos().setRotation(iDynTree.Rotation.Identity());
             obj.fixedBasePose.worldBasePos().setPosition(iDynTree.Position.Zero());
-
+            
+            % Set the default converter for considering the q, dq, d2q input parameters as radians
+            obj.convertInputToRadians = Math.convertAnglesFromTo(Const.Radians,Const.Radians);
+            obj.convertOutputFromRadians = Math.convertAnglesFromTo(Const.Radians,Const.Radians);
+            
             % Specify unknown wrenches (unknown Full wrench applied at the origin of the base_link frame)
             % The fullBodyUnknowns is a class storing all the unknown external wrenches acting on
             % the robot: we consider the pole/ground reaction on the base link as the only
@@ -101,8 +118,25 @@ classdef SensorMeasurementsEstimator < handle
         end
         
         % Returns the sensors list currently handled by the Predictor
-        function sensorList = getSensorList(obj)
-            sensorList = obj.estimator.sensors;
+        function sensorList = getSensorList(obj,sensorTypes,sensorNames)
+            if (exist('sensorTypes','var') && exist('sensorNames','var'))
+                sensorList = iDynTree.SensorsList();
+                for sensorTypeName = [sensorTypes(:)';sensorNames(:)']
+                    idx = obj.estimator.sensors.getSensorIndex(sensorTypeName{1},sensorTypeName{2});
+                    sensorObj = obj.estimator.sensors.getSensor(sensorTypeName{1},idx);
+                    sensorList.addSensor(sensorObj);
+                end
+            else
+                sensorList = obj.estimator.sensors;
+            end
+        end
+        
+        % Set from which units.
+        % [in] jointUnits: units of type System.Const
+        function setJointAngleUnits(obj,jointUnits)
+            import System.Const;
+            obj.convertInputToRadians = Math.convertAnglesFromTo(jointUnits,Const.Radians);
+            obj.convertOutputFromRadians = Math.convertAnglesFromTo(Const.Radians,jointUnits);
         end
         
         % Update the fixed base position and orientation
@@ -119,5 +153,14 @@ classdef SensorMeasurementsEstimator < handle
         
         % Computes the predicted sensor measurements
         [FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas] = getEstimatedMeasurements(obj,q,dq,d2q,gravity);
+        
+        % Computes the predicted sensor measurements, takes for input subvectors q, dq, d2q
+        [FTsMeas,AccsMeas,GyrosMeas,ThAxAngAccsMeas,ThAxFTsMeas] = getEstimatedMeasurements2(obj,q,dq,d2q,indexes,gravity);
+    end
+    
+    methods(Static)
+        % Create sensors to be added to a desired link. Supported sensors:
+        % ACCELEROMETER,GYROSCOPE,THREE_AXIS_ANGULAR_ACCELEROMETER.
+        sensorList = createSensorList(model,sensorTypes,sensorNames,parentLinkNames,linkSensorHtransforms);
     end
 end

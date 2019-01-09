@@ -13,8 +13,9 @@ clear
 close all
 clc
 
+System.clearTimers()
 %Clear static data
-% clear classes;
+clear classes;
 clear functions;
 
 % Clear all timers
