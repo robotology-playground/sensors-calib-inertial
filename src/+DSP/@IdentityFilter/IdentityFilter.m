@@ -6,12 +6,16 @@ classdef IdentityFilter < DSP.ILowPassFilter
             obj.Fc = Fc;
         end
         
-        function sigVecOut = procSig(~,sigVecIn)
-            sigVecOut = sigVecIn;
+        function filteredMeas = process(~,rawMeas)
+            filteredMeas = rawMeas;
         end
         
         function setCutoffFreq(obj,Fc)
             obj.Fc = Fc;
+        end
+        
+        function objCpy = copy(obj)
+            objCpy = DSP.IdentityFilter(obj.Fc);
         end
     end
     

@@ -2,7 +2,7 @@ function plot2dDataNfittedModel(...
     figuresHandler,aTitle,aLabel,...
     xData,yData,xModel,yModel,...
     xLabel,yLabel,...
-    dataLegend,modelLegend)
+    dataLegend,modelLegend,highlightHysteresis)
 %UNTITLED9 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -13,29 +13,46 @@ if ~isempty(figuresHandler)
     figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
 end
 
+% Save fugure label
+figH.UserData = aLabel;
+
 % If the figure is not docked, use the below command to display it full
 % screen.
 %set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
-title(aTitle,'Fontsize',16,'FontWeight','bold');
+title(aTitle,'FontSize',30,'FontWeight','bold');
 hold on
 
-scatter(xData,yData,10,'blue','filled');
+% Legend
+lg=legend('Location','BestOutside');
+lg.set('Interpreter','latex');
+
+% Select increasing/decreasing x samples and plot them
+if (exist('highlightHysteresis','var') && ~isempty(highlightHysteresis))
+    % identify increasing X samples
+    bitmapUp = [0; diff(xData(:))]>=0;
+    bitmapDown = ~bitmapUp;
+    % plot and update the legend
+    pUp = scatter(xData(bitmapUp),yData(bitmapUp),10,'red','filled');
+    pDown = scatter(xData(bitmapDown),yData(bitmapDown),10,'blue','filled');
+    pUp.DisplayName = [dataLegend ' $x$ up'];
+    pDown.DisplayName = [dataLegend ' $x$ down'];
+else
+    % plot and update the legend
+    p = scatter(xData,yData,10,'blue','filled');
+    p.DisplayName = dataLegend;
+end
+
 if ~isempty(xModel)
-    plot(xModel,yModel,'r','lineWidth',4.0);
+    pModel = plot(xModel,yModel,'r','lineWidth',4.0);
+    pModel.DisplayName = modelLegend;
 end
 
 hold off
 grid ON;
 
-xlabel(xLabel,'Fontsize',12);
-ylabel(yLabel,'Fontsize',12);
+xlabel(xLabel,'FontSize',30);
+ylabel(yLabel,'FontSize',30);
 
-if ~isempty(xModel)
-    legend('Location','BestOutside',dataLegend,modelLegend);
-else
-    legend('Location','BestOutside',dataLegend);
-end
-
-set(gca,'FontSize',12);
+set(gca,'FontSize',30);
 
 end

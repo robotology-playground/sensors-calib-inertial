@@ -78,6 +78,13 @@ if ismember('pwmctrl',fieldnames(runSeq))
     runSeq.pwmctrl.motor = cell2mat(fieldnames(runSeq.pwmctrl.pwm));
     % reshape 'pwm'
     runSeq.pwmctrl.pwm = struct2cellConcat(runSeq.pwmctrl.pwm);
+    % transition
+    if ismember('trans',fieldnames(runSeq.pwmctrl))
+        runSeq.pwmctrl.trans = runSeq.pwmctrl.trans.(runSeq.pwmctrl.motor);
+        runSeq.pwmctrl.freq = runSeq.pwmctrl.freq.(runSeq.pwmctrl.motor);
+    else
+        runSeq.pwmctrl.trans(1:numel(runSeq.pwmctrl.pwm)) = {'level'};
+    end
 end
 
 % Mode handling

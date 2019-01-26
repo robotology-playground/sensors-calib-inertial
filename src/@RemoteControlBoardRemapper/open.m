@@ -34,4 +34,17 @@ end
 motorsList = obj.robotModel.jointsDbase.getCpldMotorSharingIdx(obj.jointsList);
 obj.motorsList = reshape(motorsList,size(obj.jointsList));
 
+% Prepare position and velocity read interface
+obj.iencs = obj.driver.viewIEncoders();
+obj.imotorencs = obj.driver.viewIMotorEncoders();
+
+% Prepare read/write sink
+obj.yarpVector.resize(length(obj.jointsList));
+
+% Prepare position and velocity control interfaces
+obj.ipos = obj.driver.viewIPositionControl();
+obj.ipdr = obj.driver.viewIPositionDirect();
+obj.ivel = obj.driver.viewIVelocityControl();
+obj.ipwm = obj.driver.viewIPWMControl();
+
 end

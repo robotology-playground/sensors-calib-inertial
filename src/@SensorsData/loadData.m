@@ -90,7 +90,15 @@ for i = 1 : length(obj.parts)
             eval(['readFile = readFile_' bufferId]);
             % Read file.
             if readFile
-                [qBuff,dqBuff,d2qBuff,dqMBuff,tauBuff,pwmBuff,currBuff,tStateBuff] = readStateExt(obj.ndof{i},file);
+                switch obj.parts{i}
+                    case {'left_arm','right_arm'}
+                        [qBuff,dqBuff,d2qBuff,dqMBuff,tauBuff,pwmBuff,currBuff,tStateBuff] = readStateExt(16,file);
+                        [qBuff,dqBuff,d2qBuff,dqMBuff,tauBuff,pwmBuff,currBuff] = ...
+                            deal(qBuff(1:obj.ndof{i},:),dqBuff(1:obj.ndof{i},:),d2qBuff(1:obj.ndof{i},:),...
+                            dqMBuff(1:obj.ndof{i},:),tauBuff(1:obj.ndof{i},:),pwmBuff(1:obj.ndof{i},:),currBuff(1:obj.ndof{i},:));
+                    otherwise
+                        [qBuff,dqBuff,d2qBuff,dqMBuff,tauBuff,pwmBuff,currBuff,tStateBuff] = readStateExt(obj.ndof{i},file);
+                end
                 qBuff = qBuff + obj.calib{i};
             end
             % Parse file content.

@@ -141,7 +141,7 @@ switch frictionOrKtau
             calib.setStiction(fittedModelTau.theta(3),fittedModelTau.theta(4));
         else
             
-            fittedModelTau = Regressors.frictionModel1Sym(xVar_tau',tauMotorG');
+            fittedModelTau = Regressors.frictionModel2(xVar_tau',tauMotorG');
             calib.setFriction(fittedModelTau.theta(1), fittedModelTau.theta(2));
             calib.setStiction(nan,nan);
         end

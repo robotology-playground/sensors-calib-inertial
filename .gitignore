@@ -4,11 +4,12 @@ dumper/
 .DS_Store
 *.pdf
 *.mat
+*.session
 data/
 html/
-doc/
 tmp/
 wiki/
 matlab-workspace
 octave-workspace
 src/app/dataLogInfoMap.txt
+

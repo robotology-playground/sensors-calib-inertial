@@ -20,7 +20,6 @@ function [ figH,animLinesList ] = plotNanimLineTimeseries(...
 %   markerFaceColors: cell list 1xJ of colors: 'none' (default) | 'auto' | RGB triplet | 'r' | 'g' | 'b' | ...
 
 % default values
-if isempty(colors), colors={}; colors(1:numel(yLegends))={[0 0 0]}; end
 if isempty(markerSymbols), markerSymbols={}; markerSymbols(1:numel(yLegends))={'none'}; end
 if isempty(markerSizes),   markerSizes={}; markerSizes(1:numel(yLegends))={6}; end
 if isempty(markerEdgeColors), markerEdgeColors={}; markerEdgeColors(1:numel(yLegends))={'auto'}; end
@@ -29,24 +28,32 @@ if isempty(markerFaceColors), markerFaceColors={}; markerFaceColors(1:numel(yLeg
 % create figure
 figH = figure('Name',aTitle,'WindowStyle', 'docked');
 
+% default colormap
+if isempty(colors)
+    colors=num2cell(colormap,2)';
+    colors=colors(1:numel(yLegends));
+end
+
 if ~isempty(figuresHandler)
     figuresHandler.addFigure(figH,aLabel); % Add figure to the figure handler
 end
+% Save fugure label
+figH.UserData = aLabel;
 
 % If the figure is not docked, use the below command to display it full
 % screen.
 %set(gcf,'PositionMode','manual','Units','normalized','outerposition',[0 0 1 1]);
-title(aTitle,'FontWeight','bold');
+title(aTitle,'FontWeight','bold','Interpreter','latex');
 grid on;
 xlabel('Time (sec)');
 ylabel(yLabel);
-set(gca,'FontSize',24);
+set(gca,'FontSize',30);
 lg=legend('Location','BestOutside');
 lg.set('Interpreter','latex');
 
 % Define the animated lines
 animLinesList = cellfun(...
-    @(lineStyle,lineWidth,color,markerSymbol,markerSize,markerEdgeColor,markerFaceColor,markerCycle) ...
+    @(lineStyle,lineWidth,color,markerSymbol,markerSize,markerEdgeColor,markerFaceColor) ...
     animatedline(...
     'LineStyle',lineStyle,'LineWidth',lineWidth,'Color',color,'Marker',markerSymbol,...
     'MarkerSize',markerSize,'MarkerEdgeColor',markerEdgeColor,'MarkerFaceColor',markerFaceColor),...

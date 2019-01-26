@@ -22,6 +22,7 @@ fullscaleVec = cell2mat([fullscaleVec{:}]);
 %     'Kp',double(0),'Kd',double(0),'Ki',double(0),...
 %     'max_int',double(0),'max_output',double(0),'scale',double(0)),[1,length(motorsIdxList)]);
 
+% TO BE FIXED
 for idx = 1:length(motorsIdxList)
     cLikeIdx = idx-1; % C like index
 %     ipids.getPid(pidTypeVocab,cLikeIdx,readPid); % (*)
@@ -35,10 +36,10 @@ for idx = 1:length(motorsIdxList)
         'max_int',10,'max_output',10,...
         'scale',1);
     
-    % these PID constants were defined for PWM control in dutycycle units, not
-    % fullscale percentage units. So we need to convert these coefficients
-    readPidsMatArray(idx) = structfun(...
-        @(field) field*100/fullscaleVec(idx),readPidsMatArray(idx),'Uniformoutput',false);
+%     % these PID constants were defined for PWM control in dutycycle units, not
+%     % fullscale percentage units. So we need to convert these coefficients
+%     readPidsMatArray(idx) = structfun(...
+%         @(field) field*100/fullscaleVec(idx),readPidsMatArray(idx),'Uniformoutput',false);
     readPidsMatArray(idx).scale = 1;
 end
 

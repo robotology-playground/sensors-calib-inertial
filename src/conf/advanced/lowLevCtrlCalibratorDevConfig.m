@@ -15,5 +15,7 @@ filtParams.type = 'none';
 posCtrlEmulator.samplingPeriod = 0.01; % seconds
 posCtrlEmulator.timeout = 300; % seconds
 
+calibedMotCtrller.timeout = 60; % seconds
+
 plotterThread.samplingPeriod = 0.05; % seconds
 plotterThread.timeout = 300; % seconds
