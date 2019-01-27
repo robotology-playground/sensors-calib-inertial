@@ -144,7 +144,9 @@ for i = 1 : length(obj.parts)
             eval(['obj.parsedParams.' y '= obj.parsedParams.' y ''';']);
             
             % add filtering
-            eval(['obj.parsedParams.' y '=filt(obj.parsedParams.' y ''',filtParams{:})'';']);
+            if obj.filterSensorMeas
+                eval(['obj.parsedParams.' y '=filt(obj.parsedParams.' y ''',filtParams{:})'';']);
+            end
             
     end
 end
@@ -279,6 +281,7 @@ for i = 1 : length(obj.parts)
     % convert raw data
     t    = ['time_' obj.labels{i}];
     ys   = ['ys_' obj.labels{i}];
+    y    = ['y_' obj.labels{i}];
     if( strcmp(obj.labels{i},'lh_imu') || ...
             strcmp(obj.labels{i},'rh_imu') )
         eval(['obj.parsedParams.' ys '(1:3,:) = ' ...
@@ -294,6 +297,9 @@ for i = 1 : length(obj.parts)
         eval(['nbSamples = size(obj.parsedParams.' ys '(1:3,:),2);']);
         eval(['obj.parsedParams.' ys '(1:3,:) = ' ...
             'C*(obj.parsedParams.' ys '(1:3,:)*acc_gain-repmat(centre,1,nbSamples));']);        
+        eval(['nbSamples = size(obj.parsedParams.' y '(1:3,:),2);']);
+        eval(['obj.parsedParams.' y '(1:3,:) = ' ...
+            'C*(obj.parsedParams.' y '(1:3,:)*acc_gain-repmat(centre,1,nbSamples));']);        
     end
 end
 

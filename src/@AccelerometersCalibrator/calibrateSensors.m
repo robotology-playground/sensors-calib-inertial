@@ -1,4 +1,4 @@
-function calibrateSensors(~,...
+function calibrateSensors(obj,...
     dataPath,~,measedSensorList,measedPartsList,...
     model,taskSpecificParams)
 %% Comparing the eccentrity of several "grid" dataset measured on the iCub Robot
@@ -33,6 +33,7 @@ modelParams = model.buildModelParams(...
     {},[],...  % no need for calibration parts information
     mtbSensorAct);
 
+
 %% build input data for calibration
 %
 
@@ -45,7 +46,9 @@ switch loadSource
         plot = false; loadJointPos = false;
         data = SensorsData(dataPath,subSamplingSize,...
             timeStart,timeStop,plot);
-        [sensorsIdxListFile,sensMeasCell] = data.buildInputDataSet(loadJointPos,modelParams);
+        data.setFilteringActive(filterSensorMeas);
+        data.setResamplingActive(resampleSensorMeas); % if filtering is OFF, resampling will stay OFF
+        [sensorsIdxListFile,sensMeasCell,time] = data.buildInputDataSet(loadJointPos,modelParams);
         
         % Save data in a Matlab file for faster access in further runs
         if saveToCache
@@ -56,35 +59,17 @@ switch loadSource
         disp('Unknown data source !!')
 end
 
-%% ========================================== CALIBRATION ==========================================
-%
-%                          ellipsoid fitting and distance to ellipsoid
+%% Do the calibration: offsets or matrix C
 %
 
-ellipsoid_p = cell(1,length(sensorsIdxListFile)); % implicit parameters
-calib = cell(1,length(sensorsIdxListFile)); % explicit parameters
-ellipsoid_e = cell(1,length(sensorsIdxListFile)); % least squares error
-ellipsoid_d = cell(1,length(sensorsIdxListFile)); % distance to surface
-
-for acc_i = sensorsIdxListFile
-    [ellipsoid_p{acc_i},ellipsoid_e{acc_i},ellipsoid_d{acc_i}] = ellipsoidfit( ...
-        sensMeasCell{1,acc_i}(:,1), ...
-        sensMeasCell{1,acc_i}(:,2), ...
-        sensMeasCell{1,acc_i}(:,3));
-    [calib{acc_i}.centre,radii,calib{acc_i}.quat,calib{acc_i}.R] = ...
-        ellipsoid_im2ex(ellipsoid_p{1,acc_i}); % convert implicit to explicit
-    % convert ellipsoid axis lengths to rates
-    calib{acc_i}.radii = radii/9.807;
-    % compute full calibration matrix combining elongation and rotation
-    calib{acc_i}.C = calib{acc_i}.R'*inv(diag(calib{acc_i}.radii))*calib{acc_i}.R;
-end
-
-% Create mapping extension with new calibrated frames
-calibratedFrames = data.frames(1,sensorsIdxListFile);
-calibMapExt = containers.Map(calibratedFrames,calib);
-for cKey = calibMapExt.keys   % go through all elements of the map extension
-    key = cell2mat(cKey);     % decapsulate key
-    calibrationMap(key) = calibMapExt(key);
+switch subtask
+    case 'calibOffsets'
+        obj.calibrateOffsets(sensorsIdxListFile,data,time,sensMeasCell,calibrationMap);
+    case 'calibMatrixC'
+        obj.calibrateMatrixC(sensorsIdxListFile,data,time,sensMeasCell,calibrationMap);
+    otherwise
+        error('Unknown subtask for accelerometers calibration!');
 end
 
 end
+
