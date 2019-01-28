@@ -18,11 +18,23 @@ System.clearTimers()
 clear classes;
 clear functions;
 
+% Clear all timers
+System.clearTimers();
+
 % Create YARP Network device, for initializing YARP classes for communication
 yarp.Network.init();
 
 % load application main interface parameters
 init = Init.load('sensorSelfCalibratorInit');
+% overwrite init parameters in the case of repeatability tests (refer to script `testAccelCalibratorRepeatability.m`)
+global repeatabilityTestSeqNum;
+if ~isempty(repeatabilityTestSeqNum)
+    if (repeatabilityTestSeqNum == -1)
+        init.accelerometersCalib.sensorDataAcq = {'new'};
+    else
+        init.accelerometersCalib.sensorDataAcq = {'seq',repeatabilityTestSeqNum};
+    end
+end
 
 % Create robot model. The model holds the robot name, the parameters
 % extracted from the URDF model, the sensor calibration parameters and the

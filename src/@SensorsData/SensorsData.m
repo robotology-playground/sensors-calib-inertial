@@ -21,6 +21,8 @@ classdef SensorsData < handle
         diff_q    = 0;    %derivate the angular velocity of the IMUs
         calibrationMap;
         filtParams;
+        filterSensorMeas = true;
+        resampleSensorMeas = true;
         
         %% parsed parameters from files and model
         parts       = {};
@@ -141,6 +143,17 @@ classdef SensorsData < handle
         
         function setCalibrationMap(obj, calibrationMap)
             obj.calibrationMap = calibrationMap;
+        end
+        
+        function setFilteringActive(obj,isActive)
+            obj.filterSensorMeas = isActive;
+            % NO resampling without filtering
+            obj.resampleSensorMeas = obj.resampleSensorMeas && isActive;
+        end
+        
+        function setResamplingActive(obj,isActive)
+            % NO resampling without filtering
+            obj.resampleSensorMeas = obj.filterSensorMeas && isActive;
         end
         
     end

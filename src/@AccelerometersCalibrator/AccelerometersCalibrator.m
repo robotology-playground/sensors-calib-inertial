@@ -31,6 +31,10 @@ classdef AccelerometersCalibrator < Calibrator
         calibrateSensors(obj,...
             dataPath,~,measedSensorList,measedPartsList,...
             model,taskSpecificParams);
+        
+        ok = calibrateOffsets(~,sensorsIdxListFile,data,time,sensMeasCell,calibrationMap);
+        
+        ok = calibrateMatrixC(~,sensorsIdxListFile,data,time,sensMeasCell,calibrationMap);
     end
     
 end

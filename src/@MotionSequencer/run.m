@@ -63,7 +63,7 @@ for seqIdx = 1:numel(obj.sequences)
                 promptString = sequence.prpt{stepIdx}();
                 if isempty(promptString)
                     % run the sequencer step
-                    waitMotionDone = true; timeout = 10; % in seconds
+                    waitMotionDone = true; timeout = 100; % in seconds
                     if ~obj.ctrlBoardRemap.setEncoders(pos,'refVel',vel,waitMotionDone,timeout)
                         error('Waiting for motion done timeout!');
                     end

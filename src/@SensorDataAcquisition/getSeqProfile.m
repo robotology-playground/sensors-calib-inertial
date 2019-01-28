@@ -10,10 +10,20 @@ selector = struct();
 switch task
     case JointEncodersCalibrator.task
         run jointsCalibratorSequenceProfileWOsuspend;
+        
     case AccelerometersCalibrator.task
-        run accelerometersCalibratorSequenceProfileWOsuspend; % robotModel used here
+        switch taskSpecificParams.subtask
+            case 'calibOffsets'
+                run(taskSpecificParams.motionSeqProfileOffsets);
+            case 'calibMatrixC'
+                run(taskSpecificParams.motionSeqProfileMatrixC);
+            otherwise
+                error('Unknown subtask for AccelerometersCalibrator!');
+        end
+        
     case SensorDataAcquisition.task
         run(taskSpecificParams.motionSeqProfile);
+        
     case LowlevTauCtrlCalibrator.task
         % init joint/motors group label variable for the profile script
         motor = taskSpecificParams.motorName;
@@ -40,6 +50,7 @@ switch task
             otherwise
                 error('Unknown low level current control calibration phase!');
         end
+        
     otherwise
         error('Unknown task (sequence profile) !!');
 end
