@@ -63,7 +63,7 @@ obj.figuresHandlerMap(obj.task) = figuresHandler;
 % joint torques table [DxN]    : data.parsedParams.tau_<label>
 % 
 % Parameter names finishing by 's' are the ones recomputed after resampling
-% (refer to 'subSamplingSize' in lowLevTauCtrlCalibratorDevConfig.m config
+% (refer to 'subSamplingSize' in lowLevCtrlCalibratorDevConfig.m config
 % file).
 % 
 time = data.parsedParams.time;

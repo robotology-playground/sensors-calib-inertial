@@ -9,6 +9,8 @@ classdef Regressors < handle
     methods (Static=true)
         [thetaPos,thetaNeg] = normalEquationAsym(x,y);
         
+        model = normalEquation(x,y);
+        
         model = filteredNormalEquation(x,y);
         
         model = frictionModel1Sym(x,y);

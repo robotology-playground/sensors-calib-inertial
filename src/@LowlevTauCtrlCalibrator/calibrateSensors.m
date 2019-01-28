@@ -46,7 +46,7 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 % joint torques table [DxN]    : data.parsedParams.tau_<label>
 % 
 % Parameter names finishing by 's' are the ones recomputed after resampling
-% (refer to 'subSamplingSize' in lowLevTauCtrlCalibratorDevConfig.m config
+% (refer to 'subSamplingSize' in lowLevCtrlCalibratorDevConfig.m config
 % file).
 % 
 
@@ -56,6 +56,10 @@ data.buildInputDataSet(loadJointPos,dataLoadingParams);
 
 % Get respective torques (matrix 6xNsamples)
 tauJoints  = data.parsedParams.(['tau_' jointMotorCoupling.part '_state']);
+
+% Get respective currents (matrix 6xNsamples)
+currMotorG  = data.parsedParams.(['curr_' jointMotorCoupling.part '_state']);
+currMotorG = currMotorG(motorIdx,:);
 
 % FRICTION parameters
 %
@@ -92,13 +96,15 @@ tauMotorG = jointMotorCoupling.Tm2j(:,motorIdx)' * tauJoints;
 switch frictionOrKtau
     case 'friction'
         % get motor velocity * Gm2j (rad/s) to be the x axis variable
-        xVar = ...
+        xVar_tau = ...
             jointMotorCoupling.gearboxDqM2Jratios{motorIdx} ...
             * data.parsedParams.(['dqMRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
+        xVar_curr = data.parsedParams.(['dqMRad_' jointMotorCoupling.part '_state'])(motorIdx,:);
         
     case 'ktau'
         % get motor PWM (% Fullscale) to be the x axis variable
-        xVar = data.parsedParams.(['pwm_' jointMotorCoupling.part '_state'])(motorIdx,:);
+        xVar_tau = data.parsedParams.(['pwm_' jointMotorCoupling.part '_state'])(motorIdx,:);
+        xVar_curr = xVar_tau;
     otherwise
         error('calibrateSensors: unknown calibration type !!');
 end
@@ -111,16 +117,17 @@ end
 % -> thetaPosXvar(2) = fitting model's pos. slope
 % -> thetaNegXvar(2) = fitting model's neg. slope
 % 
-[thetaPosXvar,thetaNegXvar] = Regressors.normalEquationAsym(xVar',tauMotorG');
+[thetaPosXvar,thetaNegXvar] = Regressors.normalEquationAsym(xVar_tau',tauMotorG');
 
 %% Convert theta vector to model parameters (motor calibration) and save it to the calibration map
 
 % Get the motor calibration or create a new one. The method returns a
 % handle on the MotorTransFunc object.
-calib = MotorTransFunc.GetMotorTransFunc(motorName,calibrationMap);
+calib = FullMotorTransFunc.GetMotorTransFunc(motorName,calibrationMap);
 
 switch frictionOrKtau
     case 'friction'
+        % TAU CTRL
         % Check that the model is symmetrical
         [KcP, KcN, KvP, KvN] = deal(thetaPosXvar(1),thetaNegXvar(1),thetaPosXvar(2),thetaNegXvar(2));
         if abs(KcP+KcN)>abs(KcP)/100 || abs(KvP-KvN)>abs(KvP)/100
@@ -129,17 +136,25 @@ switch frictionOrKtau
         % Run a fitting again but matching a single Kc and a single Kv
         % For non-coupled joints fit also the static friction parameter
         if(jointMotorCoupling.Tm2j == 1)
-            fittedModel = Regressors.frictionModel2(xVar',tauMotorG');
-            calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
-            calib.setStiction(fittedModel.theta(3),fittedModel.theta(4));
+            fittedModelTau = Regressors.frictionModel2(xVar_tau',tauMotorG');
+            calib.setFriction(fittedModelTau.theta(1), fittedModelTau.theta(2));
+            calib.setStiction(fittedModelTau.theta(3),fittedModelTau.theta(4));
         else
             
-            fittedModel = Regressors.frictionModel2(xVar',tauMotorG');
-            calib.setFriction(fittedModel.theta(1), fittedModel.theta(2));
+            fittedModelTau = Regressors.frictionModel2(xVar_tau',tauMotorG');
+            calib.setFriction(fittedModelTau.theta(1), fittedModelTau.theta(2));
             calib.setStiction(nan,nan);
         end
         
+        % CURR CTRL
+        fittedModelCurr = Regressors.normalEquation(xVar_curr',currMotorG');
+        if abs(fittedModelCurr.theta(1))>1e-3 % Tau offset
+            warning('calibrateSensors: There is a current offset in the model motor velocity to current !!');
+        end
+        calib.setKbemf(fittedModelCurr.theta(2));
+        
     case 'ktau'
+        % TAU CTRL
         % Check that the model is symmetrical
         [KoffP, KoffN, KpwmP, KpwmN] = deal(thetaPosXvar(1),thetaNegXvar(1),thetaPosXvar(2),thetaNegXvar(2));
         if ...
@@ -148,17 +163,29 @@ switch frictionOrKtau
             warning('calibrateSensors: The Ktau model is not symmetrical');
         end
         % Run a fitting again but matching a single Ktau
-        fittedModel = Regressors.pwmModel1Sym(xVar',tauMotorG');
-        if abs(fittedModel.theta(1))>1e-3 % Tau offset
+        fittedModelTau = Regressors.pwmModel1Sym(xVar_tau',tauMotorG');
+        if abs(fittedModelTau.theta(1))>1e-3 % Tau offset
             warning('calibrateSensors: There is a torque offset in the model PWM to torque !!');
         end
-        calib.setKpwm(fittedModel.theta(2));
+        calib.setKpwm(fittedModelTau.theta(2));
+        
+        % CURR CTRL
+        % Run a fitting again but matching a single Kcurr
+        fittedModelCurr = Regressors.normalEquation(xVar_curr',currMotorG');
+        calib.setCurrOffset(fittedModelCurr.theta(1));
+        calib.setKcurr(fittedModelCurr.theta(2));
+        
+        % CURR TO TORQUE CTRL
+        calib.computeKtau();
+        calib.computeKvmech(jointMotorCoupling.gearboxDqM2Jratios{motorIdx});
+        
+        calib
         
     otherwise
         error('calibrateSensors: unknown calibration type !!');
 end
 
 % Plot fitted model over acquired data.
-obj.plotModel(frictionOrKtau,fittedModel,xVar,1000);
+obj.plotModel(frictionOrKtau,fittedModelTau,xVar_tau,1000);
 
 end

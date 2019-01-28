@@ -35,7 +35,20 @@ switch task
                 % run the profile script for friction identification
                 run lowLevTauCtrlCalibratorSequenceProfile3;
             otherwise
-                error('Unknown low level control calibration phase!');
+                error('Unknown low level torque control calibration phase!');
+        end
+    case LowlevCurrCtrlCalibrator.task
+        % init joint/motors group label variable for the profile script
+        motor = taskSpecificParams.motorName;
+        switch taskSpecificParams.frictionOrKcurr
+            case 'friction'
+                % run the profile script for friction identification
+                run lowLevCurrCtrlCalibratorSequenceProfile1;
+            case 'kcurr'
+                % run the profile script for friction identification
+                run lowLevCurrCtrlCalibratorSequenceProfile2;
+            otherwise
+                error('Unknown low level current control calibration phase!');
         end
         
     otherwise

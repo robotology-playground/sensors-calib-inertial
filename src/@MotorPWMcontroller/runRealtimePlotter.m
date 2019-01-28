@@ -10,9 +10,9 @@ if ~isempty(obj.plotterThread)
     delete(obj.plotterThread);
 end
 
-startFcn  = @(~,~) obj.plotterThreadStartFcn();
-stopFcn   = @(~,~) obj.plotterThreadStopFcn();
-updateFcn = @(~,~,~) obj.plotterThreadUpdateFcn();
+startFcn  = @(~,~) obj.plotterThreadStartFcn2();
+stopFcn   = @(~,~) obj.plotterThreadStopFcn2();
+updateFcn = @(~,~,~) obj.plotterThreadUpdateFcn2();
 
 if obj.testMode 
     obj.plotterThread = UT.RateThread_CB(...

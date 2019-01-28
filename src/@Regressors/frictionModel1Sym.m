@@ -17,7 +17,7 @@ y = y(filtIdxes);
 x = x(filtIdxes);
 
 % format X adding the column of sign(x)
-M = @(dq) [sign(dq) dq]
+M = @(dq) [sign(dq) dq];
 X = M(x);
 
 % process positive velocities model

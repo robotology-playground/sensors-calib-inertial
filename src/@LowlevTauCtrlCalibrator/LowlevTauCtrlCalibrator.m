@@ -22,10 +22,10 @@ classdef LowlevTauCtrlCalibrator < Calibrator
         statesNextState = {...
             'restart'         ,'proceed'         ,'skip'          ,'end'     ;...
             []                ,S.stateAcqFriction,[]              ,[]        ;...  % stateStart
-            S.stateAcqFriction,S.stateFitFriction,S.stateAcqKtau  ,S.stateEnd;...  % stateAcqFriction
-            S.stateAcqFriction,S.stateAcqKtau    ,S.stateAcqKtau  ,S.stateEnd;...  % stateFitFriction
-            S.stateAcqKtau    ,S.stateFitKtau    ,S.stateNextGroup,S.stateEnd;...  % stateAcqKtau
-            S.stateAcqKtau    ,S.stateNextGroup  ,S.stateNextGroup,S.stateEnd;...  % stateFitKtau
+            S.stateAcqFriction,S.stateFitFriction,S.stateAcqKgain ,S.stateEnd;...  % stateAcqFriction
+            S.stateAcqFriction,S.stateAcqKgain   ,S.stateAcqKgain ,S.stateEnd;...  % stateFitFriction
+            S.stateAcqKgain   ,S.stateFitKgain   ,S.stateNextGroup,S.stateEnd;...  % stateAcqKgain
+            S.stateAcqKgain   ,S.stateNextGroup  ,S.stateNextGroup,S.stateEnd;...  % stateFitKgain
             []                ,S.stateAcqFriction,[]              ,S.stateEnd};    % stateNextGroup
         
         statesCurrentProcessing = {...
@@ -33,8 +33,8 @@ classdef LowlevTauCtrlCalibrator < Calibrator
             @(o) @o.start      ,@(varargin) 'proceed' ,;... % stateStart
             @(o) @o.acqFriction,@(o) @o.promptUser    ,;... % stateAcqFriction
             @(o) @o.fitFriction,@(o) @o.promptUser    ,;... % stateFitFriction
-            @(o) @o.acqKtau    ,@(o) @o.promptUser    ,;... % stateAcqKtau
-            @(o) @o.fitKtau    ,@(o) @o.promptUser    ,;... % stateFitKtau
+            @(o) @o.acqKtau    ,@(o) @o.promptUser    ,;... % stateAcqKgain
+            @(o) @o.fitKtau    ,@(o) @o.promptUser    ,;... % stateFitKgain
             @(varargin) []     ,@(o) @o.nextGroupTrans,};   % stateNextGroup
         
         statesTransitionProcessing = {...
@@ -42,8 +42,8 @@ classdef LowlevTauCtrlCalibrator < Calibrator
             @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            ;...  % stateStart
             @(o) @o.discardAcqFriction,@(varargin) []          ,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateAcqFriction
             @(o) @o.discardAcqFriction,@(o) @o.savePlotCallback,@(o) @o.discardAcqFriction,@(o) @o.discardAcqFriction;...  % stateFitFriction
-            @(o) @o.discardAcqKtau    ,@(varargin) []          ,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateAcqKtau
-            @(o) @o.discardAcqKtau    ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateFitKtau
+            @(o) @o.discardAcqKtau    ,@(varargin) []          ,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateAcqKgain
+            @(o) @o.discardAcqKtau    ,@(o) @o.savePlotCallback,@(o) @o.discardAcqKtau    ,@(o) @o.discardAcqKtau    ;...  % stateFitKgain
             @(varargin) []            ,@(varargin) []          ,@(varargin) []            ,@(varargin) []            };    % stateNextGroup
         
         stateArray = LowlevTauCtrlCalibrator.defStatesFromDesc([...

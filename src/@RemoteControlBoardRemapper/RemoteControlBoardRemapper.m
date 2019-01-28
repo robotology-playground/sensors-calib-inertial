@@ -99,7 +99,7 @@ classdef RemoteControlBoardRemapper < handle
         end
         
         % Open ports
-        open(obj,partList,jointsList)
+        open(obj,partList,jointsList);
         
         % Close ports
         close(obj);
@@ -128,6 +128,10 @@ classdef RemoteControlBoardRemapper < handle
         
         % Read motor encoder accelerations
         [readEncAccelerations] = getMotorEncoderAccelerations(obj,motorsIdxList);
+        
+        % Get the current values (A) for a set of motor indexes
+        [currVec] = getCurrents(obj,motorsIdxList);
+        
         
         % Get joints indexes as per the control board remapper mapping
         [jointsIdxList,matchingBitmap] = getJointsMappedIdxes(obj,jointNameList);

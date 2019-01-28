@@ -15,7 +15,7 @@ obj.lastAcqSensorDataAccessorMap = lastAcqSensorDataAccessorMap;
 
 % Advanced interface parameters:
 % - timeStart, timeStop, subSamplingSize
-run lowLevTauCtrlCalibratorDevConfig;
+run lowLevCtrlCalibratorDevConfig;
 obj.timeStart = timeStart;
 obj.timeStop = timeStop;
 obj.subSamplingSize = subSamplingSize;
