@@ -86,6 +86,7 @@ for seqIdx = 1:numel(obj.sequences)
                 % the PWM value.
                 motorName = sequence.pwmctrl.motor;
                 pwm = sequence.pwmctrl.pwm{stepIdx};
+                plotterType = sequence.plot.type{stepIdx};
                 
                 switch sequence.pwmctrl.trans{stepIdx}
                     case 'level'
@@ -94,7 +95,7 @@ for seqIdx = 1:numel(obj.sequences)
                         % this is not supported by the YARP remoteControlBoardRemapper,
                         % emulate it. We can only emulate position control.
                         pwmController = MotorPWMcontroller(motorName,obj.ctrlBoardRemap,Const.ThreadON);
-                        pwmController.start();
+                        pwmController.start(plotterType);
                         
                         % Set the desired PWM level (0-100%) for the named motor
                         ok = pwmController.setMotorPWM(pwm);
@@ -106,7 +107,7 @@ for seqIdx = 1:numel(obj.sequences)
                         shape = sequence.pwmctrl.trans{stepIdx};
                         freq = sequence.pwmctrl.freq{stepIdx};
                         pwmController = MotorPWMcontrollerTrans(motorName,shape,freq,pwm,obj.ctrlBoardRemap,Const.ThreadON);
-                        pwmController.start();
+                        pwmController.start(plotterType);
                 end
                 
                 % Prompt the user to proceed

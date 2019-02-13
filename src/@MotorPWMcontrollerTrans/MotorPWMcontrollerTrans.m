@@ -32,7 +32,7 @@ classdef MotorPWMcontrollerTrans < MotorPWMcontroller
         
         % Start the controller. Refer to the method description in the parent class.
         % This method extends the parent class method by running the PWM pattern for the calibrated motor.
-        ok = start(obj);
+        ok = start(obj,plotterType);
     end
     methods (Access=protected)
         % Rate thread function for the main motor controller

@@ -1,4 +1,4 @@
-function [ ok ] = start( obj )
+function [ ok ] = start( obj,plotterType )
 %Set the controlled motor obj.ctrledMotor in PWM control mode.
 %   Handle the coupled Motors keeping their control mode and state
 %   unchanged. If this is not supported by the YARP
@@ -39,7 +39,7 @@ else
 end
 
 % Run the real-time plotter
-ok = obj.runRealtimePlotter(config.plotterThread.samplingPeriod,config.plotterThread.timeout);
+ok = obj.runRealtimePlotter(plotterType,config.plotterThread.samplingPeriod,config.plotterThread.timeout);
 %ok = obj.runRealtimePidPlotter(config.plotterThread.samplingPeriod,config.plotterThread.timeout);
 
 % Controller is ready now

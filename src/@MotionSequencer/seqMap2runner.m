@@ -73,8 +73,18 @@ else
     runSeq.logCmd = obj.dummyCmd;
 end
 
+% Mode handling
+if ismember('mode',fieldnames(runSeq))
+    % copy respective content
+    runSeq.mode = runSeq.mode.NA.NA;
+else
+    % default value
+    runSeq.mode = cell(size(runSeq.ctrl.pos,1),1);
+    runSeq.mode(:) = {'ctrl'};
+end
+
 if ismember('pwmctrl',fieldnames(runSeq))
-    % list of join/motor groups
+    % motor name
     runSeq.pwmctrl.motor = cell2mat(fieldnames(runSeq.pwmctrl.pwm));
     % reshape 'pwm'
     runSeq.pwmctrl.pwm = struct2cellConcat(runSeq.pwmctrl.pwm);
@@ -87,14 +97,13 @@ if ismember('pwmctrl',fieldnames(runSeq))
     end
 end
 
-% Mode handling
-if ismember('mode',fieldnames(runSeq))
-    % copy respective content
-    runSeq.mode = runSeq.mode.NA.NA;
+if ismember('plot',fieldnames(runSeq))
+    % motor name
+    runSeq.plot.motor = cell2mat(fieldnames(runSeq.plot.type));
+    % reshape 'type'
+    runSeq.plot.type = struct2cellConcat(runSeq.plot.type);
 else
-    % default value
-    runSeq.mode = cell(size(runSeq.ctrl.pos,1),1);
-    runSeq.mode(:) = {'ctrl'};
+    runSeq.plot.type(1:numel(runSeq.mode)) = {'motorVel2torq'};
 end
 
 % Prompt handling
@@ -202,6 +211,12 @@ end
 % runSeq.pwmctrl.pwm = {
 %     0;...
 %     0};
+% 
+% runSeq.plot.motor = 'r_shoulder_grp';
+% 
+% runSeq.plot.type = {
+%     ''             ;...
+%     'motorVel2curr'};
 % 
 % runSeq.mode = {
 %     'ctrl';...

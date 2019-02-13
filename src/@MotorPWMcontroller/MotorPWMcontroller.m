@@ -22,7 +22,6 @@ classdef MotorPWMcontroller < handle
         lastMotorsPwmInPrevMode@double;
         % PID gains and real time synchronization
         ctrllerThread@RateThread;
-        ctrllerThreadPeriod@double;
         pidGains@struct;
         % Position Emulator mode running (for avoiding state
         % inconsistencies)
@@ -45,9 +44,8 @@ classdef MotorPWMcontroller < handle
         function obj = MotorPWMcontroller(motorName,remCtrlBoardRemapper,threadActivation)
             % default init values. Controller not running...
             obj.running = false;
-            obj.ctrllerThreadPeriod = nan;
             obj.controllerReady = false;
-            obj.tempPlot = struct('figH',[],'an',[],'units',[],'convertFromRad',[]);
+            obj.tempPlot = struct('plotterType',[],'figH',[],'an',[],'units',[],'convertFromRad',[]);
             
             % Set control board remapper
             obj.remCtrlBoardRemap = remCtrlBoardRemapper;
@@ -99,7 +97,7 @@ classdef MotorPWMcontroller < handle
         % motors keeping their control mode and state unchanged. If
         % this is not supported by the YARP remoteControlBoardRemapper,
         % emulate it. We can only emulate position control.
-        ok = start(obj);
+        ok = start(obj,plotterType);
         
         % Stop the controller. This also restores the previous
         % control mode for the named motor and eventual coupled
@@ -120,17 +118,28 @@ classdef MotorPWMcontroller < handle
         % motor 'obj.pwmCtrledMotor.name' which is explicitely controlled
         % through PWM.
         ok = runPwmEmulPosCtrlMode(obj,samplingPeriod,timeout);
-        ok = runRealtimePlotter(obj,threadPeriod,threadTimeout);
+        ok = runRealtimePlotter(obj,plotterType,threadPeriod,threadTimeout);
         
         % Rate thread functions for the controller
         ok = ctrllerThreadStartFcn(obj,PIDCtrller);
         ok = ctrllerThreadStopFcn(obj);
         ok = ctrllerThreadUpdateFcn(obj,ctrllerThreadStop,rateThreadPeriod,PIDCtrller);
         
-        % Rate thread functions for the real-time plotter
+        % Rate thread functions for the real-time plotter:
+        % -> Motor velocity to torque model
         plotterThreadStartFcn(obj);
         plotterThreadStopFcn(obj);
         plotterThreadUpdateFcn(obj);
+        % Rate thread functions for the real-time plotter:
+        % -> Motor velocity to current model
+        plotterThreadStartFcn2(obj);
+        plotterThreadStopFcn2(obj);
+        plotterThreadUpdateFcn2(obj);
+        % Rate thread functions for the real-time plotter
+        % -> Motor PWM/position to Current model
+        plotterThreadStartFcn3(obj);
+        plotterThreadStopFcn3(obj);
+        plotterThreadUpdateFcn3(obj);
     end
     
 end
