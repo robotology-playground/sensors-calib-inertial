@@ -99,12 +99,13 @@ for seqIdx = 1:numel(obj.sequences)
                         % Set the desired PWM level (0-100%) for the named motor
                         ok = pwmController.setMotorPWM(pwm);
                         
-                    case 'triangle'
+                    case {'triangle','offtrgle'}
                         % Same as the 'level' transition mode but here the PWM is set by an internal 
                         % command instead of being triggered by an external action. In this case, "pwm" is a maximum
                         % value.
+                        shape = sequence.pwmctrl.trans{stepIdx};
                         freq = sequence.pwmctrl.freq{stepIdx};
-                        pwmController = MotorPWMcontrollerTrans(motorName,freq,pwm,obj.ctrlBoardRemap,Const.ThreadON);
+                        pwmController = MotorPWMcontrollerTrans(motorName,shape,freq,pwm,obj.ctrlBoardRemap,Const.ThreadON);
                         pwmController.start();
                 end
                 
@@ -119,6 +120,7 @@ for seqIdx = 1:numel(obj.sequences)
                 % control mode for the named motor and eventual coupled
                 % motors.
                 ok = pwmController.stop();
+                clear pwmController;
                 
             otherwise
                 error('Unknown control mode!');

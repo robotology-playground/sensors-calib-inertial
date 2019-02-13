@@ -12,15 +12,22 @@ classdef MotorPWMcontrollerTrans < MotorPWMcontroller
     
     methods
         % Constructor
-        function obj = MotorPWMcontrollerTrans(motorName,freq,maxPwm,remCtrlBoardRemapper,threadActivation)
+        function obj = MotorPWMcontrollerTrans(motorName,shape,freq,maxPwm,remCtrlBoardRemapper,threadActivation)
             obj@MotorPWMcontroller(motorName,remCtrlBoardRemapper,threadActivation);
             % Create the PWM transition function
             obj.pattern = MotionPatternGenerator();
-            obj.pattern.setupTriangleNderivatives(freq,maxPwm,0);
+            switch shape
+                case 'triangle'
+                    obj.pattern.setupTriangleNderivatives(0,freq,maxPwm,0);
+                case 'offtrgle'
+                    obj.pattern.setupTriangleNderivatives(5,freq,maxPwm,0);
+                otherwise
+                    error('Unknown trajectory pattern!!');
+            end
         end
         
         % Destructor
-        function delete(obj)
+        function delete(~)
         end
         
         % Start the controller. Refer to the method description in the parent class.

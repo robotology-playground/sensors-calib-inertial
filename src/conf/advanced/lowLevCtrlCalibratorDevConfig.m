@@ -18,4 +18,4 @@ posCtrlEmulator.timeout = 300; % seconds
 calibedMotCtrller.timeout = 60; % seconds
 
 plotterThread.samplingPeriod = 0.05; % seconds
-plotterThread.timeout = 300; % seconds
+plotterThread.timeout = 100; % seconds

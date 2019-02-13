@@ -15,8 +15,7 @@ end
 if(ismember(motorName,obj.coupling.coupledMotors))
     % the controller is not running
     obj.running = false;
-    obj.ctrllerThread = nan;
-    obj.ctrllerThreadPeriod = nan;
+    obj.ctrllerThread = [];
     
     % set position (emulated) and PWM controlled motor settings
     obj.pwmCtrledMotor.name = motorName;

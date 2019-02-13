@@ -46,7 +46,7 @@ switch task
                 run lowLevCurrCtrlCalibratorSequenceProfile1;
             case 'kcurr'
                 % run the profile script for k_pwm2i identification
-                run lowLevTauCtrlCalibratorSequenceProfile3;
+                run lowLevCurrCtrlCalibratorSequenceProfile2;
             otherwise
                 error('Unknown low level current control calibration phase!');
         end

@@ -79,7 +79,7 @@ acquiredParts = {'left_leg'};
 % some sensors are de-activated because of faulty behaviour
 mtbSensorAct.left_arm = [10:13 8:9 7];
 mtbSensorAct.right_arm = [10:13 8:9 7];
-mtbSensorAct.left_leg = [1:4,8:11];
+mtbSensorAct.left_leg = 1:11;
 mtbSensorAct.right_leg = 1:13;
 mtbSensorAct.torso = 7:10;
 mtbSensorAct.head = 1;
@@ -133,7 +133,7 @@ calibedParts = {'left_leg'};
 % or wrong frame definition
 mtbSensorAct.left_arm = [10:13 8:9 7];
 mtbSensorAct.right_arm = [10:13 8:9 7];
-mtbSensorAct.left_leg = [1:4,8:11];
+mtbSensorAct.left_leg = 1:11;
 mtbSensorAct.right_leg = 1:11;
 mtbSensorAct.torso = 7:10;
 mtbSensorAct.head = 1;
@@ -160,8 +160,8 @@ taskSpecificParams = struct(...
     'motionSeqProfileOffsets',motionSeqProfileOffsets,...
     'motionSeqProfileMatrixC',motionSeqProfileMatrixC);
 
-% Sensor data acquisition: ['new'|'last'|<id>]
-sensorDataAcq = {'new'};
+% Sensor data acquisition: [{'new'}|{'last'}|{'seq',<id>}]
+sensorDataAcq = {'seq',456};
 
 % wrap parameters
 accelerometersCalib = struct(...

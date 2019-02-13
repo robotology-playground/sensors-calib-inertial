@@ -7,7 +7,6 @@ function [ ok ] = runPwmEmulPosCtrlMode( obj,samplingPeriod,timeout )
 
 % Define and run the position control emulator thread with a discrete PID
 % controller.
-obj.ctrllerThreadPeriod = samplingPeriod; % thread period
 aFilter = DSP.IdentityFilter([]);         % define the filter
 % DEBUG
 [obj.pidGains.Ki] = deal(-6);
